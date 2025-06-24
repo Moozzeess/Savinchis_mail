@@ -83,15 +83,15 @@ export function TemplateEditorClient() {
   }
 
   return (
-    <div className="grid md:grid-cols-2 gap-8">
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">Editor de Plantilla</CardTitle>
-          <CardDescription>Crea o edita tu plantilla de correo electrónico.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid md:grid-cols-2 gap-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-headline">Editor de Plantilla</CardTitle>
+            <CardDescription>Crea o edita tu plantilla de correo electrónico.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
               <FormField
                 control={form.control}
                 name="templateName"
@@ -132,75 +132,75 @@ export function TemplateEditorClient() {
                 )}
               />
               <Button type="submit">Guardar Plantilla</Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-      
-      <div className="space-y-6 sticky top-24 h-max">
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2">
-              <Wand2 /> Optimizador de Correo con IA
-            </CardTitle>
-            <CardDescription>
-              Mejora tu contenido para evitar filtros de spam y aumentar la interacción.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <FormField
-                control={form.control}
-                name="audience"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Describe tu Audiencia</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ej: Clientes interesados en tecnología" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            <Button onClick={handleOptimize} disabled={isLoading} className="w-full">
-              {isLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Sparkles className="mr-2 h-4 w-4" />
-              )}
-              {isLoading ? 'Optimizando...' : 'Optimizar con IA'}
-            </Button>
+            </div>
           </CardContent>
         </Card>
-
-        {aiResult && (
-           <Card>
+        
+        <div className="space-y-6 sticky top-24 h-max">
+          <Card>
             <CardHeader>
-              <CardTitle className="font-headline">Resultados de la Optimización</CardTitle>
+              <CardTitle className="font-headline flex items-center gap-2">
+                <Wand2 /> Optimizador de Correo con IA
+              </CardTitle>
+              <CardDescription>
+                Mejora tu contenido para evitar filtros de spam y aumentar la interacción.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label>Puntuación de Spam</Label>
-                <Progress value={aiResult.spamScore || 0} className="w-full mt-1" />
-                <p className="text-sm text-muted-foreground mt-1">
-                  Puntuación: {aiResult.spamScore || 'N/A'}/100 (más bajo es mejor)
-                </p>
-              </div>
-              <div>
-                <Label>Sugerencias de Interacción</Label>
-                <p className="text-sm bg-muted p-3 rounded-md mt-1">{aiResult.engagementSuggestions}</p>
-              </div>
-               <div>
-                <Label>Contenido Optimizado</Label>
-                <Textarea readOnly value={aiResult.optimizedContent} rows={15} className="mt-1 bg-muted" />
-                <Button variant="secondary" size="sm" className="mt-2" onClick={() => {
-                  form.setValue('emailBody', aiResult.optimizedContent);
-                  toast({ title: 'Contenido actualizado', description: 'El cuerpo del correo ha sido actualizado con la versión optimizada.'})
-                  }}>Usar este contenido</Button>
-              </div>
+              <FormField
+                  control={form.control}
+                  name="audience"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Describe tu Audiencia</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ej: Clientes interesados en tecnología" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              <Button type="button" onClick={handleOptimize} disabled={isLoading} className="w-full">
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="mr-2 h-4 w-4" />
+                )}
+                {isLoading ? 'Optimizando...' : 'Optimizar con IA'}
+              </Button>
             </CardContent>
-           </Card>
-        )}
-      </div>
-    </div>
+          </Card>
+
+          {aiResult && (
+             <Card>
+              <CardHeader>
+                <CardTitle className="font-headline">Resultados de la Optimización</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label>Puntuación de Spam</Label>
+                  <Progress value={aiResult.spamScore || 0} className="w-full mt-1" />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Puntuación: {aiResult.spamScore || 'N/A'}/100 (más bajo es mejor)
+                  </p>
+                </div>
+                <div>
+                  <Label>Sugerencias de Interacción</Label>
+                  <p className="text-sm bg-muted p-3 rounded-md mt-1">{aiResult.engagementSuggestions}</p>
+                </div>
+                 <div>
+                  <Label>Contenido Optimizado</Label>
+                  <Textarea readOnly value={aiResult.optimizedContent} rows={15} className="mt-1 bg-muted" />
+                  <Button type="button" variant="secondary" size="sm" className="mt-2" onClick={() => {
+                    form.setValue('emailBody', aiResult.optimizedContent);
+                    toast({ title: 'Contenido actualizado', description: 'El cuerpo del correo ha sido actualizado con la versión optimizada.'})
+                    }}>Usar este contenido</Button>
+                </div>
+              </CardContent>
+             </Card>
+          )}
+        </div>
+      </form>
+    </Form>
   );
 }
