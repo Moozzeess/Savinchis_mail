@@ -5,8 +5,8 @@ import mysql from 'mysql2/promise';
 
 /**
  * @fileoverview Acción de servidor para enviar una campaña de correo electrónico.
- * Obtiene destinatarios desde un archivo CSV o una base de datos MySQL y envía
- * el correo utilizando Nodemailer.
+ * Obtiene destinatarios desde una consulta a la base de datos MySQL basada en una fecha
+ * y envía el correo utilizando Nodemailer.
  */
 
 /**
@@ -15,47 +15,19 @@ import mysql from 'mysql2/promise';
 interface SendCampaignPayload {
   subject: string;
   htmlBody: string;
-  recipientSource: 'file' | 'query';
-  fileContent?: string;
-  query?: string;
-}
-
-/**
- * Parsea un contenido de texto en formato CSV para extraer direcciones de correo.
- * @param csvContent - El contenido del archivo CSV como una cadena de texto.
- * @returns Un array de objetos, cada uno con una propiedad `email`.
- * @throws Arrojará un error si el CSV no contiene una columna 'email'.
- */
-function parseCsv(csvContent: string): { email: string }[] {
-  const lines = csvContent.trim().split(/\r?\n/);
-  if (lines.length === 0) {
-    return [];
-  }
-  
-  const header = lines.shift()!.toLowerCase().split(',').map(h => h.trim());
-  const emailIndex = header.indexOf('email');
-
-  if (emailIndex === -1) {
-    throw new Error("El archivo CSV debe contener una columna 'email'.");
-  }
-
-  return lines
-    .map((line) => {
-      const values = line.split(',');
-      const email = values[emailIndex]?.trim();
-      return email ? { email } : null;
-    })
-    .filter((contact): contact is { email: string } => contact !== null);
+  sendDate: string;
 }
 
 /**
  * Envía una campaña de correo a una lista de destinatarios obtenida
- * dinámicamente desde un archivo o una consulta a base de datos.
- * @param payload - Los detalles de la campaña, incluyendo asunto, cuerpo y origen de los destinatarios.
- * @returns Un objeto indicando el éxito de la operación.
+ * dinámicamente desde una consulta a base de datos basada en una fecha.
+ * @param payload - Los detalles de la campaña, incluyendo asunto, cuerpo y fecha de visita.
+ * @returns Un objeto indicando el resultado de la operación.
  * @throws Arrojará un error si la configuración o el proceso de envío fallan.
  */
 export async function sendCampaign(payload: SendCampaignPayload) {
+  const { subject, htmlBody, sendDate } = payload;
+
   const {
     SMTP_HOST,
     SMTP_PORT,
@@ -74,70 +46,80 @@ export async function sendCampaign(payload: SendCampaignPayload) {
     );
   }
 
+  if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
+    throw new Error(
+      'Faltan las variables de entorno de la base de datos. Por favor, configúralas.'
+    );
+  }
+
+  let connection;
   let recipients: { email: string }[] = [];
 
-  if (payload.recipientSource === 'file') {
-    if (!payload.fileContent) {
-      throw new Error('No se proporcionó contenido de archivo CSV.');
-    }
-    recipients = parseCsv(payload.fileContent);
-  } else if (payload.recipientSource === 'query') {
-    if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
-      throw new Error(
-        'Faltan las variables de entorno de la base de datos. Por favor, configúralas.'
-      );
-    }
-    if (!payload.query) {
-      throw new Error('No se proporcionó una consulta de base de datos.');
-    }
+  try {
+    connection = await mysql.createConnection({
+      host: MYSQL_HOST,
+      port: MYSQL_PORT ? parseInt(MYSQL_PORT, 10) : 3306,
+      user: MYSQL_USER,
+      password: MYSQL_PASSWORD,
+      database: MYSQL_DATABASE,
+    });
 
-    let connection;
-    try {
-      connection = await mysql.createConnection({
-        host: MYSQL_HOST,
-        port: MYSQL_PORT ? parseInt(MYSQL_PORT, 10) : 3306,
-        user: MYSQL_USER,
-        password: MYSQL_PASSWORD,
-        database: MYSQL_DATABASE,
-      });
-      const [rows] = await connection.execute(payload.query);
-      recipients = (rows as { email: string }[]).filter((row) => row.email);
-    } catch (error) {
-      console.error('Error al conectar o consultar la base de datos:', error);
-      throw new Error('No se pudo obtener los contactos de la base de datos.');
-    } finally {
-      if (connection) await connection.end();
-    }
+    const sql_query = `
+      SELECT t1.email
+      FROM order_data AS t1 INNER JOIN order_data_online AS t2 ON t1.Ds_Merchant_Order = t2.Ds_Order
+      WHERE
+          t1.fecha_visita = ?
+          AND t2.Ds_ErrorCode = '00'
+          AND t2.Ds_ErrorMessage = 'completed'
+          AND NOT t1.email IN ('alberto.silva@papalote.org.mx', 'alejandracervantesm@gmail.com')
+    `;
+
+    const [rows] = await connection.execute(sql_query, [sendDate]);
+    recipients = (rows as { email: string }[]).filter((row) => row.email);
+    console.log(`Se encontraron ${recipients.length} destinatarios para la fecha ${sendDate}.`);
+  } catch (error) {
+    console.error('Error al conectar o consultar la base de datos:', error);
+    throw new Error('No se pudo obtener los contactos de la base de datos.');
+  } finally {
+    if (connection) await connection.end();
   }
 
   if (recipients.length === 0) {
-    throw new Error('No se encontraron destinatarios para enviar la campaña.');
+    return { success: true, message: `No se encontraron destinatarios para enviar en la fecha ${sendDate}. No se enviaron correos.` };
   }
 
   const transporter = nodemailer.createTransport({
     host: SMTP_HOST,
     port: parseInt(SMTP_PORT, 10),
-    secure: parseInt(SMTP_PORT, 10) === 465,
+    secure: parseInt(SMTP_PORT, 10) === 465, // true for 465, false for other ports
     auth: {
       user: SMTP_USER,
       pass: SMTP_PASS,
     },
   });
 
-  const sendPromises = recipients.map((contact) => {
-    return transporter.sendMail({
-      from: `"EmailCraft Lite" <${SMTP_USER}>`,
-      to: contact.email,
-      subject: payload.subject,
-      html: payload.htmlBody,
-    });
-  });
+  let sentCount = 0;
+  let failedCount = 0;
 
-  try {
-    await Promise.all(sendPromises);
-    return { success: true, message: 'Campaña enviada con éxito.' };
-  } catch (error) {
-    console.error('Error al enviar la campaña:', error);
-    throw new Error('Hubo un problema al enviar los correos electrónicos.');
+  for (const contact of recipients) {
+    try {
+      await transporter.sendMail({
+        from: `"EmailCraft Lite" <${SMTP_USER}>`,
+        to: contact.email,
+        subject: subject,
+        html: htmlBody,
+      });
+      sentCount++;
+    } catch (error) {
+      failedCount++;
+      console.error(`Error al enviar correo a ${contact.email}:`, error);
+    }
   }
+  
+  let message = `Campaña enviada. Enviados: ${sentCount}. Fallidos: ${failedCount}.`;
+  if (failedCount > 0) {
+     message += ' Revisa la consola del servidor para más detalles sobre los errores.'
+  }
+
+  return { success: true, message: message };
 }

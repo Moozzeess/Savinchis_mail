@@ -27,7 +27,6 @@ import { es } from "date-fns/locale";
 import { campaigns } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
 import { sendCampaign } from "@/app/actions/send-campaign-action";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -45,10 +44,6 @@ export default function CampaignsPage() {
   const [subject, setSubject] = useState('');
   const [emailBody, setEmailBody] = useState('');
   const [previewContent, setPreviewContent] = useState('');
-
-  const [recipientSource, setRecipientSource] = useState<'file' | 'query'>('file');
-  const [recipientFile, setRecipientFile] = useState<File | null>(null);
-  const [recipientQuery, setRecipientQuery] = useState('SELECT email FROM contacts WHERE subscribed = true;');
 
   useEffect(() => {
     setPreviewContent(emailBody);
@@ -77,50 +72,27 @@ export default function CampaignsPage() {
       return;
     }
 
-    let fileContent: string | undefined;
-
-    if (recipientSource === 'file') {
-      if (!recipientFile) {
-        toast({
-          title: 'Archivo de destinatarios no seleccionado',
-          description: 'Por favor, selecciona un archivo CSV con los correos.',
-          variant: 'destructive',
-        });
-        return;
-      }
-      if (!recipientFile.name.toLowerCase().endsWith('.csv')) {
-        toast({
-          title: 'Archivo no válido',
-          description: 'Por favor, selecciona un archivo con extensión .csv',
-          variant: 'destructive',
-        });
-        return;
-      }
-      fileContent = await recipientFile.text();
-    } else { // 'query'
-      if (!recipientQuery.trim()) {
-        toast({
-          title: 'Consulta de destinatarios vacía',
-          description: 'Por favor, escribe una consulta SQL para obtener los correos.',
-          variant: 'destructive',
-        });
-        return;
-      }
+    if (!date) {
+      toast({
+        title: "Fecha de visita requerida",
+        description: "Por favor, selecciona una fecha para buscar los destinatarios.",
+        variant: "destructive",
+      });
+      return;
     }
-
+    
     setIsSending(true);
     try {
-      await sendCampaign({
+      const formattedDate = format(date, "dd/MM/yyyy");
+      const result = await sendCampaign({
         subject: subject,
         htmlBody: previewContent,
-        recipientSource: recipientSource,
-        fileContent: fileContent,
-        query: recipientSource === 'query' ? recipientQuery : undefined,
+        sendDate: formattedDate,
       });
 
       toast({
-        title: "Campaña enviada",
-        description: "La campaña de correo ha sido enviada a los destinatarios.",
+        title: "Proceso de envío finalizado",
+        description: result.message,
       });
     } catch (error) {
       toast({
@@ -153,7 +125,7 @@ export default function CampaignsPage() {
           <CardHeader>
             <CardTitle>Crear Nueva Campaña</CardTitle>
             <CardDescription>
-              Define el contenido, los destinatarios y envía tu campaña.
+              Define el contenido y la fecha de visita de los destinatarios para enviar tu campaña.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -178,39 +150,7 @@ export default function CampaignsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Destinatarios</Label>
-              <RadioGroup value={recipientSource} onValueChange={(value) => setRecipientSource(value as 'file' | 'query')} className="flex gap-4 mb-2">
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="file" id="r1" />
-                  <Label htmlFor="r1">Subir Archivo CSV</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="query" id="r2" />
-                  <Label htmlFor="r2">Desde Base de Datos (SQL)</Label>
-                </div>
-              </RadioGroup>
-
-              {recipientSource === 'file' && (
-                <Input 
-                  type="file" 
-                  accept=".csv" 
-                  onChange={(e) => setRecipientFile(e.target.files ? e.target.files[0] : null)}
-                />
-              )}
-
-              {recipientSource === 'query' && (
-                <Textarea 
-                  placeholder="Escribe tu consulta SQL aquí..." 
-                  value={recipientQuery}
-                  onChange={(e) => setRecipientQuery(e.target.value)}
-                  rows={4}
-                  className="font-mono"
-                />
-              )}
-            </div>
-
-             <div>
-              <Label className="mb-2 block">Fecha de envío (Opcional)</Label>
+              <Label className="mb-2 block">Fecha de Visita de los Destinatarios</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
