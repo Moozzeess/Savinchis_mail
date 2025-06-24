@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+
 import {
   Card,
   CardContent,
@@ -6,106 +6,132 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Mails, Users, FileText, PlusCircle } from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Mails, Users, TrendingUp } from "lucide-react";
+import { AnalyticsCharts } from "@/components/analytics-charts";
+import { campaigns } from "@/lib/data";
+import { cn } from "@/lib/utils";
 
 /**
  * Página del Panel de Control (Dashboard).
- * Ofrece un resumen de la actividad de la cuenta, incluyendo estadísticas clave
- * y accesos directos a las funciones principales de la aplicación.
+ * Ofrece un resumen de la actividad de la cuenta, incluyendo estadísticas clave,
+ * un gráfico de rendimiento y un historial de campañas recientes.
  */
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col gap-8">
-      <div className="grid gap-2">
-        <h1 className="text-3xl font-headline font-bold tracking-tight">
-          Panel de Control
-        </h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-headline font-bold">Panel de Control</h1>
         <p className="text-muted-foreground">
           Bienvenido a EmailCraft Lite. Aquí tienes un resumen de tu actividad.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Campañas Activas
+              Campañas Enviadas (Mes)
             </CardTitle>
             <Mails className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">5</div>
-            <p className="text-xs text-muted-foreground">
-              +2_ desde el mes pasado
-            </p>
+            <div className="text-2xl font-bold">12</div>
+            <p className="text-xs text-muted-foreground">+2 desde el mes pasado</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Contactos Totales
+              Nuevos Contactos (Semana)
             </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,257</div>
+            <div className="text-2xl font-bold">+180</div>
             <p className="text-xs text-muted-foreground">
-              +180_ esta semana
+              Total: 1,257 contactos
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Plantillas</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Tasa de Apertura (General)
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
+            <div className="text-2xl font-bold">24.5%</div>
             <p className="text-xs text-muted-foreground">
-              +3_ nuevas plantillas creadas
+              +1.2% desde la última campaña
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="flex flex-col md:flex-row items-center gap-6 p-8">
-        <div className="flex-1 space-y-4">
-          <h2 className="text-2xl font-headline font-semibold">
-            Crea tu próxima campaña exitosa
-          </h2>
-          <p className="text-muted-foreground">
-            Empieza a interactuar con tu audiencia. Crea una nueva campaña,
-            importa tus contactos o diseña una plantilla de correo electrónico
-            atractiva.
-          </p>
-          <div className="flex gap-4">
-            <Button asChild>
-              <Link href="/campaigns">
-                <PlusCircle className="mr-2" />
-                Crear Campaña
-              </Link>
-            </Button>
-            <Button variant="secondary" asChild>
-              <Link href="/contacts">
-                <Users className="mr-2" />
-                Importar Contactos
-              </Link>
-            </Button>
-          </div>
-        </div>
-        <div className="flex-shrink-0">
-          <Image
-            src="https://placehold.co/400x300.png"
-            width={400}
-            height={300}
-            alt="Marketing illustration"
-            className="rounded-lg object-cover"
-            data-ai-hint="email marketing"
-          />
-        </div>
-      </Card>
+      <div className="grid gap-8 lg:grid-cols-2">
+        <AnalyticsCharts />
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Campañas Recientes</CardTitle>
+            <CardDescription>
+              Un vistazo a tus últimas 5 campañas enviadas.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nombre</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead>Fecha</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {campaigns.slice(0, 5).map((campaign) => (
+                  <TableRow key={campaign.name}>
+                    <TableCell className="font-medium">
+                      {campaign.name}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          campaign.status === "AGOTADA"
+                            ? "destructive"
+                            : campaign.status === "EXPIRADA"
+                            ? "outline"
+                            : "default"
+                        }
+                        className={cn({
+                          "bg-green-500/20 text-green-700 border-transparent hover:bg-green-500/30":
+                            campaign.status === "TERMINADA",
+                          "bg-blue-500/20 text-blue-700 border-transparent hover:bg-blue-500/30":
+                            campaign.status === "INICIADA",
+                          "bg-yellow-500/20 text-yellow-700 border-transparent hover:bg-yellow-500/30":
+                            campaign.status === "TIEMPO LIMITADO",
+                        })}
+                      >
+                        {campaign.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{campaign.date}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
