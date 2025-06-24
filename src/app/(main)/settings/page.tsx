@@ -9,8 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Info } from "lucide-react";
+import { Database, Info } from "lucide-react";
 
 /**
  * Página de Ajustes.
@@ -23,7 +22,7 @@ export default function SettingsPage() {
       <div>
         <h1 className="text-3xl font-headline font-bold">Ajustes</h1>
         <p className="text-muted-foreground">
-          Configura tu cuenta y tus integraciones.
+          Configura tu cuenta, conexiones e integraciones.
         </p>
       </div>
 
@@ -46,6 +45,45 @@ export default function SettingsPage() {
         </CardContent>
         <CardFooter>
           <Button>Guardar Cambios</Button>
+        </CardFooter>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Conexión a Base de Datos MySQL</CardTitle>
+          <CardDescription>
+            Configura los detalles para conectar la aplicación a tu base de datos MySQL.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="db-host">Host</Label>
+              <Input id="db-host" placeholder="localhost" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="db-port">Puerto</Label>
+              <Input id="db-port" placeholder="3306" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="db-user">Usuario</Label>
+            <Input id="db-user" placeholder="root" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="db-pass">Contraseña</Label>
+            <Input id="db-pass" type="password" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="db-name">Nombre de la Base de Datos</Label>
+            <Input id="db-name" placeholder="customer_db" />
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button>
+            <Database className="mr-2" />
+            Probar y Guardar Conexión
+          </Button>
         </CardFooter>
       </Card>
       
