@@ -11,9 +11,11 @@ import Draggable from 'react-draggable';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 type TextAlign = 'left' | 'center' | 'right';
 type FontWeight = 'normal' | 'bold' | '300' | '600';
+type FontFamily = 'body' | 'headline';
 
 interface StyleProps {
   fontSize: number;
@@ -21,6 +23,7 @@ interface StyleProps {
   width: number;
   textAlign: TextAlign;
   fontWeight: FontWeight;
+  fontFamily: FontFamily;
 }
 
 /**
@@ -37,12 +40,12 @@ export function CertificateEditor() {
   const [signatureText, setSignatureText] = useState('Firma del Organizador');
   
   const [elementStyles, setElementStyles] = useState<{ [key: string]: StyleProps }>({
-    title: { fontSize: 48, color: '#000000', width: 80, textAlign: 'center', fontWeight: 'bold' },
-    issuedTo: { fontSize: 18, color: '#000000', width: 80, textAlign: 'center', fontWeight: 'normal' },
-    contactName: { fontSize: 36, color: '#000000', width: 80, textAlign: 'center', fontWeight: '600' },
-    description: { fontSize: 16, color: '#000000', width: 80, textAlign: 'center', fontWeight: 'normal' },
-    signature: { fontSize: 16, color: '#000000', width: 50, textAlign: 'center', fontWeight: '600' },
-    date: { fontSize: 16, color: '#000000', width: 50, textAlign: 'center', fontWeight: '600' },
+    title: { fontSize: 48, color: '#000000', width: 80, textAlign: 'center', fontWeight: 'bold', fontFamily: 'headline' },
+    issuedTo: { fontSize: 18, color: '#000000', width: 80, textAlign: 'center', fontWeight: 'normal', fontFamily: 'body' },
+    contactName: { fontSize: 36, color: '#000000', width: 80, textAlign: 'center', fontWeight: '600', fontFamily: 'headline' },
+    description: { fontSize: 16, color: '#000000', width: 80, textAlign: 'center', fontWeight: 'normal', fontFamily: 'body' },
+    signature: { fontSize: 16, color: '#000000', width: 50, textAlign: 'center', fontWeight: '600', fontFamily: 'body' },
+    date: { fontSize: 16, color: '#000000', width: 50, textAlign: 'center', fontWeight: '600', fontFamily: 'body' },
   });
 
   const { toast } = useToast();
@@ -94,78 +97,96 @@ export function CertificateEditor() {
    * Actualmente, muestra una notificación de éxito.
    */
   const handleSaveTemplate = () => {
-    // Aquí se podría guardar la posición y estilos de los elementos también
     toast({
       title: 'Plantilla Guardada',
       description: 'Tu plantilla de certificado ha sido guardada con éxito.',
     });
   };
 
-  const styleControls = (elementName: string, elementLabel: string, textState: string, setTextState: (val: string) => void) => (
+  const styleControls = (elementName: string, elementLabel: string, textState: string | null, setTextState: ((val: string) => void) | null) => (
     <AccordionItem value={elementName}>
       <AccordionTrigger>{elementLabel}</AccordionTrigger>
       <AccordionContent className="space-y-4 pt-4">
+        {textState !== null && setTextState && (
           <div className="space-y-2">
-              <Label htmlFor={`cert-${elementName}`}>Texto</Label>
-              <Input id={`cert-${elementName}`} value={textState} onChange={(e) => setTextState(e.target.value)} />
+            <Label htmlFor={`cert-${elementName}`}>Texto</Label>
+            <Input id={`cert-${elementName}`} value={textState} onChange={(e) => setTextState(e.target.value)} />
           </div>
+        )}
+        <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-              <Label>Tamaño de Fuente: {elementStyles[elementName].fontSize}px</Label>
-              <Slider
-                  value={[elementStyles[elementName].fontSize]}
-                  onValueChange={([val]) => handleStyleChange(elementName, 'fontSize', val)}
-                  min={8} max={120} step={1}
-              />
-          </div>
-          <div className="space-y-2">
-              <Label>Ancho: {elementStyles[elementName].width}%</Label>
-              <Slider
-                  value={[elementStyles[elementName].width]}
-                  onValueChange={([val]) => handleStyleChange(elementName, 'width', val)}
-                  min={10} max={100} step={1}
-              />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                  <Label htmlFor={`${elementName}-color`}>Color</Label>
-                  <Input
-                      id={`${elementName}-color`}
-                      type="color"
-                      value={elementStyles[elementName].color}
-                      onChange={(e) => handleStyleChange(elementName, 'color', e.target.value)}
-                      className="p-1 h-10"
-                  />
-              </div>
-              <div className="space-y-2">
-                  <Label>Alineación</Label>
-                  <Select
-                      value={elementStyles[elementName].textAlign}
-                      onValueChange={(val: TextAlign) => handleStyleChange(elementName, 'textAlign', val)}
-                  >
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                          <SelectItem value="left">Izquierda</SelectItem>
-                          <SelectItem value="center">Centro</SelectItem>
-                          <SelectItem value="right">Derecha</SelectItem>
-                      </SelectContent>
-                  </Select>
-              </div>
+            <Label>Tamaño ({elementStyles[elementName].fontSize}px)</Label>
+            <Slider
+              value={[elementStyles[elementName].fontSize]}
+              onValueChange={([val]) => handleStyleChange(elementName, 'fontSize', val)}
+              min={8} max={120} step={1}
+            />
           </div>
           <div className="space-y-2">
-              <Label>Grosor de Fuente</Label>
-              <Select
-                  value={elementStyles[elementName].fontWeight}
-                  onValueChange={(val: FontWeight) => handleStyleChange(elementName, 'fontWeight', val)}
-              >
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                      <SelectItem value="300">Light</SelectItem>
-                      <SelectItem value="normal">Normal</SelectItem>
-                      <SelectItem value="600">Semi-Bold</SelectItem>
-                      <SelectItem value="bold">Negrita</SelectItem>
-                  </SelectContent>
-              </Select>
+            <Label>Ancho ({elementStyles[elementName].width}%)</Label>
+            <Slider
+              value={[elementStyles[elementName].width]}
+              onValueChange={([val]) => handleStyleChange(elementName, 'width', val)}
+              min={10} max={100} step={1}
+            />
           </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Alineación</Label>
+            <Select
+              value={elementStyles[elementName].textAlign}
+              onValueChange={(val: TextAlign) => handleStyleChange(elementName, 'textAlign', val)}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="left">Izquierda</SelectItem>
+                <SelectItem value="center">Centro</SelectItem>
+                <SelectItem value="right">Derecha</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Grosor</Label>
+            <Select
+              value={elementStyles[elementName].fontWeight}
+              onValueChange={(val: FontWeight) => handleStyleChange(elementName, 'fontWeight', val)}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="300">Light</SelectItem>
+                <SelectItem value="normal">Normal</SelectItem>
+                <SelectItem value="600">Semi-Bold</SelectItem>
+                <SelectItem value="bold">Negrita</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Fuente</Label>
+            <Select
+              value={elementStyles[elementName].fontFamily}
+              onValueChange={(val: FontFamily) => handleStyleChange(elementName, 'fontFamily', val)}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="body">Alegreya (Cuerpo)</SelectItem>
+                <SelectItem value="headline">Belleza (Títulos)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${elementName}-color`}>Color</Label>
+            <Input
+              id={`${elementName}-color`}
+              type="color"
+              value={elementStyles[elementName].color}
+              onChange={(e) => handleStyleChange(elementName, 'color', e.target.value)}
+              className="p-1 h-10 w-full"
+            />
+          </div>
+        </div>
       </AccordionContent>
     </AccordionItem>
   );
@@ -176,7 +197,7 @@ export function CertificateEditor() {
         <CardHeader>
           <CardTitle>Personalizar Certificado</CardTitle>
           <CardDescription>
-            Ajusta los textos y estilos de cada elemento. Haz clic y arrastra los textos en la vista previa para moverlos. Usa{' '}
+            Ajusta los textos y estilos. Arrastra los elementos en la vista previa para moverlos. Usa{' '}
             <code className="bg-muted px-1 py-0.5 rounded-sm font-code">{'{{contact.name}}'}</code> y{' '}
             <code className="bg-muted px-1 py-0.5 rounded-sm font-code">{'{{event.date}}'}</code>{' '}
             como marcadores de posición.
@@ -191,6 +212,7 @@ export function CertificateEditor() {
           <Accordion type="multiple" className="w-full space-y-2">
             {styleControls('title', 'Título', title, setTitle)}
             {styleControls('issuedTo', 'Texto "Otorgado a"', issuedToText, setIssuedToText)}
+            {styleControls('contactName', 'Nombre del Contacto', null, null)}
             {styleControls('description', 'Descripción/Motivo', description, setDescription)}
             {styleControls('signature', 'Firma', signatureText, setSignatureText)}
             {styleControls('date', 'Texto de Fecha', dateText, setDateText)}
@@ -214,48 +236,86 @@ export function CertificateEditor() {
                   <p className="text-muted-foreground">Sube una imagen de fondo</p>
                 </div>
               )}
-              <div className="absolute inset-0 p-8 font-serif">
+              <div className="absolute inset-0 p-8">
                 
                 <Draggable bounds="parent" nodeRef={titleRef}>
-                  <div ref={titleRef} className="absolute cursor-move p-2" style={{ top: '10%', left: '10%', width: `${elementStyles.title.width}%`}}>
-                    <h1 className="tracking-wider" style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.title.fontSize, color: elementStyles.title.color, fontWeight: elementStyles.title.fontWeight, textAlign: elementStyles.title.textAlign }}>{title}</h1>
+                  <div ref={titleRef} className="absolute cursor-move p-2" style={{ top: '10%', left: '10%' }}>
+                    <div style={{ width: `${elementStyles.title.width}%` }}>
+                      <h1
+                        className={cn('tracking-wider', `font-${elementStyles.title.fontFamily}`)}
+                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.title.fontSize, color: elementStyles.title.color, fontWeight: elementStyles.title.fontWeight, textAlign: elementStyles.title.textAlign }}
+                      >
+                        {title}
+                      </h1>
+                    </div>
                   </div>
                 </Draggable>
 
                 <Draggable bounds="parent" nodeRef={issuedToRef}>
-                  <div ref={issuedToRef} className="absolute cursor-move p-2" style={{ top: '25%', left: '10%', width: `${elementStyles.issuedTo.width}%`}}>
-                    <p style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.issuedTo.fontSize, color: elementStyles.issuedTo.color, fontWeight: elementStyles.issuedTo.fontWeight, textAlign: elementStyles.issuedTo.textAlign }}>{issuedToText}</p>
+                  <div ref={issuedToRef} className="absolute cursor-move p-2" style={{ top: '25%', left: '10%' }}>
+                    <div style={{ width: `${elementStyles.issuedTo.width}%` }}>
+                      <p
+                        className={cn(`font-${elementStyles.issuedTo.fontFamily}`)}
+                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.issuedTo.fontSize, color: elementStyles.issuedTo.color, fontWeight: elementStyles.issuedTo.fontWeight, textAlign: elementStyles.issuedTo.textAlign }}
+                      >
+                        {issuedToText}
+                      </p>
+                    </div>
                   </div>
                 </Draggable>
 
                 <Draggable bounds="parent" nodeRef={contactNameRef}>
-                  <div ref={contactNameRef} className="absolute cursor-move p-2" style={{ top: '32%', left: '10%', width: `${elementStyles.contactName.width}%`}}>
-                    <p className="font-headline" style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.contactName.fontSize, color: elementStyles.contactName.color, fontWeight: elementStyles.contactName.fontWeight, textAlign: elementStyles.contactName.textAlign }}>
-                      &#123;&#123;contact.name&#125;&#125;
-                    </p>
+                  <div ref={contactNameRef} className="absolute cursor-move p-2" style={{ top: '32%', left: '10%' }}>
+                    <div style={{ width: `${elementStyles.contactName.width}%` }}>
+                      <p
+                        className={cn(`font-${elementStyles.contactName.fontFamily}`)}
+                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.contactName.fontSize, color: elementStyles.contactName.color, fontWeight: elementStyles.contactName.fontWeight, textAlign: elementStyles.contactName.textAlign }}
+                      >
+                        &#123;&#123;contact.name&#125;&#125;
+                      </p>
+                    </div>
                   </div>
                 </Draggable>
                 
                 <Draggable bounds="parent" nodeRef={descriptionRef}>
-                   <div ref={descriptionRef} className="absolute cursor-move p-2" style={{ top: '45%', left: '10%', width: `${elementStyles.description.width}%`}}>
-                    <p style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.description.fontSize, color: elementStyles.description.color, fontWeight: elementStyles.description.fontWeight, textAlign: elementStyles.description.textAlign }}>
-                      {description}
-                    </p>
+                  <div ref={descriptionRef} className="absolute cursor-move p-2" style={{ top: '45%', left: '10%' }}>
+                    <div style={{ width: `${elementStyles.description.width}%` }}>
+                      <p
+                        className={cn(`font-${elementStyles.description.fontFamily}`)}
+                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.description.fontSize, color: elementStyles.description.color, fontWeight: elementStyles.description.fontWeight, textAlign: elementStyles.description.textAlign }}
+                      >
+                        {description}
+                      </p>
+                    </div>
                   </div>
                 </Draggable>
 
                 <Draggable bounds="parent" nodeRef={signatureRef}>
-                  <div ref={signatureRef} className="absolute cursor-move p-2" style={{ bottom: '15%', left: '5%', width: `${elementStyles.signature.width}%`}}>
-                    <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.signature.color, textAlign: elementStyles.signature.textAlign}}>
-                        <p style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.signature.fontSize, color: elementStyles.signature.color, fontWeight: elementStyles.signature.fontWeight }}>{signatureText}</p>
+                  <div ref={signatureRef} className="absolute cursor-move p-2" style={{ bottom: '15%', left: '5%' }}>
+                    <div style={{ width: `${elementStyles.signature.width}%` }}>
+                      <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.signature.color, textAlign: elementStyles.signature.textAlign}}>
+                        <p
+                          className={cn(`font-${elementStyles.signature.fontFamily}`)}
+                          style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.signature.fontSize, color: elementStyles.signature.color, fontWeight: elementStyles.signature.fontWeight }}
+                        >
+                          {signatureText}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </Draggable>
 
                 <Draggable bounds="parent" nodeRef={dateRef}>
-                  <div ref={dateRef} className="absolute cursor-move p-2" style={{ bottom: '15%', left: '55%', width: `${elementStyles.date.width}%`}}>
-                     <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.date.color, textAlign: elementStyles.date.textAlign}}>
-                          <p style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.date.fontSize, color: elementStyles.date.color, fontWeight: elementStyles.date.fontWeight }}>{dateText} &#123;&#123;event.date&#125;&#125;</p>
+                  <div ref={dateRef} className="absolute cursor-move p-2" style={{ bottom: '15%', right: '5%' }}>
+                    <div style={{ width: `${elementStyles.date.width}%` }}>
+                      <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.date.color, textAlign: elementStyles.date.textAlign}}>
+                        <p
+                          className={cn(`font-${elementStyles.date.fontFamily}`)}
+                          style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.date.fontSize, color: elementStyles.date.color, fontWeight: elementStyles.date.fontWeight }}
+                        >
+                          {dateText} &#123;&#123;event.date&#125;&#125;
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </Draggable>
