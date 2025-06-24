@@ -2,7 +2,7 @@
 
 import { useState, type ChangeEvent, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +12,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+import { toPng } from 'html-to-image';
+import { Download } from 'lucide-react';
 
 type TextAlign = 'left' | 'center' | 'right';
 type FontWeight = 'normal' | 'bold' | '300' | '600';
@@ -50,6 +52,7 @@ export function CertificateEditor() {
 
   const { toast } = useToast();
 
+  const certificateRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef(null);
   const issuedToRef = useRef(null);
   const contactNameRef = useRef(null);
@@ -102,6 +105,42 @@ export function CertificateEditor() {
       description: 'Tu plantilla de certificado ha sido guardada con éxito.',
     });
   };
+
+  /**
+   * Gestiona la descarga del certificado como una imagen PNG.
+   * Utiliza html-to-image para convertir el DOM en una imagen y la descarga.
+   */
+  const handleDownload = () => {
+    if (!certificateRef.current) {
+      toast({
+        title: 'Error de referencia',
+        description: 'No se pudo encontrar el elemento del certificado para descargar.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    toPng(certificateRef.current, { cacheBust: true, pixelRatio: 2 })
+      .then((dataUrl) => {
+        const link = document.createElement('a');
+        link.download = 'certificado.png';
+        link.href = dataUrl;
+        link.click();
+        toast({
+          title: 'Descarga Iniciada',
+          description: 'El certificado se está descargando como imagen PNG.',
+        });
+      })
+      .catch((err) => {
+        console.error('Error al generar la imagen:', err);
+        toast({
+          title: 'Error al Descargar',
+          description: 'No se pudo generar la imagen del certificado.',
+          variant: 'destructive',
+        });
+      });
+  };
+
 
   const styleControls = (elementName: string, elementLabel: string, textState: string | null, setTextState: ((val: string) => void) | null) => (
     <AccordionItem value={elementName}>
@@ -228,7 +267,7 @@ export function CertificateEditor() {
             <CardTitle>Vista Previa del Certificado</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="relative aspect-[11/8.5] w-full bg-card-foreground/5 border rounded-lg overflow-hidden">
+            <div ref={certificateRef} className="relative aspect-[11/8.5] w-full bg-card-foreground/5 border rounded-lg overflow-hidden">
               {backgroundImage ? (
                 <Image src={backgroundImage} alt="Fondo del certificado" fill objectFit="cover" />
               ) : (
@@ -322,6 +361,12 @@ export function CertificateEditor() {
               </div>
             </div>
           </CardContent>
+          <CardFooter>
+            <Button onClick={handleDownload} className="w-full">
+              <Download className="mr-2" />
+              Descargar Certificado
+            </Button>
+          </CardFooter>
         </Card>
       </div>
     </div>
