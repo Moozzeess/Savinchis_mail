@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -79,7 +80,7 @@ export default function CampaignsPage() {
     setPreviewContent(emailBody);
   }, [emailBody]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCsvFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (!file.name.endsWith(".csv")) {
@@ -95,6 +96,37 @@ export default function CampaignsPage() {
       const reader = new FileReader();
       reader.onload = (event) => {
         setCsvContent(event.target?.result as string);
+      };
+      reader.onerror = () => {
+        toast({
+          title: "Error al leer el archivo",
+          description: "No se pudo procesar el archivo seleccionado.",
+          variant: "destructive",
+        });
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleHtmlFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.name.endsWith(".html")) {
+        toast({
+          title: "Archivo no válido",
+          description: "Por favor, selecciona un archivo .html.",
+          variant: "destructive",
+        });
+        e.target.value = ""; // Reset file input
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setEmailBody(event.target?.result as string);
+        toast({
+          title: "HTML Cargado",
+          description: "El contenido del archivo HTML se ha cargado en el editor.",
+        });
       };
       reader.onerror = () => {
         toast({
@@ -239,9 +271,15 @@ export default function CampaignsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Cuerpo del Mensaje (soporta HTML)</Label>
+              <div className="flex justify-between items-center">
+                <Label>Cuerpo del Mensaje</Label>
+                <Label htmlFor="html-upload" className="text-sm font-normal text-primary underline-offset-4 hover:underline cursor-pointer">
+                  O sube un archivo HTML
+                </Label>
+                <Input id="html-upload" type="file" accept=".html" className="hidden" onChange={handleHtmlFileChange} />
+              </div>
               <Textarea
-                placeholder="Escribe el cuerpo del correo aquí..."
+                placeholder="Escribe o pega tu código HTML aquí..."
                 value={emailBody}
                 onChange={(e) => setEmailBody(e.target.value)}
                 rows={10}
@@ -297,7 +335,7 @@ export default function CampaignsPage() {
                     id="csv-file"
                     type="file"
                     accept=".csv"
-                    onChange={handleFileChange}
+                    onChange={handleCsvFileChange}
                   />
                   <p className="text-sm text-muted-foreground">
                     El archivo debe contener una columna "email".
