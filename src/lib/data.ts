@@ -57,3 +57,27 @@ export const contacts = [
     dateAdded: "2024-06-20",
   },
 ];
+
+/**
+ * Datos de ejemplo para las encuestas.
+ */
+export const surveys = [
+  {
+    id: "1",
+    name: "Feedback de Producto de TI",
+    description: "Encuesta para recopilar opiniones sobre nuestro último software.",
+    responses: 150,
+  },
+  {
+    id: "2",
+    name: "Satisfacción del Cliente Tech",
+    description: "Mide la satisfacción general de nuestros clientes con el soporte técnico.",
+    responses: 278,
+  },
+  {
+    id: "3",
+    name: "Interés en Nuevos Cursos",
+    description: "Sondeo sobre posibles nuevos cursos de desarrollo y TI.",
+    responses: 45,
+  },
+];

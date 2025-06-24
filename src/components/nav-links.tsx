@@ -13,8 +13,8 @@ import {
   Users,
   BarChart3,
   FileText,
-  Settings,
   Award,
+  ClipboardList,
 } from "lucide-react";
 
 const links = [
@@ -24,6 +24,7 @@ const links = [
   { href: "/templates", label: "Plantillas", icon: FileText },
   { href: "/analytics", label: "Analíticas", icon: BarChart3 },
   { href: "/events", label: "Eventos", icon: Award },
+  { href: "/surveys", label: "Encuestas", icon: ClipboardList },
 ];
 
 /**

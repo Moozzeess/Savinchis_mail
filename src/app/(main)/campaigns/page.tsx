@@ -31,6 +31,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
 /**
  * Página de Campañas.
@@ -44,6 +45,8 @@ export default function CampaignsPage() {
   const [bodyType, setBodyType] = useState<'text' | 'file'>('text');
   const [emailBody, setEmailBody] = useState('');
   const [htmlFile, setHtmlFile] = useState<File | null>(null);
+  const [saveAsTemplate, setSaveAsTemplate] = useState(false);
+  const [templateName, setTemplateName] = useState('');
 
   /**
    * Gestiona el envío de una campaña de prueba.
@@ -90,6 +93,15 @@ export default function CampaignsPage() {
         });
         return;
       }
+      
+      if (saveAsTemplate && !templateName.trim()) {
+        toast({
+          title: 'Nombre de plantilla requerido',
+          description: 'Por favor, asigna un nombre a la plantilla.',
+          variant: 'destructive',
+        });
+        return;
+      }
 
       try {
         emailHtml = await htmlFile.text();
@@ -111,6 +123,18 @@ export default function CampaignsPage() {
         title: "Campaña de prueba enviada",
         description: "Se ha enviado un correo de prueba a los contactos suscritos.",
       });
+
+      if (bodyType === 'file' && saveAsTemplate) {
+        // Lógica para guardar la plantilla (simulada por ahora)
+        console.log(`Guardando plantilla: ${templateName}`);
+        toast({
+          title: "Plantilla guardada",
+          description: `El archivo HTML ha sido guardado como la plantilla "${templateName}".`
+        });
+        setSaveAsTemplate(false);
+        setTemplateName('');
+      }
+
     } catch (error) {
       toast({
         title: "Error al enviar la campaña",
@@ -193,11 +217,32 @@ export default function CampaignsPage() {
             )}
 
             {bodyType === 'file' && (
-              <Input 
-                type="file" 
-                accept=".html,text/html" 
-                onChange={(e) => setHtmlFile(e.target.files ? e.target.files[0] : null)}
-              />
+              <div className="space-y-4">
+                <Input 
+                  type="file" 
+                  accept=".html,text/html" 
+                  onChange={(e) => setHtmlFile(e.target.files ? e.target.files[0] : null)}
+                />
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="save-template" 
+                    checked={saveAsTemplate}
+                    onCheckedChange={(checked) => setSaveAsTemplate(checked as boolean)}
+                  />
+                  <Label htmlFor="save-template">Guardar como plantilla</Label>
+                </div>
+                {saveAsTemplate && (
+                  <div className="space-y-2">
+                    <Label htmlFor="template-name">Nombre de la Plantilla</Label>
+                    <Input 
+                      id="template-name"
+                      placeholder="Ej: Plantilla de Bienvenida"
+                      value={templateName}
+                      onChange={(e) => setTemplateName(e.target.value)}
+                    />
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </CardContent>
