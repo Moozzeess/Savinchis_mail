@@ -17,27 +17,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { UploadCloud, PlusCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
-
-const contacts = [
-  {
-    email: "juan.perez@example.com",
-    name: "Juan Perez",
-    status: "Suscrito",
-    dateAdded: "2024-07-10",
-  },
-  {
-    email: "maria.garcia@example.com",
-    name: "Maria Garcia",
-    status: "Suscrito",
-    dateAdded: "2024-07-09",
-  },
-  {
-    email: "baja@example.com",
-    name: "Carlos Baja",
-    status: "Baja",
-    dateAdded: "2024-06-20",
-  },
-];
+import { contacts } from "@/lib/data";
 
 export default function ContactsPage() {
   return (

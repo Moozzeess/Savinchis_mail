@@ -18,42 +18,49 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Calendar as CalendarIcon, PlusCircle } from "lucide-react";
+import { Calendar as CalendarIcon, Loader2, PlusCircle } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-
-const campaigns = [
-  {
-    name: "Lanzamiento de Verano",
-    status: "Enviado",
-    sent: "1,200",
-    opens: "25%",
-    clicks: "5%",
-    date: "2024-07-15",
-  },
-  {
-    name: "Promoción de Otoño",
-    status: "Programado",
-    sent: "1,500",
-    opens: "-",
-    clicks: "-",
-    date: "2024-09-01",
-  },
-  {
-    name: "Newsletter Mensual",
-    status: "Borrador",
-    sent: "N/A",
-    opens: "-",
-    clicks: "-",
-    date: "-",
-  },
-];
+import { campaigns } from "@/lib/data";
+import { useToast } from "@/hooks/use-toast";
+import { sendTestCampaign } from "@/app/actions/send-campaign-action";
 
 export default function CampaignsPage() {
   const [date, setDate] = useState<Date>();
+  const [isSending, setIsSending] = useState(false);
+  const { toast } = useToast();
+
+  const handleScheduleCampaign = async () => {
+    if (!date) {
+      toast({
+        title: "Fecha no seleccionada",
+        description: "Por favor, elige una fecha para programar la campaña.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      await sendTestCampaign();
+      toast({
+        title: "Campaña de prueba enviada",
+        description: "Se ha enviado un correo de prueba a los contactos suscritos.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error al enviar la campaña",
+        description: (error as Error).message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
 
   return (
     <div className="space-y-6">
@@ -75,7 +82,7 @@ export default function CampaignsPage() {
           <CardTitle>Programar Nueva Campaña</CardTitle>
           <CardDescription>
             Selecciona una fecha y hora para tu próxima campaña. Esta es una UI
-            de ejemplo.
+            de ejemplo que enviará una campaña de prueba.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -101,7 +108,10 @@ export default function CampaignsPage() {
           </Popover>
         </CardContent>
         <CardFooter>
-          <Button>Programar</Button>
+          <Button onClick={handleScheduleCampaign} disabled={isSending}>
+            {isSending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSending ? "Enviando..." : "Enviar Campaña de Prueba"}
+          </Button>
         </CardFooter>
       </Card>
 
