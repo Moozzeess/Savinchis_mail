@@ -45,6 +45,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 type RecipientSource = "date" | "file" | "sql";
 
@@ -506,17 +507,20 @@ export default function CampaignsPage() {
                   <TableCell>
                     <Badge
                       variant={
-                        campaign.status === "Enviado"
-                          ? "default"
-                          : campaign.status === "Programado"
-                          ? "secondary"
-                          : "outline"
+                        campaign.status === "AGOTADA"
+                          ? "destructive"
+                          : campaign.status === "EXPIRADA"
+                          ? "outline"
+                          : "default"
                       }
-                      className={
-                        campaign.status === "Enviado"
-                          ? "bg-green-500/20 text-green-700 border-green-500/20"
-                          : ""
-                      }
+                      className={cn({
+                        "bg-green-500/20 text-green-700 border-transparent hover:bg-green-500/30":
+                          campaign.status === "TERMINADA",
+                        "bg-blue-500/20 text-blue-700 border-transparent hover:bg-blue-500/30":
+                          campaign.status === "INICIADA",
+                        "bg-yellow-500/20 text-yellow-700 border-transparent hover:bg-yellow-500/30":
+                          campaign.status === "TIEMPO LIMITADO",
+                      })}
                     >
                       {campaign.status}
                     </Badge>
