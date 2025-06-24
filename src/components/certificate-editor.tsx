@@ -217,35 +217,35 @@ export function CertificateEditor() {
               <div className="absolute inset-0 p-8 font-serif">
                 
                 <Draggable bounds="parent" nodeRef={titleRef}>
-                  <div ref={titleRef} className="absolute cursor-move p-2" style={{ top: '10%', left: '50%', transform: 'translateX(-50%)', width: `${elementStyles.title.width}%`, textAlign: elementStyles.title.textAlign }}>
-                    <h1 className="tracking-wider" style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.title.fontSize, color: elementStyles.title.color, fontWeight: elementStyles.title.fontWeight }}>{title}</h1>
+                  <div ref={titleRef} className="absolute cursor-move p-2" style={{ top: '10%', left: '10%', width: `${elementStyles.title.width}%`}}>
+                    <h1 className="tracking-wider" style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.title.fontSize, color: elementStyles.title.color, fontWeight: elementStyles.title.fontWeight, textAlign: elementStyles.title.textAlign }}>{title}</h1>
                   </div>
                 </Draggable>
 
                 <Draggable bounds="parent" nodeRef={issuedToRef}>
-                  <div ref={issuedToRef} className="absolute cursor-move p-2" style={{ top: '25%', left: '50%', transform: 'translateX(-50%)', width: `${elementStyles.issuedTo.width}%`, textAlign: elementStyles.issuedTo.textAlign }}>
-                    <p style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.issuedTo.fontSize, color: elementStyles.issuedTo.color, fontWeight: elementStyles.issuedTo.fontWeight }}>{issuedToText}</p>
+                  <div ref={issuedToRef} className="absolute cursor-move p-2" style={{ top: '25%', left: '10%', width: `${elementStyles.issuedTo.width}%`}}>
+                    <p style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.issuedTo.fontSize, color: elementStyles.issuedTo.color, fontWeight: elementStyles.issuedTo.fontWeight, textAlign: elementStyles.issuedTo.textAlign }}>{issuedToText}</p>
                   </div>
                 </Draggable>
 
                 <Draggable bounds="parent" nodeRef={contactNameRef}>
-                  <div ref={contactNameRef} className="absolute cursor-move p-2" style={{ top: '32%', left: '50%', transform: 'translateX(-50%)', width: `${elementStyles.contactName.width}%`, textAlign: elementStyles.contactName.textAlign}}>
-                    <p className="font-headline" style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.contactName.fontSize, color: elementStyles.contactName.color, fontWeight: elementStyles.contactName.fontWeight }}>
+                  <div ref={contactNameRef} className="absolute cursor-move p-2" style={{ top: '32%', left: '10%', width: `${elementStyles.contactName.width}%`}}>
+                    <p className="font-headline" style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.contactName.fontSize, color: elementStyles.contactName.color, fontWeight: elementStyles.contactName.fontWeight, textAlign: elementStyles.contactName.textAlign }}>
                       &#123;&#123;contact.name&#125;&#125;
                     </p>
                   </div>
                 </Draggable>
                 
                 <Draggable bounds="parent" nodeRef={descriptionRef}>
-                   <div ref={descriptionRef} className="absolute cursor-move p-2" style={{ top: '45%', left: '50%', transform: 'translateX(-50%)', width: `${elementStyles.description.width}%`, textAlign: elementStyles.description.textAlign}}>
-                    <p style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.description.fontSize, color: elementStyles.description.color, fontWeight: elementStyles.description.fontWeight }}>
+                   <div ref={descriptionRef} className="absolute cursor-move p-2" style={{ top: '45%', left: '10%', width: `${elementStyles.description.width}%`}}>
+                    <p style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.description.fontSize, color: elementStyles.description.color, fontWeight: elementStyles.description.fontWeight, textAlign: elementStyles.description.textAlign }}>
                       {description}
                     </p>
                   </div>
                 </Draggable>
 
                 <Draggable bounds="parent" nodeRef={signatureRef}>
-                  <div ref={signatureRef} className="absolute cursor-move p-2" style={{ bottom: '15%', left: '25%', transform: 'translateX(-50%)', width: `${elementStyles.signature.width}%`}}>
+                  <div ref={signatureRef} className="absolute cursor-move p-2" style={{ bottom: '15%', left: '5%', width: `${elementStyles.signature.width}%`}}>
                     <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.signature.color, textAlign: elementStyles.signature.textAlign}}>
                         <p style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.signature.fontSize, color: elementStyles.signature.color, fontWeight: elementStyles.signature.fontWeight }}>{signatureText}</p>
                     </div>
@@ -253,7 +253,7 @@ export function CertificateEditor() {
                 </Draggable>
 
                 <Draggable bounds="parent" nodeRef={dateRef}>
-                  <div ref={dateRef} className="absolute cursor-move p-2" style={{ bottom: '15%', left: '75%', transform: 'translateX(-50%)', width: `${elementStyles.date.width}%`}}>
+                  <div ref={dateRef} className="absolute cursor-move p-2" style={{ bottom: '15%', left: '55%', width: `${elementStyles.date.width}%`}}>
                      <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.date.color, textAlign: elementStyles.date.textAlign}}>
                           <p style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.date.fontSize, color: elementStyles.date.color, fontWeight: elementStyles.date.fontWeight }}>{dateText} &#123;&#123;event.date&#125;&#125;</p>
                     </div>
