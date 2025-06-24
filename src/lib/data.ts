@@ -97,3 +97,30 @@ export const surveys = [
     responses: 45,
   },
 ];
+
+/**
+ * Datos de ejemplo para los eventos.
+ */
+export const events = [
+  {
+    id: "1",
+    name: "Taller de Marketing Digital",
+    date: "2024-08-15",
+    status: "Realizado",
+    attendees: 75,
+  },
+  {
+    id: "2",
+    name: "Conferencia de Liderazgo",
+    date: "2024-09-05",
+    status: "Próximo",
+    attendees: 120,
+  },
+  {
+    id: "3",
+    name: "Webinar de Nuevas Tecnologías",
+    date: "2024-07-20",
+    status: "Realizado",
+    attendees: 250,
+  },
+];
