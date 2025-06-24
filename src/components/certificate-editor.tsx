@@ -236,14 +236,14 @@ export function CertificateEditor() {
                   <p className="text-muted-foreground">Sube una imagen de fondo</p>
                 </div>
               )}
-              <div className="absolute inset-0 p-8">
+              <div className="absolute inset-0">
                 
                 <Draggable bounds="parent" nodeRef={titleRef}>
                   <div ref={titleRef} className="absolute cursor-move p-2" style={{ top: '10%', left: '10%' }}>
-                    <div style={{ width: `${elementStyles.title.width}%` }}>
+                    <div style={{ width: `${elementStyles.title.width}%`, textAlign: elementStyles.title.textAlign }}>
                       <h1
                         className={cn('tracking-wider', `font-${elementStyles.title.fontFamily}`)}
-                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.title.fontSize, color: elementStyles.title.color, fontWeight: elementStyles.title.fontWeight, textAlign: elementStyles.title.textAlign }}
+                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.title.fontSize, color: elementStyles.title.color, fontWeight: elementStyles.title.fontWeight }}
                       >
                         {title}
                       </h1>
@@ -253,10 +253,10 @@ export function CertificateEditor() {
 
                 <Draggable bounds="parent" nodeRef={issuedToRef}>
                   <div ref={issuedToRef} className="absolute cursor-move p-2" style={{ top: '25%', left: '10%' }}>
-                    <div style={{ width: `${elementStyles.issuedTo.width}%` }}>
+                    <div style={{ width: `${elementStyles.issuedTo.width}%`, textAlign: elementStyles.issuedTo.textAlign }}>
                       <p
                         className={cn(`font-${elementStyles.issuedTo.fontFamily}`)}
-                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.issuedTo.fontSize, color: elementStyles.issuedTo.color, fontWeight: elementStyles.issuedTo.fontWeight, textAlign: elementStyles.issuedTo.textAlign }}
+                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.issuedTo.fontSize, color: elementStyles.issuedTo.color, fontWeight: elementStyles.issuedTo.fontWeight }}
                       >
                         {issuedToText}
                       </p>
@@ -266,10 +266,10 @@ export function CertificateEditor() {
 
                 <Draggable bounds="parent" nodeRef={contactNameRef}>
                   <div ref={contactNameRef} className="absolute cursor-move p-2" style={{ top: '32%', left: '10%' }}>
-                    <div style={{ width: `${elementStyles.contactName.width}%` }}>
+                    <div style={{ width: `${elementStyles.contactName.width}%`, textAlign: elementStyles.contactName.textAlign }}>
                       <p
                         className={cn(`font-${elementStyles.contactName.fontFamily}`)}
-                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.contactName.fontSize, color: elementStyles.contactName.color, fontWeight: elementStyles.contactName.fontWeight, textAlign: elementStyles.contactName.textAlign }}
+                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.contactName.fontSize, color: elementStyles.contactName.color, fontWeight: elementStyles.contactName.fontWeight }}
                       >
                         &#123;&#123;contact.name&#125;&#125;
                       </p>
@@ -279,10 +279,10 @@ export function CertificateEditor() {
                 
                 <Draggable bounds="parent" nodeRef={descriptionRef}>
                   <div ref={descriptionRef} className="absolute cursor-move p-2" style={{ top: '45%', left: '10%' }}>
-                    <div style={{ width: `${elementStyles.description.width}%` }}>
+                    <div style={{ width: `${elementStyles.description.width}%`, textAlign: elementStyles.description.textAlign }}>
                       <p
                         className={cn(`font-${elementStyles.description.fontFamily}`)}
-                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.description.fontSize, color: elementStyles.description.color, fontWeight: elementStyles.description.fontWeight, textAlign: elementStyles.description.textAlign }}
+                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.description.fontSize, color: elementStyles.description.color, fontWeight: elementStyles.description.fontWeight }}
                       >
                         {description}
                       </p>
@@ -292,8 +292,8 @@ export function CertificateEditor() {
 
                 <Draggable bounds="parent" nodeRef={signatureRef}>
                   <div ref={signatureRef} className="absolute cursor-move p-2" style={{ bottom: '15%', left: '5%' }}>
-                    <div style={{ width: `${elementStyles.signature.width}%` }}>
-                      <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.signature.color, textAlign: elementStyles.signature.textAlign}}>
+                    <div style={{ width: `${elementStyles.signature.width}%`, textAlign: elementStyles.signature.textAlign }}>
+                      <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.signature.color}}>
                         <p
                           className={cn(`font-${elementStyles.signature.fontFamily}`)}
                           style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.signature.fontSize, color: elementStyles.signature.color, fontWeight: elementStyles.signature.fontWeight }}
@@ -307,8 +307,8 @@ export function CertificateEditor() {
 
                 <Draggable bounds="parent" nodeRef={dateRef}>
                   <div ref={dateRef} className="absolute cursor-move p-2" style={{ bottom: '15%', right: '5%' }}>
-                    <div style={{ width: `${elementStyles.date.width}%` }}>
-                      <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.date.color, textAlign: elementStyles.date.textAlign}}>
+                    <div style={{ width: `${elementStyles.date.width}%`, textAlign: elementStyles.date.textAlign }}>
+                      <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.date.color}}>
                         <p
                           className={cn(`font-${elementStyles.date.fontFamily}`)}
                           style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.date.fontSize, color: elementStyles.date.color, fontWeight: elementStyles.date.fontWeight }}
