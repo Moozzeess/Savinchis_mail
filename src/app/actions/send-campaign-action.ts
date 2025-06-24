@@ -6,6 +6,7 @@ import { Client } from '@microsoft/microsoft-graph-client';
 import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials';
 import mysql from 'mysql2/promise';
 import { parse } from 'csv-parse/sync';
+import * as XLSX from 'xlsx';
 
 /**
  * @fileoverview Acción de servidor para enviar una campaña de correo electrónico.
@@ -20,8 +21,8 @@ interface SendCampaignPayload {
   subject: string;
   htmlBody: string;
   recipientData: {
-    type: 'date' | 'csv' | 'sql';
-    value: string; // Contendrá la fecha, el contenido del CSV o la consulta SQL
+    type: 'date' | 'csv' | 'sql' | 'excel';
+    value: string; // Contendrá la fecha, el contenido del CSV/Excel o la consulta SQL
   };
 }
 
@@ -44,12 +45,40 @@ async function getRecipients(
       if (records.length === 0 || !('email' in records[0])) {
         throw new Error('La columna "email" no se encontró o el archivo está vacío.');
       }
-      return records.map((record: any) => ({ email: record.email })).filter((r: {email: string}) => r.email);
+      return records.map((record: any) => ({ email: record.email })).filter((r: {email: string}) => r.email && r.email.includes('@'));
     } catch (error) {
       console.error('Error al procesar el archivo CSV:', error);
       throw new Error(
         `Error al procesar el archivo CSV: ${(error as Error).message}`
       );
+    }
+  }
+
+  if (type === 'excel') {
+    try {
+      const buffer = Buffer.from(value, 'base64');
+      const workbook = XLSX.read(buffer, { type: 'buffer' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+      if (jsonData.length === 0) {
+        return [];
+      }
+
+      const header = Object.keys(jsonData[0]);
+      const emailKey = header.find(key => key.toLowerCase() === 'email');
+
+      if (!emailKey) {
+        throw new Error('La columna "email" no se encontró en el archivo Excel.');
+      }
+
+      return jsonData
+        .map(row => ({ email: row[emailKey] }))
+        .filter(r => r.email && typeof r.email === 'string' && r.email.includes('@'));
+    } catch (error) {
+      console.error('Error al procesar el archivo Excel:', error);
+      throw new Error(`Error al procesar el archivo Excel: ${(error as Error).message}`);
     }
   }
 

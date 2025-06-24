@@ -46,7 +46,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type RecipientSourceType = "date" | "csv" | "sql";
+type RecipientSource = "date" | "file" | "sql";
 
 interface CampaignStats {
   sentCount: number;
@@ -69,8 +69,9 @@ export default function CampaignsPage() {
   const [emailBody, setEmailBody] = useState("");
   const [previewContent, setPreviewContent] = useState("");
   const [recipientSource, setRecipientSource] =
-    useState<RecipientSourceType>("date");
-  const [csvContent, setCsvContent] = useState("");
+    useState<RecipientSource>("date");
+  const [fileContent, setFileContent] = useState("");
+  const [uploadedFileType, setUploadedFileType] = useState<"csv" | "excel" | null>(null);
   const [sqlQuery, setSqlQuery] = useState(
     "SELECT email FROM contacts WHERE subscribed = TRUE;"
   );
@@ -80,31 +81,54 @@ export default function CampaignsPage() {
     setPreviewContent(emailBody);
   }, [emailBody]);
 
-  const handleCsvFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.name.endsWith(".csv")) {
+      const reader = new FileReader();
+      const fileName = file.name.toLowerCase();
+
+      const resetState = () => {
+        e.target.value = '';
+        setFileContent("");
+        setUploadedFileType(null);
+      }
+
+      if (fileName.endsWith(".csv")) {
+        setUploadedFileType("csv");
+        reader.onload = (event) => {
+          setFileContent(event.target?.result as string);
+        };
+        reader.readAsText(file);
+      } else if (fileName.endsWith(".xls") || fileName.endsWith(".xlsx")) {
+        setUploadedFileType("excel");
+        reader.onload = (event) => {
+          const buffer = event.target?.result as ArrayBuffer;
+          const bytes = new Uint8Array(buffer);
+          let binary = "";
+          bytes.forEach((byte) => {
+            binary += String.fromCharCode(byte);
+          });
+          setFileContent(window.btoa(binary));
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
         toast({
           title: "Archivo no válido",
-          description: "Por favor, selecciona un archivo .csv.",
+          description: "Por favor, selecciona un archivo .csv, .xls o .xlsx.",
           variant: "destructive",
         });
-        e.target.value = ""; // Reset file input
-        setCsvContent("");
+        resetState();
         return;
       }
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setCsvContent(event.target?.result as string);
-      };
+      
       reader.onerror = () => {
         toast({
           title: "Error al leer el archivo",
           description: "No se pudo procesar el archivo seleccionado.",
           variant: "destructive",
         });
+        resetState();
       };
-      reader.readAsText(file);
     }
   };
 
@@ -180,16 +204,16 @@ export default function CampaignsPage() {
           value: format(date, "dd/MM/yyyy"),
         };
         break;
-      case "csv":
-        if (!csvContent) {
+      case "file":
+        if (!fileContent || !uploadedFileType) {
           toast({
-            title: "Archivo CSV requerido",
-            description: "Por favor, sube un archivo CSV.",
+            title: "Archivo requerido",
+            description: "Por favor, sube un archivo CSV o Excel.",
             variant: "destructive",
           });
           return;
         }
-        recipientData = { type: "csv" as const, value: csvContent };
+        recipientData = { type: uploadedFileType, value: fileContent };
         break;
       case "sql":
         if (!sqlQuery.trim()) {
@@ -291,13 +315,13 @@ export default function CampaignsPage() {
               <Tabs
                 value={recipientSource}
                 onValueChange={(value) =>
-                  setRecipientSource(value as RecipientSourceType)
+                  setRecipientSource(value as RecipientSource)
                 }
                 className="w-full"
               >
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="date">Fecha de Visita</TabsTrigger>
-                  <TabsTrigger value="csv">Subir CSV</TabsTrigger>
+                  <TabsTrigger value="file">Subir Archivo</TabsTrigger>
                   <TabsTrigger value="sql">Consulta SQL</TabsTrigger>
                 </TabsList>
                 <TabsContent value="date" className="mt-4 border-t pt-4">
@@ -329,13 +353,13 @@ export default function CampaignsPage() {
                     </PopoverContent>
                   </Popover>
                 </TabsContent>
-                <TabsContent value="csv" className="mt-4 space-y-2 border-t pt-4">
-                  <Label htmlFor="csv-file">Sube un archivo CSV</Label>
+                <TabsContent value="file" className="mt-4 space-y-2 border-t pt-4">
+                  <Label htmlFor="file-upload">Sube un archivo CSV o Excel</Label>
                   <Input
-                    id="csv-file"
+                    id="file-upload"
                     type="file"
-                    accept=".csv"
-                    onChange={handleCsvFileChange}
+                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                    onChange={handleFileChange}
                   />
                   <p className="text-sm text-muted-foreground">
                     El archivo debe contener una columna "email".
