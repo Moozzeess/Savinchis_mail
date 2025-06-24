@@ -26,123 +26,102 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { campaigns } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
-import { sendTestCampaign } from "@/app/actions/send-campaign-action";
+import { sendCampaign } from "@/app/actions/send-campaign-action";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 
 /**
  * Página de Campañas.
- * Permite a los usuarios programar nuevas campañas de correo, ver el historial
- * de campañas enviadas y gestionar su estado. Incluye una vista previa en tiempo real.
+ * Permite a los usuarios crear, programar y enviar nuevas campañas de correo,
+ * ver el historial de campañas enviadas y gestionar su estado.
  */
 export default function CampaignsPage() {
   const [date, setDate] = useState<Date>();
   const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
-  const [bodyType, setBodyType] = useState<'text' | 'file'>('text');
+  
+  const [subject, setSubject] = useState('');
   const [emailBody, setEmailBody] = useState('');
-  const [htmlFile, setHtmlFile] = useState<File | null>(null);
-  const [saveAsTemplate, setSaveAsTemplate] = useState(false);
-  const [templateName, setTemplateName] = useState('');
   const [previewContent, setPreviewContent] = useState('');
 
+  const [recipientSource, setRecipientSource] = useState<'file' | 'query'>('file');
+  const [recipientFile, setRecipientFile] = useState<File | null>(null);
+  const [recipientQuery, setRecipientQuery] = useState('SELECT email FROM contacts WHERE subscribed = true;');
+
   useEffect(() => {
-    if (bodyType === 'text') {
-      setPreviewContent(emailBody);
-    } else if (bodyType === 'file' && htmlFile) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreviewContent(e.target?.result as string);
-      };
-      reader.onerror = () => {
-        toast({
-          title: 'Error al leer el archivo',
-          description: 'No se pudo leer el contenido del archivo HTML.',
-          variant: 'destructive',
-        });
-      };
-      reader.readAsText(htmlFile);
-    } else {
-      setPreviewContent('');
-    }
-  }, [bodyType, emailBody, htmlFile, toast]);
+    setPreviewContent(emailBody);
+  }, [emailBody]);
 
   /**
-   * Gestiona el envío de una campaña de prueba.
-   * Valida la fecha y el contenido del correo (ya sea texto o archivo),
-   * llama a la acción del servidor y muestra notificaciones de éxito o error.
+   * Gestiona el envío de una campaña.
+   * Valida los campos, prepara el payload y llama a la acción del servidor.
    */
-  const handleScheduleCampaign = async () => {
-    if (!date) {
+  const handleSendCampaign = async () => {
+    if (!subject.trim()) {
       toast({
-        title: "Fecha no seleccionada",
-        description: "Por favor, elige una fecha para programar la campaña.",
+        title: "Asunto del correo requerido",
+        description: "Por favor, escribe un asunto para la campaña.",
         variant: "destructive",
       });
       return;
     }
-
+    
     if (!previewContent.trim()) {
       toast({
         title: 'Cuerpo del correo vacío',
-        description: 'Por favor, escribe el contenido del correo o adjunta un archivo HTML.',
+        description: 'Por favor, escribe el contenido del correo.',
         variant: 'destructive',
       });
       return;
     }
 
-    if (bodyType === 'file') {
-      if (!htmlFile) {
+    let fileContent: string | undefined;
+
+    if (recipientSource === 'file') {
+      if (!recipientFile) {
         toast({
-          title: 'Archivo no seleccionado',
-          description: 'Por favor, selecciona un archivo HTML.',
+          title: 'Archivo de destinatarios no seleccionado',
+          description: 'Por favor, selecciona un archivo CSV con los correos.',
           variant: 'destructive',
         });
         return;
       }
-
-      if (!htmlFile.name.toLowerCase().endsWith('.html')) {
+      if (!recipientFile.name.toLowerCase().endsWith('.csv')) {
         toast({
           title: 'Archivo no válido',
-          description: 'Por favor, selecciona un archivo con extensión .html',
+          description: 'Por favor, selecciona un archivo con extensión .csv',
           variant: 'destructive',
         });
         return;
       }
-      
-      if (saveAsTemplate && !templateName.trim()) {
+      fileContent = await recipientFile.text();
+    } else { // 'query'
+      if (!recipientQuery.trim()) {
         toast({
-          title: 'Nombre de plantilla requerido',
-          description: 'Por favor, asigna un nombre a la plantilla.',
+          title: 'Consulta de destinatarios vacía',
+          description: 'Por favor, escribe una consulta SQL para obtener los correos.',
           variant: 'destructive',
         });
         return;
       }
     }
 
-
     setIsSending(true);
     try {
-      await sendTestCampaign(previewContent);
-      toast({
-        title: "Campaña de prueba enviada",
-        description: "Se ha enviado un correo de prueba a los contactos suscritos.",
+      await sendCampaign({
+        subject: subject,
+        htmlBody: previewContent,
+        recipientSource: recipientSource,
+        fileContent: fileContent,
+        query: recipientSource === 'query' ? recipientQuery : undefined,
       });
 
-      if (bodyType === 'file' && saveAsTemplate) {
-        // Lógica para guardar la plantilla (simulada por ahora)
-        console.log(`Guardando plantilla: ${templateName}`);
-        toast({
-          title: "Plantilla guardada",
-          description: `El archivo HTML ha sido guardado como la plantilla "${templateName}".`
-        });
-        setSaveAsTemplate(false);
-        setTemplateName('');
-      }
-
+      toast({
+        title: "Campaña enviada",
+        description: "La campaña de correo ha sido enviada a los destinatarios.",
+      });
     } catch (error) {
       toast({
         title: "Error al enviar la campaña",
@@ -153,7 +132,6 @@ export default function CampaignsPage() {
       setIsSending(false);
     }
   };
-
 
   return (
     <div className="space-y-6">
@@ -173,14 +151,66 @@ export default function CampaignsPage() {
       <div className="grid lg:grid-cols-2 gap-8 items-start">
         <Card>
           <CardHeader>
-            <CardTitle>Programar Nueva Campaña</CardTitle>
+            <CardTitle>Crear Nueva Campaña</CardTitle>
             <CardDescription>
-              Selecciona una fecha, define el cuerpo del correo y envía una campaña de prueba.
+              Define el contenido, los destinatarios y envía tu campaña.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <Label className="mb-2 block">Fecha de envío</Label>
+            <div className="space-y-2">
+              <Label htmlFor="subject">Asunto del Correo</Label>
+              <Input 
+                id="subject" 
+                placeholder="Ej: Novedades de este mes"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="mb-2 block">Cuerpo del Mensaje (soporta HTML)</Label>
+              <Textarea 
+                placeholder="Escribe el cuerpo del correo aquí..." 
+                value={emailBody}
+                onChange={(e) => setEmailBody(e.target.value)}
+                rows={10}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Destinatarios</Label>
+              <RadioGroup value={recipientSource} onValueChange={(value) => setRecipientSource(value as 'file' | 'query')} className="flex gap-4 mb-2">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="file" id="r1" />
+                  <Label htmlFor="r1">Subir Archivo CSV</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="query" id="r2" />
+                  <Label htmlFor="r2">Desde Base de Datos (SQL)</Label>
+                </div>
+              </RadioGroup>
+
+              {recipientSource === 'file' && (
+                <Input 
+                  type="file" 
+                  accept=".csv" 
+                  onChange={(e) => setRecipientFile(e.target.files ? e.target.files[0] : null)}
+                />
+              )}
+
+              {recipientSource === 'query' && (
+                <Textarea 
+                  placeholder="Escribe tu consulta SQL aquí..." 
+                  value={recipientQuery}
+                  onChange={(e) => setRecipientQuery(e.target.value)}
+                  rows={4}
+                  className="font-mono"
+                />
+              )}
+            </div>
+
+             <div>
+              <Label className="mb-2 block">Fecha de envío (Opcional)</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -202,63 +232,11 @@ export default function CampaignsPage() {
                 </PopoverContent>
               </Popover>
             </div>
-            
-            <div>
-              <Label className="mb-2 block">Cuerpo del Mensaje</Label>
-              <RadioGroup defaultValue="text" onValueChange={(value) => setBodyType(value as 'text' | 'file')} className="flex gap-4 mb-2">
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="text" id="r1" />
-                  <Label htmlFor="r1">Texto</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="file" id="r2" />
-                  <Label htmlFor="r2">Adjuntar Archivo HTML</Label>
-                </div>
-              </RadioGroup>
-
-              {bodyType === 'text' && (
-                <Textarea 
-                  placeholder="Escribe el cuerpo del correo aquí... (soporta HTML)" 
-                  value={emailBody}
-                  onChange={(e) => setEmailBody(e.target.value)}
-                  rows={15}
-                />
-              )}
-
-              {bodyType === 'file' && (
-                <div className="space-y-4">
-                  <Input 
-                    type="file" 
-                    accept=".html,text/html" 
-                    onChange={(e) => setHtmlFile(e.target.files ? e.target.files[0] : null)}
-                  />
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="save-template" 
-                      checked={saveAsTemplate}
-                      onCheckedChange={(checked) => setSaveAsTemplate(checked as boolean)}
-                    />
-                    <Label htmlFor="save-template">Guardar como plantilla</Label>
-                  </div>
-                  {saveAsTemplate && (
-                    <div className="space-y-2">
-                      <Label htmlFor="template-name">Nombre de la Plantilla</Label>
-                      <Input 
-                        id="template-name"
-                        placeholder="Ej: Plantilla de Bienvenida"
-                        value={templateName}
-                        onChange={(e) => setTemplateName(e.target.value)}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
           </CardContent>
           <CardFooter>
-            <Button onClick={handleScheduleCampaign} disabled={isSending}>
+            <Button onClick={handleSendCampaign} disabled={isSending}>
               {isSending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSending ? "Enviando..." : "Enviar Campaña de Prueba"}
+              {isSending ? "Enviando..." : "Enviar Campaña"}
             </Button>
           </CardFooter>
         </Card>
