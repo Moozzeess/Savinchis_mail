@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Info } from "lucide-react";
 
 /**
  * Página de Ajustes.
@@ -47,61 +48,29 @@ export default function SettingsPage() {
           <Button>Guardar Cambios</Button>
         </CardFooter>
       </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Configuración SMTP</CardTitle>
-          <CardDescription>
-            Configura los detalles de tu servidor de correo saliente.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="smtp-host">Host SMTP</Label>
-            <Input id="smtp-host" placeholder="smtp.example.com" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="smtp-port">Puerto</Label>
-            <Input id="smtp-port" placeholder="587" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="smtp-user">Usuario</Label>
-            <Input id="smtp-user" placeholder="user@example.com" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="smtp-pass">Contraseña</Label>
-            <Input id="smtp-pass" type="password" />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button>Guardar Configuración SMTP</Button>
-        </CardFooter>
-      </Card>
-
+      
       <Card>
         <CardHeader>
           <CardTitle>Integración con Microsoft Graph</CardTitle>
           <CardDescription>
-            Conecta tu cuenta de Microsoft para mejorar la capacidad de envío y
-            la gestión de contactos.
+            La aplicación está configurada para enviar correos usando la API de Microsoft Graph.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center space-x-4 rounded-md border p-4">
+          <div className="flex items-start space-x-4 rounded-md border p-4 bg-muted/40">
+             <Info className="h-5 w-5 text-muted-foreground mt-1"/>
             <div className="flex-1 space-y-1">
               <p className="text-sm font-medium leading-none">
-                Activar Microsoft Graph
+                Integración Activa
               </p>
               <p className="text-sm text-muted-foreground">
-                Usa la API de Microsoft Graph para enviar correos.
+                El envío de correos se realiza a través de Microsoft Graph.
+                Asegúrate de que las variables de entorno (`GRAPH_CLIENT_ID`, `GRAPH_TENANT_ID`, etc.) 
+                estén configuradas correctamente en tu archivo `.env`.
               </p>
             </div>
-            <Switch />
           </div>
         </CardContent>
-        <CardFooter>
-          <Button variant="outline">Conectar con Microsoft</Button>
-        </CardFooter>
       </Card>
     </div>
   );

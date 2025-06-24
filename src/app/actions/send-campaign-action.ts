@@ -1,13 +1,16 @@
 'use server';
 
-import nodemailer from 'nodemailer';
+import 'isomorphic-fetch';
+import { ClientSecretCredential } from '@azure/identity';
+import { Client } from '@microsoft/microsoft-graph-client';
+import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials';
 import mysql from 'mysql2/promise';
 import { parse } from 'csv-parse/sync';
 
 /**
  * @fileoverview Acción de servidor para enviar una campaña de correo electrónico.
  * Obtiene destinatarios desde una consulta a la base de datos MySQL, un archivo CSV,
- * o una consulta SQL manual y envía el correo utilizando Nodemailer.
+ * o una consulta SQL manual y envía el correo utilizando la API de Microsoft Graph.
  */
 
 /**
@@ -85,8 +88,6 @@ async function getRecipients(
       params = [value];
     } else if (type === 'sql') {
       sql_query = value;
-      // Nota: Ejecutar SQL directamente del usuario es un riesgo de seguridad.
-      // En una aplicación real, esto debería ser validado o restringido.
     }
 
     const [rows] = await connection.execute(sql_query, params);
@@ -100,10 +101,35 @@ async function getRecipients(
   }
 }
 
+/**
+ * Obtiene un cliente de Microsoft Graph autenticado.
+ * @returns Un cliente de Graph listo para usar.
+ */
+async function getGraphClient() {
+    const { GRAPH_CLIENT_ID, GRAPH_TENANT_ID, GRAPH_CLIENT_SECRET } = process.env;
+    if (!GRAPH_CLIENT_ID || !GRAPH_TENANT_ID || !GRAPH_CLIENT_SECRET) {
+        throw new Error('Faltan las variables de entorno de Microsoft Graph. Por favor, configúralas.');
+    }
+
+    const credential = new ClientSecretCredential(
+        GRAPH_TENANT_ID,
+        GRAPH_CLIENT_ID,
+        GRAPH_CLIENT_SECRET
+    );
+
+    const authProvider = new TokenCredentialAuthenticationProvider(credential, {
+        scopes: ['https://graph.microsoft.com/.default'],
+    });
+
+    const client = Client.initWithMiddleware({
+        authProvider: authProvider,
+    });
+
+    return client;
+}
 
 /**
- * Envía una campaña de correo a una lista de destinatarios obtenida
- * dinámicamente desde la fuente especificada.
+ * Envía una campaña de correo utilizando la API de Microsoft Graph.
  * @param payload - Los detalles de la campaña.
  * @returns Un objeto indicando el resultado de la operación.
  * @throws Arrojará un error si la configuración o el proceso de envío fallan.
@@ -112,14 +138,11 @@ export async function sendCampaign(payload: SendCampaignPayload) {
   const { subject, htmlBody, recipientData } = payload;
   const startTime = Date.now();
 
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
-
-  if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) {
-    throw new Error(
-      'Faltan las variables de entorno SMTP. Por favor, configúralas.'
-    );
+  const { GRAPH_USER_MAIL } = process.env;
+  if(!GRAPH_USER_MAIL){
+      throw new Error('Falta la variable de entorno GRAPH_USER_MAIL. Por favor, configúrala.');
   }
-  
+
   const recipients = await getRecipients(recipientData);
   
   if (recipients.length === 0) {
@@ -136,39 +159,45 @@ export async function sendCampaign(payload: SendCampaignPayload) {
   }
 
   const totalRecipients = recipients.length;
-
-  const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: parseInt(SMTP_PORT, 10),
-    secure: parseInt(SMTP_PORT, 10) === 465,
-    auth: {
-      user: SMTP_USER,
-      pass: SMTP_PASS,
-    },
-  });
+  const graphClient = await getGraphClient();
 
   let sentCount = 0;
   let failedCount = 0;
 
   for (const contact of recipients) {
+    const message = {
+      subject: subject,
+      body: {
+        contentType: 'HTML',
+        content: htmlBody,
+      },
+      toRecipients: [
+        {
+          emailAddress: {
+            address: contact.email,
+          },
+        },
+      ],
+    };
+    
     try {
-      await transporter.sendMail({
-        from: `"EmailCraft Lite" <${SMTP_USER}>`,
-        to: contact.email,
-        subject: subject,
-        html: htmlBody,
+      await graphClient.api(`/users/${GRAPH_USER_MAIL}/sendMail`).post({
+          message: message,
+          saveToSentItems: 'true',
       });
       sentCount++;
     } catch (error) {
       failedCount++;
-      console.error(`Error al enviar correo a ${contact.email}:`, error);
+      // El error de Graph puede ser muy verboso. Extraemos el mensaje si es posible.
+      const errorMessage = (error as any)?.body ? JSON.parse((error as any).body).error.message : (error as Error).message;
+      console.error(`Error al enviar correo a ${contact.email} usando Graph:`, errorMessage);
     }
   }
   
   const endTime = Date.now();
-  const duration = (endTime - startTime) / 1000; // Duration in seconds
+  const duration = (endTime - startTime) / 1000; // Duración en segundos
 
-  let message = `Campaña enviada. Enviados: ${sentCount}. Fallidos: ${failedCount}.`;
+  let message = `Campaña enviada con Microsoft Graph. Enviados: ${sentCount}. Fallidos: ${failedCount}.`;
   if (failedCount > 0) {
      message += ' Revisa la consola del servidor para más detalles sobre los errores.'
   }
