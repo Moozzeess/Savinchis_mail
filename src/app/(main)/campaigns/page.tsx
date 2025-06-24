@@ -18,8 +18,21 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Calendar as CalendarIcon, Loader2, PlusCircle } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Calendar as CalendarIcon,
+  Loader2,
+  PlusCircle,
+  Users,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  TrendingUp,
+} from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
@@ -32,7 +45,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type RecipientSourceType = 'date' | 'csv' | 'sql';
+type RecipientSourceType = "date" | "csv" | "sql";
+
+interface CampaignStats {
+  sentCount: number;
+  failedCount: number;
+  totalRecipients: number;
+  duration: number;
+}
 
 /**
  * Página de Campañas.
@@ -43,13 +63,17 @@ export default function CampaignsPage() {
   const [date, setDate] = useState<Date>();
   const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
-  
-  const [subject, setSubject] = useState('');
-  const [emailBody, setEmailBody] = useState('');
-  const [previewContent, setPreviewContent] = useState('');
-  const [recipientSource, setRecipientSource] = useState<RecipientSourceType>('date');
-  const [csvContent, setCsvContent] = useState('');
-  const [sqlQuery, setSqlQuery] = useState('SELECT email FROM contacts WHERE subscribed = TRUE;');
+
+  const [subject, setSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+  const [previewContent, setPreviewContent] = useState("");
+  const [recipientSource, setRecipientSource] =
+    useState<RecipientSourceType>("date");
+  const [csvContent, setCsvContent] = useState("");
+  const [sqlQuery, setSqlQuery] = useState(
+    "SELECT email FROM contacts WHERE subscribed = TRUE;"
+  );
+  const [lastRunStats, setLastRunStats] = useState<CampaignStats | null>(null);
 
   useEffect(() => {
     setPreviewContent(emailBody);
@@ -58,14 +82,14 @@ export default function CampaignsPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.name.endsWith('.csv')) {
+      if (!file.name.endsWith(".csv")) {
         toast({
           title: "Archivo no válido",
           description: "Por favor, selecciona un archivo .csv.",
           variant: "destructive",
         });
-        e.target.value = ''; // Reset file input
-        setCsvContent('');
+        e.target.value = ""; // Reset file input
+        setCsvContent("");
         return;
       }
       const reader = new FileReader();
@@ -83,12 +107,12 @@ export default function CampaignsPage() {
     }
   };
 
-
   /**
    * Gestiona el envío de una campaña.
    * Valida los campos, prepara el payload y llama a la acción del servidor.
    */
   const handleSendCampaign = async () => {
+    setLastRunStats(null);
     if (!subject.trim()) {
       toast({
         title: "Asunto del correo requerido",
@@ -97,12 +121,12 @@ export default function CampaignsPage() {
       });
       return;
     }
-    
+
     if (!previewContent.trim()) {
       toast({
-        title: 'Cuerpo del correo vacío',
-        description: 'Por favor, escribe el contenido del correo.',
-        variant: 'destructive',
+        title: "Cuerpo del correo vacío",
+        description: "Por favor, escribe el contenido del correo.",
+        variant: "destructive",
       });
       return;
     }
@@ -110,32 +134,50 @@ export default function CampaignsPage() {
     let recipientData;
 
     switch (recipientSource) {
-      case 'date':
+      case "date":
         if (!date) {
-          toast({ title: "Fecha de visita requerida", description: "Por favor, selecciona una fecha.", variant: "destructive" });
+          toast({
+            title: "Fecha de visita requerida",
+            description: "Por favor, selecciona una fecha.",
+            variant: "destructive",
+          });
           return;
         }
-        recipientData = { type: 'date' as const, value: format(date, "dd/MM/yyyy") };
+        recipientData = {
+          type: "date" as const,
+          value: format(date, "dd/MM/yyyy"),
+        };
         break;
-      case 'csv':
+      case "csv":
         if (!csvContent) {
-          toast({ title: "Archivo CSV requerido", description: "Por favor, sube un archivo CSV.", variant: "destructive" });
+          toast({
+            title: "Archivo CSV requerido",
+            description: "Por favor, sube un archivo CSV.",
+            variant: "destructive",
+          });
           return;
         }
-        recipientData = { type: 'csv' as const, value: csvContent };
+        recipientData = { type: "csv" as const, value: csvContent };
         break;
-      case 'sql':
+      case "sql":
         if (!sqlQuery.trim()) {
-          toast({ title: "Consulta SQL requerida", description: "Por favor, escribe una consulta SQL.", variant: "destructive" });
+          toast({
+            title: "Consulta SQL requerida",
+            description: "Por favor, escribe una consulta SQL.",
+            variant: "destructive",
+          });
           return;
         }
-        recipientData = { type: 'sql' as const, value: sqlQuery };
+        recipientData = { type: "sql" as const, value: sqlQuery };
         break;
       default:
-        toast({ title: 'Fuente de destinatarios no válida', variant: 'destructive' });
+        toast({
+          title: "Fuente de destinatarios no válida",
+          variant: "destructive",
+        });
         return;
     }
-    
+
     setIsSending(true);
     try {
       const result = await sendCampaign({
@@ -148,6 +190,9 @@ export default function CampaignsPage() {
         title: "Proceso de envío finalizado",
         description: result.message,
       });
+      if (result.stats) {
+        setLastRunStats(result.stats);
+      }
     } catch (error) {
       toast({
         title: "Error al enviar la campaña",
@@ -185,18 +230,18 @@ export default function CampaignsPage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="subject">Asunto del Correo</Label>
-              <Input 
-                id="subject" 
+              <Input
+                id="subject"
                 placeholder="Ej: Novedades de este mes"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label>Cuerpo del Mensaje (soporta HTML)</Label>
-              <Textarea 
-                placeholder="Escribe el cuerpo del correo aquí..." 
+              <Textarea
+                placeholder="Escribe el cuerpo del correo aquí..."
                 value={emailBody}
                 onChange={(e) => setEmailBody(e.target.value)}
                 rows={10}
@@ -205,44 +250,71 @@ export default function CampaignsPage() {
 
             <div className="space-y-2">
               <Label>Fuente de Destinatarios</Label>
-              <Tabs value={recipientSource} onValueChange={(value) => setRecipientSource(value as RecipientSourceType)} className="w-full">
+              <Tabs
+                value={recipientSource}
+                onValueChange={(value) =>
+                  setRecipientSource(value as RecipientSourceType)
+                }
+                className="w-full"
+              >
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="date">Fecha de Visita</TabsTrigger>
                   <TabsTrigger value="csv">Subir CSV</TabsTrigger>
                   <TabsTrigger value="sql">Consulta SQL</TabsTrigger>
                 </TabsList>
                 <TabsContent value="date" className="mt-4 border-t pt-4">
-                    <Label className="mb-2 block">Selecciona la fecha de visita</Label>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                        <Button
-                            variant={"outline"}
-                            className="w-[280px] justify-start text-left font-normal"
-                        >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}
-                        </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                        <Calendar
-                            mode="single"
-                            selected={date}
-                            onSelect={setDate}
-                            initialFocus
-                            locale={es}
-                        />
-                        </PopoverContent>
-                    </Popover>
+                  <Label className="mb-2 block">
+                    Selecciona la fecha de visita
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className="w-[280px] justify-start text-left font-normal"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? (
+                          format(date, "PPP", { locale: es })
+                        ) : (
+                          <span>Elige una fecha</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        initialFocus
+                        locale={es}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </TabsContent>
                 <TabsContent value="csv" className="mt-4 space-y-2 border-t pt-4">
-                    <Label htmlFor="csv-file">Sube un archivo CSV</Label>
-                    <Input id="csv-file" type="file" accept=".csv" onChange={handleFileChange} />
-                    <p className="text-sm text-muted-foreground">El archivo debe contener una columna "email".</p>
+                  <Label htmlFor="csv-file">Sube un archivo CSV</Label>
+                  <Input
+                    id="csv-file"
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileChange}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    El archivo debe contener una columna "email".
+                  </p>
                 </TabsContent>
                 <TabsContent value="sql" className="mt-4 space-y-2 border-t pt-4">
-                    <Label htmlFor="sql-query">Escribe tu consulta SQL</Label>
-                    <Textarea id="sql-query" value={sqlQuery} onChange={(e) => setSqlQuery(e.target.value)} rows={4} placeholder="SELECT email FROM users;" />
-                    <p className="text-sm text-muted-foreground">La consulta debe devolver una columna "email".</p>
+                  <Label htmlFor="sql-query">Escribe tu consulta SQL</Label>
+                  <Textarea
+                    id="sql-query"
+                    value={sqlQuery}
+                    onChange={(e) => setSqlQuery(e.target.value)}
+                    rows={4}
+                    placeholder="SELECT email FROM users;"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    La consulta debe devolver una columna "email".
+                  </p>
                 </TabsContent>
               </Tabs>
             </div>
@@ -255,21 +327,98 @@ export default function CampaignsPage() {
           </CardFooter>
         </Card>
 
-        <Card className="sticky top-24">
-          <CardHeader>
-            <CardTitle>Vista Previa del Correo</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="aspect-[9/12] w-full bg-muted rounded-lg overflow-hidden border">
-              <iframe
-                srcDoc={previewContent}
-                title="Email Preview"
-                className="w-full h-full border-0"
-                sandbox="allow-scripts"
-              />
-            </div>
-          </CardContent>
-        </Card>
+        <div className="sticky top-24 space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Vista Previa del Correo</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="aspect-[9/12] w-full bg-muted rounded-lg overflow-hidden border">
+                <iframe
+                  srcDoc={previewContent}
+                  title="Email Preview"
+                  className="w-full h-full border-0"
+                  sandbox="allow-scripts"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {lastRunStats && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Resumen del Último Envío</CardTitle>
+                <CardDescription>
+                  Estadísticas de la campaña que acabas de enviar.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground flex items-center gap-2">
+                    <Users className="h-4 w-4" /> Total Destinatarios
+                  </span>
+                  <span className="font-bold">{lastRunStats.totalRecipients}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" /> Enviados
+                  </span>
+                  <span className="font-bold">{lastRunStats.sentCount}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-destructive" /> Fallidos
+                  </span>
+                  <span className="font-bold">{lastRunStats.failedCount}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground flex items-center gap-2">
+                    <Clock className="h-4 w-4" /> Duración
+                  </span>
+                  <span className="font-bold">
+                    {lastRunStats.duration.toFixed(2)}s
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4" /> Velocidad de Envío
+                  </span>
+                  <span className="font-bold">
+                    {lastRunStats.duration > 0
+                      ? (
+                          lastRunStats.sentCount / lastRunStats.duration
+                        ).toFixed(2)
+                      : "N/A"}{" "}
+                    correos/s
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Límites de Envío SMTP</CardTitle>
+              <CardDescription>
+                Restricciones para evitar el bloqueo por spam.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">
+                  Límite Diario de Correos
+                </span>
+                <span className="font-mono p-1 bg-muted rounded">5,000</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">
+                  Límite por Ejecución
+                </span>
+                <span className="font-mono p-1 bg-muted rounded">200</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <Card>
@@ -301,7 +450,11 @@ export default function CampaignsPage() {
                           ? "secondary"
                           : "outline"
                       }
-                      className={campaign.status === "Enviado" ? "bg-green-500/20 text-green-700 border-green-500/20" : ""}
+                      className={
+                        campaign.status === "Enviado"
+                          ? "bg-green-500/20 text-green-700 border-green-500/20"
+                          : ""
+                      }
                     >
                       {campaign.status}
                     </Badge>

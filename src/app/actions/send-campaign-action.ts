@@ -110,6 +110,7 @@ async function getRecipients(
  */
 export async function sendCampaign(payload: SendCampaignPayload) {
   const { subject, htmlBody, recipientData } = payload;
+  const startTime = Date.now();
 
   const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
 
@@ -122,8 +123,19 @@ export async function sendCampaign(payload: SendCampaignPayload) {
   const recipients = await getRecipients(recipientData);
   
   if (recipients.length === 0) {
-    return { success: true, message: `No se encontraron destinatarios. No se enviaron correos.` };
+    return { 
+        success: true, 
+        message: `No se encontraron destinatarios. No se enviaron correos.`,
+        stats: {
+            sentCount: 0,
+            failedCount: 0,
+            totalRecipients: 0,
+            duration: 0
+        } 
+    };
   }
+
+  const totalRecipients = recipients.length;
 
   const transporter = nodemailer.createTransport({
     host: SMTP_HOST,
@@ -153,10 +165,22 @@ export async function sendCampaign(payload: SendCampaignPayload) {
     }
   }
   
+  const endTime = Date.now();
+  const duration = (endTime - startTime) / 1000; // Duration in seconds
+
   let message = `Campaña enviada. Enviados: ${sentCount}. Fallidos: ${failedCount}.`;
   if (failedCount > 0) {
      message += ' Revisa la consola del servidor para más detalles sobre los errores.'
   }
 
-  return { success: true, message: message };
+  return { 
+    success: true, 
+    message: message,
+    stats: {
+        sentCount,
+        failedCount,
+        totalRecipients,
+        duration,
+    }
+  };
 }
