@@ -30,6 +30,9 @@ import { sendCampaign } from "@/app/actions/send-campaign-action";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+type RecipientSourceType = 'date' | 'csv' | 'sql';
 
 /**
  * Página de Campañas.
@@ -44,10 +47,42 @@ export default function CampaignsPage() {
   const [subject, setSubject] = useState('');
   const [emailBody, setEmailBody] = useState('');
   const [previewContent, setPreviewContent] = useState('');
+  const [recipientSource, setRecipientSource] = useState<RecipientSourceType>('date');
+  const [csvContent, setCsvContent] = useState('');
+  const [sqlQuery, setSqlQuery] = useState('SELECT email FROM contacts WHERE subscribed = TRUE;');
 
   useEffect(() => {
     setPreviewContent(emailBody);
   }, [emailBody]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.name.endsWith('.csv')) {
+        toast({
+          title: "Archivo no válido",
+          description: "Por favor, selecciona un archivo .csv.",
+          variant: "destructive",
+        });
+        e.target.value = ''; // Reset file input
+        setCsvContent('');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setCsvContent(event.target?.result as string);
+      };
+      reader.onerror = () => {
+        toast({
+          title: "Error al leer el archivo",
+          description: "No se pudo procesar el archivo seleccionado.",
+          variant: "destructive",
+        });
+      };
+      reader.readAsText(file);
+    }
+  };
+
 
   /**
    * Gestiona el envío de una campaña.
@@ -72,22 +107,41 @@ export default function CampaignsPage() {
       return;
     }
 
-    if (!date) {
-      toast({
-        title: "Fecha de visita requerida",
-        description: "Por favor, selecciona una fecha para buscar los destinatarios.",
-        variant: "destructive",
-      });
-      return;
+    let recipientData;
+
+    switch (recipientSource) {
+      case 'date':
+        if (!date) {
+          toast({ title: "Fecha de visita requerida", description: "Por favor, selecciona una fecha.", variant: "destructive" });
+          return;
+        }
+        recipientData = { type: 'date' as const, value: format(date, "dd/MM/yyyy") };
+        break;
+      case 'csv':
+        if (!csvContent) {
+          toast({ title: "Archivo CSV requerido", description: "Por favor, sube un archivo CSV.", variant: "destructive" });
+          return;
+        }
+        recipientData = { type: 'csv' as const, value: csvContent };
+        break;
+      case 'sql':
+        if (!sqlQuery.trim()) {
+          toast({ title: "Consulta SQL requerida", description: "Por favor, escribe una consulta SQL.", variant: "destructive" });
+          return;
+        }
+        recipientData = { type: 'sql' as const, value: sqlQuery };
+        break;
+      default:
+        toast({ title: 'Fuente de destinatarios no válida', variant: 'destructive' });
+        return;
     }
     
     setIsSending(true);
     try {
-      const formattedDate = format(date, "dd/MM/yyyy");
       const result = await sendCampaign({
         subject: subject,
         htmlBody: previewContent,
-        sendDate: formattedDate,
+        recipientData: recipientData,
       });
 
       toast({
@@ -125,7 +179,7 @@ export default function CampaignsPage() {
           <CardHeader>
             <CardTitle>Crear Nueva Campaña</CardTitle>
             <CardDescription>
-              Define el contenido y la fecha de visita de los destinatarios para enviar tu campaña.
+              Define el contenido y los destinatarios para enviar tu campaña.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -140,7 +194,7 @@ export default function CampaignsPage() {
             </div>
             
             <div className="space-y-2">
-              <Label className="mb-2 block">Cuerpo del Mensaje (soporta HTML)</Label>
+              <Label>Cuerpo del Mensaje (soporta HTML)</Label>
               <Textarea 
                 placeholder="Escribe el cuerpo del correo aquí..." 
                 value={emailBody}
@@ -150,27 +204,47 @@ export default function CampaignsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="mb-2 block">Fecha de Visita de los Destinatarios</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className="w-[280px] justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                    locale={es}
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label>Fuente de Destinatarios</Label>
+              <Tabs value={recipientSource} onValueChange={(value) => setRecipientSource(value as RecipientSourceType)} className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="date">Fecha de Visita</TabsTrigger>
+                  <TabsTrigger value="csv">Subir CSV</TabsTrigger>
+                  <TabsTrigger value="sql">Consulta SQL</TabsTrigger>
+                </TabsList>
+                <TabsContent value="date" className="mt-4 border-t pt-4">
+                    <Label className="mb-2 block">Selecciona la fecha de visita</Label>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                        <Button
+                            variant={"outline"}
+                            className="w-[280px] justify-start text-left font-normal"
+                        >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}
+                        </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                        <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                            initialFocus
+                            locale={es}
+                        />
+                        </PopoverContent>
+                    </Popover>
+                </TabsContent>
+                <TabsContent value="csv" className="mt-4 space-y-2 border-t pt-4">
+                    <Label htmlFor="csv-file">Sube un archivo CSV</Label>
+                    <Input id="csv-file" type="file" accept=".csv" onChange={handleFileChange} />
+                    <p className="text-sm text-muted-foreground">El archivo debe contener una columna "email".</p>
+                </TabsContent>
+                <TabsContent value="sql" className="mt-4 space-y-2 border-t pt-4">
+                    <Label htmlFor="sql-query">Escribe tu consulta SQL</Label>
+                    <Textarea id="sql-query" value={sqlQuery} onChange={(e) => setSqlQuery(e.target.value)} rows={4} placeholder="SELECT email FROM users;" />
+                    <p className="text-sm text-muted-foreground">La consulta debe devolver una columna "email".</p>
+                </TabsContent>
+              </Tabs>
             </div>
           </CardContent>
           <CardFooter>

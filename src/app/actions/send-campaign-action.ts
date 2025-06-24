@@ -2,11 +2,12 @@
 
 import nodemailer from 'nodemailer';
 import mysql from 'mysql2/promise';
+import { parse } from 'csv-parse/sync';
 
 /**
  * @fileoverview Acción de servidor para enviar una campaña de correo electrónico.
- * Obtiene destinatarios desde una consulta a la base de datos MySQL basada en una fecha
- * y envía el correo utilizando Nodemailer.
+ * Obtiene destinatarios desde una consulta a la base de datos MySQL, un archivo CSV,
+ * o una consulta SQL manual y envía el correo utilizando Nodemailer.
  */
 
 /**
@@ -15,36 +16,42 @@ import mysql from 'mysql2/promise';
 interface SendCampaignPayload {
   subject: string;
   htmlBody: string;
-  sendDate: string;
+  recipientData: {
+    type: 'date' | 'csv' | 'sql';
+    value: string; // Contendrá la fecha, el contenido del CSV o la consulta SQL
+  };
 }
 
 /**
- * Envía una campaña de correo a una lista de destinatarios obtenida
- * dinámicamente desde una consulta a base de datos basada en una fecha.
- * @param payload - Los detalles de la campaña, incluyendo asunto, cuerpo y fecha de visita.
- * @returns Un objeto indicando el resultado de la operación.
- * @throws Arrojará un error si la configuración o el proceso de envío fallan.
+ * Obtiene una lista de destinatarios desde la fuente especificada.
+ * @param recipientData - El objeto que define la fuente de los destinatarios.
+ * @returns Una promesa que se resuelve con un array de objetos de destinatarios.
  */
-export async function sendCampaign(payload: SendCampaignPayload) {
-  const { subject, htmlBody, sendDate } = payload;
+async function getRecipients(
+  recipientData: SendCampaignPayload['recipientData']
+): Promise<{ email: string }[]> {
+  const { type, value } = recipientData;
 
-  const {
-    SMTP_HOST,
-    SMTP_PORT,
-    SMTP_USER,
-    SMTP_PASS,
-    MYSQL_HOST,
-    MYSQL_USER,
-    MYSQL_PASSWORD,
-    MYSQL_DATABASE,
-    MYSQL_PORT,
-  } = process.env;
-
-  if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) {
-    throw new Error(
-      'Faltan las variables de entorno SMTP. Por favor, configúralas.'
-    );
+  if (type === 'csv') {
+    try {
+      const records = parse(value, {
+        columns: true,
+        skip_empty_lines: true,
+      });
+      if (records.length === 0 || !('email' in records[0])) {
+        throw new Error('La columna "email" no se encontró o el archivo está vacío.');
+      }
+      return records.map((record: any) => ({ email: record.email })).filter((r: {email: string}) => r.email);
+    } catch (error) {
+      console.error('Error al procesar el archivo CSV:', error);
+      throw new Error(
+        `Error al procesar el archivo CSV: ${(error as Error).message}`
+      );
+    }
   }
+
+  const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } =
+    process.env;
 
   if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
     throw new Error(
@@ -53,8 +60,6 @@ export async function sendCampaign(payload: SendCampaignPayload) {
   }
 
   let connection;
-  let recipients: { email: string }[] = [];
-
   try {
     connection = await mysql.createConnection({
       host: MYSQL_HOST,
@@ -64,34 +69,66 @@ export async function sendCampaign(payload: SendCampaignPayload) {
       database: MYSQL_DATABASE,
     });
 
-    const sql_query = `
-      SELECT t1.email
-      FROM order_data AS t1 INNER JOIN order_data_online AS t2 ON t1.Ds_Merchant_Order = t2.Ds_Order
-      WHERE
-          t1.fecha_visita = ?
-          AND t2.Ds_ErrorCode = '00'
-          AND t2.Ds_ErrorMessage = 'completed'
-          AND NOT t1.email IN ('alberto.silva@papalote.org.mx', 'alejandracervantesm@gmail.com')
-    `;
+    let sql_query = '';
+    let params: any[] = [];
 
-    const [rows] = await connection.execute(sql_query, [sendDate]);
-    recipients = (rows as { email: string }[]).filter((row) => row.email);
-    console.log(`Se encontraron ${recipients.length} destinatarios para la fecha ${sendDate}.`);
+    if (type === 'date') {
+      sql_query = `
+        SELECT t1.email
+        FROM order_data AS t1 INNER JOIN order_data_online AS t2 ON t1.Ds_Merchant_Order = t2.Ds_Order
+        WHERE
+            t1.fecha_visita = ?
+            AND t2.Ds_ErrorCode = '00'
+            AND t2.Ds_ErrorMessage = 'completed'
+            AND NOT t1.email IN ('alberto.silva@papalote.org.mx', 'alejandracervantesm@gmail.com')
+      `;
+      params = [value];
+    } else if (type === 'sql') {
+      sql_query = value;
+      // Nota: Ejecutar SQL directamente del usuario es un riesgo de seguridad.
+      // En una aplicación real, esto debería ser validado o restringido.
+    }
+
+    const [rows] = await connection.execute(sql_query, params);
+    return (rows as { email: string }[]).filter(row => row.email);
+
   } catch (error) {
     console.error('Error al conectar o consultar la base de datos:', error);
     throw new Error('No se pudo obtener los contactos de la base de datos.');
   } finally {
     if (connection) await connection.end();
   }
+}
 
+
+/**
+ * Envía una campaña de correo a una lista de destinatarios obtenida
+ * dinámicamente desde la fuente especificada.
+ * @param payload - Los detalles de la campaña.
+ * @returns Un objeto indicando el resultado de la operación.
+ * @throws Arrojará un error si la configuración o el proceso de envío fallan.
+ */
+export async function sendCampaign(payload: SendCampaignPayload) {
+  const { subject, htmlBody, recipientData } = payload;
+
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
+
+  if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) {
+    throw new Error(
+      'Faltan las variables de entorno SMTP. Por favor, configúralas.'
+    );
+  }
+  
+  const recipients = await getRecipients(recipientData);
+  
   if (recipients.length === 0) {
-    return { success: true, message: `No se encontraron destinatarios para enviar en la fecha ${sendDate}. No se enviaron correos.` };
+    return { success: true, message: `No se encontraron destinatarios. No se enviaron correos.` };
   }
 
   const transporter = nodemailer.createTransport({
     host: SMTP_HOST,
     port: parseInt(SMTP_PORT, 10),
-    secure: parseInt(SMTP_PORT, 10) === 465, // true for 465, false for other ports
+    secure: parseInt(SMTP_PORT, 10) === 465,
     auth: {
       user: SMTP_USER,
       pass: SMTP_PASS,
