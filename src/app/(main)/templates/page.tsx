@@ -35,6 +35,11 @@ const templates = [
   },
 ];
 
+/**
+ * Página de Plantillas.
+ * Muestra una lista de las plantillas de correo electrónico existentes
+ * y permite crear nuevas o editar/eliminar las actuales.
+ */
 export default function TemplatesPage() {
   return (
     <div className="space-y-6">

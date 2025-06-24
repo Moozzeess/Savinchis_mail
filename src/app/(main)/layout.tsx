@@ -24,6 +24,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+/**
+ * Layout principal para las secciones autenticadas de la aplicación.
+ * Incluye una barra lateral de navegación persistente y una cabecera.
+ * @param {object} props - Propiedades del componente.
+ * @param {React.ReactNode} props.children - Los componentes hijos que se renderizarán dentro del layout.
+ */
 export default function MainLayout({
   children,
 }: {

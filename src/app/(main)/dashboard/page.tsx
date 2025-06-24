@@ -10,6 +10,11 @@ import { Mails, Users, FileText, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
+/**
+ * Página del Panel de Control (Dashboard).
+ * Ofrece un resumen de la actividad de la cuenta, incluyendo estadísticas clave
+ * y accesos directos a las funciones principales de la aplicación.
+ */
 export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8">

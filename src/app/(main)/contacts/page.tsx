@@ -19,6 +19,11 @@ import { UploadCloud, PlusCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { contacts } from "@/lib/data";
 
+/**
+ * Página de Contactos.
+ * Permite a los usuarios gestionar sus listas de contactos, importar nuevos
+ * contactos desde un archivo CSV y ver el estado de cada contacto.
+ */
 export default function ContactsPage() {
   return (
     <div className="space-y-6">

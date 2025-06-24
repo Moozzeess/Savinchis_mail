@@ -1,3 +1,12 @@
+/**
+ * @fileOverview Datos de prueba para la aplicación.
+ * Este archivo contiene datos de ejemplo para campañas y contactos,
+ * utilizados para poblar la interfaz de usuario hasta que se conecte una base de datos real.
+ */
+
+/**
+ * Datos de ejemplo para las campañas de correo electrónico.
+ */
 export const campaigns = [
   {
     name: "Lanzamiento de Verano",
@@ -25,6 +34,9 @@ export const campaigns = [
   },
 ];
 
+/**
+ * Datos de ejemplo para los contactos.
+ */
 export const contacts = [
   {
     email: "juan.perez@example.com",

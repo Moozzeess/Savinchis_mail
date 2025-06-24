@@ -3,6 +3,13 @@
 import nodemailer from 'nodemailer';
 import { contacts } from '@/lib/data';
 
+/**
+ * Envía una campaña de correo de prueba a todos los contactos suscritos.
+ * @param emailHtml - El contenido HTML del correo a enviar.
+ * @returns Un objeto que indica el éxito o fracaso de la operación.
+ * @throws Arrojará un error si faltan las variables de entorno SMTP,
+ * si no hay contactos suscritos o si falla el envío de correos.
+ */
 export async function sendTestCampaign(emailHtml: string) {
   const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
 

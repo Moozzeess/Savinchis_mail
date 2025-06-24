@@ -11,6 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
+/**
+ * Página de Ajustes.
+ * Permite a los usuarios configurar su perfil, los ajustes de envío de correo (SMTP)
+ * y gestionar integraciones como Microsoft Graph.
+ */
 export default function SettingsPage() {
   return (
     <div className="space-y-6">

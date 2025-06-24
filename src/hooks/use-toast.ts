@@ -8,6 +8,11 @@ import type {
   ToastProps,
 } from "@/components/ui/toast"
 
+/**
+ * @fileoverview Un sistema de notificaciones "toast" personalizado inspirado en la librería react-hot-toast.
+ * Proporciona un hook `useToast` para gestionar y mostrar mensajes toast.
+ */
+
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
 
@@ -74,6 +79,12 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout)
 }
 
+/**
+ * Reductor para gestionar el estado de los toasts.
+ * @param state - El estado actual.
+ * @param action - La acción a realizar.
+ * @returns El nuevo estado.
+ */
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
@@ -142,6 +153,11 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">
 
+/**
+ * Muestra una notificación toast y devuelve métodos para controlarla.
+ * @param props - Las propiedades de la notificación toast.
+ * @returns Un objeto con el `id` del toast y los métodos `dismiss` y `update`.
+ */
 function toast({ ...props }: Toast) {
   const id = genId()
 
@@ -171,6 +187,11 @@ function toast({ ...props }: Toast) {
   }
 }
 
+/**
+ * Hook que proporciona acceso al estado y los métodos de las notificaciones toast.
+ * @returns Un objeto con el array de `toasts` actual, una función `toast` para crear nuevos toasts,
+ * y una función `dismiss` para cerrarlos.
+ */
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)
 

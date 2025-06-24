@@ -32,6 +32,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 
+/**
+ * Página de Campañas.
+ * Permite a los usuarios programar nuevas campañas de correo, ver el historial
+ * de campañas enviadas y gestionar su estado.
+ */
 export default function CampaignsPage() {
   const [date, setDate] = useState<Date>();
   const [isSending, setIsSending] = useState(false);
@@ -40,6 +45,11 @@ export default function CampaignsPage() {
   const [emailBody, setEmailBody] = useState('');
   const [htmlFile, setHtmlFile] = useState<File | null>(null);
 
+  /**
+   * Gestiona el envío de una campaña de prueba.
+   * Valida la fecha y el contenido del correo (ya sea texto o archivo),
+   * llama a la acción del servidor y muestra notificaciones de éxito o error.
+   */
   const handleScheduleCampaign = async () => {
     if (!date) {
       toast({

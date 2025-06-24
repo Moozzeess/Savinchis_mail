@@ -7,6 +7,11 @@ import {
 import { ArrowUp, Mail, Eye, MousePointerClick, AlertCircle } from "lucide-react";
 import { AnalyticsCharts } from "@/components/analytics-charts";
 
+/**
+ * Página de Analíticas.
+ * Muestra métricas clave de rendimiento de las campañas de correo electrónico
+ * a través de tarjetas de estadísticas y gráficos.
+ */
 export default function AnalyticsPage() {
   return (
     <div className="space-y-6">

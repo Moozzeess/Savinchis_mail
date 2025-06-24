@@ -35,6 +35,10 @@ const chartConfig = {
   },
 }
 
+/**
+ * Componente que renderiza los gráficos de analíticas para el rendimiento de las campañas.
+ * Muestra un gráfico de barras con datos de correos enviados y tasas de apertura.
+ */
 export function AnalyticsCharts() {
   return (
     <Card>

@@ -24,6 +24,10 @@ const links = [
   { href: "/analytics", label: "Analíticas", icon: BarChart3 },
 ];
 
+/**
+ * Componente que renderiza los enlaces de navegación principal en la barra lateral.
+ * Resalta el enlace activo basándose en la ruta actual de la URL.
+ */
 export function NavLinks() {
   const pathname = usePathname();
 

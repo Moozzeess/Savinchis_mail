@@ -23,6 +23,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Loader2, Wand2, Sparkles } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
+/**
+ * Esquema de validación para el formulario del editor de plantillas.
+ */
 const formSchema = z.object({
   templateName: z.string().min(1, 'El nombre de la plantilla es requerido.'),
   emailSubject: z.string().min(1, 'El asunto del correo es requerido.'),
@@ -32,6 +35,11 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+/**
+ * Componente de cliente para crear y editar plantillas de correo electrónico.
+ * Incluye un formulario para los detalles de la plantilla, un optimizador de contenido
+ * con IA y muestra los resultados de la optimización.
+ */
 export function TemplateEditorClient() {
   const [aiResult, setAiResult] = useState<OptimizeEmailContentOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -47,6 +55,11 @@ export function TemplateEditorClient() {
     },
   });
 
+  /**
+   * Gestiona el proceso de optimización con IA para el cuerpo del correo.
+   * Valida que los campos necesarios estén completos, llama a la acción del servidor,
+   * y actualiza el estado del componente con el resultado o un error.
+   */
   const handleOptimize = async () => {
     const { emailBody, audience } = form.getValues();
     if (!emailBody || !audience) {
@@ -74,6 +87,10 @@ export function TemplateEditorClient() {
     }
   };
 
+  /**
+   * Gestiona el envío del formulario para guardar la plantilla.
+   * @param values - Los valores validados del formulario.
+   */
   function onSubmit(values: FormValues) {
     console.log(values);
     toast({

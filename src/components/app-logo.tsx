@@ -1,5 +1,9 @@
 import type { SVGProps } from "react";
 
+/**
+ * Componente SVG para el logo de la aplicación.
+ * @param props - Propiedades SVG estándar.
+ */
 export function AppLogo(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
