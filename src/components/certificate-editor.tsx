@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ChangeEvent } from 'react';
+import { useState, type ChangeEvent, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -23,6 +23,13 @@ export function CertificateEditor() {
   const [dateText, setDateText] = useState('Fecha:');
 
   const { toast } = useToast();
+
+  const titleRef = useRef(null);
+  const issuedToRef = useRef(null);
+  const contactNameRef = useRef(null);
+  const descriptionRef = useRef(null);
+  const signatureRef = useRef(null);
+  const dateRef = useRef(null);
 
   /**
    * Gestiona el cambio de la imagen de fondo.
@@ -114,44 +121,44 @@ export function CertificateEditor() {
               )}
               <div className="absolute inset-0 p-8 text-black font-serif">
                 
-                <Draggable bounds="parent">
-                  <div className="absolute cursor-move p-2" style={{ top: '10%', left: '50%', transform: 'translateX(-50%)' }}>
+                <Draggable bounds="parent" nodeRef={titleRef}>
+                  <div ref={titleRef} className="absolute cursor-move p-2" style={{ top: '10%', left: '50%', transform: 'translateX(-50%)' }}>
                     <h1 className="text-4xl font-bold tracking-wider text-center" style={{ textShadow: '1px 1px 2px white' }}>{title}</h1>
                   </div>
                 </Draggable>
 
-                <Draggable bounds="parent">
-                  <div className="absolute cursor-move p-2" style={{ top: '25%', left: '50%', transform: 'translateX(-50%)' }}>
+                <Draggable bounds="parent" nodeRef={issuedToRef}>
+                  <div ref={issuedToRef} className="absolute cursor-move p-2" style={{ top: '25%', left: '50%', transform: 'translateX(-50%)' }}>
                     <p className="text-lg text-center" style={{ textShadow: '1px 1px 2px white' }}>{issuedToText}</p>
                   </div>
                 </Draggable>
 
-                <Draggable bounds="parent">
-                  <div className="absolute cursor-move p-2" style={{ top: '32%', left: '50%', transform: 'translateX(-50%)' }}>
+                <Draggable bounds="parent" nodeRef={contactNameRef}>
+                  <div ref={contactNameRef} className="absolute cursor-move p-2" style={{ top: '32%', left: '50%', transform: 'translateX(-50%)' }}>
                     <p className="text-3xl font-headline font-semibold text-center" style={{ textShadow: '1px 1px 2px white' }}>
                       &#123;&#123;contact.name&#125;&#125;
                     </p>
                   </div>
                 </Draggable>
                 
-                <Draggable bounds="parent">
-                   <div className="absolute cursor-move p-2" style={{ top: '45%', left: '50%', transform: 'translateX(-50%)', width: '80%' }}>
+                <Draggable bounds="parent" nodeRef={descriptionRef}>
+                   <div ref={descriptionRef} className="absolute cursor-move p-2" style={{ top: '45%', left: '50%', transform: 'translateX(-50%)', width: '80%' }}>
                     <p className="text-base max-w-md mx-auto text-center" style={{ textShadow: '1px 1px 2px white' }}>
                       {description}
                     </p>
                   </div>
                 </Draggable>
 
-                <Draggable bounds="parent">
-                  <div className="absolute cursor-move p-2" style={{ top: '80%', left: '25%', transform: 'translateX(-50%)' }}>
+                <Draggable bounds="parent" nodeRef={signatureRef}>
+                  <div ref={signatureRef} className="absolute cursor-move p-2" style={{ top: '80%', left: '25%', transform: 'translateX(-50%)' }}>
                     <div className="text-center">
                         <p className="font-semibold border-t-2 border-current pt-1" style={{ textShadow: '1px 1px 2px white' }}>Firma del Organizador</p>
                     </div>
                   </div>
                 </Draggable>
 
-                <Draggable bounds="parent">
-                  <div className="absolute cursor-move p-2" style={{ top: '80%', left: '75%', transform: 'translateX(-50%)' }}>
+                <Draggable bounds="parent" nodeRef={dateRef}>
+                  <div ref={dateRef} className="absolute cursor-move p-2" style={{ top: '80%', left: '75%', transform: 'translateX(-50%)' }}>
                     <div className="text-center">
                           <p className="font-semibold" style={{ textShadow: '1px 1px 2px white' }}>{dateText} &#123;&#123;event.date&#125;&#125;</p>
                           <div className="border-t-2 border-current mt-1"></div>
