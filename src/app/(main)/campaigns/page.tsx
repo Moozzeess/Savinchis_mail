@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar as CalendarIcon, Loader2, PlusCircle } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { campaigns } from "@/lib/data";
@@ -36,7 +36,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 /**
  * Página de Campañas.
  * Permite a los usuarios programar nuevas campañas de correo, ver el historial
- * de campañas enviadas y gestionar su estado.
+ * de campañas enviadas y gestionar su estado. Incluye una vista previa en tiempo real.
  */
 export default function CampaignsPage() {
   const [date, setDate] = useState<Date>();
@@ -47,6 +47,28 @@ export default function CampaignsPage() {
   const [htmlFile, setHtmlFile] = useState<File | null>(null);
   const [saveAsTemplate, setSaveAsTemplate] = useState(false);
   const [templateName, setTemplateName] = useState('');
+  const [previewContent, setPreviewContent] = useState('');
+
+  useEffect(() => {
+    if (bodyType === 'text') {
+      setPreviewContent(emailBody);
+    } else if (bodyType === 'file' && htmlFile) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreviewContent(e.target?.result as string);
+      };
+      reader.onerror = () => {
+        toast({
+          title: 'Error al leer el archivo',
+          description: 'No se pudo leer el contenido del archivo HTML.',
+          variant: 'destructive',
+        });
+      };
+      reader.readAsText(htmlFile);
+    } else {
+      setPreviewContent('');
+    }
+  }, [bodyType, emailBody, htmlFile, toast]);
 
   /**
    * Gestiona el envío de una campaña de prueba.
@@ -63,19 +85,16 @@ export default function CampaignsPage() {
       return;
     }
 
-    let emailHtml = '';
+    if (!previewContent.trim()) {
+      toast({
+        title: 'Cuerpo del correo vacío',
+        description: 'Por favor, escribe el contenido del correo o adjunta un archivo HTML.',
+        variant: 'destructive',
+      });
+      return;
+    }
 
-    if (bodyType === 'text') {
-      if (!emailBody.trim()) {
-        toast({
-          title: 'Cuerpo del correo vacío',
-          description: 'Por favor, escribe el contenido del correo.',
-          variant: 'destructive',
-        });
-        return;
-      }
-      emailHtml = emailBody;
-    } else {
+    if (bodyType === 'file') {
       if (!htmlFile) {
         toast({
           title: 'Archivo no seleccionado',
@@ -87,9 +106,9 @@ export default function CampaignsPage() {
 
       if (!htmlFile.name.toLowerCase().endsWith('.html')) {
         toast({
-            title: 'Archivo no válido',
-            description: 'Por favor, selecciona un archivo con extensión .html',
-            variant: 'destructive',
+          title: 'Archivo no válido',
+          description: 'Por favor, selecciona un archivo con extensión .html',
+          variant: 'destructive',
         });
         return;
       }
@@ -102,23 +121,12 @@ export default function CampaignsPage() {
         });
         return;
       }
-
-      try {
-        emailHtml = await htmlFile.text();
-      } catch (error) {
-        toast({
-          title: 'Error al leer el archivo',
-          description: 'No se pudo leer el contenido del archivo HTML.',
-          variant: 'destructive',
-        });
-        return;
-      }
     }
 
 
     setIsSending(true);
     try {
-      await sendTestCampaign(emailHtml);
+      await sendTestCampaign(previewContent);
       toast({
         title: "Campaña de prueba enviada",
         description: "Se ha enviado un correo de prueba a los contactos suscritos.",
@@ -162,97 +170,115 @@ export default function CampaignsPage() {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Programar Nueva Campaña</CardTitle>
-          <CardDescription>
-            Selecciona una fecha, define el cuerpo del correo y envía una campaña de prueba.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label className="mb-2 block">Fecha de envío</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className="w-[280px] justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                  locale={es}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-          
-          <div>
-            <Label className="mb-2 block">Cuerpo del Mensaje</Label>
-            <RadioGroup defaultValue="text" onValueChange={(value) => setBodyType(value as 'text' | 'file')} className="flex gap-4 mb-2">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="text" id="r1" />
-                <Label htmlFor="r1">Texto Plano</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="file" id="r2" />
-                <Label htmlFor="r2">Adjuntar Archivo HTML</Label>
-              </div>
-            </RadioGroup>
-
-            {bodyType === 'text' && (
-              <Textarea 
-                placeholder="Escribe el cuerpo del correo aquí..." 
-                value={emailBody}
-                onChange={(e) => setEmailBody(e.target.value)}
-                rows={10}
-              />
-            )}
-
-            {bodyType === 'file' && (
-              <div className="space-y-4">
-                <Input 
-                  type="file" 
-                  accept=".html,text/html" 
-                  onChange={(e) => setHtmlFile(e.target.files ? e.target.files[0] : null)}
-                />
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="save-template" 
-                    checked={saveAsTemplate}
-                    onCheckedChange={(checked) => setSaveAsTemplate(checked as boolean)}
+      <div className="grid lg:grid-cols-2 gap-8 items-start">
+        <Card>
+          <CardHeader>
+            <CardTitle>Programar Nueva Campaña</CardTitle>
+            <CardDescription>
+              Selecciona una fecha, define el cuerpo del correo y envía una campaña de prueba.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label className="mb-2 block">Fecha de envío</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className="w-[280px] justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                    locale={es}
                   />
-                  <Label htmlFor="save-template">Guardar como plantilla</Label>
+                </PopoverContent>
+              </Popover>
+            </div>
+            
+            <div>
+              <Label className="mb-2 block">Cuerpo del Mensaje</Label>
+              <RadioGroup defaultValue="text" onValueChange={(value) => setBodyType(value as 'text' | 'file')} className="flex gap-4 mb-2">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="text" id="r1" />
+                  <Label htmlFor="r1">Texto</Label>
                 </div>
-                {saveAsTemplate && (
-                  <div className="space-y-2">
-                    <Label htmlFor="template-name">Nombre de la Plantilla</Label>
-                    <Input 
-                      id="template-name"
-                      placeholder="Ej: Plantilla de Bienvenida"
-                      value={templateName}
-                      onChange={(e) => setTemplateName(e.target.value)}
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="file" id="r2" />
+                  <Label htmlFor="r2">Adjuntar Archivo HTML</Label>
+                </div>
+              </RadioGroup>
+
+              {bodyType === 'text' && (
+                <Textarea 
+                  placeholder="Escribe el cuerpo del correo aquí... (soporta HTML)" 
+                  value={emailBody}
+                  onChange={(e) => setEmailBody(e.target.value)}
+                  rows={15}
+                />
+              )}
+
+              {bodyType === 'file' && (
+                <div className="space-y-4">
+                  <Input 
+                    type="file" 
+                    accept=".html,text/html" 
+                    onChange={(e) => setHtmlFile(e.target.files ? e.target.files[0] : null)}
+                  />
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="save-template" 
+                      checked={saveAsTemplate}
+                      onCheckedChange={(checked) => setSaveAsTemplate(checked as boolean)}
                     />
+                    <Label htmlFor="save-template">Guardar como plantilla</Label>
                   </div>
-                )}
-              </div>
-            )}
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button onClick={handleScheduleCampaign} disabled={isSending}>
-            {isSending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isSending ? "Enviando..." : "Enviar Campaña de Prueba"}
-          </Button>
-        </CardFooter>
-      </Card>
+                  {saveAsTemplate && (
+                    <div className="space-y-2">
+                      <Label htmlFor="template-name">Nombre de la Plantilla</Label>
+                      <Input 
+                        id="template-name"
+                        placeholder="Ej: Plantilla de Bienvenida"
+                        value={templateName}
+                        onChange={(e) => setTemplateName(e.target.value)}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button onClick={handleScheduleCampaign} disabled={isSending}>
+              {isSending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSending ? "Enviando..." : "Enviar Campaña de Prueba"}
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card className="sticky top-24">
+          <CardHeader>
+            <CardTitle>Vista Previa del Correo</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="aspect-[9/12] w-full bg-muted rounded-lg overflow-hidden border">
+              <iframe
+                srcDoc={previewContent}
+                title="Email Preview"
+                className="w-full h-full border-0"
+                sandbox="allow-scripts"
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       <Card>
         <CardHeader>
