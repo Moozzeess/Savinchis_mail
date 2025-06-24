@@ -27,11 +27,18 @@ import { es } from "date-fns/locale";
 import { campaigns } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
 import { sendTestCampaign } from "@/app/actions/send-campaign-action";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 export default function CampaignsPage() {
   const [date, setDate] = useState<Date>();
   const [isSending, setIsSending] = useState(false);
   const { toast } = useToast();
+  const [bodyType, setBodyType] = useState<'text' | 'file'>('text');
+  const [emailBody, setEmailBody] = useState('');
+  const [htmlFile, setHtmlFile] = useState<File | null>(null);
 
   const handleScheduleCampaign = async () => {
     if (!date) {
@@ -43,9 +50,53 @@ export default function CampaignsPage() {
       return;
     }
 
+    let emailHtml = '';
+
+    if (bodyType === 'text') {
+      if (!emailBody.trim()) {
+        toast({
+          title: 'Cuerpo del correo vacío',
+          description: 'Por favor, escribe el contenido del correo.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      emailHtml = emailBody;
+    } else {
+      if (!htmlFile) {
+        toast({
+          title: 'Archivo no seleccionado',
+          description: 'Por favor, selecciona un archivo HTML.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      if (!htmlFile.name.toLowerCase().endsWith('.html')) {
+        toast({
+            title: 'Archivo no válido',
+            description: 'Por favor, selecciona un archivo con extensión .html',
+            variant: 'destructive',
+        });
+        return;
+      }
+
+      try {
+        emailHtml = await htmlFile.text();
+      } catch (error) {
+        toast({
+          title: 'Error al leer el archivo',
+          description: 'No se pudo leer el contenido del archivo HTML.',
+          variant: 'destructive',
+        });
+        return;
+      }
+    }
+
+
     setIsSending(true);
     try {
-      await sendTestCampaign();
+      await sendTestCampaign(emailHtml);
       toast({
         title: "Campaña de prueba enviada",
         description: "Se ha enviado un correo de prueba a los contactos suscritos.",
@@ -81,31 +132,64 @@ export default function CampaignsPage() {
         <CardHeader>
           <CardTitle>Programar Nueva Campaña</CardTitle>
           <CardDescription>
-            Selecciona una fecha y hora para tu próxima campaña. Esta es una UI
-            de ejemplo que enviará una campaña de prueba.
+            Selecciona una fecha, define el cuerpo del correo y envía una campaña de prueba.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className="w-[280px] justify-start text-left font-normal"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                initialFocus
-                locale={es}
+        <CardContent className="space-y-4">
+          <div>
+            <Label className="mb-2 block">Fecha de envío</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className="w-[280px] justify-start text-left font-normal"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  initialFocus
+                  locale={es}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          
+          <div>
+            <Label className="mb-2 block">Cuerpo del Mensaje</Label>
+            <RadioGroup defaultValue="text" onValueChange={(value) => setBodyType(value as 'text' | 'file')} className="flex gap-4 mb-2">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="text" id="r1" />
+                <Label htmlFor="r1">Texto Plano</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="file" id="r2" />
+                <Label htmlFor="r2">Adjuntar Archivo HTML</Label>
+              </div>
+            </RadioGroup>
+
+            {bodyType === 'text' && (
+              <Textarea 
+                placeholder="Escribe el cuerpo del correo aquí..." 
+                value={emailBody}
+                onChange={(e) => setEmailBody(e.target.value)}
+                rows={10}
               />
-            </PopoverContent>
-          </Popover>
+            )}
+
+            {bodyType === 'file' && (
+              <Input 
+                type="file" 
+                accept=".html,text/html" 
+                onChange={(e) => setHtmlFile(e.target.files ? e.target.files[0] : null)}
+              />
+            )}
+          </div>
         </CardContent>
         <CardFooter>
           <Button onClick={handleScheduleCampaign} disabled={isSending}>

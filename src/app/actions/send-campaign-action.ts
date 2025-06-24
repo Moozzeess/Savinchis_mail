@@ -3,7 +3,7 @@
 import nodemailer from 'nodemailer';
 import { contacts } from '@/lib/data';
 
-export async function sendTestCampaign() {
+export async function sendTestCampaign(emailHtml: string) {
   const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
 
   if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS) {
@@ -31,11 +31,6 @@ export async function sendTestCampaign() {
   }
 
   const emailSubject = 'Nuestra Campaña de Prueba';
-  const emailHtml = `
-    <h1>¡Hola!</h1>
-    <p>Esta es una campaña de correo electrónico de prueba desde EmailCraft Lite.</p>
-    <p>Gracias por ser parte de nuestra comunidad.</p>
-  `;
 
   const sendPromises = subscribedContacts.map((contact) => {
     return transporter.sendMail({
