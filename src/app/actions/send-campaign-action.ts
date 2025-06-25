@@ -10,26 +10,21 @@ import * as XLSX from 'xlsx';
 
 /**
  * @fileoverview Acción de servidor para enviar una campaña de correo electrónico.
- * Obtiene destinatarios desde una consulta a la base de datos MySQL, un archivo CSV,
- * o una consulta SQL manual y envía el correo utilizando la API de Microsoft Graph.
+ * Obtiene destinatarios desde una fuente de datos y los envía por lotes
+ * para respetar los límites de la API, utilizando Microsoft Graph.
  */
 
-/**
- * Payload para la acción de enviar campaña.
- */
 interface SendCampaignPayload {
   subject: string;
   htmlBody: string;
   recipientData: {
     type: 'date' | 'csv' | 'sql' | 'excel';
-    value: string; // Contendrá la fecha, el contenido del CSV/Excel o la consulta SQL
+    value: string;
   };
 }
 
 /**
  * Obtiene una lista de destinatarios desde la fuente especificada.
- * @param recipientData - El objeto que define la fuente de los destinatarios.
- * @returns Una promesa que se resuelve con un array de objetos de destinatarios.
  */
 async function getRecipients(
   recipientData: SendCampaignPayload['recipientData']
@@ -48,9 +43,7 @@ async function getRecipients(
       return records.map((record: any) => ({ email: record.email })).filter((r: {email: string}) => r.email && r.email.includes('@'));
     } catch (error) {
       console.error('Error al procesar el archivo CSV:', error);
-      throw new Error(
-        `Error al procesar el archivo CSV: ${(error as Error).message}`
-      );
+      throw new Error(`Error al procesar el archivo CSV: ${(error as Error).message}`);
     }
   }
 
@@ -61,34 +54,19 @@ async function getRecipients(
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
-
-      if (jsonData.length === 0) {
-        return [];
-      }
-
-      const header = Object.keys(jsonData[0]);
-      const emailKey = header.find(key => key.toLowerCase() === 'email');
-
-      if (!emailKey) {
-        throw new Error('La columna "email" no se encontró en el archivo Excel.');
-      }
-
-      return jsonData
-        .map(row => ({ email: row[emailKey] }))
-        .filter(r => r.email && typeof r.email === 'string' && r.email.includes('@'));
+      if (jsonData.length === 0) return [];
+      const emailKey = Object.keys(jsonData[0]).find(key => key.toLowerCase() === 'email');
+      if (!emailKey) throw new Error('La columna "email" no se encontró en el archivo Excel.');
+      return jsonData.map(row => ({ email: row[emailKey] })).filter(r => r.email && typeof r.email === 'string' && r.email.includes('@'));
     } catch (error) {
       console.error('Error al procesar el archivo Excel:', error);
       throw new Error(`Error al procesar el archivo Excel: ${(error as Error).message}`);
     }
   }
 
-  const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } =
-    process.env;
-
+  const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } = process.env;
   if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
-    throw new Error(
-      'Faltan las variables de entorno de la base de datos. Por favor, configúralas.'
-    );
+    throw new Error('Faltan las variables de entorno de la base de datos. Por favor, configúralas.');
   }
 
   let connection;
@@ -121,7 +99,6 @@ async function getRecipients(
 
     const [rows] = await connection.execute(sql_query, params);
     return (rows as { email: string }[]).filter(row => row.email);
-
   } catch (error) {
     console.error('Error al conectar o consultar la base de datos:', error);
     throw new Error('No se pudo obtener los contactos de la base de datos.');
@@ -130,115 +107,80 @@ async function getRecipients(
   }
 }
 
-/**
- * Obtiene un cliente de Microsoft Graph autenticado.
- * @returns Un cliente de Graph listo para usar.
- */
 async function getGraphClient() {
     const { GRAPH_CLIENT_ID, GRAPH_TENANT_ID, GRAPH_CLIENT_SECRET } = process.env;
     if (!GRAPH_CLIENT_ID || !GRAPH_TENANT_ID || !GRAPH_CLIENT_SECRET) {
         throw new Error('Faltan las variables de entorno de Microsoft Graph. Por favor, configúralas.');
     }
-
-    const credential = new ClientSecretCredential(
-        GRAPH_TENANT_ID,
-        GRAPH_CLIENT_ID,
-        GRAPH_CLIENT_SECRET
-    );
-
-    const authProvider = new TokenCredentialAuthenticationProvider(credential, {
-        scopes: ['https://graph.microsoft.com/.default'],
-    });
-
-    const client = Client.initWithMiddleware({
-        authProvider: authProvider,
-    });
-
-    return client;
+    const credential = new ClientSecretCredential(GRAPH_TENANT_ID, GRAPH_CLIENT_ID, GRAPH_CLIENT_SECRET);
+    const authProvider = new TokenCredentialAuthenticationProvider(credential, { scopes: ['https://graph.microsoft.com/.default'] });
+    return Client.initWithMiddleware({ authProvider });
 }
 
-/**
- * Envía una campaña de correo utilizando la API de Microsoft Graph.
- * @param payload - Los detalles de la campaña.
- * @returns Un objeto indicando el resultado de la operación.
- * @throws Arrojará un error si la configuración o el proceso de envío fallan.
- */
+const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
 export async function sendCampaign(payload: SendCampaignPayload) {
   const { subject, htmlBody, recipientData } = payload;
   const startTime = Date.now();
 
-  const { GRAPH_USER_MAIL } = process.env;
-  if(!GRAPH_USER_MAIL){
-      throw new Error('Falta la variable de entorno GRAPH_USER_MAIL. Por favor, configúrala.');
+  const { GRAPH_USER_MAIL, GRAPH_BATCH_SIZE, GRAPH_DELAY_SECONDS } = process.env;
+  if (!GRAPH_USER_MAIL) {
+    throw new Error('Falta la variable de entorno GRAPH_USER_MAIL. Por favor, configúrala.');
   }
 
+  const BATCH_SIZE = parseInt(GRAPH_BATCH_SIZE || '50', 10);
+  const DELAY_MS = parseInt(GRAPH_DELAY_SECONDS || '1', 10) * 1000;
+
   const recipients = await getRecipients(recipientData);
-  
   if (recipients.length === 0) {
-    return { 
-        success: true, 
-        message: `No se encontraron destinatarios. No se enviaron correos.`,
-        stats: {
-            sentCount: 0,
-            failedCount: 0,
-            totalRecipients: 0,
-            duration: 0
-        } 
-    };
+    return { success: true, message: `No se encontraron destinatarios. No se enviaron correos.`, stats: { sentCount: 0, failedCount: 0, totalRecipients: 0, duration: 0 } };
   }
 
   const totalRecipients = recipients.length;
   const graphClient = await getGraphClient();
-
   let sentCount = 0;
   let failedCount = 0;
 
-  for (const contact of recipients) {
-    const message = {
-      subject: subject,
-      body: {
-        contentType: 'HTML',
-        content: htmlBody,
-      },
-      toRecipients: [
-        {
-          emailAddress: {
-            address: contact.email,
-          },
-        },
-      ],
-    };
-    
-    try {
-      await graphClient.api(`/users/${GRAPH_USER_MAIL}/sendMail`).post({
-          message: message,
-          saveToSentItems: 'true',
-      });
-      sentCount++;
-    } catch (error) {
-      failedCount++;
-      // El error de Graph puede ser muy verboso. Extraemos el mensaje si es posible.
-      const errorMessage = (error as any)?.body ? JSON.parse((error as any).body).error.message : (error as Error).message;
-      console.error(`Error al enviar correo a ${contact.email} usando Graph:`, errorMessage);
+  const recipientBatches = [];
+  for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
+    recipientBatches.push(recipients.slice(i, i + BATCH_SIZE));
+  }
+
+  for (const [index, batch] of recipientBatches.entries()) {
+    const sendPromises = batch.map(contact => {
+      const message = {
+        subject: subject,
+        body: { contentType: 'HTML', content: htmlBody },
+        toRecipients: [{ emailAddress: { address: contact.email } }],
+      };
+      return graphClient.api(`/users/${GRAPH_USER_MAIL}/sendMail`).post({ message, saveToSentItems: 'true' });
+    });
+
+    const results = await Promise.allSettled(sendPromises);
+
+    results.forEach((result, i) => {
+      if (result.status === 'fulfilled') {
+        sentCount++;
+      } else {
+        failedCount++;
+        const contactEmail = batch[i].email;
+        const errorMessage = (result.reason as any)?.body ? JSON.parse((result.reason as any).body).error.message : (result.reason as Error).message;
+        console.error(`Error al enviar correo a ${contactEmail} usando Graph:`, errorMessage);
+      }
+    });
+
+    if (index < recipientBatches.length - 1) {
+      await delay(DELAY_MS);
     }
   }
   
   const endTime = Date.now();
-  const duration = (endTime - startTime) / 1000; // Duración en segundos
+  const duration = (endTime - startTime) / 1000;
 
   let message = `Campaña enviada con Microsoft Graph. Enviados: ${sentCount}. Fallidos: ${failedCount}.`;
   if (failedCount > 0) {
-     message += ' Revisa la consola del servidor para más detalles sobre los errores.'
+    message += ' Revisa la consola del servidor para más detalles sobre los errores.';
   }
 
-  return { 
-    success: true, 
-    message: message,
-    stats: {
-        sentCount,
-        failedCount,
-        totalRecipients,
-        duration,
-    }
-  };
+  return { success: true, message, stats: { sentCount, failedCount, totalRecipients, duration } };
 }

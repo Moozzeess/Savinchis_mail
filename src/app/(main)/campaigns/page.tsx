@@ -458,29 +458,6 @@ export default function CampaignsPage() {
               </CardContent>
             </Card>
           )}
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Límites de Envío SMTP</CardTitle>
-              <CardDescription>
-                Restricciones para evitar el bloqueo por spam.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">
-                  Límite Diario de Correos
-                </span>
-                <span className="font-mono p-1 bg-muted rounded">5,000</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">
-                  Límite por Ejecución
-                </span>
-                <span className="font-mono p-1 bg-muted rounded">200</span>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
 

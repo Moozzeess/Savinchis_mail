@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Database, Info } from "lucide-react";
+import { Database, Info, Send } from "lucide-react";
 
 /**
  * Página de Ajustes.
@@ -87,6 +87,36 @@ export default function SettingsPage() {
         </CardFooter>
       </Card>
       
+      <Card>
+        <CardHeader>
+          <CardTitle>Límites y Velocidad de Envío</CardTitle>
+          <CardDescription>
+            Configura los límites para el envío de correos a través de Microsoft Graph para cumplir con las políticas de uso.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="batch-size">Correos por Lote</Label>
+              <Input id="batch-size" placeholder="50" defaultValue={process.env.GRAPH_BATCH_SIZE || '50'} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="batch-delay">Retraso entre Lotes (segundos)</Label>
+              <Input id="batch-delay" placeholder="1" defaultValue={process.env.GRAPH_DELAY_SECONDS || '1'} />
+            </div>
+          </div>
+           <p className="text-sm text-muted-foreground pt-2">
+            Estos valores se leen de las variables de entorno `GRAPH_BATCH_SIZE` y `GRAPH_DELAY_SECONDS`. Para guardarlos permanentemente, debes actualizar tu archivo `.env`.
+            </p>
+        </CardContent>
+        <CardFooter>
+          <Button>
+            <Send className="mr-2" />
+            Guardar Ajustes de Envío
+          </Button>
+        </CardFooter>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Integración con Microsoft Graph</CardTitle>
