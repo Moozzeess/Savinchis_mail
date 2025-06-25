@@ -31,9 +31,12 @@ async function getGraphClient() {
  * @returns Una promesa que se resuelve con una lista de correos enviados.
  */
 export async function getSentEmailsAction(): Promise<SentEmail[]> {
-  const { GRAPH_USER_MAIL } = process.env;
-  if (!GRAPH_USER_MAIL) {
-    throw new Error('Falta la variable de entorno GRAPH_USER_MAIL.');
+  const { GRAPH_USER_MAIL, GRAPH_CLIENT_ID, GRAPH_TENANT_ID, GRAPH_CLIENT_SECRET } = process.env;
+
+  // If Graph is not configured, silently return an empty array.
+  // This prevents the page from crashing if the user hasn't set up the .env file yet.
+  if (!GRAPH_USER_MAIL || !GRAPH_CLIENT_ID || !GRAPH_TENANT_ID || !GRAPH_CLIENT_SECRET) {
+    return [];
   }
   
   try {
