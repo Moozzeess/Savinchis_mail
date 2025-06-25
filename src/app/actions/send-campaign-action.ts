@@ -21,6 +21,9 @@ interface SendCampaignPayload {
     type: 'date' | 'csv' | 'sql' | 'excel';
     value: string;
   };
+  batchSize: number;
+  emailDelay: number; // ms
+  batchDelay: number; // s
 }
 
 /**
@@ -120,16 +123,13 @@ async function getGraphClient() {
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 export async function sendCampaign(payload: SendCampaignPayload) {
-  const { subject, htmlBody, recipientData } = payload;
+  const { subject, htmlBody, recipientData, batchSize, emailDelay, batchDelay } = payload;
   const startTime = Date.now();
 
-  const { GRAPH_USER_MAIL, GRAPH_BATCH_SIZE, GRAPH_DELAY_SECONDS } = process.env;
+  const { GRAPH_USER_MAIL } = process.env;
   if (!GRAPH_USER_MAIL) {
     throw new Error('Falta la variable de entorno GRAPH_USER_MAIL. Por favor, configúrala.');
   }
-
-  const BATCH_SIZE = parseInt(GRAPH_BATCH_SIZE || '50', 10);
-  const DELAY_MS = parseInt(GRAPH_DELAY_SECONDS || '1', 10) * 1000;
 
   const recipients = await getRecipients(recipientData);
   if (recipients.length === 0) {
@@ -142,42 +142,40 @@ export async function sendCampaign(payload: SendCampaignPayload) {
   let failedCount = 0;
 
   const recipientBatches = [];
-  for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
-    recipientBatches.push(recipients.slice(i, i + BATCH_SIZE));
+  for (let i = 0; i < recipients.length; i += batchSize) {
+    recipientBatches.push(recipients.slice(i, i + batchSize));
   }
 
   for (const [index, batch] of recipientBatches.entries()) {
-    const sendPromises = batch.map(contact => {
-      const message = {
-        subject: subject,
-        body: { contentType: 'HTML', content: htmlBody },
-        toRecipients: [{ emailAddress: { address: contact.email } }],
-      };
-      return graphClient.api(`/users/${GRAPH_USER_MAIL}/sendMail`).post({ message, saveToSentItems: 'true' });
-    });
-
-    const results = await Promise.allSettled(sendPromises);
-
-    results.forEach((result, i) => {
-      if (result.status === 'fulfilled') {
-        sentCount++;
-      } else {
-        failedCount++;
-        const contactEmail = batch[i].email;
-        const errorMessage = (result.reason as any)?.body ? JSON.parse((result.reason as any).body).error.message : (result.reason as Error).message;
-        console.error(`Error al enviar correo a ${contactEmail} usando Graph:`, errorMessage);
-      }
-    });
-
+    for (const contact of batch) {
+        try {
+            const message = {
+                subject: subject,
+                body: { contentType: 'HTML', content: htmlBody },
+                toRecipients: [{ emailAddress: { address: contact.email } }],
+            };
+            await graphClient.api(`/users/${GRAPH_USER_MAIL}/sendMail`).post({ message, saveToSentItems: 'true' });
+            sentCount++;
+        } catch (error) {
+            failedCount++;
+            const errorMessage = (error as any)?.body ? JSON.parse((error as any).body).error.message : (error as Error).message;
+            console.error(`Error al enviar correo a ${contact.email} usando Graph:`, errorMessage);
+        }
+        
+        // Delay between emails inside a batch
+        if(emailDelay > 0) await delay(emailDelay);
+    }
+    
+    // Delay between batches
     if (index < recipientBatches.length - 1) {
-      await delay(DELAY_MS);
+      if(batchDelay > 0) await delay(batchDelay * 1000);
     }
   }
   
   const endTime = Date.now();
   const duration = (endTime - startTime) / 1000;
 
-  let message = `Campaña enviada con Microsoft Graph. Enviados: ${sentCount}. Fallidos: ${failedCount}.`;
+  let message = `Envío completado con Microsoft Graph. Enviados: ${sentCount}. Fallidos: ${failedCount}.`;
   if (failedCount > 0) {
     message += ' Revisa la consola del servidor para más detalles sobre los errores.';
   }

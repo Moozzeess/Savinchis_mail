@@ -15,11 +15,12 @@ import {
   FileText,
   Award,
   ClipboardList,
+  Send,
 } from "lucide-react";
 
 const links = [
   { href: "/dashboard", label: "Panel", icon: Home },
-  { href: "/campaigns", label: "Campañas", icon: Mails },
+  { href: "/campaigns", label: "Gestor de Envíos", icon: Send },
   { href: "/contacts", label: "Contactos", icon: Users },
   { href: "/templates", label: "Plantillas", icon: FileText },
   { href: "/analytics", label: "Analíticas", icon: BarChart3 },
