@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -92,9 +93,11 @@ export default function SendPage() {
   const [selectedEventId, setSelectedEventId] = useState<string>("");
   const [selectedSurveyId, setSelectedSurveyId] = useState<string>("");
   const [attachmentName, setAttachmentName] = useState<string | null>(null);
+  const [certificatePreview, setCertificatePreview] = useState<string | null>(null);
 
   useEffect(() => {
     setAttachmentName(null);
+    setCertificatePreview(null);
     if (contentType === "template" && selectedTemplateId) {
         const template = templates.find(t => t.id === selectedTemplateId);
         if (template) {
@@ -119,6 +122,10 @@ export default function SendPage() {
           setSubject(`Tu certificado del evento: ${event.name}`);
           setEmailBody(`<h1>¡Felicidades! Aquí está tu certificado</h1><p>Hola {{contact.name}},</p><p>Gracias por tu participación en el evento "${event.name}" el {{event.date}}. Adjuntamos tu certificado de asistencia.</p><p>¡Esperamos verte de nuevo!</p>`);
           setAttachmentName(`certificado-${event.name.replace(/\s/g, '_')}.png`);
+          const template = certificateTemplates[selectedEventId as keyof typeof certificateTemplates];
+          if (template) {
+            setCertificatePreview(`data:image/png;base64,${template}`);
+          }
       }
     }
   }, [contentType, selectedTemplateId, selectedEventId, selectedSurveyId]);
@@ -410,6 +417,18 @@ export default function SendPage() {
               <div className="aspect-[9/12] w-full bg-muted rounded-lg overflow-hidden border">
                 <iframe srcDoc={emailBody} title="Email Preview" className="w-full h-full border-0" sandbox="allow-scripts" />
               </div>
+              {certificatePreview && (
+                <div className="mt-4">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-2">Vista Previa del Certificado Adjunto</h3>
+                  <div className="aspect-[11/8.5] w-full bg-card-foreground/5 border rounded-lg overflow-hidden p-2">
+                    <img
+                      src={certificatePreview}
+                      alt="Vista previa del certificado"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -430,3 +449,4 @@ export default function SendPage() {
     </div>
   );
 }
+
