@@ -3,15 +3,15 @@
 La página principal de esta aplicación web parece ser un panel de control o un punto de partida desde el cual los usuarios pueden acceder a las diferentes funcionalidades para gestionar sus comunicaciones y actividades.
 
 Al visitar la página, el usuario probablemente verá una interfaz organizada con opciones para navegar a las distintas secciones, que incluyen:
-      Historial de Contactos: Donde pueden ver y gestionar sus listas de contactos utilizadas anteriormente.
-      Campañas: Un área para crear, enviar y posiblemente dar seguimiento a las campañas de comunicación (como envíos masivos de correos).
-      Eventos: Una sección para organizar eventos, gestionar participantes y posiblemente crear certificados.
-      Encuestas: Un lugar para diseñar, lanzar y analizar encuestas para su audiencia.
-      Plantillas: Una herramienta para crear y guardar diseños reutilizables (para correos, certificados, etc.).
-      Analíticas: Probablemente un área para visualizar datos sobre el rendimiento de sus campañas, eventos o encuestas.
-      Buzón: Posiblemente para gestionar respuestas o interacciones entrantes.
-      Configuraciones: Opciones para personalizar su cuenta o la aplicación.
-      Dashboard: Un resumen general de la actividad y estadísticas importantes.
+      * Historial de Contactos: Donde pueden ver y gestionar sus listas de contactos utilizadas anteriormente.
+      * Campañas: Un área para crear, enviar y posiblemente dar seguimiento a las campañas de comunicación (como envíos masivos de correos).
+      * Eventos: Una sección para organizar eventos, gestionar participantes y posiblemente crear certificados.
+      * Encuestas: Un lugar para diseñar, lanzar y analizar encuestas para su audiencia.
+      * Plantillas: Una herramienta para crear y guardar diseños reutilizables (para correos, certificados, etc.).
+      * Analíticas: Probablemente un área para visualizar datos sobre el rendimiento de sus campañas, eventos o encuestas.
+      * Buzón: Posiblemente para gestionar respuestas o interacciones entrantes.
+      * Configuraciones: Opciones para personalizar su cuenta o la aplicación.
+      * Dashboard: Un resumen general de la actividad y estadísticas importantes.
       
 La página sirve como un centro de mando donde el usuario puede iniciar y supervisar sus actividades de comunicación, desde la preparación de contactos hasta el análisis de los resultados. 
       
