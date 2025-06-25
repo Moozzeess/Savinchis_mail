@@ -29,12 +29,18 @@ import {
   MailPlus,
   Send,
   Paperclip,
+  Reply,
+  ReplyAll,
+  Forward,
+  MoreHorizontal,
+  File,
 } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Calendar } from "@/components/ui/calendar";
 import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
@@ -412,25 +418,65 @@ export default function SendPage() {
 
         <div className="sticky top-24 space-y-8">
           <Card>
-            <CardHeader><CardTitle>Vista Previa del Correo</CardTitle></CardHeader>
+            <CardHeader>
+                <CardTitle>Vista Previa del Correo</CardTitle>
+                <CardDescription>Así es como los destinatarios verán tu correo.</CardDescription>
+            </CardHeader>
             <CardContent>
-              <div className="aspect-[9/12] w-full bg-muted rounded-lg overflow-hidden border">
-                <iframe srcDoc={emailBody} title="Email Preview" className="w-full h-full border-0" sandbox="allow-scripts" />
-              </div>
-              {certificatePreview && (
-                <div className="mt-4">
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">Vista Previa del Certificado Adjunto</h3>
-                  <div className="aspect-[11/8.5] w-full bg-card-foreground/5 border rounded-lg overflow-hidden p-2">
-                    <img
-                      src={certificatePreview}
-                      alt="Vista previa del certificado"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
+                <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden">
+                    {/* Header */}
+                    <div className="flex items-center justify-between p-3 border-b bg-muted/30">
+                        <div className="flex items-center gap-3">
+                            <Avatar className="h-8 w-8">
+                                <AvatarFallback>AP</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <p className="font-semibold text-sm">Tu Nombre (Remitente)</p>
+                                <p className="text-xs text-muted-foreground">Para: destinatario@ejemplo.com</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1 text-muted-foreground">
+                            <span className="text-xs mr-2">Ahora</span>
+                            <Button variant="ghost" size="icon" className="size-8"><Reply className="size-4" /></Button>
+                            <Button variant="ghost" size="icon" className="size-8"><ReplyAll className="size-4" /></Button>
+                            <Button variant="ghost" size="icon" className="size-8"><Forward className="size-4" /></Button>
+                            <Button variant="ghost" size="icon" className="size-8"><MoreHorizontal className="size-4" /></Button>
+                        </div>
+                    </div>
+
+                    {/* Subject and Attachments */}
+                    <div className="p-4 border-b space-y-4">
+                        <h2 className="text-xl font-bold">{subject || 'Asunto del correo'}</h2>
+
+                        {attachmentName && (
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <p className="text-sm font-medium">1 archivo adjunto</p>
+                                <span className="text-sm text-muted-foreground">(~256 KB)</span>
+                            </div>
+                            <div className="mt-2 flex items-center gap-2 rounded-md border p-2 max-w-xs bg-muted/30">
+                                <File className="h-6 w-6 text-primary flex-shrink-0" />
+                                <div className="truncate">
+                                    <p className="text-sm font-medium truncate">{attachmentName}</p>
+                                </div>
+                            </div>
+                        </div>
+                        )}
+                    </div>
+
+                    {/* Body */}
+                    <div className="bg-white w-full">
+                        <iframe srcDoc={emailBody} title="Email Preview" className="w-full h-[600px] border-0" sandbox="allow-scripts" />
+                    </div>
+
+                    {/* Footer actions */}
+                    <div className="p-2 border-t flex items-center gap-2 bg-muted/30">
+                        <Button variant="outline"><Reply className="mr-2"/> Responder</Button>
+                        <Button variant="outline"><Forward className="mr-2"/> Reenviar</Button>
+                    </div>
                 </div>
-              )}
             </CardContent>
-          </Card>
+        </Card>
 
           {lastRunStats && (
             <Card>
@@ -449,4 +495,3 @@ export default function SendPage() {
     </div>
   );
 }
-
