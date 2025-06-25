@@ -27,6 +27,7 @@ import {
   TrendingUp,
   Info,
   MailPlus,
+  Send,
 } from "lucide-react";
 import {
   Popover,
@@ -40,6 +41,7 @@ import { es } from "date-fns/locale";
 import { templates, events, surveys, certificateTemplates } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
 import { sendCampaign } from "@/app/actions/send-campaign-action";
+import { sendTestEmailAction } from "@/app/actions/send-test-email-action";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -66,6 +68,8 @@ interface CampaignStats {
 export default function SendPage() {
   const [date, setDate] = useState<Date>();
   const [isSending, setIsSending] = useState(false);
+  const [isSendingTest, setIsSendingTest] = useState(false);
+  const [testEmail, setTestEmail] = useState("usuario@email.com");
   const { toast } = useToast();
 
   const [subject, setSubject] = useState("");
@@ -176,6 +180,43 @@ export default function SendPage() {
       toast({ title: "Archivo no válido", description: "Por favor, selecciona un archivo .html.", variant: "destructive" });
     }
     e.target.value = "";
+  };
+
+  const handleSendTestEmail = async () => {
+    if (!testEmail.trim() || !subject.trim() || !emailBody.trim()) {
+      toast({ title: "Faltan datos", description: "Asegúrate de que el asunto, el cuerpo y el correo de prueba estén completos.", variant: "destructive" });
+      return;
+    }
+
+    setIsSendingTest(true);
+    try {
+      let attachment;
+      if (contentType === 'certificate' && selectedEventId) {
+          const template = certificateTemplates[selectedEventId as keyof typeof certificateTemplates];
+          const event = events.find(e => e.id === selectedEventId);
+          if (template && event) {
+              attachment = {
+                  content: template,
+                  filename: `certificado-${event.name.replace(/ /g, '_')}.png`,
+                  contentType: 'image/png'
+              }
+          }
+      }
+
+      await sendTestEmailAction({
+        subject,
+        htmlBody: emailBody,
+        recipientEmail: testEmail,
+        attachment,
+        eventId: selectedEventId,
+      });
+
+      toast({ title: "Correo de prueba enviado", description: `Se ha enviado un correo de prueba a ${testEmail}.` });
+    } catch (error) {
+      toast({ title: "Error al enviar prueba", description: (error as Error).message, variant: "destructive" });
+    } finally {
+      setIsSendingTest(false);
+    }
   };
 
   const handleSendCampaign = async () => {
@@ -306,6 +347,27 @@ export default function SendPage() {
                 <TabsContent value="sql" className="mt-4 space-y-2 border-t pt-4"><Label htmlFor="sql-query">Escribe tu consulta SQL</Label><Textarea id="sql-query" value={sqlQuery} onChange={(e) => setSqlQuery(e.target.value)} rows={4} /><p className="text-sm text-muted-foreground">La consulta debe devolver una columna "email".</p></TabsContent>
               </Tabs>
             </div>
+
+            <Card className="bg-muted/50">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2"><Send /> Envío de Prueba</CardTitle>
+                <CardDescription>
+                  Envía una versión de prueba de este correo a una dirección específica antes del envío masivo.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-2 items-end">
+                  <div className="flex-grow space-y-2">
+                    <Label htmlFor="test-email">Correo de Prueba</Label>
+                    <Input id="test-email" type="email" placeholder="tu-correo@ejemplo.com" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} />
+                  </div>
+                  <Button onClick={handleSendTestEmail} variant="secondary" disabled={isSendingTest || isSending}>
+                    {isSendingTest ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Enviar Prueba
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
             
             <div className="space-y-4 rounded-lg border p-4">
                 <h3 className="text-md font-semibold">Control de Envíos</h3>
@@ -325,7 +387,7 @@ export default function SendPage() {
 
           </CardContent>
           <CardFooter>
-            <Button onClick={handleSendCampaign} disabled={isSending} className="w-full">
+            <Button onClick={handleSendCampaign} disabled={isSending || isSendingTest} className="w-full">
               <MailPlus className="mr-2 h-4 w-4" />
               {isSending ? "Enviando..." : "Iniciar Envío Masivo"}
             </Button>
