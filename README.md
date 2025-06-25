@@ -2,7 +2,26 @@
 
 # Título del Proyecto
 
-Una descripción breve y concisa del proyecto. Explica qué hace la aplicación y cuál es su propósito principal.
+Gestión de contactos: El archivo src/app/(main)/contacts/page.tsx y el fragmento de src/lib/data.ts indican que la aplicación maneja listas de contactos, posiblemente para enviarles comunicaciones. La mención de "Historial de Contactos" y el uso de archivos o consultas sugieren la importación y gestión de bases de datos de contactos.
+
+Gestión de campañas: La existencia de archivos como src/app/(main)/campaigns/page.tsx y src/app/actions/send-campaign-action.ts sugiere que la aplicación permite crear y enviar campañas (probablemente por correo electrónico u otro medio). El fragmento de send-campaign-action.ts muestra la lógica para procesar archivos de contactos (como Excel) y conectarse a una base de datos (MySQL), lo que respalda la idea de enviar comunicaciones masivas.
+
+Eventos y certificados: La presencia de src/app/(main)/events/page.tsx, src/components/event-editor.tsx y src/components/certificate-editor.tsx indica que la aplicación podría estar relacionada con la organización de eventos y la generación o diseño de certificados para los asistentes. La sección "Diseño del Certificado" en event-editor.tsx refuerza esta idea.
+
+Plantillas y encuestas: Los archivos src/app/(main)/templates/page.tsx, src/app/(main)/surveys/page.tsx, src/components/template-editor-client.tsx y src/components/survey-editor.tsx sugieren la posibilidad de crear y utilizar plantillas (quizás para correos electrónicos o certificados) y diseñar encuestas, lo cual es común en plataformas de comunicación y marketing.
+
+Funcionalidades adicionales: Los directorios y archivos para "analytics", "dashboard", "mailbox" y "settings" sugieren que la aplicación también podría incluir características como:
+Análisis: Seguimiento del rendimiento de las campañas, eventos o encuestas.
+
+Dashboard: Un panel de control general con información resumida.
+
+Buzón/Mailbox: Posiblemente para gestionar las respuestas o interacciones relacionadas con las comunicaciones enviadas.
+
+Configuraciones: Opciones para personalizar la aplicación.
+
+Integración de IA: El directorio src/ai y archivos como optimize-email-content.ts con el uso de Genkit indican que la aplicación incorpora funcionalidades de inteligencia artificial, probablemente para optimizar el contenido de los correos electrónicos u otras comunicaciones.
+
+Tecnología: La aplicación está construida con tecnologías web modernas como Next.js, React, TypeScript, Tailwind CSS, y utiliza una base de datos MySQL.
 
 ## Descripción del Proyecto
 
