@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +27,7 @@ import {
   Info,
   MailPlus,
   Send,
+  Paperclip,
 } from "lucide-react";
 import {
   Popover,
@@ -91,8 +91,10 @@ export default function SendPage() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
   const [selectedEventId, setSelectedEventId] = useState<string>("");
   const [selectedSurveyId, setSelectedSurveyId] = useState<string>("");
+  const [attachmentName, setAttachmentName] = useState<string | null>(null);
 
   useEffect(() => {
+    setAttachmentName(null);
     if (contentType === "template" && selectedTemplateId) {
         const template = templates.find(t => t.id === selectedTemplateId);
         if (template) {
@@ -116,6 +118,7 @@ export default function SendPage() {
       if (event) {
           setSubject(`Tu certificado del evento: ${event.name}`);
           setEmailBody(`<h1>¡Felicidades! Aquí está tu certificado</h1><p>Hola {{contact.name}},</p><p>Gracias por tu participación en el evento "${event.name}" el {{event.date}}. Adjuntamos tu certificado de asistencia.</p><p>¡Esperamos verte de nuevo!</p>`);
+          setAttachmentName(`certificado-${event.name.replace(/\s/g, '_')}.png`);
       }
     }
   }, [contentType, selectedTemplateId, selectedEventId, selectedSurveyId]);
@@ -331,6 +334,12 @@ export default function SendPage() {
                   <Input id="html-upload" type="file" accept=".html" className="hidden" onChange={handleHtmlFileChange} />
                 </div>
                 <Textarea value={emailBody} onChange={(e) => setEmailBody(e.target.value)} rows={10} />
+                {attachmentName && (
+                  <div className="mt-2 flex items-center gap-2 rounded-md border bg-muted/20 p-2 text-sm text-muted-foreground">
+                    <Paperclip className="h-4 w-4 flex-shrink-0" />
+                    <span className="truncate">Adjunto: {attachmentName}</span>
+                  </div>
+                )}
               </div>
             </div>
             
