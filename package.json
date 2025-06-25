@@ -46,6 +46,7 @@
     "genkit": "^1.8.0",
     "html-to-image": "^1.11.11",
     "isomorphic-fetch": "^3.0.0",
+    "jspdf": "^2.5.1",
     "lucide-react": "^0.475.0",
     "mysql2": "^3.10.1",
     "next": "15.3.3",

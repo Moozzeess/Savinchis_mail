@@ -26,7 +26,7 @@ const links = [
   { href: "/mailbox", label: "Buzón", icon: Inbox },
   { href: "/contacts", label: "Contactos", icon: Users },
   { href: "/templates", label: "Plantillas", icon: FileText },
-  { href: "/analytics", label: "Analíticas", icon: BarChart3 },
+  { href: "/analytics", label: "Rendimiento", icon: BarChart3 },
   { href: "/events", label: "Eventos", icon: Award },
   { href: "/surveys", label: "Encuestas", icon: ClipboardList },
 ];
