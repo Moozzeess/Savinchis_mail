@@ -49,7 +49,7 @@ import { parse } from 'csv-parse/sync';
 import * as XLSX from 'xlsx';
 
 type RecipientSource = "date" | "file" | "sql";
-type ContentType = "template" | "event" | "survey" | "custom";
+type ContentType = "template" | "event" | "survey" | "custom" | "certificate";
 
 interface CampaignStats {
   sentCount: number;
@@ -107,6 +107,12 @@ export default function SendPage() {
             setSubject(`Participa en nuestra encuesta: ${survey.name}`);
             setEmailBody(`<h1>${survey.name}</h1><p>Tu opinión es importante. <a href="#">Haz clic aquí para participar</a>.</p>`);
         }
+    } else if (contentType === "certificate" && selectedEventId) {
+      const event = events.find(e => e.id === selectedEventId);
+      if (event) {
+          setSubject(`Tu certificado del evento: ${event.name}`);
+          setEmailBody(`<h1>¡Felicidades! Aquí está tu certificado</h1><p>Hola {{contact.name}},</p><p>Gracias por tu participación en el evento "${event.name}". Adjuntamos tu certificado de asistencia.</p><p>¡Esperamos verte de nuevo!</p>`);
+      }
     }
   }, [contentType, selectedTemplateId, selectedEventId, selectedSurveyId]);
 
@@ -201,9 +207,11 @@ export default function SendPage() {
         case 'template':
             return <Select onValueChange={setSelectedTemplateId}><SelectTrigger><SelectValue placeholder="Elige una plantilla..." /></SelectTrigger><SelectContent>{templates.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}</SelectContent></Select>;
         case 'event':
-            return <Select onValueChange={setSelectedEventId}><SelectTrigger><SelectValue placeholder="Elige un evento..." /></SelectTrigger><SelectContent>{events.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent></Select>;
+            return <Select onValueChange={setSelectedEventId}><SelectTrigger><SelectValue placeholder="Elige un evento para la invitación..." /></SelectTrigger><SelectContent>{events.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent></Select>;
         case 'survey':
             return <Select onValueChange={setSelectedSurveyId}><SelectTrigger><SelectValue placeholder="Elige una encuesta..." /></SelectTrigger><SelectContent>{surveys.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select>;
+        case 'certificate':
+            return <Select onValueChange={setSelectedEventId}><SelectTrigger><SelectValue placeholder="Elige un evento para el certificado..." /></SelectTrigger><SelectContent>{events.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent></Select>;
         default:
             return null;
     }
@@ -235,8 +243,9 @@ export default function SendPage() {
                         <SelectContent>
                             <SelectItem value="custom">Personalizado</SelectItem>
                             <SelectItem value="template">Usar Plantilla</SelectItem>
-                            <SelectItem value="event">Enviar sobre Evento</SelectItem>
+                            <SelectItem value="event">Invitación a Evento</SelectItem>
                             <SelectItem value="survey">Enviar Encuesta</SelectItem>
+                            <SelectItem value="certificate">Certificado de Evento</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
