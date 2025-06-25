@@ -10,30 +10,7 @@ import {
 import { PlusCircle, Edit, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-const templates = [
-  {
-    id: "1",
-    name: "Newsletter Mensual",
-    description: "Plantilla estándar para el boletín informativo de cada mes.",
-    image: "https://placehold.co/600x400.png",
-    aiHint: "abstract pattern"
-  },
-  {
-    id: "2",
-    name: "Anuncio de Producto",
-    description: "Plantilla para anunciar nuevos productos o características.",
-    image: "https://placehold.co/600x400.png",
-    aiHint: "product launch"
-  },
-  {
-    id: "3",
-    name: "Oferta Especial",
-    description: "Diseño llamativo para promociones y descuentos.",
-    image: "https://placehold.co/600x400.png",
-    aiHint: "special offer"
-  },
-];
+import { templates } from "@/lib/data";
 
 /**
  * Página de Plantillas.

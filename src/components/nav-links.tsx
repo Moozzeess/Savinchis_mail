@@ -9,18 +9,21 @@ import {
 } from "@/components/ui/sidebar";
 import {
   Home,
-  Mails,
   Users,
   BarChart3,
   FileText,
   Award,
   ClipboardList,
-  Send,
+  MailPlus,
+  Monitor,
+  Inbox,
 } from "lucide-react";
 
 const links = [
   { href: "/dashboard", label: "Panel", icon: Home },
-  { href: "/campaigns", label: "Gestor de Envíos", icon: Send },
+  { href: "/send", label: "Nuevo Correo", icon: MailPlus },
+  { href: "/campaigns", label: "Monitor de Envíos", icon: Monitor },
+  { href: "/mailbox", label: "Buzón", icon: Inbox },
   { href: "/contacts", label: "Contactos", icon: Users },
   { href: "/templates", label: "Plantillas", icon: FileText },
   { href: "/analytics", label: "Analíticas", icon: BarChart3 },

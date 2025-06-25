@@ -51,6 +51,34 @@ export const campaigns = [
 ];
 
 /**
+ * Datos de ejemplo para las plantillas de correo.
+ */
+export const templates = [
+  {
+    id: "1",
+    name: "Newsletter Mensual",
+    description: "Plantilla estándar para el boletín informativo de cada mes.",
+    image: "https://placehold.co/600x400.png",
+    aiHint: "abstract pattern"
+  },
+  {
+    id: "2",
+    name: "Anuncio de Producto",
+    description: "Plantilla para anunciar nuevos productos o características.",
+    image: "https://placehold.co/600x400.png",
+    aiHint: "product launch"
+  },
+  {
+    id: "3",
+    name: "Oferta Especial",
+    description: "Diseño llamativo para promociones y descuentos.",
+    image: "https://placehold.co/600x400.png",
+    aiHint: "special offer"
+  },
+];
+
+
+/**
  * Datos de ejemplo para los contactos.
  */
 export const contacts = [
