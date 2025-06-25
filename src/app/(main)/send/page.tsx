@@ -37,7 +37,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { templates, events, surveys } from "@/lib/data";
+import { templates, events, surveys, certificateTemplates } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
 import { sendCampaign } from "@/app/actions/send-campaign-action";
 import { Label } from "@/components/ui/label";
@@ -73,7 +73,7 @@ export default function SendPage() {
   const [recipientSource, setRecipientSource] = useState<RecipientSource>("file");
   const [fileContent, setFileContent] = useState("");
   const [uploadedFileType, setUploadedFileType] = useState<"csv" | "excel" | null>(null);
-  const [sqlQuery, setSqlQuery] = useState("SELECT email FROM contacts WHERE subscribed = TRUE;");
+  const [sqlQuery, setSqlQuery] = useState("SELECT email, name FROM contacts WHERE subscribed = TRUE;");
   const [lastRunStats, setLastRunStats] = useState<CampaignStats | null>(null);
   
   const [batchSize, setBatchSize] = useState(50);
@@ -111,7 +111,7 @@ export default function SendPage() {
       const event = events.find(e => e.id === selectedEventId);
       if (event) {
           setSubject(`Tu certificado del evento: ${event.name}`);
-          setEmailBody(`<h1>¡Felicidades! Aquí está tu certificado</h1><p>Hola {{contact.name}},</p><p>Gracias por tu participación en el evento "${event.name}". Adjuntamos tu certificado de asistencia.</p><p>¡Esperamos verte de nuevo!</p>`);
+          setEmailBody(`<h1>¡Felicidades! Aquí está tu certificado</h1><p>Hola {{contact.name}},</p><p>Gracias por tu participación en el evento "${event.name}" el {{event.date}}. Adjuntamos tu certificado de asistencia.</p><p>¡Esperamos verte de nuevo!</p>`);
       }
     }
   }, [contentType, selectedTemplateId, selectedEventId, selectedSurveyId]);
@@ -190,9 +190,35 @@ export default function SendPage() {
       case "file": recipientData = { type: uploadedFileType!, value: fileContent }; break;
       case "sql": recipientData = { type: "sql" as const, value: sqlQuery }; break;
     }
+
+    let attachment;
+    if (contentType === 'certificate' && selectedEventId) {
+        const template = certificateTemplates[selectedEventId as keyof typeof certificateTemplates];
+        const event = events.find(e => e.id === selectedEventId);
+        if (template && event) {
+            attachment = {
+                content: template,
+                filename: `certificado-${event.name.replace(/ /g, '_')}.png`,
+                contentType: 'image/png'
+            }
+        } else {
+            toast({ title: "Plantilla no encontrada", description: "No se encontró una plantilla de certificado para este evento.", variant: "destructive" });
+            return;
+        }
+    }
+
     setIsSending(true);
     try {
-      const result = await sendCampaign({ subject, htmlBody: emailBody, recipientData, batchSize, emailDelay, batchDelay });
+      const result = await sendCampaign({ 
+        subject, 
+        htmlBody: emailBody, 
+        recipientData, 
+        batchSize, 
+        emailDelay, 
+        batchDelay,
+        attachment,
+        eventId: selectedEventId
+      });
       toast({ title: "Proceso de envío finalizado", description: result.message });
       if (result.stats) setLastRunStats(result.stats);
     } catch (error) {

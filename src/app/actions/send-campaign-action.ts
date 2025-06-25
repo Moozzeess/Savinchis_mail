@@ -1,3 +1,4 @@
+
 'use server';
 
 import 'isomorphic-fetch';
@@ -7,6 +8,7 @@ import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-grap
 import mysql from 'mysql2/promise';
 import { parse } from 'csv-parse/sync';
 import * as XLSX from 'xlsx';
+import { events } from '@/lib/data';
 
 /**
  * @fileoverview Acción de servidor para enviar una campaña de correo electrónico.
@@ -24,6 +26,17 @@ interface SendCampaignPayload {
   batchSize: number;
   emailDelay: number; // ms
   batchDelay: number; // s
+  attachment?: {
+    filename: string;
+    contentType: string;
+    content: string; // base64 content
+  };
+  eventId?: string;
+}
+
+interface Recipient {
+  email: string;
+  name?: string;
 }
 
 /**
@@ -31,8 +44,13 @@ interface SendCampaignPayload {
  */
 async function getRecipients(
   recipientData: SendCampaignPayload['recipientData']
-): Promise<{ email: string }[]> {
+): Promise<Recipient[]> {
   const { type, value } = recipientData;
+
+  const findKey = (obj: object, potentialKeys: string[]) => {
+    const key = Object.keys(obj).find(k => potentialKeys.includes(k.toLowerCase()));
+    return key ? obj[key as keyof typeof obj] : undefined;
+  };
 
   if (type === 'csv') {
     try {
@@ -40,10 +58,15 @@ async function getRecipients(
         columns: true,
         skip_empty_lines: true,
       });
-      if (records.length === 0 || !('email' in records[0])) {
-        throw new Error('La columna "email" no se encontró o el archivo está vacío.');
-      }
-      return records.map((record: any) => ({ email: record.email })).filter((r: {email: string}) => r.email && r.email.includes('@'));
+      if (records.length === 0) return [];
+      
+      const emailKey = Object.keys(records[0]).find(k => k.toLowerCase() === 'email');
+      if (!emailKey) throw new Error('La columna "email" no se encontró en el archivo CSV.');
+      
+      return records.map((record: any) => ({
+        email: record[emailKey],
+        name: findKey(record, ['name', 'nombre', 'fullname', 'nombre completo']),
+      })).filter((r: Recipient) => r.email && r.email.includes('@'));
     } catch (error) {
       console.error('Error al procesar el archivo CSV:', error);
       throw new Error(`Error al procesar el archivo CSV: ${(error as Error).message}`);
@@ -58,9 +81,14 @@ async function getRecipients(
       const worksheet = workbook.Sheets[sheetName];
       const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
       if (jsonData.length === 0) return [];
+
       const emailKey = Object.keys(jsonData[0]).find(key => key.toLowerCase() === 'email');
       if (!emailKey) throw new Error('La columna "email" no se encontró en el archivo Excel.');
-      return jsonData.map(row => ({ email: row[emailKey] })).filter(r => r.email && typeof r.email === 'string' && r.email.includes('@'));
+
+      return jsonData.map(row => ({
+        email: row[emailKey],
+        name: findKey(row, ['name', 'nombre', 'fullname', 'nombre completo']),
+      })).filter(r => r.email && typeof r.email === 'string' && r.email.includes('@'));
     } catch (error) {
       console.error('Error al procesar el archivo Excel:', error);
       throw new Error(`Error al procesar el archivo Excel: ${(error as Error).message}`);
@@ -87,7 +115,7 @@ async function getRecipients(
 
     if (type === 'date') {
       sql_query = `
-        SELECT t1.email
+        SELECT t1.email, t1.nombre_completo as name
         FROM order_data AS t1 INNER JOIN order_data_online AS t2 ON t1.Ds_Merchant_Order = t2.Ds_Order
         WHERE
             t1.fecha_visita = ?
@@ -101,7 +129,7 @@ async function getRecipients(
     }
 
     const [rows] = await connection.execute(sql_query, params);
-    return (rows as { email: string }[]).filter(row => row.email);
+    return (rows as Recipient[]).filter(row => row.email);
   } catch (error) {
     console.error('Error al conectar o consultar la base de datos:', error);
     throw new Error('No se pudo obtener los contactos de la base de datos.');
@@ -123,7 +151,7 @@ async function getGraphClient() {
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 export async function sendCampaign(payload: SendCampaignPayload) {
-  const { subject, htmlBody, recipientData, batchSize, emailDelay, batchDelay } = payload;
+  const { subject, htmlBody, recipientData, batchSize, emailDelay, batchDelay, attachment, eventId } = payload;
   const startTime = Date.now();
 
   const { GRAPH_USER_MAIL } = process.env;
@@ -136,6 +164,7 @@ export async function sendCampaign(payload: SendCampaignPayload) {
     return { success: true, message: `No se encontraron destinatarios. No se enviaron correos.`, stats: { sentCount: 0, failedCount: 0, totalRecipients: 0, duration: 0 } };
   }
 
+  const event = eventId ? events.find(e => e.id === eventId) : null;
   const totalRecipients = recipients.length;
   const graphClient = await getGraphClient();
   let sentCount = 0;
@@ -149,10 +178,29 @@ export async function sendCampaign(payload: SendCampaignPayload) {
   for (const [index, batch] of recipientBatches.entries()) {
     for (const contact of batch) {
         try {
+            let finalHtmlBody = htmlBody;
+            if (contact.name) {
+              finalHtmlBody = finalHtmlBody.replace(/{{contact.name}}/g, contact.name);
+            }
+            if (event) {
+              finalHtmlBody = finalHtmlBody.replace(/{{event.date}}/g, event.date);
+            }
+            // Clean up any unreplaced placeholders
+            finalHtmlBody = finalHtmlBody.replace(/{{contact.name}}/g, '');
+            finalHtmlBody = finalHtmlBody.replace(/{{event.date}}/g, '');
+
             const message = {
                 subject: subject,
-                body: { contentType: 'HTML', content: htmlBody },
+                body: { contentType: 'HTML', content: finalHtmlBody },
                 toRecipients: [{ emailAddress: { address: contact.email } }],
+                attachments: attachment ? [
+                  {
+                      '@odata.type': '#microsoft.graph.fileAttachment',
+                      name: attachment.filename,
+                      contentType: attachment.contentType,
+                      contentBytes: attachment.content,
+                  }
+                ] : undefined,
             };
             await graphClient.api(`/users/${GRAPH_USER_MAIL}/sendMail`).post({ message, saveToSentItems: 'true' });
             sentCount++;
@@ -162,11 +210,9 @@ export async function sendCampaign(payload: SendCampaignPayload) {
             console.error(`Error al enviar correo a ${contact.email} usando Graph:`, errorMessage);
         }
         
-        // Delay between emails inside a batch
         if(emailDelay > 0) await delay(emailDelay);
     }
     
-    // Delay between batches
     if (index < recipientBatches.length - 1) {
       if(batchDelay > 0) await delay(batchDelay * 1000);
     }
