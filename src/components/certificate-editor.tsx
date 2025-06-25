@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import { toPng } from 'html-to-image';
 import { Download } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 
 type TextAlign = 'left' | 'center' | 'right';
 type FontWeight = 'normal' | 'bold' | '300' | '600';
@@ -111,7 +112,8 @@ export function CertificateEditor() {
    * Utiliza html-to-image para convertir el DOM en una imagen y la descarga.
    */
   const handleDownload = () => {
-    if (!certificateRef.current) {
+    const element = certificateRef.current;
+    if (!element) {
       toast({
         title: 'Error de referencia',
         description: 'No se pudo encontrar el elemento del certificado para descargar.',
@@ -120,15 +122,22 @@ export function CertificateEditor() {
       return;
     }
 
-    toPng(certificateRef.current, { cacheBust: true, pixelRatio: 2 })
+    toPng(element, { cacheBust: true, pixelRatio: 2 })
       .then((dataUrl) => {
-        const link = document.createElement('a');
-        link.download = 'certificado.png';
-        link.href = dataUrl;
-        link.click();
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'px',
+          // Use element's dimensions for PDF size to match aspect ratio
+          format: [element.offsetWidth, element.offsetHeight],
+        });
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('certificado.pdf');
         toast({
           title: 'Descarga Iniciada',
-          description: 'El certificado se está descargando como imagen PNG.',
+          description: 'El certificado se está descargando como archivo PDF.',
         });
       })
       .catch((err) => {

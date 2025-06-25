@@ -56,6 +56,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { parse } from 'csv-parse/sync';
 import * as XLSX from 'xlsx';
+import { jsPDF } from "jspdf";
 
 type RecipientSource = "date" | "file" | "sql";
 type ContentType = "template" | "event" | "survey" | "custom" | "certificate";
@@ -99,11 +100,9 @@ export default function SendPage() {
   const [selectedEventId, setSelectedEventId] = useState<string>("");
   const [selectedSurveyId, setSelectedSurveyId] = useState<string>("");
   const [attachmentName, setAttachmentName] = useState<string | null>(null);
-  const [certificatePreview, setCertificatePreview] = useState<string | null>(null);
 
   useEffect(() => {
     setAttachmentName(null);
-    setCertificatePreview(null);
     if (contentType === "template" && selectedTemplateId) {
         const template = templates.find(t => t.id === selectedTemplateId);
         if (template) {
@@ -127,11 +126,7 @@ export default function SendPage() {
       if (event) {
           setSubject(`Tu certificado del evento: ${event.name}`);
           setEmailBody(`<h1>¡Felicidades! Aquí está tu certificado</h1><p>Hola {{contact.name}},</p><p>Gracias por tu participación en el evento "${event.name}" el {{event.date}}. Adjuntamos tu certificado de asistencia.</p><p>¡Esperamos verte de nuevo!</p>`);
-          setAttachmentName(`certificado-${event.name.replace(/\s/g, '_')}.png`);
-          const template = certificateTemplates[selectedEventId as keyof typeof certificateTemplates];
-          if (template) {
-            setCertificatePreview(`data:image/png;base64,${template}`);
-          }
+          setAttachmentName(`certificado-${event.name.replace(/\s/g, '_')}.pdf`);
       }
     }
   }, [contentType, selectedTemplateId, selectedEventId, selectedSurveyId]);
@@ -211,10 +206,14 @@ export default function SendPage() {
           const template = certificateTemplates[selectedEventId as keyof typeof certificateTemplates];
           const event = events.find(e => e.id === selectedEventId);
           if (template && event) {
+              const pdf = new jsPDF('l', 'px', [1100, 850]);
+              const dataUrl = `data:image/png;base64,${template}`;
+              pdf.addImage(dataUrl, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+              const pdfBase64 = pdf.output('datauristring').split(',')[1];
               attachment = {
-                  content: template,
-                  filename: `certificado-${event.name.replace(/ /g, '_')}.png`,
-                  contentType: 'image/png'
+                  content: pdfBase64,
+                  filename: `certificado-${event.name.replace(/ /g, '_')}.pdf`,
+                  contentType: 'application/pdf'
               }
           }
       }
@@ -253,10 +252,14 @@ export default function SendPage() {
         const template = certificateTemplates[selectedEventId as keyof typeof certificateTemplates];
         const event = events.find(e => e.id === selectedEventId);
         if (template && event) {
+            const pdf = new jsPDF('l', 'px', [1100, 850]);
+            const dataUrl = `data:image/png;base64,${template}`;
+            pdf.addImage(dataUrl, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+            const pdfBase64 = pdf.output('datauristring').split(',')[1];
             attachment = {
-                content: template,
-                filename: `certificado-${event.name.replace(/ /g, '_')}.png`,
-                contentType: 'image/png'
+                content: pdfBase64,
+                filename: `certificado-${event.name.replace(/ /g, '_')}.pdf`,
+                contentType: 'application/pdf'
             }
         } else {
             toast({ title: "Plantilla no encontrada", description: "No se encontró una plantilla de certificado para este evento.", variant: "destructive" });
