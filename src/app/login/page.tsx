@@ -9,6 +9,7 @@ import {
 import { MicrosoftLogo } from "@/components/microsoft-logo";
 import Link from "next/link";
 import { AppLogo } from "@/components/app-logo";
+import Image from "next/image";
 
 /**
  * Página de inicio de sesión.
@@ -17,8 +18,16 @@ import { AppLogo } from "@/components/app-logo";
 export default function LoginPage() {
   return (
     <main className="flex items-center justify-center min-h-screen bg-background p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
+      <Card className="w-full max-w-sm overflow-hidden">
+        <Image
+          src="https://placehold.co/436x236.png"
+          alt="Monstruos divertidos"
+          width={436}
+          height={236}
+          className="w-full object-cover"
+          data-ai-hint="happy monsters"
+        />
+        <CardHeader className="text-center pt-6">
           <div className="flex justify-center items-center gap-2 mb-4">
             <AppLogo className="size-8 text-primary" />
             <CardTitle className="text-2xl font-headline">EmailCraft Lite</CardTitle>
