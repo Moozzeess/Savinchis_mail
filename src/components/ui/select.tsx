@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Componente de UI "Select".
+ * Muestra una lista de opciones para que el usuario elija una.
+ *
+ * @see https://ui.shadcn.com/docs/components/select
+ */
 "use client"
 
 import * as React from "react"
@@ -6,12 +12,24 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Componente raíz del selector.
+ */
 const Select = SelectPrimitive.Root
 
+/**
+ * Agrupa opciones dentro del selector.
+ */
 const SelectGroup = SelectPrimitive.Group
 
+/**
+ * Muestra el valor seleccionado.
+ */
 const SelectValue = SelectPrimitive.Value
 
+/**
+ * El botón que abre/cierra el selector.
+ */
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
@@ -67,6 +85,9 @@ const SelectScrollDownButton = React.forwardRef<
 SelectScrollDownButton.displayName =
   SelectPrimitive.ScrollDownButton.displayName
 
+/**
+ * Contenedor del contenido del selector (las opciones).
+ */
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
@@ -99,6 +120,9 @@ const SelectContent = React.forwardRef<
 ))
 SelectContent.displayName = SelectPrimitive.Content.displayName
 
+/**
+ * Etiqueta para un grupo de opciones.
+ */
 const SelectLabel = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Label>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>
@@ -111,6 +135,9 @@ const SelectLabel = React.forwardRef<
 ))
 SelectLabel.displayName = SelectPrimitive.Label.displayName
 
+/**
+ * Un elemento individual de opción en el selector.
+ */
 const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
@@ -134,6 +161,9 @@ const SelectItem = React.forwardRef<
 ))
 SelectItem.displayName = SelectPrimitive.Item.displayName
 
+/**
+ * Separador visual entre grupos de opciones.
+ */
 const SelectSeparator = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>

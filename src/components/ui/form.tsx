@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Componentes para construir formularios con validación.
+ * Integra `react-hook-form` con los componentes de UI de `shadcn/ui` para crear
+ * formularios robustos y accesibles con manejo de estado y validación.
+ *
+ * @see https://ui.shadcn.com/docs/components/form
+ */
 "use client"
 
 import * as React from "react"
@@ -15,6 +22,9 @@ import {
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 
+/**
+ * Proveedor de contexto del formulario, basado en react-hook-form.
+ */
 const Form = FormProvider
 
 type FormFieldContextValue<
@@ -28,6 +38,9 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue
 )
 
+/**
+ * Componente que conecta un campo de entrada a react-hook-form.
+ */
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
@@ -41,6 +54,9 @@ const FormField = <
   )
 }
 
+/**
+ * Hook personalizado para acceder al estado de un campo de formulario.
+ */
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext)
   const itemContext = React.useContext(FormItemContext)
@@ -72,6 +88,9 @@ const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue
 )
 
+/**
+ * Contenedor para un campo de formulario, incluyendo etiqueta, entrada y mensajes.
+ */
 const FormItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -86,6 +105,9 @@ const FormItem = React.forwardRef<
 })
 FormItem.displayName = "FormItem"
 
+/**
+ * Etiqueta para un campo de formulario.
+ */
 const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
@@ -103,6 +125,9 @@ const FormLabel = React.forwardRef<
 })
 FormLabel.displayName = "FormLabel"
 
+/**
+ * Contenedor para el componente de entrada (input, select, etc.).
+ */
 const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
   React.ComponentPropsWithoutRef<typeof Slot>
@@ -125,6 +150,9 @@ const FormControl = React.forwardRef<
 })
 FormControl.displayName = "FormControl"
 
+/**
+ * Descripción o texto de ayuda para un campo de formulario.
+ */
 const FormDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
@@ -142,6 +170,9 @@ const FormDescription = React.forwardRef<
 })
 FormDescription.displayName = "FormDescription"
 
+/**
+ * Mensaje de error o de estado para un campo de formulario.
+ */
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>

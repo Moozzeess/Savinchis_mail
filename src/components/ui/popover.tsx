@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Componente de UI "Popover".
+ * Muestra contenido enriquecido en una ventana emergente que aparece
+ * junto a un elemento disparador.
+ *
+ * @see https://ui.shadcn.com/docs/components/popover
+ */
 "use client"
 
 import * as React from "react"
@@ -5,10 +12,19 @@ import * as PopoverPrimitive from "@radix-ui/react-popover"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Componente raíz del popover.
+ */
 const Popover = PopoverPrimitive.Root
 
+/**
+ * Elemento que activa la apertura del popover.
+ */
 const PopoverTrigger = PopoverPrimitive.Trigger
 
+/**
+ * Contenedor del contenido del popover.
+ */
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>

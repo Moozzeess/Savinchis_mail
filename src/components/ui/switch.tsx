@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Componente de UI "Switch" (Interruptor).
+ * Un control que permite al usuario alternar entre dos estados (encendido/apagado).
+ *
+ * @see https://ui.shadcn.com/docs/components/switch
+ */
 "use client"
 
 import * as React from "react"
@@ -5,6 +11,9 @@ import * as SwitchPrimitives from "@radix-ui/react-switch"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Componente Switch para conmutar entre dos estados.
+ */
 const Switch = React.forwardRef<
   React.ElementRef<typeof SwitchPrimitives.Root>,
   React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>

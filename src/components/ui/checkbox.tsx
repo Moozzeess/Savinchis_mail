@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Componente de UI "Checkbox".
+ * Permite al usuario seleccionar una o más opciones de un conjunto.
+ *
+ * @see https://ui.shadcn.com/docs/components/checkbox
+ */
 "use client"
 
 import * as React from "react"
@@ -6,6 +12,9 @@ import { Check } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Componente Checkbox que permite la selección.
+ */
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>

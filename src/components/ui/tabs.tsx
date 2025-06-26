@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Componente de UI "Tabs" (Pestañas).
+ * Un conjunto de pestañas que muestran un panel de contenido a la vez.
+ *
+ * @see https://ui.shadcn.com/docs/components/tabs
+ */
 "use client"
 
 import * as React from "react"
@@ -5,8 +11,14 @@ import * as TabsPrimitive from "@radix-ui/react-tabs"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Componente raíz del sistema de pestañas.
+ */
 const Tabs = TabsPrimitive.Root
 
+/**
+ * Lista que contiene los disparadores de las pestañas.
+ */
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
@@ -22,6 +34,9 @@ const TabsList = React.forwardRef<
 ))
 TabsList.displayName = TabsPrimitive.List.displayName
 
+/**
+ * El botón que activa una pestaña para mostrar su contenido.
+ */
 const TabsTrigger = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
@@ -37,6 +52,9 @@ const TabsTrigger = React.forwardRef<
 ))
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 
+/**
+ * El panel de contenido asociado a una pestaña.
+ */
 const TabsContent = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>

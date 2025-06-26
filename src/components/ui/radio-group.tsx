@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Componente de UI "RadioGroup".
+ * Permite al usuario seleccionar una única opción de un conjunto.
+ *
+ * @see https://ui.shadcn.com/docs/components/radio-group
+ */
 "use client"
 
 import * as React from "react"
@@ -6,6 +12,9 @@ import { Circle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Contenedor para un grupo de radio buttons.
+ */
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
@@ -20,6 +29,9 @@ const RadioGroup = React.forwardRef<
 })
 RadioGroup.displayName = RadioGroupPrimitive.Root.displayName
 
+/**
+ * Un único radio button dentro de un RadioGroup.
+ */
 const RadioGroupItem = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>

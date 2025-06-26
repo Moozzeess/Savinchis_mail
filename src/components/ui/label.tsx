@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Componente de UI "Label" (Etiqueta).
+ * Muestra una etiqueta para un campo de formulario.
+ *
+ * @see https://ui.shadcn.com/docs/components/label
+ */
 "use client"
 
 import * as React from "react"
@@ -10,6 +16,9 @@ const labelVariants = cva(
   "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 )
 
+/**
+ * Componente Label que se asocia con un campo de entrada.
+ */
 const Label = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &

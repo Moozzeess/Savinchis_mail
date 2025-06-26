@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Componentes de UI para la creación de gráficos.
+ * Proporciona un conjunto de componentes envoltorio sobre Recharts para crear
+ * gráficos consistentes y temáticos dentro de la aplicación.
+ *
+ * @see https://ui.shadcn.com/docs/components/charts
+ */
 "use client"
 
 import * as React from "react"
@@ -5,9 +12,12 @@ import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@/lib/utils"
 
-// Format: { THEME_NAME: CSS_SELECTOR }
+// Formato: { NOMBRE_TEMA: SELECTOR_CSS }
 const THEMES = { light: "", dark: ".dark" } as const
 
+/**
+ * Configuración para un gráfico, definiendo etiquetas, colores y temas para cada serie de datos.
+ */
 export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode
@@ -24,16 +34,22 @@ type ChartContextProps = {
 
 const ChartContext = React.createContext<ChartContextProps | null>(null)
 
+/**
+ * Hook para acceder a la configuración del gráfico desde componentes hijos.
+ */
 function useChart() {
   const context = React.useContext(ChartContext)
 
   if (!context) {
-    throw new Error("useChart must be used within a <ChartContainer />")
+    throw new Error("useChart debe ser usado dentro de un <ChartContainer />")
   }
 
   return context
 }
 
+/**
+ * Contenedor principal para un gráfico, que provee la configuración y el contenedor responsivo.
+ */
 const ChartContainer = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
@@ -67,6 +83,9 @@ const ChartContainer = React.forwardRef<
 })
 ChartContainer.displayName = "Chart"
 
+/**
+ * Componente interno para inyectar los estilos CSS (colores) del gráfico.
+ */
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
     ([, config]) => config.theme || config.color
@@ -100,8 +119,14 @@ ${colorConfig
   )
 }
 
+/**
+ * Componente Tooltip de Recharts.
+ */
 const ChartTooltip = RechartsPrimitive.Tooltip
 
+/**
+ * Componente para personalizar el contenido del tooltip de un gráfico.
+ */
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
@@ -256,8 +281,14 @@ const ChartTooltipContent = React.forwardRef<
 )
 ChartTooltipContent.displayName = "ChartTooltip"
 
+/**
+ * Componente Legend de Recharts.
+ */
 const ChartLegend = RechartsPrimitive.Legend
 
+/**
+ * Componente para personalizar el contenido de la leyenda de un gráfico.
+ */
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> &
@@ -316,7 +347,9 @@ const ChartLegendContent = React.forwardRef<
 )
 ChartLegendContent.displayName = "ChartLegend"
 
-// Helper to extract item config from a payload.
+/**
+ * Ayudante para extraer la configuración de un item desde el payload del tooltip/leyenda.
+ */
 function getPayloadConfigFromPayload(
   config: ChartConfig,
   payload: unknown,

@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Componente de UI "Calendar" (Calendario).
+ * Permite a los usuarios seleccionar fechas de un calendario interactivo.
+ *
+ * @see https://ui.shadcn.com/docs/components/calendar
+ */
 "use client"
 
 import * as React from "react"
@@ -9,6 +15,10 @@ import { buttonVariants } from "@/components/ui/button"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
+/**
+ * Componente de calendario para selección de fechas.
+ * @param {CalendarProps} props - Propiedades del componente DayPicker.
+ */
 function Calendar({
   className,
   classNames,

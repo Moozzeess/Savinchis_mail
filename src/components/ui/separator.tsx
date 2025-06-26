@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Componente de UI "Separator" (Separador).
+ * Una línea visual para separar contenido.
+ *
+ * @see https://ui.shadcn.com/docs/components/separator
+ */
 "use client"
 
 import * as React from "react"
@@ -5,6 +11,9 @@ import * as SeparatorPrimitive from "@radix-ui/react-separator"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Componente Separator para dividir visualmente secciones de contenido.
+ */
 const Separator = React.forwardRef<
   React.ElementRef<typeof SeparatorPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Componente de UI "Accordion" (Acordeón).
+ * Proporciona un componente de acordeón colapsable, permitiendo mostrar
+ * y ocultar secciones de contenido. Basado en Radix UI y estilizado con Tailwind CSS.
+ *
+ * @see https://ui.shadcn.com/docs/components/accordion
+ */
 "use client"
 
 import * as React from "react"
@@ -6,8 +13,14 @@ import { ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Contenedor principal del acordeón, basado en AccordionPrimitive.Root.
+ */
 const Accordion = AccordionPrimitive.Root
 
+/**
+ * Un único elemento dentro del acordeón, que contiene un disparador (trigger) y un contenido.
+ */
 const AccordionItem = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
@@ -20,6 +33,9 @@ const AccordionItem = React.forwardRef<
 ))
 AccordionItem.displayName = "AccordionItem"
 
+/**
+ * El botón que conmuta el estado (abierto/cerrado) de un AccordionItem.
+ */
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
@@ -40,6 +56,9 @@ const AccordionTrigger = React.forwardRef<
 ))
 AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName
 
+/**
+ * El contenedor del contenido que se muestra cuando un AccordionItem está abierto.
+ */
 const AccordionContent = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>

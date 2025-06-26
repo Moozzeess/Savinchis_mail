@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Componente de UI "Progress" (Barra de Progreso).
+ * Muestra un indicador del progreso de una tarea.
+ *
+ * @see https://ui.shadcn.com/docs/components/progress
+ */
 "use client"
 
 import * as React from "react"
@@ -5,6 +11,9 @@ import * as ProgressPrimitive from "@radix-ui/react-progress"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Componente Progress para visualizar el avance de una operación.
+ */
 const Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>

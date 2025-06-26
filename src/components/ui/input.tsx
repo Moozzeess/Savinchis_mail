@@ -1,7 +1,16 @@
+/**
+ * @fileoverview Componente de UI "Input".
+ * Proporciona un campo de entrada de texto estándar.
+ *
+ * @see https://ui.shadcn.com/docs/components/input
+ */
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Componente Input que se puede usar en formularios para entrada de texto.
+ */
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {
     return (

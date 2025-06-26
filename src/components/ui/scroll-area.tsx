@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Componente de UI "ScrollArea" (Área de Desplazamiento).
+ * Aumenta un área de desplazamiento con una barra de desplazamiento estilizada.
+ *
+ * @see https://ui.shadcn.com/docs/components/scroll-area
+ */
 "use client"
 
 import * as React from "react"
@@ -5,6 +11,9 @@ import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Componente que crea un contenedor con barras de desplazamiento personalizadas.
+ */
 const ScrollArea = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
@@ -23,6 +32,9 @@ const ScrollArea = React.forwardRef<
 ))
 ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName
 
+/**
+ * Componente de la barra de desplazamiento.
+ */
 const ScrollBar = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>

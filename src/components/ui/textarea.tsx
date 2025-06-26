@@ -1,7 +1,16 @@
+/**
+ * @fileoverview Componente de UI "Textarea".
+ * Proporciona un campo de entrada de texto de varias líneas.
+ *
+ * @see https://ui.shadcn.com/docs/components/textarea
+ */
 import * as React from 'react';
 
 import {cn} from '@/lib/utils';
 
+/**
+ * Componente Textarea para entrada de texto largo.
+ */
 const Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<'textarea'>>(
   ({className, ...props}, ref) => {
     return (

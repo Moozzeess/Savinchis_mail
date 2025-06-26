@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Componente de UI "Tooltip".
+ * Muestra información contextual al pasar el ratón por encima,
+ * enfocar con el teclado o tocar un elemento.
+ *
+ * @see https://ui.shadcn.com/docs/components/tooltip
+ */
 "use client"
 
 import * as React from "react"
@@ -11,6 +18,9 @@ const Tooltip = TooltipPrimitive.Root
 
 const TooltipTrigger = TooltipPrimitive.Trigger
 
+/**
+ * Contenido del tooltip que aparece al activarse.
+ */
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>

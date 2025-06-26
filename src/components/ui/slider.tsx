@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Componente de UI "Slider".
+ * Un control de entrada que permite al usuario seleccionar un valor
+ * de un rango determinado.
+ *
+ * @see https://ui.shadcn.com/docs/components/slider
+ */
 "use client"
 
 import * as React from "react"
@@ -5,6 +12,9 @@ import * as SliderPrimitive from "@radix-ui/react-slider"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Componente Slider para seleccionar un valor dentro de un rango.
+ */
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>

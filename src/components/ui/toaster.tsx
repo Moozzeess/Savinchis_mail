@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Componente "Toaster" que renderiza las notificaciones toast.
+ * Este componente utiliza el hook `useToast` para mostrar las notificaciones
+ * activas en la interfaz de usuario.
+ */
 "use client"
 
 import { useToast } from "@/hooks/use-toast"
@@ -10,6 +15,9 @@ import {
   ToastViewport,
 } from "@/components/ui/toast"
 
+/**
+ * Componente Toaster que gestiona y muestra todas las notificaciones toast.
+ */
 export function Toaster() {
   const { toasts } = useToast()
 
