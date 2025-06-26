@@ -1,45 +1,50 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Este es un archivo .gitignore
+# Consulta https://help.github.com/articles/ignoring-files/ para obtener más información sobre cómo ignorar archivos.
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Dependencias: Archivos y directorios generados por gestores de paquetes que no deben ser rastreados.
+/node_modules # Ignora la carpeta node_modules que contiene las dependencias de Node.js.
+/.pnp # Ignora archivos relacionados con Plug'n'Play de Yarn.
+.pnp.* # Ignora archivos con prefijo .pnp.
+.yarn/* # Ignora todo dentro de la carpeta .yarn...
+!.yarn/patches # ...pero no ignores la carpeta patches dentro de .yarn (puede contener parches importantes).
+!.yarn/plugins # ...pero no ignores la carpeta plugins dentro de .yarn.
+!.yarn/releases # ...pero no ignores la carpeta releases dentro de .yarn.
+!.yarn/versions # ...pero no ignores la carpeta versions dentro de .yarn.
 
-# testing
-/coverage
+# Testing: Archivos generados durante las pruebas.
+/coverage # Ignora la carpeta coverage que contiene los informes de cobertura de código.
 
-# next.js
-/.next/
-/out/
+# next.js: Archivos y directorios generados por el framework Next.js.
+/.next/ # Ignora la carpeta .next/ que contiene la construcción optimizada de Next.js.
+/out/ # Ignora la carpeta out/ que contiene la salida estática si se genera.
 
-# production
-/build
+# Producción: Archivos generados para la producción.
+/build # Ignora la carpeta build/ que puede contener archivos de construcción.
 
-# misc
-.DS_Store
-*.pem
+# Misceláneo: Otros archivos temporales o específicos del sistema operativo que no deben ser rastreados.
+.DS_Store # Ignora los archivos .DS_Store generados por macOS.
+*.pem # Ignora archivos con extensión .pem (usados a menudo para certificados).
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+# Debug: Archivos de log generados durante la depuración.
+npm-debug.log* # Ignora archivos de log de depuración de npm.
+yarn-debug.log* # Ignora archivos de log de depuración de yarn.
+yarn-error.log* # Ignora archivos de log de error de yarn.
+.pnpm-debug.log* # Ignora archivos de log de depuración de pnpm.
 
-# vercel
-.vercel
+# Vercel: Archivos específicos de la plataforma Vercel.
+.vercel # Ignora la carpeta .vercel utilizada por la CLI de Vercel.
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# TypeScript: Archivos generados por TypeScript.
+*.tsbuildinfo # Ignora archivos .tsbuildinfo generados por la construcción incremental de TypeScript.
+next-env.d.ts # Ignora el archivo next-env.d.ts generado por Next.js para tipos de entorno.
 
-.genkit/*
-.env*
+# Genkit: Archivos específicos de Genkit.
+.genkit/* # Ignora todo dentro de la carpeta .genkit.
 
-# firebase
-firebase-debug.log
-firestore-debug.log
+# Entorno: Archivos de variables de entorno que contienen información sensible.
+.env* # Ignora cualquier archivo que comience con .env (como .env, .env.local, .env.production, etc.).
+
+# Firebase: Archivos de log generados por Firebase.
+firebase-debug.log # Ignora el archivo de log de depuración de Firebase.
+firestore-debug.log # Ignora el archivo de log de depuración de Firestore.
+node_modules

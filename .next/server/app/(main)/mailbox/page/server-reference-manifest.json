@@ -1,0 +1,16 @@
+{
+  "node": {
+    "009b0ef4a61b32bc4769bd6f89db5a46b26f2f5ffc": {
+      "workers": {
+        "app/(main)/mailbox/page": {
+          "moduleId": "[project]/.next-internal/server/app/(main)/mailbox/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/get-sent-emails-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/(main)/mailbox/page": "rsc"
+      }
+    }
+  },
+  "edge": {}
+}

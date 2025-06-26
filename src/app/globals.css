@@ -1,90 +1,90 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@tailwind base; /* Importa estilos base de Tailwind, como resets y variables CSS */
+@tailwind components; /* Importa las clases de componentes de Tailwind */
+@tailwind utilities; /* Importa las clases de utilidades de Tailwind */
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif; /* Define la familia de fuente para el cuerpo del documento */
 }
 
-@layer base {
-  :root {
-    --background: 161 67% 93%;
-    --foreground: 160 10% 20%;
-    --card: 161 67% 93%;
-    --card-foreground: 160 10% 20%;
-    --popover: 161 67% 93%;
-    --popover-foreground: 160 10% 20%;
-    --primary: 159 35% 72%;
-    --primary-foreground: 160 10% 10%;
-    --secondary: 159 30% 85%;
-    --secondary-foreground: 160 10% 10%;
-    --muted: 159 30% 85%;
-    --muted-foreground: 160 10% 40%;
-    --accent: 159 29% 58%;
-    --accent-foreground: 160 10% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 159 30% 80%;
-    --input: 159 40% 88%;
-    --ring: 159 29% 58%;
-    --radius: 0.75rem;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    
-    --sidebar-background: 159 40% 88%;
-    --sidebar-foreground: 160 10% 20%;
-    --sidebar-primary: 159 35% 72%;
-    --sidebar-primary-foreground: 160 10% 10%;
-    --sidebar-accent: 159 29% 58%;
-    --sidebar-accent-foreground: 160 10% 10%;
-    --sidebar-border: 159 30% 80%;
-    --sidebar-ring: 159 29% 58%;
-  }
-  .dark {
-    --background: 224 71% 4%;
-    --foreground: 210 40% 98%;
-    --card: 224 71% 4%;
-    --card-foreground: 210 40% 98%;
-    --popover: 224 71% 4%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 159 35% 72%;
-    --primary-foreground: 160 10% 10%;
-    --secondary: 215 28% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 215 28% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 159 29% 58%;
-    --accent-foreground: 160 10% 10%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 215 28% 17%;
-    --input: 215 28% 17%;
-    --ring: 159 29% 58%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+@layer base { /* Define una capa base para estilos personalizados */
+  :root { /* Define variables CSS para el tema claro */
+    --background: 161 67% 93%; /* Color de fondo */
+    --foreground: 160 10% 20%; /* Color del texto */
+    --card: 161 67% 93%; /* Color de fondo de las tarjetas */
+    --card-foreground: 160 10% 20%; /* Color del texto de las tarjetas */
+    --popover: 161 67% 93%; /* Color de fondo de los popovers */
+    --popover-foreground: 160 10% 20%; /* Color del texto de los popovers */
+    --primary: 159 35% 72%; /* Color primario */
+    --primary-foreground: 160 10% 10%; /* Color del texto primario */
+    --secondary: 159 30% 85%; /* Color secundario */
+    --secondary-foreground: 160 10% 10%; /* Color del texto secundario */
+    --muted: 159 30% 85%; /* Color de texto atenuado */
+    --muted-foreground: 160 10% 40%; /* Color del texto atenuado de primer plano */
+    --accent: 159 29% 58%; /* Color de acento */
+    --accent-foreground: 160 10% 10%; /* Color del texto de acento */
+    --destructive: 0 84.2% 60.2%; /* Color para elementos destructivos (ej: errores) */
+    --destructive-foreground: 0 0% 98%; /* Color del texto destructivo */
+    --border: 159 30% 80%; /* Color de los bordes */
+    --input: 159 40% 88%; /* Color de los campos de entrada */
+    --ring: 159 29% 58%; /* Color del anillo de enfoque */
+    --radius: 0.75rem; /* Radio por defecto para bordes redondeados */
+    --chart-1: 12 76% 61%; /* Color 1 para gráficos */
+    --chart-2: 173 58% 39%; /* Color 2 para gráficos */
+    --chart-3: 197 37% 24%; /* Color 3 para gráficos */
+    --chart-4: 43 74% 66%; /* Color 4 para gráficos */
+    --chart-5: 27 87% 67%; /* Color 5 para gráficos */
 
-    --sidebar-background: 224 71% 4%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 159 35% 72%;
-    --sidebar-primary-foreground: 160 10% 10%;
-    --sidebar-accent: 159 29% 58%;
-    --sidebar-accent-foreground: 160 10% 10%;
-    --sidebar-border: 215 28% 17%;
-    --sidebar-ring: 159 29% 58%;
+    --sidebar-background: 159 40% 88%; /* Color de fondo de la barra lateral */
+    --sidebar-foreground: 160 10% 20%; /* Color del texto de la barra lateral */
+    --sidebar-primary: 159 35% 72%; /* Color primario de la barra lateral */
+    --sidebar-primary-foreground: 160 10% 10%; /* Color del texto primario de la barra lateral */
+    --sidebar-accent: 159 29% 58%; /* Color de acento de la barra lateral */
+    --sidebar-accent-foreground: 160 10% 10%; /* Color del texto de acento de la barra lateral */
+    --sidebar-border: 159 30% 80%; /* Color del borde de la barra lateral */
+    --sidebar-ring: 159 29% 58%; /* Color del anillo de enfoque de la barra lateral */
+  }
+  .dark { /* Define variables CSS para el tema oscuro */
+    --background: 224 71% 4%; /* Color de fondo en modo oscuro */
+    --foreground: 210 40% 98%; /* Color del texto en modo oscuro */
+    --card: 224 71% 4%; /* Color de fondo de las tarjetas en modo oscuro */
+    --card-foreground: 210 40% 98%; /* Color del texto de las tarjetas en modo oscuro */
+    --popover: 224 71% 4%; /* Color de fondo de los popovers en modo oscuro */
+    --popover-foreground: 210 40% 98%; /* Color del texto de los popovers en modo oscuro */
+    --primary: 159 35% 72%; /* Color primario en modo oscuro */
+    --primary-foreground: 160 10% 10%; /* Color del texto primario en modo oscuro */
+    --secondary: 215 28% 17%; /* Color secundario en modo oscuro */
+    --secondary-foreground: 210 40% 98%; /* Color del texto secundario en modo oscuro */
+    --muted: 215 28% 17%; /* Color de texto atenuado en modo oscuro */
+    --muted-foreground: 215 20% 65%; /* Color del texto atenuado de primer plano en modo oscuro */
+    --accent: 159 29% 58%; /* Color de acento en modo oscuro */
+    --accent-foreground: 160 10% 10%; /* Color del texto de acento en modo oscuro */
+    --destructive: 0 63% 31%; /* Color para elementos destructivos en modo oscuro */
+    --destructive-foreground: 210 40% 98%; /* Color del texto destructivo en modo oscuro */
+    --border: 215 28% 17%; /* Color de los bordes en modo oscuro */
+    --input: 215 28% 17%; /* Color de los campos de entrada en modo oscuro */
+    --ring: 159 29% 58%; /* Color del anillo de enfoque en modo oscuro */
+    --chart-1: 220 70% 50%; /* Color 1 para gráficos en modo oscuro */
+    --chart-2: 160 60% 45%; /* Color 2 para gráficos en modo oscuro */
+    --chart-3: 30 80% 55%; /* Color 3 para gráficos en modo oscuro */
+    --chart-4: 280 65% 60%; /* Color 4 para gráficos en modo oscuro */
+    --chart-5: 340 75% 55%; /* Color 5 para gráficos en modo oscuro */
+
+    --sidebar-background: 224 71% 4%; /* Color de fondo de la barra lateral en modo oscuro */
+    --sidebar-foreground: 210 40% 98%; /* Color del texto de la barra lateral en modo oscuro */
+    --sidebar-primary: 159 35% 72%; /* Color primario de la barra lateral en modo oscuro */
+    --sidebar-primary-foreground: 160 10% 10%; /* Color del texto primario de la barra lateral en modo oscuro */
+    --sidebar-accent: 159 29% 58%; /* Color de acento de la barra lateral en modo oscuro */
+    --sidebar-accent-foreground: 160 10% 10%; /* Color del texto de acento de la barra lateral en modo oscuro */
+    --sidebar-border: 215 28% 17%; /* Color del borde de la barra lateral en modo oscuro */
+    --sidebar-ring: 159 29% 58%; /* Color del anillo de enfoque de la barra lateral en modo oscuro */
   }
 }
 
-@layer base {
+@layer base { /* Otra capa base para estilos personalizados */
   * {
-    @apply border-border;
+    @apply border-border; /* Aplica el color de borde definido por la variable CSS a todos los elementos */
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground; /* Aplica los colores de fondo y texto definidos por las variables CSS al cuerpo del documento */
   }
 }

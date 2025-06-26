@@ -1,0 +1,16 @@
+{
+  "node": {
+    "408eb00f3d55a667ab96280ee5276ee768efedb92d": {
+      "workers": {
+        "app/(main)/templates/editor/page": {
+          "moduleId": "[project]/.next-internal/server/app/(main)/templates/editor/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/optimize-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/(main)/templates/editor/page": "action-browser"
+      }
+    }
+  },
+  "edge": {}
+}
