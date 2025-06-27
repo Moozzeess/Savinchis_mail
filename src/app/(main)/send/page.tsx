@@ -69,6 +69,7 @@ import { optimizeEmailContentAction } from "@/app/actions/optimize-email-action"
 import type { OptimizeEmailContentOutput } from "@/ai/flows/optimize-email-content";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/context/auth-context";
+import { ROLES } from "@/lib/permissions";
 
 type RecipientSource = "date" | "file" | "sql";
 type ContentType = "template" | "event" | "survey" | "custom" | "certificate";
@@ -468,14 +469,17 @@ export default function SendPage() {
             <div className="space-y-2">
               <Label>Fuente de Destinatarios</Label>
               <Tabs value={recipientSource} onValueChange={(v) => setRecipientSource(v as RecipientSource)} className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className={cn(
+                  "grid w-full",
+                  role === ROLES.IT ? "grid-cols-3" : "grid-cols-2"
+                )}>
                   <TabsTrigger value="date">Fecha de Visita</TabsTrigger>
                   <TabsTrigger value="file">Subir Archivo</TabsTrigger>
-                  <TabsTrigger value="sql">Consulta SQL</TabsTrigger>
+                  {role === ROLES.IT && <TabsTrigger value="sql">Consulta SQL</TabsTrigger>}
                 </TabsList>
                 <TabsContent value="date" className="mt-4 border-t pt-4"><Popover><PopoverTrigger asChild><Button variant={"outline"} className="w-[280px] justify-start text-left font-normal"><CalendarIcon className="mr-2 h-4 w-4" />{date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={date} onSelect={setDate} initialFocus locale={es} /></PopoverContent></Popover></TabsContent>
                 <TabsContent value="file" className="mt-4 space-y-2 border-t pt-4"><Label htmlFor="file-upload">Sube un archivo CSV o Excel</Label><Input id="file-upload" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" onChange={handleFileChange} /><p className="text-sm text-muted-foreground">El archivo debe contener una columna "email".</p></TabsContent>
-                <TabsContent value="sql" className="mt-4 space-y-2 border-t pt-4"><Label htmlFor="sql-query">Escribe tu consulta SQL</Label><Textarea id="sql-query" value={sqlQuery} onChange={(e) => setSqlQuery(e.target.value)} rows={4} /><p className="text-sm text-muted-foreground">La consulta debe devolver una columna "email".</p></TabsContent>
+                {role === ROLES.IT && <TabsContent value="sql" className="mt-4 space-y-2 border-t pt-4"><Label htmlFor="sql-query">Escribe tu consulta SQL</Label><Textarea id="sql-query" value={sqlQuery} onChange={(e) => setSqlQuery(e.target.value)} rows={4} /><p className="text-sm text-muted-foreground">La consulta debe devolver una columna "email".</p></TabsContent>}
               </Tabs>
             </div>
 
@@ -598,3 +602,5 @@ export default function SendPage() {
     </>
   );
 }
+
+    
