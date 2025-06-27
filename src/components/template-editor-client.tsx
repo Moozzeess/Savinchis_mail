@@ -21,7 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Loader2, Wand2, Sparkles, PlusCircle, Trash2, GripVertical, Image as ImageIcon, Pilcrow, MousePointerClick, Minus } from 'lucide-react';
+import { Loader2, Wand2, Sparkles, PlusCircle, Trash2, GripVertical, Image as ImageIcon, Pilcrow, Minus } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/context/auth-context';
 import { DragDropContext, Droppable, Draggable, type DropResult } from 'react-beautiful-dnd';
@@ -280,11 +280,13 @@ export function TemplateEditorClient() {
                                 )}
                             </Droppable>
                         </DragDropContext>
-                        <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
-                            <Button type="button" variant="outline" size="sm" onClick={() => addBlock('text')}><Pilcrow className="mr-2 h-4 w-4"/>Añadir Texto</Button>
-                            <Button type="button" variant="outline" size="sm" onClick={() => addBlock('image')}><ImageIcon className="mr-2 h-4 w-4"/>Añadir Imagen</Button>
-                            <Button type="button" variant="outline" size="sm" onClick={() => addBlock('button')}><MousePointerClick className="mr-2 h-4 w-4"/>Añadir Botón</Button>
-                            <Button type="button" variant="outline" size="sm" onClick={() => addBlock('spacer')}><Minus className="mr-2 h-4 w-4"/>Añadir Espaciador</Button>
+                         <div className="pt-4 mt-4 border-t">
+                            <div className="grid grid-cols-2 gap-2">
+                                <Button type="button" variant="outline" size="sm" onClick={() => addBlock('text')}><Pilcrow className="mr-2 h-4 w-4"/>Añadir Texto</Button>
+                                <Button type="button" variant="outline" size="sm" onClick={() => addBlock('image')}><ImageIcon className="mr-2 h-4 w-4"/>Añadir Imagen</Button>
+                                <Button type="button" variant="outline" size="sm" onClick={() => addBlock('button')}><Sparkles className="mr-2 h-4 w-4"/>Añadir Botón</Button>
+                                <Button type="button" variant="outline" size="sm" onClick={() => addBlock('spacer')}><Minus className="mr-2 h-4 w-4"/>Añadir Espaciador</Button>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
