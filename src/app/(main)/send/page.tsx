@@ -81,6 +81,59 @@ interface CampaignStats {
   duration: number;
 }
 
+const defaultInitialBody = `<div style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 16px; line-height: 1.5; color: #333333; background-color: #ffffff; margin: 0; padding: 0;">
+  <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #ffffff;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" border="0" cellpadding="0" cellspacing="0" class="content-table" style="width: 100%; max-width: 600px; margin: 0 auto;">
+          <!-- Header -->
+          <tr>
+            <td>
+              <img src="https://placehold.co/600x95.png" alt="Header Banner" style="width: 100%; height: auto; display: block;" data-ai-hint="papalote museum header" />
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding: 30px 20px;">
+              <p style="margin: 0 0 16px 0;"><strong>Maestra, Maestro:</strong></p>
+              <p style="margin: 0 0 16px 0;">Nos alegra mucho que hayas utilizado nuestra página para planear tu visita a Papalote Museo del Niño.</p>
+              <p style="margin: 0 0 16px 0;">En este correo encontrarás adjuntos:</p>
+              <ul style="margin: 0 0 16px 0; padding-left: 20px;">
+                <li style="margin-bottom: 8px;">Formato Proyecto de visita (prellenado)</li>
+                <li style="margin-bottom: 8px;">Formatos administrativos</li>
+              </ul>
+              <p style="margin: 0 0 16px 0;">Esperamos que estas herramientas te ayuden a detonar proyectos increíbles y faciliten la visita con tu grupo escolar.</p>
+              
+              <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td valign="top" style="padding-right: 20px; width: 60%;">
+                    <p style="margin: 0 0 16px 0;"><strong>Si requieres más información:</strong></p>
+                    <p style="margin: 0 0 8px 0;">Llámanos a: 5552371710 - 5546017873</p>
+                    <p style="margin: 0 0 16px 0;">O escríbenos un whatsApp.</p>
+                    <p style="margin: 0 0 16px 0;">
+                      <img src="https://placehold.co/40x40.png" alt="WhatsApp" width="30" height="30" style="vertical-align: middle;" data-ai-hint="whatsapp logo" />
+                    </p>
+                    <p style="margin: 0;"><strong>¡Nos vemos muy pronto!</strong></p>
+                  </td>
+                  <td width="40%" valign="top" align="center">
+                    <img src="https://placehold.co/200x150.png" alt="¡No olvides descargar la guía educativa! Da clic aquí" style="max-width: 100%; height: auto; display: block;" data-ai-hint="educational guide monster" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td>
+              <img src="https://placehold.co/600x50.png" alt="Footer Banner" style="width: 100%; height: auto; display: block;" data-ai-hint="papalote museum footer" />
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>`;
+
 /**
  * Página de Nuevo Correo.
  * Permite a los usuarios componer un nuevo envío de correo, seleccionar plantillas,
@@ -94,8 +147,8 @@ export default function SendPage() {
   const { toast } = useToast();
   const { role } = useAuth();
 
-  const [subject, setSubject] = useState("");
-  const [emailBody, setEmailBody] = useState("");
+  const [subject, setSubject] = useState("Información sobre tu visita a Papalote");
+  const [emailBody, setEmailBody] = useState(defaultInitialBody);
   const [recipientSource, setRecipientSource] = useState<RecipientSource>("file");
   const [fileContent, setFileContent] = useState("");
   const [uploadedFileType, setUploadedFileType] = useState<"csv" | "excel" | null>(null);
