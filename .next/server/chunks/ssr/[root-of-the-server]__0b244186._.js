@@ -408,9 +408,12 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$microsoft$
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$microsoft$2f$microsoft$2d$graph$2d$client$2f$lib$2f$es$2f$src$2f$Client$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@microsoft/microsoft-graph-client/lib/es/src/Client.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$microsoft$2f$microsoft$2d$graph$2d$client$2f$authProviders$2f$azureTokenCredentials$2f$index$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials/index.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$mysql2$2f$promise$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/mysql2/promise.js [app-rsc] (ecmascript)");
+// Importa la función parse del paquete csv-parse/sync para parsear archivos CSV de forma síncrona.
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$csv$2d$parse$2f$lib$2f$sync$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/node_modules/csv-parse/lib/sync.js [app-rsc] (ecmascript) <module evaluation>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$csv$2d$parse$2f$lib$2f$sync$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/csv-parse/lib/sync.js [app-rsc] (ecmascript) <locals>");
+// Importa todas las funciones del paquete xlsx bajo el alias XLSX para trabajar con archivos Excel.
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$xlsx$2f$xlsx$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/xlsx/xlsx.mjs [app-rsc] (ecmascript)");
+// Importa la constante 'events' desde el módulo de datos local.
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/data.ts [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/action-validate.js [app-rsc] (ecmascript)");
 ;
@@ -427,19 +430,28 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
  * Obtiene una lista de destinatarios desde la fuente especificada.
  */ async function getRecipients(recipientData) {
     const { type, value } = recipientData;
+    // Desestructura el tipo y el valor de los datos del destinatario.
+    // Función auxiliar para encontrar una clave en un objeto de forma insensible a mayúsculas/minúsculas.
     const findKey = (obj, potentialKeys)=>{
+        // Itera sobre las claves del objeto.
         const key = Object.keys(obj).find((k)=>potentialKeys.includes(k.toLowerCase()));
+        // Si encuentra una clave que coincide (insensible a mayúsculas/minúsculas), devuelve su valor; de lo contrario, undefined.
         return key ? obj[key] : undefined;
     };
     if (type === 'csv') {
         try {
             const records = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$csv$2d$parse$2f$lib$2f$sync$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__["parse"])(value, {
                 columns: true,
+                // Especifica que la primera fila contiene nombres de columnas.
                 skip_empty_lines: true
             });
+            // Parsear el valor del CSV en un array de objetos.
             if (records.length === 0) return [];
+            // Si no hay registros, retorna un array vacío.
             const emailKey = Object.keys(records[0]).find((k)=>k.toLowerCase() === 'email');
+            // Busca la clave 'email' (insensible a mayúsculas/minúsculas) en el primer registro.
             if (!emailKey) throw new Error('La columna "email" no se encontró en el archivo CSV.');
+            // Si no se encuentra la columna 'email', lanza un error.
             return records.map((record)=>({
                     email: record[emailKey],
                     name: findKey(record, [
@@ -449,6 +461,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
                         'nombre completo'
                     ])
                 })).filter((r)=>r.email && r.email.includes('@'));
+        // Mapea los registros para crear objetos Recipient y filtra los que no tienen un email válido.
         } catch (error) {
             console.error('Error al procesar el archivo CSV:', error);
             throw new Error(`Error al procesar el archivo CSV: ${error.message}`);
@@ -456,16 +469,24 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
     }
     if (type === 'excel') {
         try {
+            // Decodifica el contenido base64 del archivo Excel a un buffer.
             const buffer = Buffer.from(value, 'base64');
+            // Lee el buffer como un libro de trabajo de Excel.
             const workbook = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$xlsx$2f$xlsx$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["read"])(buffer, {
                 type: 'buffer'
             });
+            // Obtiene el nombre de la primera hoja del libro de trabajo.
             const sheetName = workbook.SheetNames[0];
+            // Obtiene la hoja de trabajo por su nombre.
             const worksheet = workbook.Sheets[sheetName];
+            // Convierte la hoja de trabajo a un array de objetos JSON.
             const jsonData = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$xlsx$2f$xlsx$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["utils"].sheet_to_json(worksheet);
             if (jsonData.length === 0) return [];
+            // Si no hay datos JSON, retorna un array vacío.
             const emailKey = Object.keys(jsonData[0]).find((key)=>key.toLowerCase() === 'email');
+            // Busca la clave 'email' (insensible a mayúsculas/minúsculas) en el primer objeto JSON.
             if (!emailKey) throw new Error('La columna "email" no se encontró en el archivo Excel.');
+            // Si no se encuentra la columna 'email', lanza un error.
             return jsonData.map((row)=>({
                     email: row[emailKey],
                     name: findKey(row, [
@@ -481,20 +502,26 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
         }
     }
     const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } = process.env;
+    // Desestructura las variables de entorno para la conexión a la base de datos.
     if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
         throw new Error('Faltan las variables de entorno de la base de datos. Por favor, configúralas.');
     }
+    // Verifica que las variables de entorno necesarias para la base de datos estén configuradas. Si faltan, lanza un error.
     let connection;
     try {
         connection = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$mysql2$2f$promise$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].createConnection({
             host: MYSQL_HOST,
             port: MYSQL_PORT ? parseInt(MYSQL_PORT, 10) : 3306,
             user: MYSQL_USER,
+            // Convierte el puerto a número si está definido, de lo contrario usa 3306.
             password: MYSQL_PASSWORD,
             database: MYSQL_DATABASE
         });
+        // Crea una conexión a la base de datos MySQL utilizando las variables de entorno.
         let sql_query = '';
         let params = [];
+        // Inicializa la variable para la consulta SQL y los parámetros.
+        // Si el tipo de datos del destinatario es 'date', construye la consulta SQL para obtener contactos por fecha.
         if (type === 'date') {
             sql_query = `
         SELECT t1.email, t1.nombre_completo as name
@@ -508,19 +535,27 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
             params = [
                 value
             ];
+        // El valor se usa como parámetro para la fecha de visita.
+        // Si el tipo de datos del destinatario es 'sql', usa el valor directamente como consulta SQL.
         } else if (type === 'sql') {
             sql_query = value;
+            params = []; // Las consultas SQL personalizadas no esperan parámetros por defecto aquí.
         }
         const [rows] = await connection.execute(sql_query, params);
         return rows.filter((row)=>row.email);
+    // Ejecuta la consulta SQL y filtra las filas para asegurarse de que tengan un email.
     } catch (error) {
         console.error('Error al conectar o consultar la base de datos:', error);
         throw new Error('No se pudo obtener los contactos de la base de datos.');
+    // Captura y loguea errores de conexión o consulta de la base de datos, luego lanza un nuevo error.
     } finally{
         if (connection) await connection.end();
+    // Asegura que la conexión a la base de datos se cierre al finalizar (éxito o error).
     }
 }
+// Función asíncrona para obtener una instancia del cliente de Microsoft Graph.
 async function getGraphClient() {
+    // Desestructura las variables de entorno necesarias para la autenticación con Microsoft Graph.
     const { GRAPH_CLIENT_ID, GRAPH_TENANT_ID, GRAPH_CLIENT_SECRET } = process.env;
     if (!GRAPH_CLIENT_ID || !GRAPH_TENANT_ID || !GRAPH_CLIENT_SECRET) {
         throw new Error('Faltan las variables de entorno de Microsoft Graph. Por favor, configúralas.');
@@ -535,15 +570,20 @@ async function getGraphClient() {
         authProvider
     });
 }
+// Función de utilidad para crear un retraso basado en un número de milisegundos.
 const delay = (ms)=>new Promise((res)=>setTimeout(res, ms));
 async function sendCampaign(payload) {
+    // Desestructura las propiedades del payload.
     const { subject, htmlBody, recipientData, batchSize, emailDelay, batchDelay, attachment, eventId } = payload;
     const startTime = Date.now();
+    // Registra el tiempo de inicio para calcular la duración total.
     const { GRAPH_USER_MAIL } = process.env;
     if (!GRAPH_USER_MAIL) {
         throw new Error('Falta la variable de entorno GRAPH_USER_MAIL. Por favor, configúrala.');
     }
+    // Verifica que la variable de entorno GRAPH_USER_MAIL esté configurada. Si falta, lanza un error.
     const recipients = await getRecipients(recipientData);
+    // Obtiene la lista de destinatarios utilizando la función getRecipients.
     if (recipients.length === 0) {
         return {
             success: true,
@@ -556,8 +596,12 @@ async function sendCampaign(payload) {
             }
         };
     }
+    // Si no se encontraron destinatarios, retorna un resultado exitoso con estadísticas de cero envíos.
+    // Busca el evento correspondiente si se proporcionó un eventId.
     const event = eventId ? __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["events"].find((e)=>e.id === eventId) : null;
+    // Obtiene el número total de destinatarios.
     const totalRecipients = recipients.length;
+    // Obtiene una instancia del cliente de Microsoft Graph.
     const graphClient = await getGraphClient();
     let sentCount = 0;
     let failedCount = 0;
@@ -565,13 +609,19 @@ async function sendCampaign(payload) {
     for(let i = 0; i < recipients.length; i += batchSize){
         recipientBatches.push(recipients.slice(i, i + batchSize));
     }
+    // Divide la lista de destinatarios en lotes según el tamaño de lote especificado.
+    // Itera sobre cada lote de destinatarios.
     for (const [index, batch] of recipientBatches.entries()){
+        // Itera sobre cada contacto dentro del lote actual.
         for (const contact of batch){
             try {
+                // Inicializa el cuerpo final del correo con el cuerpo HTML original.
                 let finalHtmlBody = htmlBody;
+                // Reemplaza el placeholder {{contact.name}} si existe el nombre del contacto.
                 if (contact.name) {
                     finalHtmlBody = finalHtmlBody.replace(/{{contact.name}}/g, contact.name);
                 }
+                // Reemplaza el placeholder {{event.date}} si existe la fecha del evento.
                 if (event) {
                     finalHtmlBody = finalHtmlBody.replace(/{{event.date}}/g, event.date);
                 }
@@ -604,24 +654,33 @@ async function sendCampaign(payload) {
                     message,
                     saveToSentItems: 'true'
                 });
+                // Construye el objeto del mensaje de correo y lo envía utilizando la API de Microsoft Graph.
+                // saveToSentItems: 'true' asegura que el correo se guarde en la carpeta de elementos enviados.
                 sentCount++;
+            // Incrementa el contador de correos enviados exitosamente.
             } catch (error) {
                 failedCount++;
                 const errorMessage = error?.body ? JSON.parse(error.body).error.message : error.message;
                 console.error(`Error al enviar correo a ${contact.email} usando Graph:`, errorMessage);
+            // Incrementa el contador de correos fallidos.
+            // Loguea el error detallado al enviar el correo a un contacto específico.
             }
             if (emailDelay > 0) await delay(emailDelay);
         }
         if (index < recipientBatches.length - 1) {
             if (batchDelay > 0) await delay(batchDelay * 1000);
+        // Si no es el último lote y hay un retraso de lote configurado, espera antes de procesar el siguiente lote.
         }
     }
+    // Registra el tiempo de finalización.
     const endTime = Date.now();
+    // Calcula la duración total del proceso de envío en segundos.
     const duration = (endTime - startTime) / 1000;
     let message = `Envío completado con Microsoft Graph. Enviados: ${sentCount}. Fallidos: ${failedCount}.`;
     if (failedCount > 0) {
         message += ' Revisa la consola del servidor para más detalles sobre los errores.';
     }
+    // Retorna un objeto con el estado de éxito, un mensaje resumen y estadísticas del envío.
     return {
         success: true,
         message,

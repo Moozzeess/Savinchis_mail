@@ -31,11 +31,6 @@ interface SendCampaignPayload {
     type: 'date' | 'csv' | 'sql' | 'excel';
     value: string;
   };
-  batchSize: number;
-  emailDelay: number; // ms
-  // Retraso entre el envío de correos individuales dentro de un lote (en milisegundos).
-  batchDelay: number; // s
-  // Retraso entre el envío de lotes de correos (en segundos).
   // Propiedad opcional para adjuntar un archivo al correo.
   attachment?: {
     filename: string; // El nombre del archivo adjunto.
@@ -198,10 +193,48 @@ async function getGraphClient() {
 // Función de utilidad para crear un retraso basado en un número de milisegundos.
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
+
+/**
+ * Envía un correo electrónico utilizando Microsoft Graph con una política de reintentos.
+ * @param graphClient - El cliente de Microsoft Graph.
+ * @param message - El objeto de mensaje a enviar.
+ * @param userMail - El correo del usuario remitente.
+ * @param maxRetries - El número máximo de reintentos.
+ * @throws Si el envío falla después de todos los reintentos.
+ */
+async function sendEmailWithRetry(graphClient: Client, message: any, userMail: string, maxRetries = 3) {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            await graphClient.api(`/users/${userMail}/sendMail`).post({ message, saveToSentItems: 'true' });
+            return; // Éxito
+        } catch (error: any) {
+            // Verifica si es un error de throttling (demasiadas solicitudes)
+            if (error.statusCode === 429 && i < maxRetries - 1) {
+                // Obtiene el tiempo de espera del encabezado 'retry-after' o usa un backoff exponencial.
+                const retryAfter = error.responseHeaders?.['retry-after'] || Math.pow(2, i);
+                console.warn(`Throttled por la API de Graph. Reintentando en ${retryAfter} segundos...`);
+                await delay(retryAfter * 1000);
+            } else {
+                // Si es otro tipo de error, lo relanza para que sea manejado más arriba.
+                throw error;
+            }
+        }
+    }
+    // Si todos los reintentos fallan, lanza un error.
+    throw new Error(`No se pudo enviar el correo después de ${maxRetries} reintentos.`);
+}
+
+
 // Acción de servidor principal para enviar la campaña de correo electrónico.
 export async function sendCampaign(payload: SendCampaignPayload) {
+  // Estos ajustes ahora están configurados globalmente (ej: en la página de Ajustes).
+  // Para esta acción, usaremos valores por defecto. En una aplicación real, se obtendrían de una base de datos o servicio de configuración.
+  const batchSize = 50;
+  const emailDelay = 100; // milisegundos
+  const batchDelay = 5; // segundos
+
   // Desestructura las propiedades del payload.
-  const { subject, htmlBody, recipientData, batchSize, emailDelay, batchDelay, attachment, eventId } = payload;
+  const { subject, htmlBody, recipientData, attachment, eventId } = payload;
   const startTime = Date.now();
   // Registra el tiempo de inicio para calcular la duración total.
 
@@ -248,7 +281,7 @@ export async function sendCampaign(payload: SendCampaignPayload) {
             if (event) {
               finalHtmlBody = finalHtmlBody.replace(/{{event.date}}/g, event.date);
             }
-            // Clean up any unreplaced placeholders
+            // Limpia cualquier marcador de posición que no haya sido reemplazado.
             finalHtmlBody = finalHtmlBody.replace(/{{contact.name}}/g, '');
             finalHtmlBody = finalHtmlBody.replace(/{{event.date}}/g, '');
 
@@ -265,9 +298,10 @@ export async function sendCampaign(payload: SendCampaignPayload) {
                   }
                 ] : undefined,
             };
-            await graphClient.api(`/users/${GRAPH_USER_MAIL}/sendMail`).post({ message, saveToSentItems: 'true' });
-            // Construye el objeto del mensaje de correo y lo envía utilizando la API de Microsoft Graph.
-            // saveToSentItems: 'true' asegura que el correo se guarde en la carpeta de elementos enviados.
+            
+            // Envía el correo usando la función con lógica de reintentos.
+            await sendEmailWithRetry(graphClient, message, GRAPH_USER_MAIL);
+
             sentCount++;
             // Incrementa el contador de correos enviados exitosamente.
         } catch (error) {

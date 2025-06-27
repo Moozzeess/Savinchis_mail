@@ -213,7 +213,12 @@ module.exports = mod;
 
 var { g: global, __dirname } = __turbopack_context__;
 {
-__turbopack_context__.s({
+/**
+ * @fileoverview Configuración e inicialización de Genkit.
+ * Este archivo centraliza la configuración del framework de IA Genkit,
+ * especificando los plugins a utilizar (como Google AI) y el modelo
+ * de lenguaje por defecto para toda la aplicación.
+ */ __turbopack_context__.s({
     "ai": (()=>ai)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$genkit$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/node_modules/genkit/lib/index.mjs [app-rsc] (ecmascript) <module evaluation>");

@@ -18,6 +18,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Calendar as CalendarIcon,
   Loader2,
   Users,
@@ -34,6 +41,8 @@ import {
   Forward,
   MoreHorizontal,
   File,
+  Wand2,
+  Sparkles,
 } from "lucide-react";
 import {
   Popover,
@@ -57,6 +66,9 @@ import { cn } from "@/lib/utils";
 import { parse } from 'csv-parse/sync';
 import * as XLSX from 'xlsx';
 import { jsPDF } from "jspdf";
+import { optimizeEmailContentAction } from "@/app/actions/optimize-email-action";
+import type { OptimizeEmailContentOutput } from "@/ai/flows/optimize-email-content";
+import { Progress } from "@/components/ui/progress";
 
 type RecipientSource = "date" | "file" | "sql";
 type ContentType = "template" | "event" | "survey" | "custom" | "certificate";
@@ -88,10 +100,6 @@ export default function SendPage() {
   const [sqlQuery, setSqlQuery] = useState("SELECT email, name FROM contacts WHERE subscribed = TRUE;");
   const [lastRunStats, setLastRunStats] = useState<CampaignStats | null>(null);
   
-  const [batchSize, setBatchSize] = useState(50);
-  const [emailDelay, setEmailDelay] = useState(100);
-  const [batchDelay, setBatchDelay] = useState(5);
-
   const [recipientCount, setRecipientCount] = useState(0);
 
   // Content type selection
@@ -100,6 +108,12 @@ export default function SendPage() {
   const [selectedEventId, setSelectedEventId] = useState<string>("");
   const [selectedSurveyId, setSelectedSurveyId] = useState<string>("");
   const [attachmentName, setAttachmentName] = useState<string | null>(null);
+
+  // AI Optimization state
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [aiResult, setAiResult] = useState<OptimizeEmailContentOutput | null>(null);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [audience, setAudience] = useState("");
 
   useEffect(() => {
     setAttachmentName(null);
@@ -132,6 +146,10 @@ export default function SendPage() {
   }, [contentType, selectedTemplateId, selectedEventId, selectedSurveyId]);
 
   const estimatedTime = useMemo(() => {
+    const batchSize = 50;
+    const emailDelay = 100;
+    const batchDelay = 5;
+
     if (recipientCount === 0 || batchSize <= 0) return "0s";
     const totalEmailDelaySeconds = (recipientCount * emailDelay) / 1000;
     const numberOfBatches = Math.ceil(recipientCount / batchSize);
@@ -142,7 +160,7 @@ export default function SendPage() {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = (totalSeconds % 60).toFixed(0);
     return `${minutes}m ${seconds}s`;
-  }, [recipientCount, batchSize, emailDelay, batchDelay]);
+  }, [recipientCount]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -209,6 +227,7 @@ export default function SendPage() {
               const pdf = new jsPDF('l', 'px', [1100, 850]);
               const dataUrl = `data:image/png;base64,${template}`;
               pdf.addImage(dataUrl, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
+              pdf.text(`Otorgado a: Usuario de Prueba`, 550, 450, { align: 'center' });
               const pdfBase64 = pdf.output('datauristring').split(',')[1];
               attachment = {
                   content: pdfBase64,
@@ -273,9 +292,6 @@ export default function SendPage() {
         subject, 
         htmlBody: emailBody, 
         recipientData, 
-        batchSize, 
-        emailDelay, 
-        batchDelay,
         attachment,
         eventId: selectedEventId
       });
@@ -303,7 +319,70 @@ export default function SendPage() {
     }
   }
 
+  const handleOptimize = async () => {
+    if (!emailBody || !audience) {
+      toast({
+        title: 'Faltan campos',
+        description: 'Por favor, rellena el cuerpo del correo y la audiencia para optimizar.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    setIsOptimizing(true);
+    setAiResult(null);
+    try {
+      const result = await optimizeEmailContentAction({ emailContent: emailBody, audience });
+      setAiResult(result);
+      setIsAiModalOpen(true);
+    } catch (error) {
+      toast({
+        title: 'Error de optimización',
+        description: (error as Error).message,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsOptimizing(false);
+    }
+  };
+
   return (
+    <>
+    <Dialog open={isAiModalOpen} onOpenChange={setIsAiModalOpen}>
+      <DialogContent className="sm:max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>Resultados de la Optimización</DialogTitle>
+          <DialogDescription>
+            Aquí tienes el contenido mejorado y sugerencias para tu correo.
+          </DialogDescription>
+        </DialogHeader>
+        {aiResult && (
+          <div className="space-y-4 max-h-[70vh] overflow-y-auto p-1">
+             <div>
+                <Label>Puntuación de Spam</Label>
+                <Progress value={aiResult.spamScore || 0} className="w-full mt-1" />
+                <p className="text-sm text-muted-foreground mt-1">
+                  Puntuación: {aiResult.spamScore || 'N/A'}/100 (más bajo es mejor)
+                </p>
+              </div>
+              <div>
+                <Label>Sugerencias de Interacción</Label>
+                <p className="text-sm bg-muted p-3 rounded-md mt-1">{aiResult.engagementSuggestions}</p>
+              </div>
+                <div>
+                <Label>Contenido Optimizado</Label>
+                <Textarea readOnly value={aiResult.optimizedContent} rows={15} className="mt-1 bg-muted" />
+                <Button type="button" variant="secondary" size="sm" className="mt-2" onClick={() => {
+                  setEmailBody(aiResult.optimizedContent);
+                  setIsAiModalOpen(false);
+                  toast({ title: 'Contenido actualizado', description: 'El cuerpo del correo ha sido actualizado con la versión optimizada.'})
+                  }}>Usar este contenido</Button>
+              </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -343,11 +422,23 @@ export default function SendPage() {
                 <Label htmlFor="subject">Asunto del Correo</Label>
                 <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
               </div>
+
+               <div className="space-y-2">
+                <Label htmlFor="audience">Describe tu Audiencia (para optimización IA)</Label>
+                <Input id="audience" placeholder="Ej: Clientes interesados en tecnología" value={audience} onChange={(e) => setAudience(e.target.value)} />
+              </div>
+
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <Label>Cuerpo del Mensaje</Label>
-                  <Label htmlFor="html-upload" className="text-sm font-normal text-primary underline-offset-4 hover:underline cursor-pointer">O sube un archivo HTML</Label>
-                  <Input id="html-upload" type="file" accept=".html" className="hidden" onChange={handleHtmlFileChange} />
+                   <div className="flex items-center gap-2">
+                     <Button type="button" variant="outline" size="sm" onClick={handleOptimize} disabled={isOptimizing}>
+                        {isOptimizing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                        Optimizar
+                    </Button>
+                    <Label htmlFor="html-upload" className="text-sm font-normal text-primary underline-offset-4 hover:underline cursor-pointer">O sube HTML</Label>
+                    <Input id="html-upload" type="file" accept=".html" className="hidden" onChange={handleHtmlFileChange} />
+                   </div>
                 </div>
                 <Textarea value={emailBody} onChange={(e) => setEmailBody(e.target.value)} rows={10} />
                 {attachmentName && (
@@ -394,19 +485,12 @@ export default function SendPage() {
               </CardContent>
             </Card>
             
-            <div className="space-y-4 rounded-lg border p-4">
-                <h3 className="text-md font-semibold">Control de Envíos</h3>
-                 <div className="grid sm:grid-cols-3 gap-4">
-                    <div className="space-y-2"><Label htmlFor="batch-size">Correos/Lote</Label><Input id="batch-size" type="number" value={batchSize} onChange={(e) => setBatchSize(Math.max(1, parseInt(e.target.value) || 1))} /></div>
-                    <div className="space-y-2"><Label>Retraso (ms)/correo</Label><Input type="number" value={emailDelay} onChange={(e) => setEmailDelay(Math.max(0, parseInt(e.target.value) || 0))} /></div>
-                    <div className="space-y-2"><Label>Retraso (s)/lote</Label><Input type="number" value={batchDelay} onChange={(e) => setBatchDelay(Math.max(0, parseInt(e.target.value) || 0))} /></div>
-                </div>
-                <div className="flex items-start space-x-3 rounded-md bg-muted/50 p-3 text-sm">
-                    <Info className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                    <div>
-                        <p className="text-muted-foreground">Destinatarios detectados: <span className="font-bold text-foreground">{recipientCount}</span></p>
-                        <p className="text-muted-foreground">Tiempo estimado: <span className="font-bold text-foreground">{estimatedTime}</span></p>
-                    </div>
+            <div className="flex items-start space-x-3 rounded-md bg-muted/50 p-3 text-sm">
+                <Info className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <div>
+                    <p className="text-muted-foreground">Destinatarios detectados: <span className="font-bold text-foreground">{recipientCount}</span></p>
+                    <p className="text-muted-foreground">Tiempo estimado: <span className="font-bold text-foreground">{estimatedTime}</span></p>
+                    <p className="text-muted-foreground mt-1 text-xs">Los ajustes de velocidad de envío se gestionan en la sección de <span className="font-bold text-foreground">Ajustes</span>.</p>
                 </div>
             </div>
 
@@ -496,5 +580,6 @@ export default function SendPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

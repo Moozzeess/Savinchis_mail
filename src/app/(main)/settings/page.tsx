@@ -50,6 +50,45 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Ajustes de Envío de Correo</CardTitle>
+          <CardDescription>
+            Configura los parámetros para el envío masivo de correos para optimizar la entrega y evitar el bloqueo.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid sm:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="batch-size">Correos por Lote</Label>
+              <Input id="batch-size" type="number" defaultValue="50" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email-delay">Retraso por Correo (ms)</Label>
+              <Input id="email-delay" type="number" defaultValue="100" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="batch-delay">Retraso por Lote (s)</Label>
+              <Input id="batch-delay" type="number" defaultValue="5" />
+            </div>
+          </div>
+          <div className="flex items-start space-x-4 rounded-md border p-4 bg-muted/40">
+            <Send className="h-5 w-5 text-muted-foreground mt-1"/>
+            <div className="flex-1 space-y-1">
+              <p className="text-sm font-medium leading-none">
+                Mejoras Futuras
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Próximamente: Manejo de reintentos, validación de correos, seguimiento de métricas (aperturas, clics) y pruebas A/B para optimizar el rendimiento de las campañas.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button>Guardar Ajustes de Envío</Button>
+        </CardFooter>
+      </Card>
+      
+      <Card>
+        <CardHeader>
           <CardTitle>Conexión a Base de Datos MySQL</CardTitle>
           <CardDescription>
             Configura los detalles para conectar la aplicación a tu base de datos MySQL.
