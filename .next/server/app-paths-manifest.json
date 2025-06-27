@@ -1,4 +1,5 @@
 {
+  "/(main)/analytics/page": "app/(main)/analytics/page.js",
   "/(main)/dashboard/page": "app/(main)/dashboard/page.js",
   "/(main)/send/page": "app/(main)/send/page.js",
   "/(main)/settings/page": "app/(main)/settings/page.js",

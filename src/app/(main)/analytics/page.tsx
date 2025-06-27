@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mail, Eye, MousePointerClick, AlertCircle, FileDown, Activity, Filter, Bot, Share2, TriangleAlert, TrendingUp, DatabaseZap, Calendar as CalendarIcon, ArrowRight, CheckCircle, XCircle } from "lucide-react";
+import { Mail, Eye, MousePointerClick, AlertCircle, FileDown, Activity, Bot, Share2, TriangleAlert, TrendingUp, DatabaseZap, Calendar as CalendarIcon, XCircle } from "lucide-react";
 import { AnalyticsCharts } from "@/components/analytics-charts";
 import { jsPDF } from "jspdf";
 import { toPng } from "html-to-image";
@@ -23,21 +23,25 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/context/auth-context";
+import { hasPermission, APP_PERMISSIONS } from "@/lib/permissions";
 
 /**
  * Página de Rendimiento.
  * Muestra métricas clave y gráficos sobre el rendimiento de las campañas
- * y permite generar reportes en PDF.
+ * y permite generar reportes en PDF, con acceso controlado por rol.
  */
 export default function PerformancePage() {
   const reportRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { role } = useAuth();
   
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(2024, 0, 1),
     to: addDays(new Date(2024, 5, 30), 20),
   });
+
+  const canGenerateReport = hasPermission(role, APP_PERMISSIONS.GENERATE_REPORTS);
 
   const handleGeneratePdf = async () => {
     const element = reportRef.current;
@@ -152,10 +156,12 @@ export default function PerformancePage() {
               />
             </PopoverContent>
           </Popover>
-          <Button onClick={handleGeneratePdf}>
-            <FileDown className="mr-2" />
-            Generar Reporte
-          </Button>
+          {canGenerateReport && (
+            <Button onClick={handleGeneratePdf}>
+              <FileDown className="mr-2" />
+              Generar Reporte
+            </Button>
+          )}
         </div>
       </div>
 

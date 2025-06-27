@@ -23,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Loader2, Wand2, Sparkles } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { useAuth } from '@/context/auth-context';
 
 /**
  * Esquema de validación para el formulario del editor de plantillas.
@@ -45,6 +46,7 @@ export function TemplateEditorClient() {
   const [aiResult, setAiResult] = useState<OptimizeEmailContentOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { role } = useAuth();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -71,11 +73,15 @@ export function TemplateEditorClient() {
       });
       return;
     }
+    if (!role) {
+      toast({ title: 'Error de autenticación', description: 'Rol de usuario no encontrado.', variant: 'destructive' });
+      return;
+    }
     
     setIsLoading(true);
     setAiResult(null);
     try {
-      const result = await optimizeEmailContentAction({ emailContent: emailBody, audience });
+      const result = await optimizeEmailContentAction({ emailContent: emailBody, audience, role });
       setAiResult(result);
     } catch (error) {
       toast({

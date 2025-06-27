@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,16 +8,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { MicrosoftLogo } from "@/components/microsoft-logo";
-import Link from "next/link";
+import { useRouter } from 'next/navigation';
 import { AppLogo } from "@/components/app-logo";
 import Image from "next/image";
+import { useAuth } from '@/context/auth-context';
+import { ROLES, type Role } from '@/lib/permissions';
+import { Users, Code, Megaphone } from 'lucide-react';
 
 /**
  * Página de inicio de sesión.
- * Permite a los usuarios "autenticarse" (simulado) con una cuenta de Microsoft.
+ * Permite a los usuarios "autenticarse" (simulado) seleccionando un rol.
  */
 export default function LoginPage() {
+  const { login } = useAuth();
+  const router = useRouter();
+
+  const handleLogin = (role: Role) => {
+    login(role);
+    router.push('/dashboard');
+  };
+
   return (
     <main className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className="w-full max-w-sm overflow-hidden">
@@ -33,15 +45,21 @@ export default function LoginPage() {
             <CardTitle className="text-2xl font-headline">EmailCraft Lite</CardTitle>
           </div>
           <CardDescription>
-            Inicia sesión para gestionar tus campañas de correo.
+            Selecciona un rol para iniciar sesión.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Button asChild className="w-full">
-            <Link href="/dashboard">
-              <MicrosoftLogo className="mr-2 h-4 w-4" />
-              Iniciar sesión con Microsoft
-            </Link>
+        <CardContent className="space-y-2">
+          <Button onClick={() => handleLogin(ROLES.IT)} className="w-full">
+            <Code className="mr-2 h-4 w-4" />
+            Iniciar como TI
+          </Button>
+           <Button onClick={() => handleLogin(ROLES.MARKETING)} className="w-full">
+            <Megaphone className="mr-2 h-4 w-4" />
+            Iniciar como Marketing
+          </Button>
+           <Button onClick={() => handleLogin(ROLES.HR)} className="w-full">
+            <Users className="mr-2 h-4 w-4" />
+            Iniciar como RH
           </Button>
         </CardContent>
       </Card>

@@ -1,4 +1,7 @@
+'use client';
+
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 import {
   SidebarProvider,
   Sidebar,
@@ -7,8 +10,6 @@ import {
   SidebarFooter,
   SidebarTrigger,
   SidebarInset,
-  SidebarMenuItem,
-  SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/context/auth-context";
+import { hasPermission, APP_PERMISSIONS } from "@/lib/permissions";
+import { Skeleton } from "@/components/ui/skeleton";
+import React from "react";
 
 /**
  * Layout principal para las secciones autenticadas de la aplicación.
@@ -35,6 +40,39 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { role, logout, isLoading } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
+
+  const getRoleName = (role: string | null) => {
+    if (!role) return "Desconocido";
+    return {
+      it: 'Administrador (TI)',
+      marketing: 'Marketing',
+      hr: 'Recursos Humanos'
+    }[role] || 'Usuario';
+  };
+  
+  React.useEffect(() => {
+    if (!isLoading && !role) {
+      router.push('/login');
+    }
+  }, [role, isLoading, router]);
+
+  if (isLoading || !role) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p>Cargando...</p>
+      </div>
+    );
+  }
+  
+  const canViewSettings = hasPermission(role, APP_PERMISSIONS.VIEW_SETTINGS);
+
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
@@ -58,19 +96,21 @@ export default function MainLayout({
                   <AvatarFallback>U</AvatarFallback>
                 </Avatar>
                 <div className="text-left group-data-[collapsible=icon]:hidden">
-                  <p className="font-semibold text-sm">Usuario</p>
-                  <p className="text-xs text-muted-foreground">usuario@email.com</p>
+                  <p className="font-semibold text-sm">{getRoleName(role)}</p>
+                  <p className="text-xs text-muted-foreground">{role}@email.com</p>
                 </div>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="right" align="start" className="w-56">
               <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
+              {canViewSettings && <DropdownMenuSeparator />}
+              {canViewSettings && (
+                 <DropdownMenuItem asChild>
+                    <Link href="/settings"><Settings className="mr-2 h-4 w-4" /><span>Ajustes</span></Link>
+                 </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/settings"><Settings className="mr-2 h-4 w-4" /><span>Ajustes</span></Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Cerrar sesión</span>
               </DropdownMenuItem>

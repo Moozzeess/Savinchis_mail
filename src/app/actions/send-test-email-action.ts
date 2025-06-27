@@ -7,9 +7,11 @@ import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-grap
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { events } from '@/lib/data';
+import { hasPermission, APP_PERMISSIONS, type Role } from '@/lib/permissions';
 
 /**
  * @fileoverview Acción de servidor para enviar un único correo de prueba.
+ * Incluye verificación de permisos basada en rol.
  */
 
 interface SendTestEmailPayload {
@@ -22,6 +24,7 @@ interface SendTestEmailPayload {
     content: string; // base64 content
   };
   eventId?: string;
+  role: Role;
 }
 
 async function getGraphClient() {
@@ -35,8 +38,12 @@ async function getGraphClient() {
 }
 
 export async function sendTestEmailAction(payload: SendTestEmailPayload): Promise<{ success: boolean }> {
-  const { subject, htmlBody, recipientEmail, attachment, eventId } = payload;
+  const { subject, htmlBody, recipientEmail, attachment, eventId, role } = payload;
   
+  if (!hasPermission(role, APP_PERMISSIONS.SEND_CAMPAIGN)) {
+    throw new Error('Acceso denegado: No tienes permiso para enviar correos de prueba.');
+  }
+
   const { GRAPH_USER_MAIL } = process.env;
   if (!GRAPH_USER_MAIL) {
     throw new Error('Falta la variable de entorno GRAPH_USER_MAIL. Por favor, configúrala.');

@@ -42,7 +42,6 @@ import {
   MoreHorizontal,
   File,
   Wand2,
-  Sparkles,
 } from "lucide-react";
 import {
   Popover,
@@ -69,6 +68,7 @@ import { jsPDF } from "jspdf";
 import { optimizeEmailContentAction } from "@/app/actions/optimize-email-action";
 import type { OptimizeEmailContentOutput } from "@/ai/flows/optimize-email-content";
 import { Progress } from "@/components/ui/progress";
+import { useAuth } from "@/context/auth-context";
 
 type RecipientSource = "date" | "file" | "sql";
 type ContentType = "template" | "event" | "survey" | "custom" | "certificate";
@@ -91,6 +91,7 @@ export default function SendPage() {
   const [isSendingTest, setIsSendingTest] = useState(false);
   const [testEmail, setTestEmail] = useState("usuario@email.com");
   const { toast } = useToast();
+  const { role } = useAuth();
 
   const [subject, setSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
@@ -216,6 +217,10 @@ export default function SendPage() {
       toast({ title: "Faltan datos", description: "Asegúrate de que el asunto, el cuerpo y el correo de prueba estén completos.", variant: "destructive" });
       return;
     }
+    if (!role) {
+      toast({ title: "Error de autenticación", description: "No se pudo verificar el rol del usuario.", variant: "destructive" });
+      return;
+    }
 
     setIsSendingTest(true);
     try {
@@ -243,6 +248,7 @@ export default function SendPage() {
         recipientEmail: testEmail,
         attachment,
         eventId: selectedEventId,
+        role,
       });
 
       toast({ title: "Correo de prueba enviado", description: `Se ha enviado un correo de prueba a ${testEmail}.` });
@@ -257,6 +263,10 @@ export default function SendPage() {
     setLastRunStats(null);
     if (!subject.trim() || !emailBody.trim()) {
       toast({ title: "Asunto y Cuerpo requeridos", variant: "destructive" });
+      return;
+    }
+    if (!role) {
+      toast({ title: "Error de autenticación", description: "No se pudo verificar el rol del usuario.", variant: "destructive" });
       return;
     }
     let recipientData;
@@ -293,7 +303,8 @@ export default function SendPage() {
         htmlBody: emailBody, 
         recipientData, 
         attachment,
-        eventId: selectedEventId
+        eventId: selectedEventId,
+        role,
       });
       toast({ title: "Proceso de envío finalizado", description: result.message });
       if (result.stats) setLastRunStats(result.stats);
@@ -328,11 +339,15 @@ export default function SendPage() {
       });
       return;
     }
+     if (!role) {
+      toast({ title: "Error de autenticación", description: "No se pudo verificar el rol del usuario.", variant: "destructive" });
+      return;
+    }
     
     setIsOptimizing(true);
     setAiResult(null);
     try {
-      const result = await optimizeEmailContentAction({ emailContent: emailBody, audience });
+      const result = await optimizeEmailContentAction({ emailContent: emailBody, audience, role });
       setAiResult(result);
       setIsAiModalOpen(true);
     } catch (error) {

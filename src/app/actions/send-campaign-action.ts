@@ -12,6 +12,7 @@ import { parse } from 'csv-parse/sync';
 import * as XLSX from 'xlsx';
 // Importa la constante 'events' desde el módulo de datos local.
 import { events } from '@/lib/data';
+import { hasPermission, APP_PERMISSIONS, type Role } from '@/lib/permissions';
 
 /**
  * @fileoverview Acción de servidor para enviar una campaña de correo electrónico.
@@ -40,6 +41,7 @@ interface SendCampaignPayload {
   };
   // ID opcional de un evento para personalizar el correo (ej: fecha del evento).
   eventId?: string; // ID opcional de un evento.
+  role: Role; // Rol del usuario que ejecuta la acción para verificación de permisos
 }
 
 interface Recipient {
@@ -227,14 +229,18 @@ async function sendEmailWithRetry(graphClient: Client, message: any, userMail: s
 
 // Acción de servidor principal para enviar la campaña de correo electrónico.
 export async function sendCampaign(payload: SendCampaignPayload) {
+  const { subject, htmlBody, recipientData, attachment, eventId, role } = payload;
+  
+  if (!hasPermission(role, APP_PERMISSIONS.SEND_CAMPAIGN)) {
+    throw new Error('Acceso denegado: No tienes permiso para enviar campañas.');
+  }
+  
   // Estos ajustes ahora están configurados globalmente (ej: en la página de Ajustes).
   // Para esta acción, usaremos valores por defecto. En una aplicación real, se obtendrían de una base de datos o servicio de configuración.
   const batchSize = 50;
   const emailDelay = 100; // milisegundos
   const batchDelay = 5; // segundos
 
-  // Desestructura las propiedades del payload.
-  const { subject, htmlBody, recipientData, attachment, eventId } = payload;
   const startTime = Date.now();
   // Registra el tiempo de inicio para calcular la duración total.
 
