@@ -41,7 +41,6 @@ import {
   Forward,
   MoreHorizontal,
   File,
-  Wand2,
 } from "lucide-react";
 import {
   Popover,
@@ -65,9 +64,6 @@ import { cn } from "@/lib/utils";
 import { parse } from 'csv-parse/sync';
 import * as XLSX from 'xlsx';
 import { jsPDF } from "jspdf";
-import { optimizeEmailContentAction } from "@/app/actions/optimize-email-action";
-import type { OptimizeEmailContentOutput } from "@/ai/flows/optimize-email-content";
-import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/context/auth-context";
 import { ROLES } from "@/lib/permissions";
 
@@ -163,15 +159,11 @@ export default function SendPage() {
   const [selectedEventId, setSelectedEventId] = useState<string>("");
   const [selectedSurveyId, setSelectedSurveyId] = useState<string>("");
   const [attachmentName, setAttachmentName] = useState<string | null>(null);
-
-  // AI Optimization state
-  const [isOptimizing, setIsOptimizing] = useState(false);
-  const [aiResult, setAiResult] = useState<OptimizeEmailContentOutput | null>(null);
-  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
-  const [audience, setAudience] = useState("");
+  const [certificatePreview, setCertificatePreview] = useState<string | null>(null);
 
   useEffect(() => {
     setAttachmentName(null);
+    setCertificatePreview(null);
     if (contentType === "template" && selectedTemplateId) {
         const template = templates.find(t => t.id === selectedTemplateId);
         if (template) {
@@ -192,10 +184,12 @@ export default function SendPage() {
         }
     } else if (contentType === "certificate" && selectedEventId) {
       const event = events.find(e => e.id === selectedEventId);
-      if (event) {
+      const template = certificateTemplates[selectedEventId as keyof typeof certificateTemplates];
+      if (event && template) {
           setSubject(`Tu certificado del evento: ${event.name}`);
           setEmailBody(`<h1>¡Felicidades! Aquí está tu certificado</h1><p>Hola {{contact.name}},</p><p>Gracias por tu participación en el evento "${event.name}" el {{event.date}}. Adjuntamos tu certificado de asistencia.</p><p>¡Esperamos verte de nuevo!</p>`);
           setAttachmentName(`certificado-${event.name.replace(/\s/g, '_')}.pdf`);
+          setCertificatePreview(`data:image/png;base64,${template}`);
       }
     }
   }, [contentType, selectedTemplateId, selectedEventId, selectedSurveyId]);
@@ -384,74 +378,7 @@ export default function SendPage() {
     }
   }
 
-  const handleOptimize = async () => {
-    if (!emailBody || !audience) {
-      toast({
-        title: 'Faltan campos',
-        description: 'Por favor, rellena el cuerpo del correo y la audiencia para optimizar.',
-        variant: 'destructive',
-      });
-      return;
-    }
-     if (!role) {
-      toast({ title: "Error de autenticación", description: "No se pudo verificar el rol del usuario.", variant: "destructive" });
-      return;
-    }
-    
-    setIsOptimizing(true);
-    setAiResult(null);
-    try {
-      const result = await optimizeEmailContentAction({ emailContent: emailBody, audience, role });
-      setAiResult(result);
-      setIsAiModalOpen(true);
-    } catch (error) {
-      toast({
-        title: 'Error de optimización',
-        description: (error as Error).message,
-        variant: 'destructive',
-      });
-    } finally {
-      setIsOptimizing(false);
-    }
-  };
-
   return (
-    <>
-    <Dialog open={isAiModalOpen} onOpenChange={setIsAiModalOpen}>
-      <DialogContent className="sm:max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>Resultados de la Optimización</DialogTitle>
-          <DialogDescription>
-            Aquí tienes el contenido mejorado y sugerencias para tu correo.
-          </DialogDescription>
-        </DialogHeader>
-        {aiResult && (
-          <div className="space-y-4 max-h-[70vh] overflow-y-auto p-1">
-             <div>
-                <Label>Puntuación de Spam</Label>
-                <Progress value={aiResult.spamScore || 0} className="w-full mt-1" />
-                <p className="text-sm text-muted-foreground mt-1">
-                  Puntuación: {aiResult.spamScore || 'N/A'}/100 (más bajo es mejor)
-                </p>
-              </div>
-              <div>
-                <Label>Sugerencias de Interacción</Label>
-                <p className="text-sm bg-muted p-3 rounded-md mt-1">{aiResult.engagementSuggestions}</p>
-              </div>
-                <div>
-                <Label>Contenido Optimizado</Label>
-                <Textarea readOnly value={aiResult.optimizedContent} rows={15} className="mt-1 bg-muted" />
-                <Button type="button" variant="secondary" size="sm" className="mt-2" onClick={() => {
-                  setEmailBody(aiResult.optimizedContent);
-                  setIsAiModalOpen(false);
-                  toast({ title: 'Contenido actualizado', description: 'El cuerpo del correo ha sido actualizado con la versión optimizada.'})
-                  }}>Usar este contenido</Button>
-              </div>
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
-
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -492,30 +419,15 @@ export default function SendPage() {
                 <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
               </div>
 
-               <div className="space-y-2">
-                <Label htmlFor="audience">Describe tu Audiencia (para optimización IA)</Label>
-                <Input id="audience" placeholder="Ej: Clientes interesados en tecnología" value={audience} onChange={(e) => setAudience(e.target.value)} />
-              </div>
-
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <Label>Cuerpo del Mensaje</Label>
                    <div className="flex items-center gap-2">
-                     <Button type="button" variant="outline" size="sm" onClick={handleOptimize} disabled={isOptimizing}>
-                        {isOptimizing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                        Optimizar
-                    </Button>
                     <Label htmlFor="html-upload" className="text-sm font-normal text-primary underline-offset-4 hover:underline cursor-pointer">O sube HTML</Label>
                     <Input id="html-upload" type="file" accept=".html" className="hidden" onChange={handleHtmlFileChange} />
                    </div>
                 </div>
                 <Textarea value={emailBody} onChange={(e) => setEmailBody(e.target.value)} rows={10} />
-                {attachmentName && (
-                  <div className="mt-2 flex items-center gap-2 rounded-md border bg-muted/20 p-2 text-sm text-muted-foreground">
-                    <Paperclip className="h-4 w-4 flex-shrink-0" />
-                    <span className="truncate">Adjunto: {attachmentName}</span>
-                  </div>
-                )}
               </div>
             </div>
             
@@ -626,6 +538,12 @@ export default function SendPage() {
                     {/* Body */}
                     <div className="bg-white w-full">
                         <iframe srcDoc={emailBody} title="Email Preview" className="w-full h-[600px] border-0" sandbox="allow-scripts" />
+                         {certificatePreview && (
+                            <div className="p-4 bg-gray-100">
+                                <h3 className="text-lg font-semibold mb-2">Vista Previa del Certificado</h3>
+                                <img src={certificatePreview} alt="Vista previa del certificado" className="max-w-full border rounded-md" />
+                            </div>
+                        )}
                     </div>
 
                     {/* Footer actions */}
@@ -652,8 +570,5 @@ export default function SendPage() {
         </div>
       </div>
     </div>
-    </>
   );
 }
-
-    
