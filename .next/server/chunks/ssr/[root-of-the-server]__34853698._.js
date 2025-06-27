@@ -431,9 +431,17 @@ const APP_PERMISSIONS = {
     VIEW_TEMPLATES: 'templates:view',
     VIEW_EVENTS: 'events:view',
     VIEW_SURVEYS: 'surveys:view',
-    // Avanzado
+    // Avanzado: Página de Rendimiento
     VIEW_PERFORMANCE: 'performance:view',
     GENERATE_REPORTS: 'performance:generate_report',
+    VIEW_PERFORMANCE_MAIN_METRICS: 'performance:view_main_metrics',
+    VIEW_PERFORMANCE_CHARTS: 'performance:view_charts',
+    VIEW_PERFORMANCE_FUNNEL: 'performance:view_funnel',
+    VIEW_PERFORMANCE_SEGMENTS: 'performance:view_segments',
+    VIEW_PERFORMANCE_PREDICTIONS: 'performance:view_predictions',
+    VIEW_PERFORMANCE_ERRORS: 'performance:view_errors',
+    VIEW_PERFORMANCE_SYSTEM: 'performance:view_system',
+    // Ajustes
     VIEW_SETTINGS: 'settings:view'
 };
 const ROLE_PERMISSIONS = {
@@ -446,7 +454,12 @@ const ROLE_PERMISSIONS = {
         APP_PERMISSIONS.VIEW_CONTACTS,
         APP_PERMISSIONS.VIEW_TEMPLATES,
         APP_PERMISSIONS.VIEW_SURVEYS,
-        APP_PERMISSIONS.VIEW_PERFORMANCE
+        APP_PERMISSIONS.VIEW_PERFORMANCE,
+        APP_PERMISSIONS.VIEW_PERFORMANCE_MAIN_METRICS,
+        APP_PERMISSIONS.VIEW_PERFORMANCE_CHARTS,
+        APP_PERMISSIONS.VIEW_PERFORMANCE_FUNNEL,
+        APP_PERMISSIONS.VIEW_PERFORMANCE_SEGMENTS,
+        APP_PERMISSIONS.VIEW_PERFORMANCE_PREDICTIONS
     ],
     [ROLES.HR]: [
         APP_PERMISSIONS.VIEW_DASHBOARD,
