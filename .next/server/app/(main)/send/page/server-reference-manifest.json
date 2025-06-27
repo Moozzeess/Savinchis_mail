@@ -3,7 +3,7 @@
     "401372f659c5451f99035a7f116333db4ac66a7ce4": {
       "workers": {
         "app/(main)/send/page": {
-          "moduleId": "[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/actions/send-test-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "moduleId": "[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/actions/send-test-email-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/app/actions/optimize-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },
@@ -14,7 +14,18 @@
     "406b923f738831070980d62a75596a77849741996f": {
       "workers": {
         "app/(main)/send/page": {
-          "moduleId": "[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/actions/send-test-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "moduleId": "[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/actions/send-test-email-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/app/actions/optimize-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/(main)/send/page": "action-browser"
+      }
+    },
+    "408eb00f3d55a667ab96280ee5276ee768efedb92d": {
+      "workers": {
+        "app/(main)/send/page": {
+          "moduleId": "[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/actions/send-test-email-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/app/actions/optimize-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },
