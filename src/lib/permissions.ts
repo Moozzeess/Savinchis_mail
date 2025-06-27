@@ -31,10 +31,10 @@ export const APP_PERMISSIONS = {
   VIEW_SETTINGS: 'settings:view',
 } as const;
 
-type Permission = (typeof APP_PERMISSIONS)[keyof typeof APP_PERMISSIONS];
+export type Permission = (typeof APP_PERMISSIONS)[keyof typeof APP_PERMISSIONS];
 
-// Asigna permisos a cada rol.
-const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
+// Asigna permisos iniciales a cada rol. Esta será la configuración por defecto.
+export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   [ROLES.IT]: Object.values(APP_PERMISSIONS), // TI tiene todos los permisos
   [ROLES.MARKETING]: [
     APP_PERMISSIONS.VIEW_DASHBOARD,
@@ -44,6 +44,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     APP_PERMISSIONS.VIEW_CONTACTS,
     APP_PERMISSIONS.VIEW_TEMPLATES,
     APP_PERMISSIONS.VIEW_SURVEYS,
+    APP_PERMISSIONS.VIEW_PERFORMANCE,
   ],
   [ROLES.HR]: [
     APP_PERMISSIONS.VIEW_DASHBOARD,
@@ -63,5 +64,8 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
  */
 export function hasPermission(role: Role | null, permission: Permission): boolean {
   if (!role) return false;
+  // En una implementación real y dinámica, ROLE_PERMISSIONS se obtendría
+  // de un estado global o contexto que el admin de TI puede modificar.
+  // Por ahora, usamos la configuración estática.
   return ROLE_PERMISSIONS[role]?.includes(permission) || false;
 }
