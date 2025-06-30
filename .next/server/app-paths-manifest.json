@@ -3,6 +3,7 @@
   "/(main)/campaigns/page": "app/(main)/campaigns/page.js",
   "/(main)/contacts/page": "app/(main)/contacts/page.js",
   "/(main)/dashboard/page": "app/(main)/dashboard/page.js",
+  "/(main)/events/editor/page": "app/(main)/events/editor/page.js",
   "/(main)/events/page": "app/(main)/events/page.js",
   "/(main)/mailbox/page": "app/(main)/mailbox/page.js",
   "/(main)/send/page": "app/(main)/send/page.js",
@@ -11,6 +12,7 @@
   "/(main)/surveys/page": "app/(main)/surveys/page.js",
   "/(main)/templates/editor/page": "app/(main)/templates/editor/page.js",
   "/(main)/templates/page": "app/(main)/templates/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/login/page": "app/login/page.js",
   "/page": "app/page.js"
 }

@@ -1879,12 +1879,12 @@ function MainLayout({ children }) {
                 children: "Cargando..."
             }, void 0, false, {
                 fileName: "[project]/src/app/(main)/layout.tsx",
-                lineNumber: 69,
+                lineNumber: 70,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/app/(main)/layout.tsx",
-            lineNumber: 68,
+            lineNumber: 69,
             columnNumber: 7
         }, this);
     }
@@ -1894,6 +1894,11 @@ function MainLayout({ children }) {
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$sidebar$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Sidebar"], {
                 collapsible: "icon",
                 children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$sidebar$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SidebarRail"], {}, void 0, false, {
+                        fileName: "[project]/src/app/(main)/layout.tsx",
+                        lineNumber: 80,
+                        columnNumber: 9
+                    }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$sidebar$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SidebarHeader"], {
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "flex items-center gap-2",
@@ -1902,7 +1907,7 @@ function MainLayout({ children }) {
                                     className: "size-7 text-primary"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(main)/layout.tsx",
-                                    lineNumber: 81,
+                                    lineNumber: 83,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1910,29 +1915,29 @@ function MainLayout({ children }) {
                                     children: "EmailCraft Lite"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(main)/layout.tsx",
-                                    lineNumber: 82,
+                                    lineNumber: 84,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/(main)/layout.tsx",
-                            lineNumber: 80,
+                            lineNumber: 82,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/(main)/layout.tsx",
-                        lineNumber: 79,
+                        lineNumber: 81,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$sidebar$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SidebarContent"], {
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$nav$2d$links$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["NavLinks"], {}, void 0, false, {
                             fileName: "[project]/src/app/(main)/layout.tsx",
-                            lineNumber: 88,
+                            lineNumber: 90,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/(main)/layout.tsx",
-                        lineNumber: 87,
+                        lineNumber: 89,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$sidebar$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SidebarFooter"], {
@@ -1953,20 +1958,20 @@ function MainLayout({ children }) {
                                                         "data-ai-hint": "person portrait"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/layout.tsx",
-                                                        lineNumber: 95,
+                                                        lineNumber: 97,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$avatar$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AvatarFallback"], {
                                                         children: "U"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/layout.tsx",
-                                                        lineNumber: 96,
+                                                        lineNumber: 98,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/layout.tsx",
-                                                lineNumber: 94,
+                                                lineNumber: 96,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1977,7 +1982,7 @@ function MainLayout({ children }) {
                                                         children: getRoleName(role)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/layout.tsx",
-                                                        lineNumber: 99,
+                                                        lineNumber: 101,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1988,24 +1993,24 @@ function MainLayout({ children }) {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/layout.tsx",
-                                                        lineNumber: 100,
+                                                        lineNumber: 102,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/layout.tsx",
-                                                lineNumber: 98,
+                                                lineNumber: 100,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/layout.tsx",
-                                        lineNumber: 93,
+                                        lineNumber: 95,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(main)/layout.tsx",
-                                    lineNumber: 92,
+                                    lineNumber: 94,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuContent"], {
@@ -2017,12 +2022,12 @@ function MainLayout({ children }) {
                                             children: "Mi Cuenta"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/(main)/layout.tsx",
-                                            lineNumber: 105,
+                                            lineNumber: 107,
                                             columnNumber: 15
                                         }, this),
                                         canViewSettings && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuSeparator"], {}, void 0, false, {
                                             fileName: "[project]/src/app/(main)/layout.tsx",
-                                            lineNumber: 106,
+                                            lineNumber: 108,
                                             columnNumber: 35
                                         }, this),
                                         canViewSettings && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -2034,30 +2039,30 @@ function MainLayout({ children }) {
                                                         className: "mr-2 h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/layout.tsx",
-                                                        lineNumber: 109,
+                                                        lineNumber: 111,
                                                         columnNumber: 44
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         children: "Ajustes"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/layout.tsx",
-                                                        lineNumber: 109,
+                                                        lineNumber: 111,
                                                         columnNumber: 81
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/layout.tsx",
-                                                lineNumber: 109,
+                                                lineNumber: 111,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/(main)/layout.tsx",
-                                            lineNumber: 108,
+                                            lineNumber: 110,
                                             columnNumber: 18
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuSeparator"], {}, void 0, false, {
                                             fileName: "[project]/src/app/(main)/layout.tsx",
-                                            lineNumber: 112,
+                                            lineNumber: 114,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -2067,43 +2072,43 @@ function MainLayout({ children }) {
                                                     className: "mr-2 h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/layout.tsx",
-                                                    lineNumber: 114,
+                                                    lineNumber: 116,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     children: "Cerrar sesión"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/layout.tsx",
-                                                    lineNumber: 115,
+                                                    lineNumber: 117,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/(main)/layout.tsx",
-                                            lineNumber: 113,
+                                            lineNumber: 115,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/(main)/layout.tsx",
-                                    lineNumber: 104,
+                                    lineNumber: 106,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/(main)/layout.tsx",
-                            lineNumber: 91,
+                            lineNumber: 93,
                             columnNumber: 12
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/(main)/layout.tsx",
-                        lineNumber: 90,
+                        lineNumber: 92,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(main)/layout.tsx",
-                lineNumber: 78,
+                lineNumber: 79,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$sidebar$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SidebarInset"], {
@@ -2115,7 +2120,7 @@ function MainLayout({ children }) {
                                 className: "md:hidden"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/layout.tsx",
-                                lineNumber: 123,
+                                lineNumber: 125,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2124,18 +2129,18 @@ function MainLayout({ children }) {
                                     className: "text-lg font-headline font-semibold"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(main)/layout.tsx",
-                                    lineNumber: 125,
+                                    lineNumber: 127,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/layout.tsx",
-                                lineNumber: 124,
+                                lineNumber: 126,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/(main)/layout.tsx",
-                        lineNumber: 122,
+                        lineNumber: 124,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -2143,19 +2148,19 @@ function MainLayout({ children }) {
                         children: children
                     }, void 0, false, {
                         fileName: "[project]/src/app/(main)/layout.tsx",
-                        lineNumber: 128,
+                        lineNumber: 130,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(main)/layout.tsx",
-                lineNumber: 121,
+                lineNumber: 123,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/(main)/layout.tsx",
-        lineNumber: 77,
+        lineNumber: 78,
         columnNumber: 5
     }, this);
 }
