@@ -24,6 +24,7 @@ import { Target, Users, Megaphone, Code, Globe, Server } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { ROLES, type Role } from "@/lib/permissions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { managedSenders } from "@/lib/data";
 
 
 type Campaign = {
@@ -38,12 +39,13 @@ type Campaign = {
 
 // Datos de ejemplo para el monitor de envíos
 const allCampaigns: Campaign[] = [
-  { name: "Lanzamiento Nuevo Producto", sender: "marketing@emailcraft.com", status: "INICIADA", sent: 1200, total: 8000, date: "2024-07-18", role: ROLES.MARKETING },
+  { name: "Lanzamiento Nuevo Producto", sender: "marketing@emailcraft.com", status: "INICIADA", sent: 8200, total: 15000, date: "2024-07-18", role: ROLES.MARKETING },
   { name: "Encuesta de Satisfacción Q3 (TI)", sender: "soporte@emailcraft.com", status: "INICIADA", sent: 3500, total: 5000, date: "2024-07-20", role: ROLES.IT },
   { name: "Contrataciones Abiertas", sender: "rh@emailcraft.com", status: "TERMINADA", sent: 500, total: 500, date: "2024-07-15", role: ROLES.HR },
-  { name: "Newsletter Mensual - Julio", sender: "marketing@emailcraft.com", status: "TERMINADA", sent: 15000, total: 15000, date: "2024-07-01", role: ROLES.MARKETING },
+  { name: "Newsletter Mensual - Julio", sender: "marketing@emailcraft.com", status: "TERMINADA", sent: 1500, total: 1500, date: "2024-07-01", role: ROLES.MARKETING },
+  { name: "Aviso de Mantenimiento", sender: "soporte@emailcraft.com", status: "TERMINADA", sent: 4000, total: 4000, date: "2024-07-21", role: ROLES.IT },
   { name: "Recordatorio Webinar (RH)", sender: "rh@emailcraft.com", status: "PAUSADA", sent: 50, total: 400, date: "2024-07-22", role: ROLES.HR },
-  { name: "Actualización de Servidores", sender: "noreply@emailcraft.com", status: "TERMINADA", sent: 25, total: 25, date: "2024-07-19", role: ROLES.IT },
+  { name: "Actualización de Servidores", sender: "noreply@emailcraft.com", status: "TERMINADA", sent: 2500, total: 2500, date: "2024-07-19", role: ROLES.IT },
   { name: "Comunicado Interno de TI", sender: "comms@emailcraft.com", status: "TERMINADA", sent: 150, total: 150, date: "2024-07-10", role: ROLES.IT },
 ];
 
@@ -159,9 +161,23 @@ export default function CampaignsPage() {
     const totalSentForIT = useMemo(() => 
         itCampaigns.reduce((acc, c) => acc + c.sent, 0),
     [itCampaigns]);
+    
+    const sentByITSender = useMemo(() => {
+        const totals: Record<string, number> = {};
+        managedSenders.forEach(sender => {
+            totals[sender.email] = 0;
+        });
+        
+        itCampaigns.forEach(campaign => {
+            if (totals.hasOwnProperty(campaign.sender)) {
+                totals[campaign.sender] += campaign.sent;
+            }
+        });
+        return totals;
+    }, [itCampaigns]);
+
 
     const roleSentPercentage = (totalSentForRole / dailyLimit) * 100;
-    const itSentPercentage = (totalSentForIT / dailyLimit) * 100;
 
   return (
     <div className="space-y-6">
@@ -184,35 +200,41 @@ export default function CampaignsPage() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Globe className="h-5 w-5" />
-                            Contador Global de Envíos
+                            Contador Global de Envíos (Hoy)
                         </CardTitle>
                         <CardDescription>
-                            Total de correos enviados hoy por toda la organización.
+                            Total de correos enviados por toda la organización.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-2xl font-bold">{globalSent.toLocaleString()}</p>
+                        <p className="text-3xl font-bold">{globalSent.toLocaleString()}</p>
                         <p className="text-xs text-muted-foreground">Envíos totales</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Server className="h-5 w-5" />
-                            Contador de Envíos de TI (Hoy)
+                            <Users className="h-5 w-5" />
+                            Uso por Cuenta de Remitente (TI)
                         </CardTitle>
                         <CardDescription>
-                            Uso del límite diario de envíos para el área de TI.
+                            Límite diario de 10,000 por cuenta de envío.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center gap-4">
-                            <div className="flex-1"><Progress value={itSentPercentage} /></div>
-                            <div className="text-right">
-                                <p className="text-lg font-bold">{totalSentForIT.toLocaleString()} / {dailyLimit.toLocaleString()}</p>
-                                <p className="text-xs text-muted-foreground">{itSentPercentage.toFixed(1)}% del límite utilizado</p>
-                            </div>
-                        </div>
+                    <CardContent className="space-y-4">
+                        {managedSenders.map(sender => {
+                            const sent = sentByITSender[sender.email] || 0;
+                            const percentage = (sent / dailyLimit) * 100;
+                            return (
+                                <div key={sender.email}>
+                                    <div className="flex justify-between items-center mb-1">
+                                        <p className="text-sm font-medium">{sender.name}</p>
+                                        <p className="text-sm text-muted-foreground">{sent.toLocaleString()} / {dailyLimit.toLocaleString()}</p>
+                                    </div>
+                                    <Progress value={percentage} />
+                                </div>
+                            )
+                        })}
                     </CardContent>
                 </Card>
             </>
@@ -224,7 +246,7 @@ export default function CampaignsPage() {
                     Contador de Envíos de tu Área (Hoy)
                 </CardTitle>
                 <CardDescription>
-                    Uso del límite diario de envíos de Microsoft Graph para tu área.
+                    Uso del límite diario de 10,000 envíos para tu área.
                 </CardDescription>
                 </CardHeader>
                 <CardContent>
