@@ -685,7 +685,7 @@ const delay = (ms)=>new Promise((res)=>setTimeout(res, ms));
     throw new Error(`No se pudo enviar el correo después de ${maxRetries} reintentos.`);
 }
 async function sendCampaign(payload) {
-    const { subject, htmlBody, recipientData, attachment, eventId, role } = payload;
+    const { subject, htmlBody, recipientData, attachment, eventId, role, senderEmail } = payload;
     if (!(0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["hasPermission"])(role, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["APP_PERMISSIONS"].SEND_CAMPAIGN)) {
         throw new Error('Acceso denegado: No tienes permiso para enviar campañas.');
     }
@@ -696,11 +696,9 @@ async function sendCampaign(payload) {
     const batchDelay = 5; // segundos
     const startTime = Date.now();
     // Registra el tiempo de inicio para calcular la duración total.
-    const { GRAPH_USER_MAIL } = process.env;
-    if (!GRAPH_USER_MAIL) {
-        throw new Error('Falta la variable de entorno GRAPH_USER_MAIL. Por favor, configúrala.');
+    if (!senderEmail) {
+        throw new Error('Falta el correo del remitente. Por favor, configúralo.');
     }
-    // Verifica que la variable de entorno GRAPH_USER_MAIL esté configurada. Si falta, lanza un error.
     const recipients = await getRecipients(recipientData);
     // Obtiene la lista de destinatarios utilizando la función getRecipients.
     if (recipients.length === 0) {
@@ -770,7 +768,7 @@ async function sendCampaign(payload) {
                     ] : undefined
                 };
                 // Envía el correo usando la función con lógica de reintentos.
-                await sendEmailWithRetry(graphClient, message, GRAPH_USER_MAIL);
+                await sendEmailWithRetry(graphClient, message, senderEmail);
                 sentCount++;
             // Incrementa el contador de correos enviados exitosamente.
             } catch (error) {
@@ -860,13 +858,12 @@ async function getGraphClient() {
     });
 }
 async function sendTestEmailAction(payload) {
-    const { subject, htmlBody, recipientEmail, attachment, eventId, role } = payload;
+    const { subject, htmlBody, recipientEmail, senderEmail, attachment, eventId, role } = payload;
     if (!(0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["hasPermission"])(role, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["APP_PERMISSIONS"].SEND_CAMPAIGN)) {
         throw new Error('Acceso denegado: No tienes permiso para enviar correos de prueba.');
     }
-    const { GRAPH_USER_MAIL } = process.env;
-    if (!GRAPH_USER_MAIL) {
-        throw new Error('Falta la variable de entorno GRAPH_USER_MAIL. Por favor, configúrala.');
+    if (!senderEmail) {
+        throw new Error('Falta el correo del remitente. Por favor, configúralo.');
     }
     const event = eventId ? __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["events"].find((e)=>e.id === eventId) : null;
     let finalHtmlBody = htmlBody;
@@ -907,7 +904,7 @@ async function sendTestEmailAction(payload) {
     };
     try {
         const graphClient = await getGraphClient();
-        await graphClient.api(`/users/${GRAPH_USER_MAIL}/sendMail`).post({
+        await graphClient.api(`/users/${senderEmail}/sendMail`).post({
             message,
             saveToSentItems: 'true'
         });
