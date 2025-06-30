@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -19,42 +20,30 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { Target } from "lucide-react";
+import { Target, Users, Megaphone, Code } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
+import { ROLES, type Role } from "@/lib/permissions";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+
+type Campaign = {
+    name: string;
+    sender: string;
+    status: "INICIADA" | "TERMINADA" | "PAUSADA";
+    sent: number;
+    total: number;
+    date: string;
+    role: Role;
+};
 
 // Datos de ejemplo para el monitor de envíos
-const sendingCampaigns = [
-  {
-    name: "Lanzamiento Nuevo Producto",
-    sender: "marketing@emailcraft.com",
-    status: "INICIADA",
-    sent: 1200,
-    total: 8000,
-    date: "2024-07-18",
-  },
-  {
-    name: "Encuesta de Satisfacción Q3",
-    sender: "soporte@emailcraft.com",
-    status: "INICIADA",
-    sent: 3500,
-    total: 5000,
-    date: "2024-07-20",
-  },
-  {
-    name: "Newsletter Mensual - Julio",
-    sender: "newsletter@emailcraft.com",
-    status: "TERMINADA",
-    sent: 15000,
-    total: 15000,
-    date: "2024-07-01",
-  },
-  {
-    name: "Recordatorio Webinar",
-    sender: "eventos@emailcraft.com",
-    status: "PAUSADA",
-    sent: 50,
-    total: 400,
-    date: "2024-07-22",
-  },
+const allCampaigns: Campaign[] = [
+  { name: "Lanzamiento Nuevo Producto", sender: "marketing@emailcraft.com", status: "INICIADA", sent: 1200, total: 8000, date: "2024-07-18", role: ROLES.MARKETING },
+  { name: "Encuesta de Satisfacción Q3 (TI)", sender: "soporte@emailcraft.com", status: "INICIADA", sent: 3500, total: 5000, date: "2024-07-20", role: ROLES.IT },
+  { name: "Contrataciones Abiertas", sender: "rh@emailcraft.com", status: "TERMINADA", sent: 500, total: 500, date: "2024-07-15", role: ROLES.HR },
+  { name: "Newsletter Mensual - Julio", sender: "newsletter@emailcraft.com", status: "TERMINADA", sent: 15000, total: 15000, date: "2024-07-01", role: ROLES.MARKETING },
+  { name: "Recordatorio Webinar (RH)", sender: "eventos@emailcraft.com", status: "PAUSADA", sent: 50, total: 400, date: "2024-07-22", role: ROLES.HR },
+  { name: "Actualización de Servidores", sender: "it@emailcraft.com", status: "TERMINADA", sent: 25, total: 25, date: "2024-07-19", role: ROLES.IT },
 ];
 
 const getStatusVariant = (status: string) => {
@@ -84,26 +73,93 @@ const getStatusClass = (status: string) => {
 };
 
 /**
+ * Componente reutilizable para renderizar la tabla de campañas.
+ */
+const CampaignsTable = ({ campaigns }: { campaigns: Campaign[] }) => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Campaña / Evento</TableHead>
+          <TableHead>Remitente</TableHead>
+          <TableHead>Estado</TableHead>
+          <TableHead>Enviados / Total</TableHead>
+          <TableHead className="w-[25%]">Progreso</TableHead>
+          <TableHead>Fecha de Inicio</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {campaigns.map((campaign) => {
+          const progress = (campaign.total > 0) ? (campaign.sent / campaign.total) * 100 : 0;
+          return (
+            <TableRow key={campaign.name}>
+              <TableCell className="font-medium">{campaign.name}</TableCell>
+              <TableCell>{campaign.sender}</TableCell>
+              <TableCell>
+                <Badge
+                  variant={getStatusVariant(campaign.status)}
+                  className={cn(getStatusClass(campaign.status))}
+                >
+                  {campaign.status}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                {campaign.sent.toLocaleString()} / {campaign.total.toLocaleString()}
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  <Progress value={progress} className="h-2" />
+                  <span className="text-xs text-muted-foreground">{Math.round(progress)}%</span>
+                </div>
+              </TableCell>
+              <TableCell>{campaign.date}</TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
+  );
+
+
+/**
  * Página del Monitor de Envíos.
- * Muestra el estado y progreso de las campañas de correo electrónico activas y recientes.
+ * Muestra el estado y progreso de las campañas de correo electrónico activas y recientes,
+ * con vistas personalizadas según el rol del usuario.
  */
 export default function CampaignsPage() {
-  const totalSentToday = sendingCampaigns.reduce(
-    (acc, campaign) => acc + campaign.sent,
-    0
-  );
-  const dailyLimit = 10000;
-  const sentPercentage = (totalSentToday / dailyLimit) * 100;
+    const { role } = useAuth();
+    const isIT = role === ROLES.IT;
+
+    const campaignsForUser = useMemo(() => {
+        if (!role || isIT) return allCampaigns;
+        return allCampaigns.filter((campaign) => campaign.role === role);
+    }, [role, isIT]);
+
+    const marketingCampaigns = useMemo(() => allCampaigns.filter(c => c.role === ROLES.MARKETING), []);
+    const hrCampaigns = useMemo(() => allCampaigns.filter(c => c.role === ROLES.HR), []);
+    const itCampaigns = useMemo(() => allCampaigns.filter(c => c.role === ROLES.IT), []);
+
+    const totalSentForRole = useMemo(() => 
+        campaignsForUser.reduce((acc, c) => acc + c.sent, 0),
+    [campaignsForUser]);
+
+    const globalSent = useMemo(() =>
+        allCampaigns.reduce((acc, c) => acc + c.sent, 0),
+    []);
+
+    const dailyLimit = 50000;
+    const sentCount = isIT ? globalSent : totalSentForRole;
+    const sentPercentage = (sentCount / dailyLimit) * 100;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-headline font-bold">
-            Monitor de Envíos
-          </h1>
+          <h1 className="text-3xl font-headline font-bold">Monitor de Envíos</h1>
           <p className="text-muted-foreground">
-            Supervisa el comportamiento y progreso de tus envíos en tiempo real.
+            {isIT 
+                ? "Supervisa los envíos de toda la organización."
+                : "Supervisa el comportamiento y progreso de tus envíos en tiempo real."
+            }
           </p>
         </div>
       </div>
@@ -112,10 +168,13 @@ export default function CampaignsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
-            Contador General de Envíos (Hoy)
+            {isIT ? 'Contador Global de Envíos (Hoy)' : 'Contador de Envíos de tu Área (Hoy)'}
           </CardTitle>
           <CardDescription>
-            Uso del límite diario de envíos de Microsoft Graph.
+            {isIT 
+              ? 'Uso consolidado del límite diario de envíos de todas las áreas.' 
+              : 'Uso del límite diario de envíos de Microsoft Graph para tu área.'
+            }
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -125,8 +184,7 @@ export default function CampaignsPage() {
             </div>
             <div className="text-right">
               <p className="text-lg font-bold">
-                {totalSentToday.toLocaleString()} /{" "}
-                {dailyLimit.toLocaleString()}
+                {sentCount.toLocaleString()} / {dailyLimit.toLocaleString()}
               </p>
               <p className="text-xs text-muted-foreground">
                 {sentPercentage.toFixed(1)}% del límite utilizado
@@ -136,63 +194,42 @@ export default function CampaignsPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Estado de Envíos</CardTitle>
-          <CardDescription>
-            Campañas que se están enviando actualmente o que han finalizado
-            recientemente.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Campaña / Evento</TableHead>
-                <TableHead>Remitente</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead>Enviados / Total</TableHead>
-                <TableHead className="w-[25%]">Progreso</TableHead>
-                <TableHead>Fecha de Inicio</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sendingCampaigns.map((campaign) => {
-                const progress = (campaign.sent / campaign.total) * 100;
-                return (
-                  <TableRow key={campaign.name}>
-                    <TableCell className="font-medium">
-                      {campaign.name}
-                    </TableCell>
-                    <TableCell>{campaign.sender}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={getStatusVariant(campaign.status)}
-                        className={cn(getStatusClass(campaign.status))}
-                      >
-                        {campaign.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {campaign.sent.toLocaleString()} /{" "}
-                      {campaign.total.toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Progress value={progress} className="h-2" />
-                        <span className="text-xs text-muted-foreground">
-                          {Math.round(progress)}%
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>{campaign.date}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {isIT ? (
+        <Card>
+            <CardHeader>
+                <CardTitle>Monitor Global de Envíos</CardTitle>
+                <CardDescription>
+                    Supervisa las campañas de todas las áreas de la organización.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Tabs defaultValue="global" className="w-full">
+                    <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="global">Global</TabsTrigger>
+                        <TabsTrigger value="marketing"><Megaphone className="mr-2 h-4 w-4" />Marketing</TabsTrigger>
+                        <TabsTrigger value="hr"><Users className="mr-2 h-4 w-4" />RH</TabsTrigger>
+                        <TabsTrigger value="it"><Code className="mr-2 h-4 w-4" />TI</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="global" className="mt-4"><CampaignsTable campaigns={allCampaigns} /></TabsContent>
+                    <TabsContent value="marketing" className="mt-4"><CampaignsTable campaigns={marketingCampaigns} /></TabsContent>
+                    <TabsContent value="hr" className="mt-4"><CampaignsTable campaigns={hrCampaigns} /></TabsContent>
+                    <TabsContent value="it" className="mt-4"><CampaignsTable campaigns={itCampaigns} /></TabsContent>
+                </Tabs>
+            </CardContent>
+        </Card>
+      ) : (
+        <Card>
+            <CardHeader>
+            <CardTitle>Estado de tus Envíos</CardTitle>
+            <CardDescription>
+                Campañas que tu área está enviando actualmente o que ha finalizado recientemente.
+            </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <CampaignsTable campaigns={campaignsForUser} />
+            </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
