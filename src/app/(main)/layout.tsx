@@ -10,6 +10,7 @@ import {
   SidebarFooter,
   SidebarTrigger,
   SidebarInset,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -76,6 +77,7 @@ export default function MainLayout({
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
+        <SidebarRail />
         <SidebarHeader>
           <div className="flex items-center gap-2">
             <AppLogo className="size-7 text-primary" />
