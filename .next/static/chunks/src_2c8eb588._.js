@@ -527,6 +527,7 @@ var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_
     "certificateTemplates": (()=>certificateTemplates),
     "contacts": (()=>contacts),
     "events": (()=>events),
+    "managedSenders": (()=>managedSenders),
     "surveys": (()=>surveys),
     "templates": (()=>templates)
 });
@@ -661,6 +662,20 @@ const events = [
 const certificateTemplates = {
     '1': 'iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDlWIpAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGSSURBVHhe7dJBDQAgDAAx2NB/yHwM46GE+zs7+8HBAgQIECAwERAgQIAAgYmAAAECEAEDAgECEQEBAgECEQEBAgECBAgQCAmY+wEECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIECAQEBAgAABAq8CgU5q3+UAAAAASUVORK5CYII='
 };
+const managedSenders = [
+    {
+        name: 'Soporte Técnico',
+        email: 'soporte@emailcraft.com'
+    },
+    {
+        name: 'Notificaciones del Sistema',
+        email: 'noreply@emailcraft.com'
+    },
+    {
+        name: 'Comunicaciones Internas',
+        email: 'comms@emailcraft.com'
+    }
+];
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
 }

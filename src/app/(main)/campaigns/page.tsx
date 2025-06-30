@@ -41,9 +41,10 @@ const allCampaigns: Campaign[] = [
   { name: "Lanzamiento Nuevo Producto", sender: "marketing@emailcraft.com", status: "INICIADA", sent: 1200, total: 8000, date: "2024-07-18", role: ROLES.MARKETING },
   { name: "Encuesta de Satisfacción Q3 (TI)", sender: "soporte@emailcraft.com", status: "INICIADA", sent: 3500, total: 5000, date: "2024-07-20", role: ROLES.IT },
   { name: "Contrataciones Abiertas", sender: "rh@emailcraft.com", status: "TERMINADA", sent: 500, total: 500, date: "2024-07-15", role: ROLES.HR },
-  { name: "Newsletter Mensual - Julio", sender: "newsletter@emailcraft.com", status: "TERMINADA", sent: 15000, total: 15000, date: "2024-07-01", role: ROLES.MARKETING },
-  { name: "Recordatorio Webinar (RH)", sender: "eventos@emailcraft.com", status: "PAUSADA", sent: 50, total: 400, date: "2024-07-22", role: ROLES.HR },
-  { name: "Actualización de Servidores", sender: "it@emailcraft.com", status: "TERMINADA", sent: 25, total: 25, date: "2024-07-19", role: ROLES.IT },
+  { name: "Newsletter Mensual - Julio", sender: "marketing@emailcraft.com", status: "TERMINADA", sent: 15000, total: 15000, date: "2024-07-01", role: ROLES.MARKETING },
+  { name: "Recordatorio Webinar (RH)", sender: "rh@emailcraft.com", status: "PAUSADA", sent: 50, total: 400, date: "2024-07-22", role: ROLES.HR },
+  { name: "Actualización de Servidores", sender: "noreply@emailcraft.com", status: "TERMINADA", sent: 25, total: 25, date: "2024-07-19", role: ROLES.IT },
+  { name: "Comunicado Interno de TI", sender: "comms@emailcraft.com", status: "TERMINADA", sent: 150, total: 150, date: "2024-07-10", role: ROLES.IT },
 ];
 
 const getStatusVariant = (status: string) => {
