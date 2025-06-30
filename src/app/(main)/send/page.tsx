@@ -141,9 +141,11 @@ export default function SendPage() {
   const [date, setDate] = useState<Date>();
   const [isSending, setIsSending] = useState(false);
   const [isSendingTest, setIsSendingTest] = useState(false);
-  const [testEmail, setTestEmail] = useState("usuario@email.com");
   const { toast } = useToast();
   const { role } = useAuth();
+  
+  const [senderEmail, setSenderEmail] = useState("");
+  const [testEmail, setTestEmail] = useState("");
 
   const [subject, setSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
@@ -163,6 +165,14 @@ export default function SendPage() {
   const [attachmentName, setAttachmentName] = useState<string | null>(null);
   const [certificatePreview, setCertificatePreview] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
+
+  useEffect(() => {
+    if (role) {
+      const userEmail = `${role}@email.com`;
+      setSenderEmail(userEmail);
+      setTestEmail(userEmail);
+    }
+  }, [role]);
 
   useEffect(() => {
     setAttachmentName(null);
@@ -271,8 +281,8 @@ export default function SendPage() {
   };
 
   const handleSendTestEmail = async () => {
-    if (!testEmail.trim() || !subject.trim() || !emailBody.trim()) {
-      toast({ title: "Faltan datos", description: "Asegúrate de que el asunto, el cuerpo y el correo de prueba estén completos.", variant: "destructive" });
+    if (!testEmail.trim() || !senderEmail.trim() || !subject.trim() || !emailBody.trim()) {
+      toast({ title: "Faltan datos", description: "Asegúrate de que el remitente, asunto, cuerpo y correo de prueba estén completos.", variant: "destructive" });
       return;
     }
     if (!role) {
@@ -304,6 +314,7 @@ export default function SendPage() {
         subject,
         htmlBody: emailBody,
         recipientEmail: testEmail,
+        senderEmail,
         attachment,
         eventId: selectedEventId,
         role,
@@ -319,8 +330,8 @@ export default function SendPage() {
 
   const handleSendCampaign = async () => {
     setLastRunStats(null);
-    if (!subject.trim() || !emailBody.trim()) {
-      toast({ title: "Asunto y Cuerpo requeridos", variant: "destructive" });
+    if (!subject.trim() || !senderEmail.trim() || !emailBody.trim()) {
+      toast({ title: "Remitente, Asunto y Cuerpo requeridos", variant: "destructive" });
       return;
     }
     if (!role) {
@@ -360,6 +371,7 @@ export default function SendPage() {
         subject, 
         htmlBody: emailBody, 
         recipientData, 
+        senderEmail,
         attachment,
         eventId: selectedEventId,
         role,
@@ -423,10 +435,16 @@ export default function SendPage() {
                 {contentType !== 'custom' && <div className="space-y-2">{renderContentSelector()}</div>}
             </div>
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="subject">Asunto del Correo</Label>
-                <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
+            <div className="space-y-4 border-t pt-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                      <Label htmlFor="sender-email">Email del Remitente</Label>
+                      <Input id="sender-email" type="email" value={senderEmail} onChange={(e) => setSenderEmail(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="subject">Asunto del Correo</Label>
+                      <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
+                  </div>
               </div>
 
               <div className="space-y-2">
@@ -458,26 +476,23 @@ export default function SendPage() {
               </Tabs>
             </div>
 
-            <Card className="bg-muted/50">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2"><Send /> Envío de Prueba</CardTitle>
-                <CardDescription>
-                  Envía una versión de prueba de este correo a una dirección específica antes del envío masivo.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-2 items-end">
-                  <div className="flex-grow space-y-2">
-                    <Label htmlFor="test-email">Correo de Prueba</Label>
-                    <Input id="test-email" type="email" placeholder="tu-correo@ejemplo.com" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} />
-                  </div>
-                  <Button onClick={handleSendTestEmail} variant="secondary" disabled={isSendingTest || isSending}>
-                    {isSendingTest ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                    Enviar Prueba
-                  </Button>
+            <div className="space-y-3 rounded-md border p-4">
+              <Label>Envío de Prueba</Label>
+              <p className="text-sm text-muted-foreground">
+                Envía una versión de prueba de este correo antes del envío masivo.
+              </p>
+              <div className="flex gap-2 items-end">
+                <div className="flex-grow space-y-2">
+                  <Label htmlFor="test-email" className="sr-only">Correo de Prueba</Label>
+                  <Input id="test-email" type="email" placeholder="tu-correo@ejemplo.com" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} />
                 </div>
-              </CardContent>
-            </Card>
+                <Button onClick={handleSendTestEmail} variant="secondary" disabled={isSendingTest || isSending}>
+                  {isSendingTest ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  <span>Enviar Prueba</span>
+                </Button>
+              </div>
+            </div>
+
             
             <div className="flex items-start space-x-3 rounded-md bg-muted/50 p-3 text-sm">
                 <Info className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
@@ -531,7 +546,7 @@ export default function SendPage() {
                                     <AvatarFallback>AP</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <p className="font-semibold text-sm">Tu Nombre (Remitente)</p>
+                                    <p className="font-semibold text-sm">{senderEmail || 'remitente@ejemplo.com'}</p>
                                     <p className="text-xs text-muted-foreground">Para: destinatario@ejemplo.com</p>
                                 </div>
                             </div>

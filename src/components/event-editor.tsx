@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -106,21 +107,15 @@ export function EventEditor() {
 
       <Card>
         <CardHeader>
-          <CardTitle>1. Detalles del Evento y Correo</CardTitle>
+          <CardTitle>1. Detalles del Evento</CardTitle>
           <CardDescription>
-            Configura la información básica del evento y el remitente del correo.
+            Configura la información básica del evento.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="event-name">Nombre del Evento</Label>
-              <Input id="event-name" placeholder="Ej: Conferencia Anual de Tecnología" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="sender-email">Email del Remitente</Label>
-              <Input id="sender-email" type="email" placeholder="tu-correo@ejemplo.com" />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="event-name">Nombre del Evento</Label>
+            <Input id="event-name" placeholder="Ej: Conferencia Anual de Tecnología" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="event-description">Descripción del Evento</Label>

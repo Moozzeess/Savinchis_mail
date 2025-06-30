@@ -1,3 +1,4 @@
+
 'use server';
 
 import 'isomorphic-fetch';
@@ -18,6 +19,7 @@ interface SendTestEmailPayload {
   subject: string;
   htmlBody: string;
   recipientEmail: string;
+  senderEmail: string;
   attachment?: {
     filename: string;
     contentType: string;
@@ -38,15 +40,14 @@ async function getGraphClient() {
 }
 
 export async function sendTestEmailAction(payload: SendTestEmailPayload): Promise<{ success: boolean }> {
-  const { subject, htmlBody, recipientEmail, attachment, eventId, role } = payload;
+  const { subject, htmlBody, recipientEmail, senderEmail, attachment, eventId, role } = payload;
   
   if (!hasPermission(role, APP_PERMISSIONS.SEND_CAMPAIGN)) {
     throw new Error('Acceso denegado: No tienes permiso para enviar correos de prueba.');
   }
 
-  const { GRAPH_USER_MAIL } = process.env;
-  if (!GRAPH_USER_MAIL) {
-    throw new Error('Falta la variable de entorno GRAPH_USER_MAIL. Por favor, configúrala.');
+  if (!senderEmail) {
+    throw new Error('Falta el correo del remitente. Por favor, configúralo.');
   }
 
   const event = eventId ? events.find(e => e.id === eventId) : null;
@@ -81,7 +82,7 @@ export async function sendTestEmailAction(payload: SendTestEmailPayload): Promis
 
   try {
     const graphClient = await getGraphClient();
-    await graphClient.api(`/users/${GRAPH_USER_MAIL}/sendMail`).post({ message, saveToSentItems: 'true' });
+    await graphClient.api(`/users/${senderEmail}/sendMail`).post({ message, saveToSentItems: 'true' });
     return { success: true };
   } catch (error) {
     const errorMessage = (error as any)?.body ? JSON.parse((error as any).body).error.message : (error as Error).message;

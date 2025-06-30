@@ -32,6 +32,7 @@ interface SendCampaignPayload {
     type: 'date' | 'csv' | 'sql' | 'excel';
     value: string;
   };
+  senderEmail: string;
   // Propiedad opcional para adjuntar un archivo al correo.
   attachment?: {
     filename: string; // El nombre del archivo adjunto.
@@ -229,7 +230,7 @@ async function sendEmailWithRetry(graphClient: Client, message: any, userMail: s
 
 // Acción de servidor principal para enviar la campaña de correo electrónico.
 export async function sendCampaign(payload: SendCampaignPayload) {
-  const { subject, htmlBody, recipientData, attachment, eventId, role } = payload;
+  const { subject, htmlBody, recipientData, attachment, eventId, role, senderEmail } = payload;
   
   if (!hasPermission(role, APP_PERMISSIONS.SEND_CAMPAIGN)) {
     throw new Error('Acceso denegado: No tienes permiso para enviar campañas.');
@@ -244,11 +245,9 @@ export async function sendCampaign(payload: SendCampaignPayload) {
   const startTime = Date.now();
   // Registra el tiempo de inicio para calcular la duración total.
 
-  const { GRAPH_USER_MAIL } = process.env;
-  if (!GRAPH_USER_MAIL) {
-    throw new Error('Falta la variable de entorno GRAPH_USER_MAIL. Por favor, configúrala.');
+  if (!senderEmail) {
+    throw new Error('Falta el correo del remitente. Por favor, configúralo.');
   }
-  // Verifica que la variable de entorno GRAPH_USER_MAIL esté configurada. Si falta, lanza un error.
 
   const recipients = await getRecipients(recipientData);
   // Obtiene la lista de destinatarios utilizando la función getRecipients.
@@ -306,7 +305,7 @@ export async function sendCampaign(payload: SendCampaignPayload) {
             };
             
             // Envía el correo usando la función con lógica de reintentos.
-            await sendEmailWithRetry(graphClient, message, GRAPH_USER_MAIL);
+            await sendEmailWithRetry(graphClient, message, senderEmail);
 
             sentCount++;
             // Incrementa el contador de correos enviados exitosamente.
