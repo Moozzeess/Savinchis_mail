@@ -915,7 +915,15 @@ function PerformancePage() {
         from: new Date(2024, 0, 1),
         to: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$addDays$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["addDays"])(new Date(2024, 5, 30), 20)
     });
+    // Permisos granulares
     const canGenerateReport = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["hasPermission"])(role, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["APP_PERMISSIONS"].GENERATE_REPORTS);
+    const canViewMainMetrics = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["hasPermission"])(role, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["APP_PERMISSIONS"].VIEW_PERFORMANCE_MAIN_METRICS);
+    const canViewCharts = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["hasPermission"])(role, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["APP_PERMISSIONS"].VIEW_PERFORMANCE_CHARTS);
+    const canViewPredictions = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["hasPermission"])(role, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["APP_PERMISSIONS"].VIEW_PERFORMANCE_PREDICTIONS);
+    const canViewErrors = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["hasPermission"])(role, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["APP_PERMISSIONS"].VIEW_PERFORMANCE_ERRORS);
+    const canViewFunnel = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["hasPermission"])(role, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["APP_PERMISSIONS"].VIEW_PERFORMANCE_FUNNEL);
+    const canViewSegments = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["hasPermission"])(role, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["APP_PERMISSIONS"].VIEW_PERFORMANCE_SEGMENTS);
+    const canViewSystem = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["hasPermission"])(role, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["APP_PERMISSIONS"].VIEW_PERFORMANCE_SYSTEM);
     const handleGeneratePdf = async ()=>{
         const element = reportRef.current;
         if (!element) {
@@ -982,7 +990,7 @@ function PerformancePage() {
                             children: value
                         }, void 0, false, {
                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                            lineNumber: 102,
+                            lineNumber: 110,
                             columnNumber: 9
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -990,13 +998,13 @@ function PerformancePage() {
                             children: title
                         }, void 0, false, {
                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                            lineNumber: 103,
+                            lineNumber: 111,
                             columnNumber: 9
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                    lineNumber: 101,
+                    lineNumber: 109,
                     columnNumber: 7
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1006,12 +1014,12 @@ function PerformancePage() {
                         indicatorClassName: color
                     }, void 0, false, {
                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                        lineNumber: 106,
+                        lineNumber: 114,
                         columnNumber: 9
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                    lineNumber: 105,
+                    lineNumber: 113,
                     columnNumber: 7
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1019,13 +1027,13 @@ function PerformancePage() {
                     children: change
                 }, void 0, false, {
                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                    lineNumber: 108,
+                    lineNumber: 116,
                     columnNumber: 7
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-            lineNumber: 100,
+            lineNumber: 108,
             columnNumber: 5
         }, this);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1041,7 +1049,7 @@ function PerformancePage() {
                                 children: "Rendimiento"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 116,
+                                lineNumber: 124,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1049,13 +1057,13 @@ function PerformancePage() {
                                 children: "Visualiza el rendimiento de tus campañas y genera reportes."
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 117,
+                                lineNumber: 125,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                        lineNumber: 115,
+                        lineNumber: 123,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1074,7 +1082,7 @@ function PerformancePage() {
                                                     className: "mr-2 h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 132,
+                                                    lineNumber: 140,
                                                     columnNumber: 17
                                                 }, this),
                                                 date?.from ? date.to ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -1092,18 +1100,18 @@ function PerformancePage() {
                                                     children: "Elige un rango de fechas"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 143,
+                                                    lineNumber: 151,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                            lineNumber: 124,
+                                            lineNumber: 132,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 123,
+                                        lineNumber: 131,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$popover$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["PopoverContent"], {
@@ -1119,18 +1127,18 @@ function PerformancePage() {
                                             locale: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$locale$2f$es$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["es"]
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                            lineNumber: 148,
+                                            lineNumber: 156,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 147,
+                                        lineNumber: 155,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 122,
+                                lineNumber: 130,
                                 columnNumber: 12
                             }, this),
                             canGenerateReport && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -1140,33 +1148,33 @@ function PerformancePage() {
                                         className: "mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 161,
+                                        lineNumber: 169,
                                         columnNumber: 15
                                     }, this),
                                     "Generar Reporte"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 160,
+                                lineNumber: 168,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                        lineNumber: 121,
+                        lineNumber: 129,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                lineNumber: 114,
+                lineNumber: 122,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 ref: reportRef,
                 className: "space-y-6 bg-background p-4 rounded-lg",
                 children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    canViewMainMetrics && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "grid gap-4 md:grid-cols-2 lg:grid-cols-4",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -1179,21 +1187,21 @@ function PerformancePage() {
                                                 children: "Emails Enviados"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 173,
-                                                columnNumber: 15
+                                                lineNumber: 182,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$mail$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Mail$3e$__["Mail"], {
                                                 className: "h-4 w-4 text-muted-foreground"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 174,
-                                                columnNumber: 15
+                                                lineNumber: 183,
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 172,
-                                        columnNumber: 13
+                                        lineNumber: 181,
+                                        columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
                                         children: [
@@ -1202,28 +1210,28 @@ function PerformancePage() {
                                                 children: "45,231"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 177,
-                                                columnNumber: 15
+                                                lineNumber: 186,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                 className: "text-xs text-muted-foreground",
                                                 children: "+20.1% vs período anterior"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 178,
-                                                columnNumber: 15
+                                                lineNumber: 187,
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 176,
-                                        columnNumber: 13
+                                        lineNumber: 185,
+                                        columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 171,
-                                columnNumber: 11
+                                lineNumber: 180,
+                                columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
                                 children: [
@@ -1235,21 +1243,21 @@ function PerformancePage() {
                                                 children: "Tasa de Apertura"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 183,
-                                                columnNumber: 15
+                                                lineNumber: 192,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$eye$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Eye$3e$__["Eye"], {
                                                 className: "h-4 w-4 text-muted-foreground"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 184,
-                                                columnNumber: 15
+                                                lineNumber: 193,
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 182,
-                                        columnNumber: 13
+                                        lineNumber: 191,
+                                        columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
                                         children: [
@@ -1258,28 +1266,28 @@ function PerformancePage() {
                                                 children: "28.7%"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 187,
-                                                columnNumber: 15
+                                                lineNumber: 196,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                 className: "text-xs text-muted-foreground",
                                                 children: "+2.3% vs período anterior"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 188,
-                                                columnNumber: 15
+                                                lineNumber: 197,
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 186,
-                                        columnNumber: 13
+                                        lineNumber: 195,
+                                        columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 181,
-                                columnNumber: 11
+                                lineNumber: 190,
+                                columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
                                 children: [
@@ -1291,21 +1299,21 @@ function PerformancePage() {
                                                 children: "Tasa de Clics"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 193,
-                                                columnNumber: 15
+                                                lineNumber: 202,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$mouse$2d$pointer$2d$click$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__MousePointerClick$3e$__["MousePointerClick"], {
                                                 className: "h-4 w-4 text-muted-foreground"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 194,
-                                                columnNumber: 15
+                                                lineNumber: 203,
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 192,
-                                        columnNumber: 13
+                                        lineNumber: 201,
+                                        columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
                                         children: [
@@ -1314,28 +1322,28 @@ function PerformancePage() {
                                                 children: "4.2%"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 197,
-                                                columnNumber: 15
+                                                lineNumber: 206,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                 className: "text-xs text-muted-foreground",
                                                 children: "+0.5% vs período anterior"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 198,
-                                                columnNumber: 15
+                                                lineNumber: 207,
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 196,
-                                        columnNumber: 13
+                                        lineNumber: 205,
+                                        columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 191,
-                                columnNumber: 11
+                                lineNumber: 200,
+                                columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
                                 children: [
@@ -1347,21 +1355,21 @@ function PerformancePage() {
                                                 children: "Tasa de Rebote"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 203,
-                                                columnNumber: 15
+                                                lineNumber: 212,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2d$alert$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertCircle$3e$__["AlertCircle"], {
                                                 className: "h-4 w-4 text-muted-foreground"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 204,
-                                                columnNumber: 15
+                                                lineNumber: 213,
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 202,
-                                        columnNumber: 13
+                                        lineNumber: 211,
+                                        columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
                                         children: [
@@ -1370,54 +1378,54 @@ function PerformancePage() {
                                                 children: "1.1%"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 207,
-                                                columnNumber: 15
+                                                lineNumber: 216,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                 className: "text-xs text-muted-foreground text-green-600",
                                                 children: "-0.2% vs período anterior"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 208,
-                                                columnNumber: 15
+                                                lineNumber: 217,
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 206,
-                                        columnNumber: 13
+                                        lineNumber: 215,
+                                        columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 201,
-                                columnNumber: 11
+                                lineNumber: 210,
+                                columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                        lineNumber: 170,
-                        columnNumber: 9
+                        lineNumber: 179,
+                        columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "grid md:grid-cols-2 lg:grid-cols-3 gap-6",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            canViewCharts && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "lg:col-span-2",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$analytics$2d$charts$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AnalyticsCharts"], {}, void 0, false, {
                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                    lineNumber: 216,
-                                    columnNumber: 14
+                                    lineNumber: 227,
+                                    columnNumber: 16
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 215,
-                                columnNumber: 11
+                                lineNumber: 226,
+                                columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "space-y-6",
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
+                                    canViewPredictions && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardHeader"], {
                                                 children: [
@@ -1428,28 +1436,28 @@ function PerformancePage() {
                                                                 className: "h-5 w-5"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 222,
-                                                                columnNumber: 66
+                                                                lineNumber: 235,
+                                                                columnNumber: 68
                                                             }, this),
                                                             " Perspectivas Predictivas"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 222,
-                                                        columnNumber: 19
+                                                        lineNumber: 235,
+                                                        columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                         children: "Análisis de IA basado en datos históricos."
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 223,
-                                                        columnNumber: 19
+                                                        lineNumber: 236,
+                                                        columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 221,
-                                                columnNumber: 15
+                                                lineNumber: 234,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
                                                 className: "space-y-3 text-sm",
@@ -1461,8 +1469,8 @@ function PerformancePage() {
                                                                 className: "h-5 w-5 text-green-500 mt-1 flex-shrink-0"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 227,
-                                                                columnNumber: 21
+                                                                lineNumber: 240,
+                                                                columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                                 children: [
@@ -1472,21 +1480,21 @@ function PerformancePage() {
                                                                         children: "tasa de apertura del 32%"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                        lineNumber: 228,
-                                                                        columnNumber: 40
+                                                                        lineNumber: 241,
+                                                                        columnNumber: 42
                                                                     }, this),
                                                                     ' para la campaña "Verano 2024", un 10% más alta que campañas similares.'
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 228,
-                                                                columnNumber: 21
+                                                                lineNumber: 241,
+                                                                columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 226,
-                                                        columnNumber: 18
+                                                        lineNumber: 239,
+                                                        columnNumber: 20
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "flex items-start gap-3",
@@ -1495,8 +1503,8 @@ function PerformancePage() {
                                                                 className: "h-5 w-5 text-yellow-500 mt-1 flex-shrink-0"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 231,
-                                                                columnNumber: 21
+                                                                lineNumber: 244,
+                                                                columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                                 children: [
@@ -1506,48 +1514,48 @@ function PerformancePage() {
                                                                         children: "riesgo de rebote del 5%"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                        lineNumber: 232,
-                                                                        columnNumber: 67
+                                                                        lineNumber: 245,
+                                                                        columnNumber: 69
                                                                     }, this),
                                                                     ". Considere una campaña de reactivación."
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 232,
-                                                                columnNumber: 21
+                                                                lineNumber: 245,
+                                                                columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 230,
-                                                        columnNumber: 18
+                                                        lineNumber: 243,
+                                                        columnNumber: 20
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 225,
-                                                columnNumber: 15
+                                                lineNumber: 238,
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 220,
-                                        columnNumber: 13
+                                        lineNumber: 233,
+                                        columnNumber: 15
                                     }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
+                                    canViewErrors && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardHeader"], {
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardTitle"], {
                                                     children: "Desglose de Errores"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 239,
-                                                    columnNumber: 19
+                                                    lineNumber: 254,
+                                                    columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 238,
-                                                columnNumber: 15
+                                                lineNumber: 253,
+                                                columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
                                                 className: "space-y-3",
@@ -1562,29 +1570,29 @@ function PerformancePage() {
                                                                         className: "h-4 w-4 text-red-500"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                        lineNumber: 243,
-                                                                        columnNumber: 65
+                                                                        lineNumber: 258,
+                                                                        columnNumber: 67
                                                                     }, this),
                                                                     "Rebotes Duros (Hard)"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 243,
-                                                                columnNumber: 23
+                                                                lineNumber: 258,
+                                                                columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 className: "font-bold",
                                                                 children: "78"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 244,
-                                                                columnNumber: 23
+                                                                lineNumber: 259,
+                                                                columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 242,
-                                                        columnNumber: 19
+                                                        lineNumber: 257,
+                                                        columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "flex justify-between items-center text-sm",
@@ -1596,29 +1604,29 @@ function PerformancePage() {
                                                                         className: "h-4 w-4 text-yellow-500"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                        lineNumber: 247,
-                                                                        columnNumber: 65
+                                                                        lineNumber: 262,
+                                                                        columnNumber: 67
                                                                     }, this),
                                                                     "Rebotes Suaves (Soft)"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 247,
-                                                                columnNumber: 23
+                                                                lineNumber: 262,
+                                                                columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 className: "font-bold",
                                                                 children: "123"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 248,
-                                                                columnNumber: 23
+                                                                lineNumber: 263,
+                                                                columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 246,
-                                                        columnNumber: 19
+                                                        lineNumber: 261,
+                                                        columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "flex justify-between items-center text-sm",
@@ -1630,49 +1638,49 @@ function PerformancePage() {
                                                                         className: "h-4 w-4 text-orange-500"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                        lineNumber: 251,
-                                                                        columnNumber: 65
+                                                                        lineNumber: 266,
+                                                                        columnNumber: 67
                                                                     }, this),
                                                                     "Quejas de Spam"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 251,
-                                                                columnNumber: 23
+                                                                lineNumber: 266,
+                                                                columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 className: "font-bold",
                                                                 children: "12"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 252,
-                                                                columnNumber: 23
+                                                                lineNumber: 267,
+                                                                columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 250,
-                                                        columnNumber: 20
+                                                        lineNumber: 265,
+                                                        columnNumber: 22
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 241,
-                                                columnNumber: 15
+                                                lineNumber: 256,
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 237,
-                                        columnNumber: 13
+                                        lineNumber: 252,
+                                        columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 219,
+                                lineNumber: 231,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            canViewFunnel && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "lg:col-span-2",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
                                     children: [
@@ -1682,21 +1690,21 @@ function PerformancePage() {
                                                     children: "Análisis de Embudo de Conversión"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 261,
-                                                    columnNumber: 17
+                                                    lineNumber: 278,
+                                                    columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                     children: 'Flujo de usuarios desde el envío hasta el clic para la campaña "Newsletter Julio".'
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 262,
-                                                    columnNumber: 17
+                                                    lineNumber: 279,
+                                                    columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                            lineNumber: 260,
-                                            columnNumber: 15
+                                            lineNumber: 277,
+                                            columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
                                             className: "space-y-4 pt-4",
@@ -1709,8 +1717,8 @@ function PerformancePage() {
                                                     color: "bg-blue-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 265,
-                                                    columnNumber: 19
+                                                    lineNumber: 282,
+                                                    columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(FunnelStep, {
                                                     title: "Entregados",
@@ -1720,8 +1728,8 @@ function PerformancePage() {
                                                     color: "bg-sky-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 266,
-                                                    columnNumber: 19
+                                                    lineNumber: 283,
+                                                    columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(FunnelStep, {
                                                     title: "Abiertos",
@@ -1731,8 +1739,8 @@ function PerformancePage() {
                                                     color: "bg-teal-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 267,
-                                                    columnNumber: 19
+                                                    lineNumber: 284,
+                                                    columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(FunnelStep, {
                                                     title: "Clics",
@@ -1742,27 +1750,27 @@ function PerformancePage() {
                                                     color: "bg-green-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 268,
-                                                    columnNumber: 19
+                                                    lineNumber: 285,
+                                                    columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                            lineNumber: 264,
-                                            columnNumber: 15
+                                            lineNumber: 281,
+                                            columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                    lineNumber: 259,
-                                    columnNumber: 13
+                                    lineNumber: 276,
+                                    columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 258,
-                                columnNumber: 11
+                                lineNumber: 275,
+                                columnNumber: 13
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
+                            canViewSegments && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardHeader"], {
                                         children: [
@@ -1770,21 +1778,21 @@ function PerformancePage() {
                                                 children: "Análisis por Segmento"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 275,
-                                                columnNumber: 17
+                                                lineNumber: 294,
+                                                columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                 children: "Compara el rendimiento entre diferentes grupos de audiencia."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 276,
-                                                columnNumber: 17
+                                                lineNumber: 295,
+                                                columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 274,
-                                        columnNumber: 15
+                                        lineNumber: 293,
+                                        columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Tabs"], {
@@ -1799,30 +1807,30 @@ function PerformancePage() {
                                                             children: "Geografía"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                            lineNumber: 281,
-                                                            columnNumber: 21
+                                                            lineNumber: 300,
+                                                            columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TabsTrigger"], {
                                                             value: "new_users",
                                                             children: "Nuevos"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                            lineNumber: 282,
-                                                            columnNumber: 21
+                                                            lineNumber: 301,
+                                                            columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TabsTrigger"], {
                                                             value: "device",
                                                             children: "Dispositivo"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                            lineNumber: 283,
-                                                            columnNumber: 21
+                                                            lineNumber: 302,
+                                                            columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 280,
-                                                    columnNumber: 19
+                                                    lineNumber: 299,
+                                                    columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TabsContent"], {
                                                     value: "geography",
@@ -1835,8 +1843,8 @@ function PerformancePage() {
                                                                     children: "Norteamérica"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                    lineNumber: 286,
-                                                                    columnNumber: 82
+                                                                    lineNumber: 305,
+                                                                    columnNumber: 84
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                     className: "flex items-center gap-2",
@@ -1846,28 +1854,28 @@ function PerformancePage() {
                                                                             className: "w-24 h-2"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                            lineNumber: 286,
-                                                                            columnNumber: 142
+                                                                            lineNumber: 305,
+                                                                            columnNumber: 144
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                             className: "font-bold",
                                                                             children: "45%"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                            lineNumber: 286,
-                                                                            columnNumber: 185
+                                                                            lineNumber: 305,
+                                                                            columnNumber: 187
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                    lineNumber: 286,
-                                                                    columnNumber: 101
+                                                                    lineNumber: 305,
+                                                                    columnNumber: 103
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                            lineNumber: 286,
-                                                            columnNumber: 23
+                                                            lineNumber: 305,
+                                                            columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             className: "flex justify-between items-center text-sm",
@@ -1876,8 +1884,8 @@ function PerformancePage() {
                                                                     children: "Europa"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                    lineNumber: 287,
-                                                                    columnNumber: 82
+                                                                    lineNumber: 306,
+                                                                    columnNumber: 84
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                     className: "flex items-center gap-2",
@@ -1887,28 +1895,28 @@ function PerformancePage() {
                                                                             className: "w-24 h-2"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                            lineNumber: 287,
-                                                                            columnNumber: 136
+                                                                            lineNumber: 306,
+                                                                            columnNumber: 138
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                             className: "font-bold",
                                                                             children: "35%"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                            lineNumber: 287,
-                                                                            columnNumber: 180
+                                                                            lineNumber: 306,
+                                                                            columnNumber: 182
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                    lineNumber: 287,
-                                                                    columnNumber: 95
+                                                                    lineNumber: 306,
+                                                                    columnNumber: 97
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                            lineNumber: 287,
-                                                            columnNumber: 23
+                                                            lineNumber: 306,
+                                                            columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                             className: "flex justify-between items-center text-sm",
@@ -1917,8 +1925,8 @@ function PerformancePage() {
                                                                     children: "Latinoamérica"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                    lineNumber: 288,
-                                                                    columnNumber: 82
+                                                                    lineNumber: 307,
+                                                                    columnNumber: 84
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                     className: "flex items-center gap-2",
@@ -1928,34 +1936,34 @@ function PerformancePage() {
                                                                             className: "w-24 h-2"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                            lineNumber: 288,
-                                                                            columnNumber: 143
+                                                                            lineNumber: 307,
+                                                                            columnNumber: 145
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                             className: "font-bold",
                                                                             children: "20%"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                            lineNumber: 288,
-                                                                            columnNumber: 186
+                                                                            lineNumber: 307,
+                                                                            columnNumber: 188
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                    lineNumber: 288,
-                                                                    columnNumber: 102
+                                                                    lineNumber: 307,
+                                                                    columnNumber: 104
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                            lineNumber: 288,
-                                                            columnNumber: 23
+                                                            lineNumber: 307,
+                                                            columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 285,
-                                                    columnNumber: 19
+                                                    lineNumber: 304,
+                                                    columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TabsContent"], {
                                                     value: "new_users",
@@ -1965,13 +1973,13 @@ function PerformancePage() {
                                                         children: "Los nuevos usuarios muestran una tasa de apertura un 15% mayor que los usuarios existentes."
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 291,
-                                                        columnNumber: 23
+                                                        lineNumber: 310,
+                                                        columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 290,
-                                                    columnNumber: 19
+                                                    lineNumber: 309,
+                                                    columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["TabsContent"], {
                                                     value: "device",
@@ -1981,32 +1989,32 @@ function PerformancePage() {
                                                         children: "El 72% de las aperturas ocurren en dispositivos móviles."
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 294,
-                                                        columnNumber: 23
+                                                        lineNumber: 313,
+                                                        columnNumber: 25
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 293,
-                                                    columnNumber: 19
+                                                    lineNumber: 312,
+                                                    columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                            lineNumber: 279,
-                                            columnNumber: 17
+                                            lineNumber: 298,
+                                            columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 278,
-                                        columnNumber: 15
+                                        lineNumber: 297,
+                                        columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 273,
-                                columnNumber: 11
+                                lineNumber: 292,
+                                columnNumber: 13
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            canViewSystem && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "lg:col-span-3 grid md:grid-cols-2 gap-6",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
@@ -2020,28 +2028,28 @@ function PerformancePage() {
                                                                 className: "h-5 w-5"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 303,
-                                                                columnNumber: 72
+                                                                lineNumber: 324,
+                                                                columnNumber: 74
                                                             }, this),
                                                             "Rendimiento del Sistema"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 303,
-                                                        columnNumber: 25
+                                                        lineNumber: 324,
+                                                        columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                         children: "Métricas en tiempo real sobre la infraestructura de envío."
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 304,
-                                                        columnNumber: 25
+                                                        lineNumber: 325,
+                                                        columnNumber: 27
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 302,
-                                                columnNumber: 21
+                                                lineNumber: 323,
+                                                columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
                                                 className: "text-center text-muted-foreground p-8",
@@ -2049,19 +2057,19 @@ function PerformancePage() {
                                                     children: "Próximamente: Estado de la cola de envío, velocidad de procesamiento y estado de la API."
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                    lineNumber: 307,
-                                                    columnNumber: 24
+                                                    lineNumber: 328,
+                                                    columnNumber: 26
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 306,
-                                                columnNumber: 21
+                                                lineNumber: 327,
+                                                columnNumber: 23
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 301,
-                                        columnNumber: 17
+                                        lineNumber: 322,
+                                        columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Card"], {
                                         children: [
@@ -2074,28 +2082,28 @@ function PerformancePage() {
                                                                 className: "h-5 w-5"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 312,
-                                                                columnNumber: 72
+                                                                lineNumber: 333,
+                                                                columnNumber: 74
                                                             }, this),
                                                             "Integración y Exportación"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 312,
-                                                        columnNumber: 25
+                                                        lineNumber: 333,
+                                                        columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                         children: "Conecta con tus herramientas de BI o descarga los datos."
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 313,
-                                                        columnNumber: 25
+                                                        lineNumber: 334,
+                                                        columnNumber: 27
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 311,
-                                                columnNumber: 21
+                                                lineNumber: 332,
+                                                columnNumber: 23
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
                                                 className: "space-y-4",
@@ -2107,58 +2115,58 @@ function PerformancePage() {
                                                                 className: "mr-2"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                                lineNumber: 316,
-                                                                columnNumber: 52
+                                                                lineNumber: 337,
+                                                                columnNumber: 54
                                                             }, this),
                                                             " Exportar Datos (CSV)"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 316,
-                                                        columnNumber: 25
+                                                        lineNumber: 337,
+                                                        columnNumber: 27
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                         className: "text-xs text-muted-foreground text-center",
                                                         children: "Próximamente: Conexión API para PowerBI y Looker Studio."
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                        lineNumber: 317,
-                                                        columnNumber: 25
+                                                        lineNumber: 338,
+                                                        columnNumber: 27
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                                lineNumber: 315,
-                                                columnNumber: 21
+                                                lineNumber: 336,
+                                                columnNumber: 23
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                        lineNumber: 310,
-                                        columnNumber: 18
+                                        lineNumber: 331,
+                                        columnNumber: 20
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                                lineNumber: 300,
-                                columnNumber: 12
+                                lineNumber: 321,
+                                columnNumber: 14
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                        lineNumber: 214,
+                        lineNumber: 224,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(main)/analytics/page.tsx",
-                lineNumber: 168,
+                lineNumber: 176,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/(main)/analytics/page.tsx",
-        lineNumber: 113,
+        lineNumber: 121,
         columnNumber: 5
     }, this);
 }

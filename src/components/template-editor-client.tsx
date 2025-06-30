@@ -2,12 +2,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import { optimizeEmailContentAction } from '@/app/actions/optimize-email-action';
-import type { OptimizeEmailContentOutput } from '@/ai/flows/optimize-email-content';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -21,9 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Loader2, Wand2, Sparkles, PlusCircle, Trash2, GripVertical, Image as ImageIcon, Pilcrow, Minus } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
-import { useAuth } from '@/context/auth-context';
+import { Minus, Sparkles, Trash2, GripVertical, Image as ImageIcon, Pilcrow } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from 'react-beautiful-dnd';
 import { nanoid } from 'nanoid';
 import { cn } from '@/lib/utils';
@@ -47,17 +43,12 @@ const spacerBlockSchema = z.object({
   height: z.number().min(10, 'La altura mínima es 10px.').max(200, 'La altura máxima es 200px.'),
 });
 
-const customHtmlBlockSchema = z.object({
-  html: z.string().min(1, 'El HTML no puede estar vacío.'),
-});
-
 // Esquema principal para un bloque, usando `discriminatedUnion`
 const blockSchema = z.discriminatedUnion('type', [
   z.object({ id: z.string(), type: z.literal('text'), content: textBlockSchema }),
   z.object({ id: z.string(), type: z.literal('image'), content: imageBlockSchema }),
   z.object({ id: z.string(), type: z.literal('button'), content: buttonBlockSchema }),
   z.object({ id: z.string(), type: z.literal('spacer'), content: spacerBlockSchema }),
-  z.object({ id: z.string(), type: z.literal('customHtml'), content: customHtmlBlockSchema }),
 ]);
 
 type Block = z.infer<typeof blockSchema>;
@@ -67,7 +58,6 @@ const formSchema = z.object({
   templateName: z.string().min(1, 'El nombre de la plantilla es requerido.'),
   emailSubject: z.string().min(1, 'El asunto del correo es requerido.'),
   blocks: z.array(blockSchema).min(1, 'El cuerpo del correo debe tener al menos un bloque.'),
-  audience: z.string().min(1, 'La descripción de la audiencia es requerida para la optimización con IA.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -84,8 +74,6 @@ function generateHtmlFromBlocks(blocks: Block[]): string {
                 return `<tr><td style="padding: 20px;" align="center"><a href="${block.content.href}" target="_blank" style="background-color: #74B49B; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; display: inline-block;">${block.content.text}</a></td></tr>`;
             case 'spacer':
                 return `<tr><td style="height: ${block.content.height}px; line-height: ${block.content.height}px; font-size: ${block.content.height}px;">&nbsp;</td></tr>`;
-            case 'customHtml':
-                return `<tr><td>${block.content.html}</td></tr>`;
             default:
                 return '';
         }
@@ -114,11 +102,8 @@ function generateHtmlFromBlocks(blocks: Block[]): string {
  * Componente de cliente para crear y editar plantillas de correo electrónico con un editor visual por bloques.
  */
 export function TemplateEditorClient() {
-  const [aiResult, setAiResult] = useState<OptimizeEmailContentOutput | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [previewHtml, setPreviewHtml] = useState('');
   const { toast } = useToast();
-  const { role } = useAuth();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -126,7 +111,6 @@ export function TemplateEditorClient() {
       templateName: '',
       emailSubject: '',
       blocks: [],
-      audience: '',
     },
   });
 
@@ -141,34 +125,6 @@ export function TemplateEditorClient() {
     const html = generateHtmlFromBlocks(watchedBlocks);
     setPreviewHtml(html);
   }, [watchedBlocks]);
-
-  const handleOptimize = async () => {
-    const { audience, blocks } = form.getValues();
-    if (blocks.length === 0) {
-      toast({ title: 'Cuerpo vacío', description: 'Añade al menos un bloque para optimizar.', variant: 'destructive' });
-      return;
-    }
-    if (!audience) {
-      form.setError('audience', { type: 'manual', message: 'La audiencia es requerida para optimizar.' });
-      return;
-    }
-    if (!role) {
-      toast({ title: 'Error de autenticación', description: 'Rol de usuario no encontrado.', variant: 'destructive' });
-      return;
-    }
-
-    setIsLoading(true);
-    setAiResult(null);
-    try {
-      const emailBody = generateHtmlFromBlocks(blocks);
-      const result = await optimizeEmailContentAction({ emailContent: emailBody, audience, role });
-      setAiResult(result);
-    } catch (error) {
-      toast({ title: 'Error de optimización', description: (error as Error).message, variant: 'destructive' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   function onSubmit(values: FormValues) {
     const finalHtml = generateHtmlFromBlocks(values.blocks);
@@ -223,8 +179,6 @@ export function TemplateEditorClient() {
         </div>;
       case 'spacer':
         return <FormField control={form.control} name={`blocks.${index}.content.height`} render={({ field }) => <div className="flex items-center gap-2"><Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))}/><span>px</span></div>} />;
-      case 'customHtml':
-        return <p className="text-sm text-muted-foreground italic">Este es un bloque de HTML personalizado y no se puede editar visualmente.</p>;
       default:
         return null;
     }
@@ -290,31 +244,6 @@ export function TemplateEditorClient() {
                         </div>
                     </CardContent>
                 </Card>
-
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline flex items-center gap-2"><Wand2 /> Optimizador de Correo con IA</CardTitle>
-                        <CardDescription>Mejora tu contenido para evitar filtros de spam y aumentar la interacción.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <FormField control={form.control} name="audience" render={({ field }) => (<FormItem><FormLabel>Describe tu Audiencia</FormLabel><FormControl><Input placeholder="Ej: Clientes interesados en tecnología" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <Button type="button" onClick={handleOptimize} disabled={isLoading} className="w-full">
-                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                            {isLoading ? 'Optimizando...' : 'Optimizar con IA'}
-                        </Button>
-                    </CardContent>
-                </Card>
-
-                {aiResult && (
-                    <Card>
-                        <CardHeader><CardTitle className="font-headline">Resultados de la Optimización</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            <div><Label>Puntuación de Spam</Label><Progress value={aiResult.spamScore || 0} className="w-full mt-1" /><p className="text-sm text-muted-foreground mt-1">Puntuación: {aiResult.spamScore || 'N/A'}/100 (más bajo es mejor)</p></div>
-                            <div><Label>Sugerencias de Interacción</Label><p className="text-sm bg-muted p-3 rounded-md mt-1">{aiResult.engagementSuggestions}</p></div>
-                            <div><Label>Contenido Optimizado</Label><Textarea readOnly value={aiResult.optimizedContent} rows={15} className="mt-1 bg-muted" /><Button type="button" variant="secondary" size="sm" className="mt-2" onClick={() => {form.setValue('blocks', [{ id: nanoid(), type: 'customHtml', content: { html: aiResult.optimizedContent }}]); toast({ title: 'Contenido actualizado', description: 'Tus bloques han sido reemplazados con la versión optimizada.'})}}>Usar este contenido</Button></div>
-                        </CardContent>
-                    </Card>
-                )}
             </div>
 
             {/* Columna de la Vista Previa */}
