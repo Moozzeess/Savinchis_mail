@@ -93,38 +93,34 @@ export default function DashboardPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Nombre</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Fecha</TableHead>
+                  <TableHead className="text-center">Estado</TableHead>
+                  <TableHead className="text-right">Aperturas</TableHead>
+                  <TableHead className="text-right">Clics</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {campaigns.slice(0, 5).map((campaign) => (
                   <TableRow key={campaign.name}>
-                    <TableCell className="font-medium">
-                      {campaign.name}
-                    </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={
-                          campaign.status === "AGOTADA"
-                            ? "destructive"
-                            : campaign.status === "EXPIRADA"
-                            ? "outline"
-                            : "default"
-                        }
-                        className={cn({
-                          "bg-green-500/20 text-green-700 border-transparent hover:bg-green-500/30":
-                            campaign.status === "TERMINADA",
-                          "bg-blue-500/20 text-blue-700 border-transparent hover:bg-blue-500/30":
-                            campaign.status === "INICIADA",
-                          "bg-yellow-500/20 text-yellow-700 border-transparent hover:bg-yellow-500/30":
-                            campaign.status === "TIEMPO LIMITADO",
+                      <div className="font-medium">{campaign.name}</div>
+                      <div className="text-sm text-muted-foreground">{campaign.date}</div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                       <Badge
+                        variant="outline"
+                        className={cn("text-xs", {
+                          "bg-green-100 text-green-800 border-green-200": campaign.status === "TERMINADA",
+                          "bg-blue-100 text-blue-800 border-blue-200": campaign.status === "INICIADA",
+                          "bg-yellow-100 text-yellow-800 border-yellow-200": campaign.status === "TIEMPO LIMITADO",
+                          "bg-gray-100 text-gray-800 border-gray-200": campaign.status === "EXPIRADA",
+                           "bg-red-100 text-red-800 border-red-200": campaign.status === "AGOTADA",
                         })}
                       >
                         {campaign.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>{campaign.date}</TableCell>
+                    <TableCell className="text-right font-medium">{campaign.opens}</TableCell>
+                    <TableCell className="text-right font-medium">{campaign.clicks}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

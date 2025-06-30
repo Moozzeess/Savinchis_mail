@@ -23,7 +23,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
 
 /**
  * Convierte una clave de permiso (ej. 'VIEW_DASHBOARD') a un formato legible (ej. 'View Dashboard').
@@ -115,7 +115,7 @@ export default function SettingsPage() {
                                 .filter(r => r !== ROLES.IT)
                                 .map((targetRole) => (
                                 <AccordionItem key={targetRole} value={targetRole}>
-                                    <AccordionTrigger className="capitalize">{targetRole === ROLES.HR ? 'Recursos Humanos' : targetRole}</AccordionTrigger>
+                                    <AccordionTrigger className="text-base capitalize">{targetRole === ROLES.HR ? 'Recursos Humanos' : targetRole}</AccordionTrigger>
                                     <AccordionContent>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3 pt-2">
                                             {Object.entries(APP_PERMISSIONS).map(([key, permission]) => (

@@ -41,6 +41,8 @@ import {
   Forward,
   MoreHorizontal,
   File,
+  Laptop,
+  Smartphone,
 } from "lucide-react";
 import {
   Popover,
@@ -143,8 +145,8 @@ export default function SendPage() {
   const { toast } = useToast();
   const { role } = useAuth();
 
-  const [subject, setSubject] = useState("Información sobre tu visita a Papalote");
-  const [emailBody, setEmailBody] = useState(defaultInitialBody);
+  const [subject, setSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
   const [recipientSource, setRecipientSource] = useState<RecipientSource>("file");
   const [fileContent, setFileContent] = useState("");
   const [uploadedFileType, setUploadedFileType] = useState<"csv" | "excel" | null>(null);
@@ -154,17 +156,22 @@ export default function SendPage() {
   const [recipientCount, setRecipientCount] = useState(0);
 
   // Content type selection
-  const [contentType, setContentType] = useState<ContentType>("custom");
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+  const [contentType, setContentType] = useState<ContentType>("template");
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(templates[0]?.id || "");
   const [selectedEventId, setSelectedEventId] = useState<string>("");
   const [selectedSurveyId, setSelectedSurveyId] = useState<string>("");
   const [attachmentName, setAttachmentName] = useState<string | null>(null);
   const [certificatePreview, setCertificatePreview] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
 
   useEffect(() => {
     setAttachmentName(null);
     setCertificatePreview(null);
-    if (contentType === "template" && selectedTemplateId) {
+    
+    if (contentType === 'custom') {
+        setSubject("Asunto Personalizado");
+        setEmailBody(defaultInitialBody);
+    } else if (contentType === "template" && selectedTemplateId) {
         const template = templates.find(t => t.id === selectedTemplateId);
         if (template) {
             setSubject(`Desde plantilla: ${template.name}`);
@@ -191,6 +198,9 @@ export default function SendPage() {
           setAttachmentName(`certificado-${event.name.replace(/\s/g, '_')}.pdf`);
           setCertificatePreview(`data:image/png;base64,${template}`);
       }
+    } else {
+        setSubject("");
+        setEmailBody("");
     }
   }, [contentType, selectedTemplateId, selectedEventId, selectedSurveyId]);
 
@@ -366,7 +376,7 @@ export default function SendPage() {
   const renderContentSelector = () => {
     switch (contentType) {
         case 'template':
-            return <Select onValueChange={setSelectedTemplateId}><SelectTrigger><SelectValue placeholder="Elige una plantilla..." /></SelectTrigger><SelectContent>{templates.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}</SelectContent></Select>;
+            return <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}><SelectTrigger><SelectValue placeholder="Elige una plantilla..." /></SelectTrigger><SelectContent>{templates.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}</SelectContent></Select>;
         case 'event':
             return <Select onValueChange={setSelectedEventId}><SelectTrigger><SelectValue placeholder="Elige un evento para la invitación..." /></SelectTrigger><SelectContent>{events.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent></Select>;
         case 'survey':
@@ -402,11 +412,11 @@ export default function SendPage() {
                     <Select value={contentType} onValueChange={(v) => setContentType(v as ContentType)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="custom">Personalizado</SelectItem>
                             <SelectItem value="template">Usar Plantilla</SelectItem>
                             <SelectItem value="event">Invitación a Evento</SelectItem>
                             <SelectItem value="survey">Enviar Encuesta</SelectItem>
                             <SelectItem value="certificate">Certificado de Evento</SelectItem>
+                            <SelectItem value="custom">Personalizado (HTML)</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -422,12 +432,12 @@ export default function SendPage() {
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <Label>Cuerpo del Mensaje</Label>
-                   <div className="flex items-center gap-2">
+                   <div className={cn("flex items-center gap-2", contentType !== 'custom' && 'hidden')}>
                     <Label htmlFor="html-upload" className="text-sm font-normal text-primary underline-offset-4 hover:underline cursor-pointer">O sube HTML</Label>
                     <Input id="html-upload" type="file" accept=".html" className="hidden" onChange={handleHtmlFileChange} />
                    </div>
                 </div>
-                <Textarea value={emailBody} onChange={(e) => setEmailBody(e.target.value)} rows={10} />
+                <Textarea value={emailBody} onChange={(e) => setEmailBody(e.target.value)} rows={10} disabled={contentType !== 'custom'} />
               </div>
             </div>
             
@@ -490,66 +500,94 @@ export default function SendPage() {
         <div className="sticky top-24 space-y-8">
           <Card>
             <CardHeader>
-                <CardTitle>Vista Previa del Correo</CardTitle>
-                <CardDescription>Así es como los destinatarios verán tu correo.</CardDescription>
+                <div className="flex items-center justify-between">
+                    <div>
+                        <CardTitle>Vista Previa del Correo</CardTitle>
+                        <CardDescription>Así es como los destinatarios verán tu correo.</CardDescription>
+                    </div>
+                    <div className="flex items-center gap-1 rounded-md bg-muted p-1">
+                        <Button variant={previewMode === 'desktop' ? 'secondary' : 'ghost'} size="icon" className="h-8 w-8" onClick={() => setPreviewMode('desktop')} aria-label="Vista de escritorio">
+                            <Laptop className="h-4 w-4" />
+                        </Button>
+                        <Button variant={previewMode === 'mobile' ? 'secondary' : 'ghost'} size="icon" className="h-8 w-8" onClick={() => setPreviewMode('mobile')} aria-label="Vista móvil">
+                            <Smartphone className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
             </CardHeader>
             <CardContent>
-                <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden">
-                    {/* Header */}
-                    <div className="flex items-center justify-between p-3 border-b bg-muted/30">
-                        <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                                <AvatarFallback>AP</AvatarFallback>
-                            </Avatar>
-                            <div>
-                                <p className="font-semibold text-sm">Tu Nombre (Remitente)</p>
-                                <p className="text-xs text-muted-foreground">Para: destinatario@ejemplo.com</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-1 text-muted-foreground">
-                            <span className="text-xs mr-2">Ahora</span>
-                            <Button variant="ghost" size="icon" className="size-8"><Reply className="size-4" /></Button>
-                            <Button variant="ghost" size="icon" className="size-8"><ReplyAll className="size-4" /></Button>
-                            <Button variant="ghost" size="icon" className="size-8"><Forward className="size-4" /></Button>
-                            <Button variant="ghost" size="icon" className="size-8"><MoreHorizontal className="size-4" /></Button>
-                        </div>
-                    </div>
-
-                    {/* Subject and Attachments */}
-                    <div className="p-4 border-b space-y-4">
-                        <h2 className="text-xl font-bold">{subject || 'Asunto del correo'}</h2>
-
-                        {attachmentName && (
-                        <div>
-                            <div className="flex items-center gap-2">
-                                <p className="text-sm font-medium">1 archivo adjunto</p>
-                                <span className="text-sm text-muted-foreground">(~256 KB)</span>
-                            </div>
-                            <div className="mt-2 flex items-center gap-2 rounded-md border p-2 max-w-xs bg-muted/30">
-                                <File className="h-6 w-6 text-primary flex-shrink-0" />
-                                <div className="truncate">
-                                    <p className="text-sm font-medium truncate">{attachmentName}</p>
+                <div className={cn(
+                    "w-full transition-all duration-300 ease-in-out",
+                    previewMode === 'mobile' && 'mx-auto w-[375px]'
+                )}>
+                    <div className={cn(
+                        "rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden",
+                        previewMode === 'mobile' && 'border-8 border-black rounded-[40px] shadow-lg'
+                    )}>
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-3 border-b bg-muted/30">
+                            <div className="flex items-center gap-3">
+                                <Avatar className="h-8 w-8">
+                                    <AvatarFallback>AP</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-semibold text-sm">Tu Nombre (Remitente)</p>
+                                    <p className="text-xs text-muted-foreground">Para: destinatario@ejemplo.com</p>
                                 </div>
                             </div>
-                        </div>
-                        )}
-                    </div>
-
-                    {/* Body */}
-                    <div className="bg-white w-full">
-                        <iframe srcDoc={emailBody} title="Email Preview" className="w-full h-[600px] border-0" sandbox="allow-scripts" />
-                         {certificatePreview && (
-                            <div className="p-4 bg-gray-100">
-                                <h3 className="text-lg font-semibold mb-2">Vista Previa del Certificado</h3>
-                                <img src={certificatePreview} alt="Vista previa del certificado" className="max-w-full border rounded-md" />
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                                <span className="text-xs mr-2">Ahora</span>
+                                <Button variant="ghost" size="icon" className="size-8"><Reply className="size-4" /></Button>
+                                <Button variant="ghost" size="icon" className="size-8"><ReplyAll className="size-4" /></Button>
+                                <Button variant="ghost" size="icon" className="size-8"><Forward className="size-4" /></Button>
+                                <Button variant="ghost" size="icon" className="size-8"><MoreHorizontal className="size-4" /></Button>
                             </div>
-                        )}
-                    </div>
+                        </div>
 
-                    {/* Footer actions */}
-                    <div className="p-2 border-t flex items-center gap-2 bg-muted/30">
-                        <Button variant="outline"><Reply className="mr-2"/> Responder</Button>
-                        <Button variant="outline"><Forward className="mr-2"/> Reenviar</Button>
+                        {/* Subject and Attachments */}
+                        <div className="p-4 border-b space-y-4">
+                            <h2 className="text-xl font-bold">{subject || 'Asunto del correo'}</h2>
+
+                            {attachmentName && (
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <p className="text-sm font-medium">1 archivo adjunto</p>
+                                    <span className="text-sm text-muted-foreground">(~256 KB)</span>
+                                </div>
+                                <div className="mt-2 flex items-center gap-2 rounded-md border p-2 max-w-xs bg-muted/30">
+                                    <File className="h-6 w-6 text-primary flex-shrink-0" />
+                                    <div className="truncate">
+                                        <p className="text-sm font-medium truncate">{attachmentName}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            )}
+                        </div>
+
+                        {/* Body */}
+                        <div className="bg-white w-full">
+                            <iframe
+                                srcDoc={emailBody}
+                                title="Email Preview"
+                                className={cn(
+                                    "w-full h-[600px] border-0",
+                                    previewMode === 'mobile' && 'rounded-[32px]'
+                                )}
+                                sandbox="allow-scripts"
+                            />
+                            {certificatePreview && (
+                                <div className="p-4 bg-gray-100">
+                                    <h3 className="text-lg font-semibold mb-2">Vista Previa del Certificado</h3>
+                                    <img src={certificatePreview} alt="Vista previa del certificado" className="max-w-full border rounded-md" />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer actions */}
+                        <div className="p-2 border-t flex items-center gap-2 bg-muted/30">
+                            <Button variant="outline"><Reply className="mr-2"/> Responder</Button>
+                            <Button variant="outline"><Forward className="mr-2"/> Reenviar</Button>
+                        </div>
                     </div>
                 </div>
             </CardContent>
