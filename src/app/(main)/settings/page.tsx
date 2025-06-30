@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Database, Info, Send, ShieldCheck } from "lucide-react";
+import { Database, Info, Send, ShieldCheck, UserPlus, Users } from "lucide-react";
 import { useAuth } from '@/context/auth-context';
 import { ROLES, APP_PERMISSIONS, ROLE_PERMISSIONS, type Role, type Permission } from '@/lib/permissions';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -24,6 +24,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { managedSenders } from '@/lib/data';
 
 /**
  * Convierte una clave de permiso (ej. 'VIEW_DASHBOARD') a un formato legible (ej. 'View Dashboard').
@@ -98,6 +99,47 @@ export default function SettingsPage() {
                 Configura tu cuenta, conexiones e integraciones.
                 </p>
             </div>
+
+            {isIT && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Users /> Gestión de Remitentes</CardTitle>
+                        <CardDescription>
+                            Administra las cuentas de correo electrónico habilitadas para realizar envíos.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-start space-x-4 rounded-md border p-4 bg-muted/40">
+                            <Info className="h-5 w-5 text-muted-foreground mt-1"/>
+                            <div className="flex-1 space-y-1">
+                                <p className="text-sm font-medium leading-none">
+                                    Requisito de Permisos en Microsoft Graph
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                    Para que la aplicación pueda enviar correos en nombre de estos remitentes,
+                                    debe tener concedido el permiso de aplicación `Mail.Send` en Azure AD.
+                                    Esto permite a la aplicación enviar correos como cualquier usuario de la organización
+                                    sin necesidad de sus contraseñas.
+                                </p>
+                            </div>
+                        </div>
+                        <ul className="divide-y border rounded-md">
+                            {managedSenders.map(sender => (
+                                <li key={sender.email} className="p-3 flex justify-between items-center">
+                                    <div>
+                                        <p className="font-medium">{sender.name}</p>
+                                        <p className="text-sm text-muted-foreground">{sender.email}</p>
+                                    </div>
+                                    <Button variant="ghost" size="sm">Gestionar</Button>
+                                </li>
+                            ))}
+                        </ul>
+                    </CardContent>
+                    <CardFooter>
+                        <Button variant="outline"><UserPlus className="mr-2" /> Añadir Nuevo Remitente</Button>
+                    </CardFooter>
+                </Card>
+            )}
 
             {/* Tarjeta de Gestión de Permisos - Solo visible para TI */}
             {isIT && (
@@ -273,3 +315,5 @@ export default function SettingsPage() {
         </div>
     );
 }
+
+    
