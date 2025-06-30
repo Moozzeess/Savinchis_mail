@@ -20,7 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { Target, Users, Megaphone, Code } from "lucide-react";
+import { Target, Users, Megaphone, Code, Globe, Server } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { ROLES, type Role } from "@/lib/permissions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -128,6 +128,7 @@ const CampaignsTable = ({ campaigns }: { campaigns: Campaign[] }) => (
 export default function CampaignsPage() {
     const { role } = useAuth();
     const isIT = role === ROLES.IT;
+    const dailyLimit = 10000;
 
     const campaignsForUser = useMemo(() => {
         if (!role || isIT) return allCampaigns;
@@ -138,17 +139,20 @@ export default function CampaignsPage() {
     const hrCampaigns = useMemo(() => allCampaigns.filter(c => c.role === ROLES.HR), []);
     const itCampaigns = useMemo(() => allCampaigns.filter(c => c.role === ROLES.IT), []);
 
-    const totalSentForRole = useMemo(() => 
+    const totalSentForRole = useMemo(() =>
         campaignsForUser.reduce((acc, c) => acc + c.sent, 0),
     [campaignsForUser]);
-
+    
     const globalSent = useMemo(() =>
         allCampaigns.reduce((acc, c) => acc + c.sent, 0),
     []);
 
-    const dailyLimit = 50000;
-    const sentCount = isIT ? globalSent : totalSentForRole;
-    const sentPercentage = (sentCount / dailyLimit) * 100;
+    const totalSentForIT = useMemo(() => 
+        itCampaigns.reduce((acc, c) => acc + c.sent, 0),
+    [itCampaigns]);
+
+    const roleSentPercentage = (totalSentForRole / dailyLimit) * 100;
+    const itSentPercentage = (totalSentForIT / dailyLimit) * 100;
 
   return (
     <div className="space-y-6">
@@ -164,35 +168,68 @@ export default function CampaignsPage() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            {isIT ? 'Contador Global de Envíos (Hoy)' : 'Contador de Envíos de tu Área (Hoy)'}
-          </CardTitle>
-          <CardDescription>
-            {isIT 
-              ? 'Uso consolidado del límite diario de envíos de todas las áreas.' 
-              : 'Uso del límite diario de envíos de Microsoft Graph para tu área.'
-            }
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <Progress value={sentPercentage} />
-            </div>
-            <div className="text-right">
-              <p className="text-lg font-bold">
-                {sentCount.toLocaleString()} / {dailyLimit.toLocaleString()}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {sentPercentage.toFixed(1)}% del límite utilizado
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid md:grid-cols-2 gap-4">
+        {isIT ? (
+            <>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Globe className="h-5 w-5" />
+                            Contador Global de Envíos
+                        </CardTitle>
+                        <CardDescription>
+                            Total de correos enviados hoy por toda la organización.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-2xl font-bold">{globalSent.toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">Envíos totales</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Server className="h-5 w-5" />
+                            Contador de Envíos de TI (Hoy)
+                        </CardTitle>
+                        <CardDescription>
+                            Uso del límite diario de envíos para el área de TI.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex items-center gap-4">
+                            <div className="flex-1"><Progress value={itSentPercentage} /></div>
+                            <div className="text-right">
+                                <p className="text-lg font-bold">{totalSentForIT.toLocaleString()} / {dailyLimit.toLocaleString()}</p>
+                                <p className="text-xs text-muted-foreground">{itSentPercentage.toFixed(1)}% del límite utilizado</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </>
+        ) : (
+            <Card>
+                <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5" />
+                    Contador de Envíos de tu Área (Hoy)
+                </CardTitle>
+                <CardDescription>
+                    Uso del límite diario de envíos de Microsoft Graph para tu área.
+                </CardDescription>
+                </CardHeader>
+                <CardContent>
+                <div className="flex items-center gap-4">
+                    <div className="flex-1"><Progress value={roleSentPercentage} /></div>
+                    <div className="text-right">
+                        <p className="text-lg font-bold">{totalSentForRole.toLocaleString()} / {dailyLimit.toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">{roleSentPercentage.toFixed(1)}% del límite utilizado</p>
+                    </div>
+                </div>
+                </CardContent>
+            </Card>
+        )}
+      </div>
 
       {isIT ? (
         <Card>
