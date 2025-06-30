@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -18,6 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { Target } from "lucide-react";
 
 // Datos de ejemplo para el monitor de envíos
 const sendingCampaigns = [
@@ -75,7 +77,7 @@ const getStatusClass = (status: string) => {
     case "INICIADA":
       return "bg-blue-500/20 text-blue-700 border-transparent hover:bg-blue-500/30 animate-pulse";
     case "PAUSADA":
-        return "bg-yellow-500/20 text-yellow-700 border-transparent hover:bg-yellow-500/30";
+      return "bg-yellow-500/20 text-yellow-700 border-transparent hover:bg-yellow-500/30";
     default:
       return "";
   }
@@ -86,6 +88,13 @@ const getStatusClass = (status: string) => {
  * Muestra el estado y progreso de las campañas de correo electrónico activas y recientes.
  */
 export default function CampaignsPage() {
+  const totalSentToday = sendingCampaigns.reduce(
+    (acc, campaign) => acc + campaign.sent,
+    0
+  );
+  const dailyLimit = 10000;
+  const sentPercentage = (totalSentToday / dailyLimit) * 100;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -98,6 +107,34 @@ export default function CampaignsPage() {
           </p>
         </div>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            Contador General de Envíos (Hoy)
+          </CardTitle>
+          <CardDescription>
+            Uso del límite diario de envíos de Microsoft Graph.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <Progress value={sentPercentage} />
+            </div>
+            <div className="text-right">
+              <p className="text-lg font-bold">
+                {totalSentToday.toLocaleString()} /{" "}
+                {dailyLimit.toLocaleString()}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {sentPercentage.toFixed(1)}% del límite utilizado
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -124,7 +161,9 @@ export default function CampaignsPage() {
                 const progress = (campaign.sent / campaign.total) * 100;
                 return (
                   <TableRow key={campaign.name}>
-                    <TableCell className="font-medium">{campaign.name}</TableCell>
+                    <TableCell className="font-medium">
+                      {campaign.name}
+                    </TableCell>
                     <TableCell>{campaign.sender}</TableCell>
                     <TableCell>
                       <Badge
