@@ -1,6 +1,9 @@
 {
+  "/(main)/campaigns/page": "app/(main)/campaigns/page.js",
   "/(main)/dashboard/page": "app/(main)/dashboard/page.js",
+  "/(main)/mailbox/page": "app/(main)/mailbox/page.js",
   "/(main)/send/page": "app/(main)/send/page.js",
+  "/(main)/settings/page": "app/(main)/settings/page.js",
   "/login/page": "app/login/page.js",
   "/page": "app/page.js"
 }
