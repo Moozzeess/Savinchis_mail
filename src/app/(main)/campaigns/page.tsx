@@ -147,6 +147,14 @@ export default function CampaignsPage() {
         allCampaigns.reduce((acc, c) => acc + c.sent, 0),
     []);
 
+    const totalSentForMarketing = useMemo(() =>
+        marketingCampaigns.reduce((acc, c) => acc + c.sent, 0),
+    [marketingCampaigns]);
+
+    const totalSentForHR = useMemo(() =>
+        hrCampaigns.reduce((acc, c) => acc + c.sent, 0),
+    [hrCampaigns]);
+
     const totalSentForIT = useMemo(() => 
         itCampaigns.reduce((acc, c) => acc + c.sent, 0),
     [itCampaigns]);
@@ -248,9 +256,33 @@ export default function CampaignsPage() {
                         <TabsTrigger value="it"><Code className="mr-2 h-4 w-4" />TI</TabsTrigger>
                     </TabsList>
                     <TabsContent value="global" className="mt-4"><CampaignsTable campaigns={allCampaigns} /></TabsContent>
-                    <TabsContent value="marketing" className="mt-4"><CampaignsTable campaigns={marketingCampaigns} /></TabsContent>
-                    <TabsContent value="hr" className="mt-4"><CampaignsTable campaigns={hrCampaigns} /></TabsContent>
-                    <TabsContent value="it" className="mt-4"><CampaignsTable campaigns={itCampaigns} /></TabsContent>
+                    <TabsContent value="marketing" className="mt-4 space-y-4">
+                        <Card>
+                            <CardHeader className="p-4 flex-row items-center justify-between">
+                                <CardTitle className="text-base">Total de Envíos de Marketing (Hoy)</CardTitle>
+                                <p className="text-2xl font-bold">{totalSentForMarketing.toLocaleString()}</p>
+                            </CardHeader>
+                        </Card>
+                        <CampaignsTable campaigns={marketingCampaigns} />
+                    </TabsContent>
+                    <TabsContent value="hr" className="mt-4 space-y-4">
+                        <Card>
+                            <CardHeader className="p-4 flex-row items-center justify-between">
+                                <CardTitle className="text-base">Total de Envíos de RH (Hoy)</CardTitle>
+                                <p className="text-2xl font-bold">{totalSentForHR.toLocaleString()}</p>
+                            </CardHeader>
+                        </Card>
+                        <CampaignsTable campaigns={hrCampaigns} />
+                    </TabsContent>
+                    <TabsContent value="it" className="mt-4 space-y-4">
+                        <Card>
+                           <CardHeader className="p-4 flex-row items-center justify-between">
+                                <CardTitle className="text-base">Total de Envíos de TI (Hoy)</CardTitle>
+                                <p className="text-2xl font-bold">{totalSentForIT.toLocaleString()}</p>
+                            </CardHeader>
+                        </Card>
+                        <CampaignsTable campaigns={itCampaigns} />
+                    </TabsContent>
                 </Tabs>
             </CardContent>
         </Card>
