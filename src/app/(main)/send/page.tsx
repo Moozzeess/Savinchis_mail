@@ -54,7 +54,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { templates, events, surveys, certificateTemplates } from "@/lib/data";
+import { templates, events, surveys, certificateTemplates, managedSenders } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
 import { sendCampaign } from "@/app/actions/send-campaign-action";
 import { sendTestEmailAction } from "@/app/actions/send-test-email-action";
@@ -143,6 +143,7 @@ export default function SendPage() {
   const [isSendingTest, setIsSendingTest] = useState(false);
   const { toast } = useToast();
   const { role } = useAuth();
+  const isIT = role === ROLES.IT;
   
   const [senderEmail, setSenderEmail] = useState("");
   const [testEmail, setTestEmail] = useState("");
@@ -168,11 +169,11 @@ export default function SendPage() {
 
   useEffect(() => {
     if (role) {
-      const userEmail = `${role}@email.com`;
+      const userEmail = isIT ? managedSenders[0].email : `${role}@email.com`;
       setSenderEmail(userEmail);
       setTestEmail(userEmail);
     }
-  }, [role]);
+  }, [role, isIT]);
 
   useEffect(() => {
     setAttachmentName(null);
@@ -399,6 +400,32 @@ export default function SendPage() {
             return null;
     }
   }
+  
+  const renderSenderInput = () => {
+    if (isIT) {
+        return (
+            <div className="space-y-2">
+                <Label htmlFor="sender-email">Email del Remitente</Label>
+                <Select value={senderEmail} onValueChange={setSenderEmail}>
+                    <SelectTrigger id="sender-email">
+                        <SelectValue placeholder="Selecciona un remitente..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {managedSenders.map(sender => (
+                            <SelectItem key={sender.email} value={sender.email}>{sender.name} ({sender.email})</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+        )
+    }
+    return (
+        <div className="space-y-2">
+            <Label htmlFor="sender-email">Email del Remitente</Label>
+            <Input id="sender-email" type="email" value={senderEmail} onChange={(e) => setSenderEmail(e.target.value)} />
+        </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -437,10 +464,7 @@ export default function SendPage() {
 
             <div className="space-y-4 border-t pt-4">
               <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                      <Label htmlFor="sender-email">Email del Remitente</Label>
-                      <Input id="sender-email" type="email" value={senderEmail} onChange={(e) => setSenderEmail(e.target.value)} />
-                  </div>
+                  {renderSenderInput()}
                   <div className="space-y-2">
                       <Label htmlFor="subject">Asunto del Correo</Label>
                       <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
@@ -476,11 +500,8 @@ export default function SendPage() {
               </Tabs>
             </div>
 
-            <div className="space-y-3 rounded-md border p-4">
+            <div className="space-y-3">
               <Label>Envío de Prueba</Label>
-              <p className="text-sm text-muted-foreground">
-                Envía una versión de prueba de este correo antes del envío masivo.
-              </p>
               <div className="flex gap-2 items-end">
                 <div className="flex-grow space-y-2">
                   <Label htmlFor="test-email" className="sr-only">Correo de Prueba</Label>
@@ -488,7 +509,6 @@ export default function SendPage() {
                 </div>
                 <Button onClick={handleSendTestEmail} variant="secondary" disabled={isSendingTest || isSending}>
                   {isSendingTest ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                  <span>Enviar Prueba</span>
                 </Button>
               </div>
             </div>
@@ -625,3 +645,5 @@ export default function SendPage() {
     </div>
   );
 }
+
+    
