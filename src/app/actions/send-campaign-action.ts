@@ -149,24 +149,22 @@ async function getRecipients(
     let params: any[] = [];
     // Inicializa la variable para la consulta SQL y los parámetros.
 
-    // Si el tipo de datos del destinatario es 'date', construye la consulta SQL para obtener contactos por fecha.
     if (type === 'date') {
-      sql_query = `
-        SELECT t1.email, t1.nombre_completo as name
-        FROM order_data AS t1 INNER JOIN order_data_online AS t2 ON t1.Ds_Merchant_Order = t2.Ds_Order
-        WHERE
-            t1.fecha_visita = ?
-            AND t2.Ds_ErrorCode = '00'
-            AND t2.Ds_ErrorMessage = 'completed'
-            AND NOT t1.email IN ('alberto.silva@papalote.org.mx', 'alejandracervantesm@gmail.com')
-      `;
-      params = [value];
-      // El valor se usa como parámetro para la fecha de visita.
-      // Si el tipo de datos del destinatario es 'sql', usa el valor directamente como consulta SQL.
+        const [day, month, year] = value.split('/');
+        const formattedDate = `${year}-${month}-${day}`;
+        sql_query = `
+            SELECT c.email, c.name
+            FROM contacts c
+            JOIN attendees a ON c.id = a.contact_id
+            JOIN events e ON a.event_id = e.id
+            WHERE e.event_date = ?;
+        `;
+        params = [formattedDate];
     } else if (type === 'sql') {
-      sql_query = value;
-      params = []; // Las consultas SQL personalizadas no esperan parámetros por defecto aquí.
+        sql_query = value;
+        params = [];
     }
+
 
     const [rows] = await connection.execute(sql_query, params);
     return (rows as Recipient[]).filter(row => row.email);
