@@ -153,11 +153,11 @@ async function getRecipients(
         const [day, month, year] = value.split('/');
         const formattedDate = `${year}-${month}-${day}`;
         sql_query = `
-            SELECT c.email, c.name
-            FROM contacts c
-            JOIN attendees a ON c.id = a.contact_id
-            JOIN events e ON a.event_id = e.id
-            WHERE e.event_date = ?;
+            SELECT c.email, c.nombre
+            FROM contactos c
+            JOIN asistentes a ON c.id = a.contacto_id
+            JOIN eventos e ON a.evento_id = e.id
+            WHERE e.fecha_evento = ?;
         `;
         params = [formattedDate];
     } else if (type === 'sql') {
