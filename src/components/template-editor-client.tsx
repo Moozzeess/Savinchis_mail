@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -30,6 +31,7 @@ import { type Block, formSchema, type FormValues, generateHtmlFromBlocks } from 
 export function TemplateEditorClient() {
   const [previewHtml, setPreviewHtml] = useState('');
   const { toast } = useToast();
+  const [isMounted, setIsMounted] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -51,6 +53,10 @@ export function TemplateEditorClient() {
     const html = generateHtmlFromBlocks(watchedBlocks);
     setPreviewHtml(html);
   }, [watchedBlocks]);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   function onSubmit(values: FormValues) {
     const finalHtml = generateHtmlFromBlocks(values.blocks);
@@ -133,33 +139,35 @@ export function TemplateEditorClient() {
                         <CardDescription>Añade y organiza los bloques de contenido de tu correo.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <DragDropContext onDragEnd={onDragEnd}>
-                            <Droppable droppableId="blocks">
-                                {(provided) => (
-                                    <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
-                                        {fields.map((field, index) => (
-                                            <Draggable key={field.id} draggableId={field.id} index={index}>
-                                                {(provided, snapshot) => (
-                                                    <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className={cn("p-4 border rounded-lg bg-background", snapshot.isDragging && "shadow-lg")}>
-                                                        <div className="flex items-start gap-2">
-                                                            <GripVertical className="h-5 w-5 text-muted-foreground mt-1 cursor-move" />
-                                                            <div className="flex-grow space-y-2">
-                                                                <h4 className="font-medium capitalize">{watchedBlocks[index].type}</h4>
-                                                                {renderBlockControls(index)}
+                        {isMounted && (
+                            <DragDropContext onDragEnd={onDragEnd}>
+                                <Droppable droppableId="blocks">
+                                    {(provided) => (
+                                        <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
+                                            {fields.map((field, index) => (
+                                                <Draggable key={field.id} draggableId={field.id} index={index}>
+                                                    {(provided, snapshot) => (
+                                                        <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className={cn("p-4 border rounded-lg bg-background", snapshot.isDragging && "shadow-lg")}>
+                                                            <div className="flex items-start gap-2">
+                                                                <GripVertical className="h-5 w-5 text-muted-foreground mt-1 cursor-move" />
+                                                                <div className="flex-grow space-y-2">
+                                                                    <h4 className="font-medium capitalize">{watchedBlocks[index].type}</h4>
+                                                                    {renderBlockControls(index)}
+                                                                </div>
+                                                                <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
                                                             </div>
-                                                            <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </Button>
                                                         </div>
-                                                    </div>
-                                                )}
-                                            </Draggable>
-                                        ))}
-                                        {provided.placeholder}
-                                    </div>
-                                )}
-                            </Droppable>
-                        </DragDropContext>
+                                                    )}
+                                                </Draggable>
+                                            ))}
+                                            {provided.placeholder}
+                                        </div>
+                                    )}
+                                </Droppable>
+                            </DragDropContext>
+                        )}
                          <div className="pt-4 mt-4 border-t">
                             <div className="grid grid-cols-2 gap-2">
                                 <Button type="button" variant="outline" size="sm" onClick={() => addBlock('text')}><Pilcrow className="mr-2 h-4 w-4"/>Añadir Texto</Button>
