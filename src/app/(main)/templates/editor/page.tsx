@@ -1,4 +1,3 @@
-
 import { TemplateEditorClient } from "@/components/template-editor-client";
 
 /**
@@ -7,15 +6,6 @@ import { TemplateEditorClient } from "@/components/template-editor-client";
  * y edición de plantillas de correo.
  */
 export default function TemplateEditorPage() {
-  return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-headline font-bold">Editor de Plantillas</h1>
-        <p className="text-muted-foreground">
-          Diseña correos electrónicos atractivos con el editor de bloques.
-        </p>
-      </div>
-      <TemplateEditorClient />
-    </div>
-  );
+  // El componente cliente ahora maneja el diseño de pantalla completa.
+  return <TemplateEditorClient />;
 }

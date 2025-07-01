@@ -21,17 +21,6 @@
       "layer": {
         "app/(main)/send/page": "action-browser"
       }
-    },
-    "006ea2342d4d407bd8720253796880b53a660d9c88": {
-      "workers": {
-        "app/(main)/mailbox/page": {
-          "moduleId": "[project]/.next-internal/server/app/(main)/mailbox/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/get-sent-emails-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false
-        }
-      },
-      "layer": {
-        "app/(main)/mailbox/page": "rsc"
-      }
     }
   },
   "edge": {},

@@ -19,11 +19,19 @@ const spacerBlockSchema = z.object({
   height: z.number().min(10, 'La altura mínima es 10px.').max(200, 'La altura máxima es 200px.'),
 });
 
+const dividerBlockSchema = z.object({}); // No content needed
+
+const htmlBlockSchema = z.object({
+  code: z.string().min(1, 'El código HTML no puede estar vacío.'),
+});
+
 export const blockSchema = z.discriminatedUnion('type', [
   z.object({ id: z.string(), type: z.literal('text'), content: textBlockSchema }),
   z.object({ id: z.string(), type: z.literal('image'), content: imageBlockSchema }),
   z.object({ id: z.string(), type: z.literal('button'), content: buttonBlockSchema }),
   z.object({ id: z.string(), type: z.literal('spacer'), content: spacerBlockSchema }),
+  z.object({ id: z.string(), type: z.literal('divider'), content: dividerBlockSchema }),
+  z.object({ id: z.string(), type: z.literal('html'), content: htmlBlockSchema }),
 ]);
 
 export type Block = z.infer<typeof blockSchema>;
@@ -32,7 +40,7 @@ export type Block = z.infer<typeof blockSchema>;
 export const formSchema = z.object({
   templateName: z.string().min(1, 'El nombre de la plantilla es requerido.'),
   emailSubject: z.string().min(1, 'El asunto del correo es requerido.'),
-  blocks: z.array(blockSchema).min(1, 'El cuerpo del correo debe tener al menos un bloque.'),
+  blocks: z.array(blockSchema),
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -50,6 +58,11 @@ export function generateHtmlFromBlocks(blocks: Block[]): string {
                 return `<tr><td style="padding: 20px;" align="center"><a href="${block.content.href}" target="_blank" style="background-color: #74B49B; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; display: inline-block;">${block.content.text}</a></td></tr>`;
             case 'spacer':
                 return `<tr><td style="height: ${block.content.height}px; line-height: ${block.content.height}px; font-size: ${block.content.height}px;">&nbsp;</td></tr>`;
+            case 'divider':
+                return `<tr><td style="padding: 10px 20px;"><hr style="border: none; border-top: 1px solid #cccccc; margin: 0;" /></td></tr>`;
+            case 'html':
+                // Note: This is unsafe if the HTML is not sanitized. For a real app, use a sanitizer.
+                return `<tr><td style="padding: 0; margin: 0;">${block.content.code}</td></tr>`;
             default:
                 return '';
         }

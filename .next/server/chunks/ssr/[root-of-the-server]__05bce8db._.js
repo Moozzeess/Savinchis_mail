@@ -249,8 +249,6 @@ var { g: global, __dirname } = __turbopack_context__;
  * @fileOverview Datos de prueba para la aplicación.
  * Este archivo contiene datos de ejemplo para campañas y contactos,
  * utilizados para poblar la interfaz de usuario hasta que se conecte una base de datos real.
- */ /**
- * Datos de ejemplo para las campañas de correo electrónico.
  */ __turbopack_context__.s({
     "campaigns": (()=>campaigns),
     "certificateTemplates": (()=>certificateTemplates),
@@ -307,22 +305,112 @@ const templates = [
         id: "1",
         name: "Newsletter Mensual",
         description: "Plantilla estándar para el boletín informativo de cada mes.",
-        image: "https://placehold.co/600x400.png",
-        aiHint: "abstract pattern"
+        blocks: [
+            {
+                id: 'a',
+                type: 'image',
+                content: {
+                    src: 'https://placehold.co/600x200.png',
+                    alt: 'Banner de Newsletter'
+                }
+            },
+            {
+                id: 'b',
+                type: 'text',
+                content: {
+                    text: '¡Hola, {{contact.name}}!\n\nEstas son las novedades de este mes. Hemos estado trabajando en muchas cosas emocionantes y no podemos esperar a compartirlas contigo.'
+                }
+            },
+            {
+                id: 'c',
+                type: 'button',
+                content: {
+                    text: 'Leer más',
+                    href: 'https://example.com/blog'
+                }
+            },
+            {
+                id: 'd',
+                type: 'spacer',
+                content: {
+                    height: 20
+                }
+            }
+        ]
     },
     {
         id: "2",
         name: "Anuncio de Producto",
         description: "Plantilla para anunciar nuevos productos o características.",
-        image: "https://placehold.co/600x400.png",
-        aiHint: "product launch"
+        blocks: [
+            {
+                id: 'e',
+                type: 'text',
+                content: {
+                    text: '¡Presentamos nuestro nuevo producto!'
+                }
+            },
+            {
+                id: 'f',
+                type: 'image',
+                content: {
+                    src: 'https://placehold.co/600x300.png',
+                    alt: 'Nuevo Producto'
+                }
+            },
+            {
+                id: 'g',
+                type: 'text',
+                content: {
+                    text: 'Este producto revolucionará tu forma de trabajar. Conoce más sobre sus características y beneficios.'
+                }
+            },
+            {
+                id: 'h',
+                type: 'button',
+                content: {
+                    text: 'Comprar ahora',
+                    href: 'https://example.com/product'
+                }
+            }
+        ]
     },
     {
         id: "3",
         name: "Oferta Especial",
         description: "Diseño llamativo para promociones y descuentos.",
-        image: "https://placehold.co/600x400.png",
-        aiHint: "special offer"
+        blocks: [
+            {
+                id: 'i',
+                type: 'text',
+                content: {
+                    text: '¡Oferta por tiempo limitado!'
+                }
+            },
+            {
+                id: 'j',
+                type: 'text',
+                content: {
+                    text: 'Obtén un 50% de descuento en todos nuestros productos. No dejes pasar esta oportunidad.'
+                }
+            },
+            {
+                id: 'k',
+                type: 'image',
+                content: {
+                    src: 'https://placehold.co/600x150.png',
+                    alt: 'Descuento'
+                }
+            },
+            {
+                id: 'l',
+                type: 'button',
+                content: {
+                    text: 'Aprovechar oferta',
+                    href: 'https://example.com/sale'
+                }
+            }
+        ]
     }
 ];
 const contacts = [

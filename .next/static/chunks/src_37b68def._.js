@@ -589,6 +589,7 @@ function TemplateEditorClient() {
     _s();
     const [previewHtml, setPreviewHtml] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
     const { toast } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$use$2d$toast$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useToast"])();
+    const [isMounted, setIsMounted] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const form = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$hook$2d$form$2f$dist$2f$index$2e$esm$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useForm"])({
         resolver: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$hookform$2f$resolvers$2f$zod$2f$dist$2f$zod$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["zodResolver"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$template$2d$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["formSchema"]),
         defaultValues: {
@@ -610,6 +611,11 @@ function TemplateEditorClient() {
     }["TemplateEditorClient.useEffect"], [
         watchedBlocks
     ]);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "TemplateEditorClient.useEffect": ()=>{
+            setIsMounted(true);
+        }
+    }["TemplateEditorClient.useEffect"], []);
     function onSubmit(values) {
         const finalHtml = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$template$2d$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["generateHtmlFromBlocks"])(values.blocks);
         console.log({
@@ -684,12 +690,12 @@ function TemplateEditorClient() {
                             rows: 4
                         }, void 0, false, {
                             fileName: "[project]/src/components/template-editor-client.tsx",
-                            lineNumber: 95,
+                            lineNumber: 101,
                             columnNumber: 111
                         }, void 0)
                 }, void 0, false, {
                     fileName: "[project]/src/components/template-editor-client.tsx",
-                    lineNumber: 95,
+                    lineNumber: 101,
                     columnNumber: 16
                 }, this);
             case 'image':
@@ -704,12 +710,12 @@ function TemplateEditorClient() {
                                     placeholder: "URL de la imagen"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                    lineNumber: 98,
+                                    lineNumber: 104,
                                     columnNumber: 107
                                 }, void 0)
                         }, void 0, false, {
                             fileName: "[project]/src/components/template-editor-client.tsx",
-                            lineNumber: 98,
+                            lineNumber: 104,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -720,18 +726,18 @@ function TemplateEditorClient() {
                                     placeholder: "Texto alternativo"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                    lineNumber: 99,
+                                    lineNumber: 105,
                                     columnNumber: 107
                                 }, void 0)
                         }, void 0, false, {
                             fileName: "[project]/src/components/template-editor-client.tsx",
-                            lineNumber: 99,
+                            lineNumber: 105,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/template-editor-client.tsx",
-                    lineNumber: 97,
+                    lineNumber: 103,
                     columnNumber: 16
                 }, this);
             case 'button':
@@ -746,12 +752,12 @@ function TemplateEditorClient() {
                                     placeholder: "Texto del botón"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                    lineNumber: 103,
+                                    lineNumber: 109,
                                     columnNumber: 108
                                 }, void 0)
                         }, void 0, false, {
                             fileName: "[project]/src/components/template-editor-client.tsx",
-                            lineNumber: 103,
+                            lineNumber: 109,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -762,18 +768,18 @@ function TemplateEditorClient() {
                                     placeholder: "URL del enlace"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                    lineNumber: 104,
+                                    lineNumber: 110,
                                     columnNumber: 108
                                 }, void 0)
                         }, void 0, false, {
                             fileName: "[project]/src/components/template-editor-client.tsx",
-                            lineNumber: 104,
+                            lineNumber: 110,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/template-editor-client.tsx",
-                    lineNumber: 102,
+                    lineNumber: 108,
                     columnNumber: 16
                 }, this);
             case 'spacer':
@@ -789,25 +795,25 @@ function TemplateEditorClient() {
                                     onChange: (e)=>field.onChange(parseInt(e.target.value, 10))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                    lineNumber: 107,
+                                    lineNumber: 113,
                                     columnNumber: 154
                                 }, void 0),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                     children: "px"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                    lineNumber: 107,
+                                    lineNumber: 113,
                                     columnNumber: 248
                                 }, void 0)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/template-editor-client.tsx",
-                            lineNumber: 107,
+                            lineNumber: 113,
                             columnNumber: 113
                         }, void 0)
                 }, void 0, false, {
                     fileName: "[project]/src/components/template-editor-client.tsx",
-                    lineNumber: 107,
+                    lineNumber: 113,
                     columnNumber: 16
                 }, this);
             default:
@@ -835,20 +841,20 @@ function TemplateEditorClient() {
                                                     children: "Editor de Plantilla"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                    lineNumber: 121,
+                                                    lineNumber: 127,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                     children: "Crea o edita tu plantilla de correo electrónico."
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                    lineNumber: 122,
+                                                    lineNumber: 128,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/template-editor-client.tsx",
-                                            lineNumber: 120,
+                                            lineNumber: 126,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -863,7 +869,7 @@ function TemplateEditorClient() {
                                                                     children: "Nombre de la Plantilla"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                    lineNumber: 125,
+                                                                    lineNumber: 131,
                                                                     columnNumber: 113
                                                                 }, void 0),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -872,28 +878,28 @@ function TemplateEditorClient() {
                                                                         ...field
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                        lineNumber: 125,
+                                                                        lineNumber: 131,
                                                                         columnNumber: 171
                                                                     }, void 0)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                    lineNumber: 125,
+                                                                    lineNumber: 131,
                                                                     columnNumber: 158
                                                                 }, void 0),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                    lineNumber: 125,
+                                                                    lineNumber: 131,
                                                                     columnNumber: 242
                                                                 }, void 0)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/template-editor-client.tsx",
-                                                            lineNumber: 125,
+                                                            lineNumber: 131,
                                                             columnNumber: 103
                                                         }, void 0)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                    lineNumber: 125,
+                                                    lineNumber: 131,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -905,7 +911,7 @@ function TemplateEditorClient() {
                                                                     children: "Asunto del Correo"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                    lineNumber: 126,
+                                                                    lineNumber: 132,
                                                                     columnNumber: 113
                                                                 }, void 0),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -914,40 +920,40 @@ function TemplateEditorClient() {
                                                                         ...field
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                        lineNumber: 126,
+                                                                        lineNumber: 132,
                                                                         columnNumber: 166
                                                                     }, void 0)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                    lineNumber: 126,
+                                                                    lineNumber: 132,
                                                                     columnNumber: 153
                                                                 }, void 0),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                    lineNumber: 126,
+                                                                    lineNumber: 132,
                                                                     columnNumber: 240
                                                                 }, void 0)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/template-editor-client.tsx",
-                                                            lineNumber: 126,
+                                                            lineNumber: 132,
                                                             columnNumber: 103
                                                         }, void 0)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                    lineNumber: 126,
+                                                    lineNumber: 132,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/template-editor-client.tsx",
-                                            lineNumber: 124,
+                                            lineNumber: 130,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                    lineNumber: 119,
+                                    lineNumber: 125,
                                     columnNumber: 18
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -958,25 +964,25 @@ function TemplateEditorClient() {
                                                     children: "Contenido del Correo"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                    lineNumber: 132,
+                                                    lineNumber: 138,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                     children: "Añade y organiza los bloques de contenido de tu correo."
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                    lineNumber: 133,
+                                                    lineNumber: 139,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/template-editor-client.tsx",
-                                            lineNumber: 131,
+                                            lineNumber: 137,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$beautiful$2d$dnd$2f$dist$2f$react$2d$beautiful$2d$dnd$2e$esm$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DragDropContext"], {
+                                                isMounted && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$beautiful$2d$dnd$2f$dist$2f$react$2d$beautiful$2d$dnd$2e$esm$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DragDropContext"], {
                                                     onDragEnd: onDragEnd,
                                                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$beautiful$2d$dnd$2f$dist$2f$react$2d$beautiful$2d$dnd$2e$esm$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Droppable"], {
                                                         droppableId: "blocks",
@@ -1000,8 +1006,8 @@ function TemplateEditorClient() {
                                                                                                 className: "h-5 w-5 text-muted-foreground mt-1 cursor-move"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                                lineNumber: 145,
-                                                                                                columnNumber: 61
+                                                                                                lineNumber: 152,
+                                                                                                columnNumber: 65
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                                                 className: "flex-grow space-y-2",
@@ -1011,15 +1017,15 @@ function TemplateEditorClient() {
                                                                                                         children: watchedBlocks[index].type
                                                                                                     }, void 0, false, {
                                                                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                                        lineNumber: 147,
-                                                                                                        columnNumber: 65
+                                                                                                        lineNumber: 154,
+                                                                                                        columnNumber: 69
                                                                                                     }, this),
                                                                                                     renderBlockControls(index)
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                                lineNumber: 146,
-                                                                                                columnNumber: 61
+                                                                                                lineNumber: 153,
+                                                                                                columnNumber: 65
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                                                                                 type: "button",
@@ -1030,46 +1036,46 @@ function TemplateEditorClient() {
                                                                                                     className: "h-4 w-4"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                                    lineNumber: 151,
-                                                                                                    columnNumber: 65
+                                                                                                    lineNumber: 158,
+                                                                                                    columnNumber: 69
                                                                                                 }, this)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                                lineNumber: 150,
-                                                                                                columnNumber: 61
+                                                                                                lineNumber: 157,
+                                                                                                columnNumber: 65
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                        lineNumber: 144,
-                                                                                        columnNumber: 57
+                                                                                        lineNumber: 151,
+                                                                                        columnNumber: 61
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                    lineNumber: 143,
-                                                                                    columnNumber: 53
+                                                                                    lineNumber: 150,
+                                                                                    columnNumber: 57
                                                                                 }, this)
                                                                         }, field.id, false, {
                                                                             fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                            lineNumber: 141,
-                                                                            columnNumber: 45
+                                                                            lineNumber: 148,
+                                                                            columnNumber: 49
                                                                         }, this)),
                                                                     provided.placeholder
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                lineNumber: 139,
-                                                                columnNumber: 37
+                                                                lineNumber: 146,
+                                                                columnNumber: 41
                                                             }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                        lineNumber: 137,
-                                                        columnNumber: 29
+                                                        lineNumber: 144,
+                                                        columnNumber: 33
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                    lineNumber: 136,
-                                                    columnNumber: 25
+                                                    lineNumber: 143,
+                                                    columnNumber: 29
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "pt-4 mt-4 border-t",
@@ -1086,14 +1092,14 @@ function TemplateEditorClient() {
                                                                         className: "mr-2 h-4 w-4"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                        lineNumber: 165,
+                                                                        lineNumber: 173,
                                                                         columnNumber: 116
                                                                     }, this),
                                                                     "Añadir Texto"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                lineNumber: 165,
+                                                                lineNumber: 173,
                                                                 columnNumber: 33
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1106,14 +1112,14 @@ function TemplateEditorClient() {
                                                                         className: "mr-2 h-4 w-4"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                        lineNumber: 166,
+                                                                        lineNumber: 174,
                                                                         columnNumber: 117
                                                                     }, this),
                                                                     "Añadir Imagen"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                lineNumber: 166,
+                                                                lineNumber: 174,
                                                                 columnNumber: 33
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1126,14 +1132,14 @@ function TemplateEditorClient() {
                                                                         className: "mr-2 h-4 w-4"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                        lineNumber: 167,
+                                                                        lineNumber: 175,
                                                                         columnNumber: 118
                                                                     }, this),
                                                                     "Añadir Botón"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                lineNumber: 167,
+                                                                lineNumber: 175,
                                                                 columnNumber: 33
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1146,43 +1152,43 @@ function TemplateEditorClient() {
                                                                         className: "mr-2 h-4 w-4"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                        lineNumber: 168,
+                                                                        lineNumber: 176,
                                                                         columnNumber: 118
                                                                     }, this),
                                                                     "Añadir Espaciador"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                lineNumber: 168,
+                                                                lineNumber: 176,
                                                                 columnNumber: 33
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                        lineNumber: 164,
+                                                        lineNumber: 172,
                                                         columnNumber: 29
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                    lineNumber: 163,
+                                                    lineNumber: 171,
                                                     columnNumber: 26
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/template-editor-client.tsx",
-                                            lineNumber: 135,
+                                            lineNumber: 141,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                    lineNumber: 130,
+                                    lineNumber: 136,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/template-editor-client.tsx",
-                            lineNumber: 118,
+                            lineNumber: 124,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1194,12 +1200,12 @@ function TemplateEditorClient() {
                                             children: "Vista Previa"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/template-editor-client.tsx",
-                                            lineNumber: 179,
+                                            lineNumber: 187,
                                             columnNumber: 25
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                        lineNumber: 178,
+                                        lineNumber: 186,
                                         columnNumber: 21
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1212,34 +1218,34 @@ function TemplateEditorClient() {
                                                 sandbox: "allow-scripts"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                lineNumber: 183,
+                                                lineNumber: 191,
                                                 columnNumber: 29
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/template-editor-client.tsx",
-                                            lineNumber: 182,
+                                            lineNumber: 190,
                                             columnNumber: 25
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                        lineNumber: 181,
+                                        lineNumber: 189,
                                         columnNumber: 21
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                lineNumber: 177,
+                                lineNumber: 185,
                                 columnNumber: 17
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/template-editor-client.tsx",
-                            lineNumber: 176,
+                            lineNumber: 184,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/template-editor-client.tsx",
-                    lineNumber: 116,
+                    lineNumber: 122,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1249,22 +1255,22 @@ function TemplateEditorClient() {
                     children: "Guardar Plantilla"
                 }, void 0, false, {
                     fileName: "[project]/src/components/template-editor-client.tsx",
-                    lineNumber: 190,
+                    lineNumber: 198,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/template-editor-client.tsx",
-            lineNumber: 115,
+            lineNumber: 121,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/template-editor-client.tsx",
-        lineNumber: 114,
+        lineNumber: 120,
         columnNumber: 5
     }, this);
 }
-_s(TemplateEditorClient, "casVdK68Z+pFHbJg7cHDgLjVzrs=", false, function() {
+_s(TemplateEditorClient, "geQ6RezdZ0BrEqTFGs37/9z80i0=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$use$2d$toast$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useToast"],
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$hook$2d$form$2f$dist$2f$index$2e$esm$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useForm"],
