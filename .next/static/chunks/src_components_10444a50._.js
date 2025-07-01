@@ -558,7 +558,7 @@ function generateHtmlFromBlocks(blocks) {
     <!DOCTYPE html>
     <html>
     <head><title>${'Email Preview'}</title></head>
-    <body style="margin: 0; padding: 0; background-color: #E2F9F0;">
+    <body style="margin: 0; padding: 0; background-color: #f4f4f4;">
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
         <tr>
           <td align="center" style="padding: 20px;">

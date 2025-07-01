@@ -36,7 +36,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/tabs.tsx",
-        lineNumber: 26,
+        lineNumber: 27,
         columnNumber: 3
     }, this));
 _c1 = TabsList;
@@ -49,7 +49,7 @@ TabsList.displayName = __TURBOPACK__imported__module__$5b$project$5d2f$node_modu
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/tabs.tsx",
-        lineNumber: 44,
+        lineNumber: 45,
         columnNumber: 3
     }, this));
 _c3 = TabsTrigger;
@@ -62,7 +62,7 @@ TabsTrigger.displayName = __TURBOPACK__imported__module__$5b$project$5d2f$node_m
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/tabs.tsx",
-        lineNumber: 62,
+        lineNumber: 63,
         columnNumber: 3
     }, this));
 _c5 = TabsContent;

@@ -36,7 +36,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/tabs.tsx",
-        lineNumber: 26,
+        lineNumber: 27,
         columnNumber: 3
     }, this));
 TabsList.displayName = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$tabs$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["List"].displayName;
@@ -48,7 +48,7 @@ TabsList.displayName = __TURBOPACK__imported__module__$5b$project$5d2f$node_modu
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/tabs.tsx",
-        lineNumber: 44,
+        lineNumber: 45,
         columnNumber: 3
     }, this));
 TabsTrigger.displayName = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$tabs$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Trigger"].displayName;
@@ -60,7 +60,7 @@ TabsTrigger.displayName = __TURBOPACK__imported__module__$5b$project$5d2f$node_m
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/tabs.tsx",
-        lineNumber: 62,
+        lineNumber: 63,
         columnNumber: 3
     }, this));
 TabsContent.displayName = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$tabs$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Content"].displayName;

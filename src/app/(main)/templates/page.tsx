@@ -1,3 +1,4 @@
+"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,9 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PlusCircle, Edit, Trash2 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { templates } from "@/lib/data";
+import { generateHtmlFromBlocks } from "@/lib/template-utils";
 
 /**
  * Página de Plantillas.
@@ -37,36 +38,40 @@ export default function TemplatesPage() {
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {templates.map((template) => (
-          <Card key={template.id}>
-            <CardHeader>
-              <Image
-                src={template.image}
-                width={600}
-                height={400}
-                alt={template.name}
-                className="rounded-t-lg object-cover aspect-[3/2]"
-                data-ai-hint={template.aiHint}
-              />
-            </CardHeader>
-            <CardContent>
-              <CardTitle className="text-xl font-headline">
-                {template.name}
-              </CardTitle>
-              <CardDescription>{template.description}</CardDescription>
-            </CardContent>
-            <CardFooter className="flex justify-end gap-2">
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="/templates/editor">
-                  <Edit className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+        {templates.map((template) => {
+          const templateHtml = generateHtmlFromBlocks(template.blocks);
+          return (
+            <Card key={template.id} className="flex flex-col">
+              <CardHeader className="p-0">
+                <div className="aspect-[3/2] w-full h-full overflow-hidden rounded-t-lg bg-muted pointer-events-none">
+                  <iframe
+                    srcDoc={templateHtml}
+                    title={template.name}
+                    className="w-full h-full border-0 scale-[0.5] origin-top-left"
+                    style={{ width: "200%", height: "200%" }}
+                    scrolling="no"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4 flex-grow">
+                <CardTitle className="text-xl font-headline">
+                  {template.name}
+                </CardTitle>
+                <CardDescription>{template.description}</CardDescription>
+              </CardContent>
+              <CardFooter className="flex justify-end gap-2">
+                <Button variant="ghost" size="icon" asChild>
+                  <Link href="/templates/editor">
+                    <Edit className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </CardFooter>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
