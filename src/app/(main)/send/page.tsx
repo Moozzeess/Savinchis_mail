@@ -23,7 +23,14 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import {
   Calendar as CalendarIcon,
   Loader2,
@@ -43,6 +50,9 @@ import {
   File,
   Laptop,
   Smartphone,
+  Search,
+  List,
+  Zap,
 } from "lucide-react";
 import {
   Popover,
@@ -69,7 +79,7 @@ import { jsPDF } from "jspdf";
 import { useAuth } from "@/context/auth-context";
 import { ROLES } from "@/lib/permissions";
 
-type RecipientSource = "date" | "file" | "sql";
+type RecipientSource = "date" | "file" | "sql" | "individual";
 type ContentType = "template" | "event" | "survey" | "custom" | "certificate";
 
 interface CampaignStats {
@@ -153,10 +163,17 @@ export default function SendPage() {
   const [recipientSource, setRecipientSource] = useState<RecipientSource>("file");
   const [fileContent, setFileContent] = useState("");
   const [uploadedFileType, setUploadedFileType] = useState<"csv" | "excel" | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [sqlQuery, setSqlQuery] = useState("SELECT email, nombre FROM contactos WHERE suscrito = TRUE;");
+  const [individualEmails, setIndividualEmails] = useState("");
   const [lastRunStats, setLastRunStats] = useState<CampaignStats | null>(null);
   
   const [recipientCount, setRecipientCount] = useState(0);
+  const [recipientSummary, setRecipientSummary] = useState("Ninguna fuente seleccionada");
+
+  // State for recipient dialog
+  const [isRecipientDialogOpen, setIsRecipientDialogOpen] = useState(false);
+
 
   // Content type selection
   const [contentType, setContentType] = useState<ContentType>("template");
@@ -215,6 +232,16 @@ export default function SendPage() {
     }
   }, [contentType, selectedTemplateId, selectedEventId, selectedSurveyId]);
 
+  useEffect(() => {
+    let count = 0;
+    switch (recipientSource) {
+      case 'file': count = recipientCount; break;
+      case 'individual': count = individualEmails.split(/[\s,;]+/).filter(e => e && e.includes('@')).length; break;
+      // SQL and Date count would ideally come from a backend query preview
+    }
+    setRecipientCount(count);
+  }, [recipientSource, recipientCount, individualEmails]);
+
   const estimatedTime = useMemo(() => {
     const batchSize = 50;
     const emailDelay = 100;
@@ -238,7 +265,8 @@ export default function SendPage() {
       const reader = new FileReader();
       const fileName = file.name.toLowerCase();
       setRecipientCount(0);
-      const resetState = () => { e.target.value = ''; setFileContent(""); setUploadedFileType(null); setRecipientCount(0); };
+      setUploadedFileName(file.name);
+      const resetState = () => { e.target.value = ''; setFileContent(""); setUploadedFileType(null); setRecipientCount(0); setUploadedFileName(null); };
 
       if (fileName.endsWith(".csv")) {
         setUploadedFileType("csv");
@@ -342,26 +370,24 @@ export default function SendPage() {
     let recipientData;
     switch (recipientSource) {
       case "date": 
-        if (!date) {
-            toast({ title: "Fecha requerida", description: "Por favor, selecciona una fecha para la fuente de destinatarios.", variant: "destructive" });
-            return;
-        }
+        if (!date) { toast({ title: "Fecha requerida", variant: "destructive" }); return; }
         recipientData = { type: "date" as const, value: format(date, "yyyy-MM-dd") }; 
         break;
       case "file": 
-        if (!uploadedFileType || !fileContent) {
-            toast({ title: "Archivo requerido", description: "Por favor, sube un archivo para la fuente de destinatarios.", variant: "destructive" });
-            return;
-        }
+        if (!uploadedFileType || !fileContent) { toast({ title: "Archivo requerido", variant: "destructive" }); return; }
         recipientData = { type: uploadedFileType, value: fileContent }; 
         break;
       case "sql": 
-        if (!sqlQuery.trim()) {
-            toast({ title: "Consulta SQL requerida", description: "Por favor, escribe una consulta SQL.", variant: "destructive" });
-            return;
-        }
+        if (!sqlQuery.trim()) { toast({ title: "Consulta SQL requerida", variant: "destructive" }); return; }
         recipientData = { type: "sql" as const, value: sqlQuery }; 
         break;
+      case "individual":
+        if (!individualEmails.trim()) { toast({ title: "Correos requeridos", variant: "destructive" }); return; }
+        recipientData = { type: "individual" as const, value: individualEmails };
+        break;
+      default:
+        toast({ title: "Fuente de destinatarios no válida", variant: "destructive" });
+        return;
     }
 
     let attachment;
@@ -373,28 +399,15 @@ export default function SendPage() {
             const dataUrl = `data:image/png;base64,${template}`;
             pdf.addImage(dataUrl, 'PNG', 0, 0, pdf.internal.pageSize.getWidth(), pdf.internal.pageSize.getHeight());
             const pdfBase64 = pdf.output('datauristring').split(',')[1];
-            attachment = {
-                content: pdfBase64,
-                filename: `certificado-${event.name.replace(/ /g, '_')}.pdf`,
-                contentType: 'application/pdf'
-            }
+            attachment = { content: pdfBase64, filename: `certificado-${event.name.replace(/ /g, '_')}.pdf`, contentType: 'application/pdf' }
         } else {
-            toast({ title: "Plantilla no encontrada", description: "No se encontró una plantilla de certificado para este evento.", variant: "destructive" });
-            return;
+            toast({ title: "Plantilla no encontrada", variant: "destructive" }); return;
         }
     }
 
     setIsSending(true);
     try {
-      const result = await sendCampaign({ 
-        subject, 
-        htmlBody: emailBody, 
-        recipientData, 
-        senderEmail,
-        attachment,
-        eventId: selectedEventId,
-        role,
-      });
+      const result = await sendCampaign({ subject, htmlBody: emailBody, recipientData, senderEmail, attachment, eventId: selectedEventId, role });
       toast({ title: "Proceso de envío finalizado", description: result.message });
       if (result.stats) setLastRunStats(result.stats);
     } catch (error) {
@@ -402,6 +415,33 @@ export default function SendPage() {
     } finally {
       setIsSending(false);
     }
+  };
+
+  const handleSaveRecipients = () => {
+    let summary = "Ninguna fuente seleccionada";
+    switch (recipientSource) {
+      case "file":
+        if (recipientCount > 0 && uploadedFileName) {
+          summary = `Archivo: "${uploadedFileName}" (${recipientCount} destinatarios).`;
+        }
+        break;
+      case "date":
+        if (date) {
+          summary = `Fecha de Visita (BD): ${format(date, "PPP", { locale: es })}`;
+        }
+        break;
+      case "sql":
+        summary = "Consulta SQL personalizada.";
+        break;
+      case "individual":
+        const count = individualEmails.split(/[\s,;]+/).filter(e => e && e.includes('@')).length;
+        if (count > 0) {
+          summary = `Contactos Individuales: ${count} destinatarios.`;
+        }
+        break;
+    }
+    setRecipientSummary(summary);
+    setIsRecipientDialogOpen(false);
   };
 
   const renderContentSelector = () => {
@@ -425,14 +465,8 @@ export default function SendPage() {
             <div className="space-y-2">
                 <Label htmlFor="sender-email">Email del Remitente</Label>
                 <Select value={senderEmail} onValueChange={setSenderEmail}>
-                    <SelectTrigger id="sender-email">
-                        <SelectValue placeholder="Selecciona un remitente..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {managedSenders.map(sender => (
-                            <SelectItem key={sender.email} value={sender.email}>{sender.name} ({sender.email})</SelectItem>
-                        ))}
-                    </SelectContent>
+                    <SelectTrigger id="sender-email"><SelectValue placeholder="Selecciona un remitente..." /></SelectTrigger>
+                    <SelectContent>{managedSenders.map(sender => <SelectItem key={sender.email} value={sender.email}>{sender.name} ({sender.email})</SelectItem>)}</SelectContent>
                 </Select>
             </div>
         )
@@ -457,98 +491,154 @@ export default function SendPage() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8 items-start">
-        <Card>
-          <CardHeader>
-            <CardTitle>Composición y Configuración</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            
-            <div className="space-y-4">
-                <div className="space-y-2">
-                    <Label>Tipo de Contenido</Label>
-                    <Select value={contentType} onValueChange={(v) => setContentType(v as ContentType)}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="template">Usar Plantilla</SelectItem>
-                            <SelectItem value="event">Invitación a Evento</SelectItem>
-                            <SelectItem value="survey">Enviar Encuesta</SelectItem>
-                            <SelectItem value="certificate">Certificado de Evento</SelectItem>
-                            <SelectItem value="custom">Personalizado (HTML)</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                {contentType !== 'custom' && <div className="space-y-2">{renderContentSelector()}</div>}
-            </div>
-
-            <div className="space-y-4 border-t pt-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                  {renderSenderInput()}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Composición y Configuración</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              
+              <div className="space-y-4">
                   <div className="space-y-2">
-                      <Label htmlFor="subject">Asunto del Correo</Label>
-                      <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
+                      <Label>Tipo de Contenido</Label>
+                      <Select value={contentType} onValueChange={(v) => setContentType(v as ContentType)}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                              <SelectItem value="template">Usar Plantilla</SelectItem>
+                              <SelectItem value="event">Invitación a Evento</SelectItem>
+                              <SelectItem value="survey">Enviar Encuesta</SelectItem>
+                              <SelectItem value="certificate">Certificado de Evento</SelectItem>
+                              <SelectItem value="custom">Personalizado (HTML)</SelectItem>
+                          </SelectContent>
+                      </Select>
                   </div>
+                  {contentType !== 'custom' && <div className="space-y-2">{renderContentSelector()}</div>}
               </div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <Label>Cuerpo del Mensaje</Label>
-                   <div className={cn("flex items-center gap-2", contentType !== 'custom' && 'hidden')}>
-                    <Label htmlFor="html-upload" className="text-sm font-normal text-primary underline-offset-4 hover:underline cursor-pointer">O sube HTML</Label>
-                    <Input id="html-upload" type="file" accept=".html" className="hidden" onChange={handleHtmlFileChange} />
-                   </div>
+              <div className="space-y-4 border-t pt-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                    {renderSenderInput()}
+                    <div className="space-y-2">
+                        <Label htmlFor="subject">Asunto del Correo</Label>
+                        <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
+                    </div>
                 </div>
-                <Textarea value={emailBody} onChange={(e) => setEmailBody(e.target.value)} rows={10} disabled={contentType !== 'custom'} />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Fuente de Destinatarios</Label>
-              <Tabs value={recipientSource} onValueChange={(v) => setRecipientSource(v as RecipientSource)} className="w-full">
-                <TabsList className={cn(
-                  "grid w-full",
-                  role === ROLES.IT ? "grid-cols-3" : "grid-cols-2"
-                )}>
-                  <TabsTrigger value="date">Fecha de Visita</TabsTrigger>
-                  <TabsTrigger value="file">Subir Archivo</TabsTrigger>
-                  {role === ROLES.IT && <TabsTrigger value="sql">Consulta SQL</TabsTrigger>}
-                </TabsList>
-                <TabsContent value="date" className="mt-4 border-t pt-4"><Popover><PopoverTrigger asChild><Button variant={"outline"} className="w-[280px] justify-start text-left font-normal"><CalendarIcon className="mr-2 h-4 w-4" />{date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={date} onSelect={setDate} initialFocus locale={es} /></PopoverContent></Popover></TabsContent>
-                <TabsContent value="file" className="mt-4 space-y-2 border-t pt-4"><Label htmlFor="file-upload">Sube un archivo CSV o Excel</Label><Input id="file-upload" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" onChange={handleFileChange} /><p className="text-sm text-muted-foreground">El archivo debe contener una columna "email".</p></TabsContent>
-                {role === ROLES.IT && <TabsContent value="sql" className="mt-4 space-y-2 border-t pt-4"><Label htmlFor="sql-query">Escribe tu consulta SQL</Label><Textarea id="sql-query" value={sqlQuery} onChange={(e) => setSqlQuery(e.target.value)} rows={4} /><p className="text-sm text-muted-foreground">La consulta debe devolver una columna "email".</p></TabsContent>}
-              </Tabs>
-            </div>
 
-            <div className="space-y-3">
-              <Label>Envío de Prueba</Label>
-              <div className="flex gap-2 items-end">
-                <div className="flex-grow space-y-2">
-                  <Label htmlFor="test-email" className="sr-only">Correo de Prueba</Label>
-                  <Input id="test-email" type="email" placeholder="tu-correo@ejemplo.com" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} />
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Label>Cuerpo del Mensaje</Label>
+                    <div className={cn("flex items-center gap-2", contentType !== 'custom' && 'hidden')}>
+                      <Label htmlFor="html-upload" className="text-sm font-normal text-primary underline-offset-4 hover:underline cursor-pointer">O sube HTML</Label>
+                      <Input id="html-upload" type="file" accept=".html" className="hidden" onChange={handleHtmlFileChange} />
+                    </div>
+                  </div>
+                  <Textarea value={emailBody} onChange={(e) => setEmailBody(e.target.value)} rows={10} disabled={contentType !== 'custom'} />
                 </div>
-                <Button onClick={handleSendTestEmail} variant="secondary" disabled={isSendingTest || isSending}>
-                  {isSendingTest ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+                <CardTitle>Destinatarios</CardTitle>
+                <CardDescription>{recipientSummary}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Button variant="outline" onClick={() => setIsRecipientDialogOpen(true)}>
+                    Seleccionar Fuente de Destinatarios
                 </Button>
+            </CardContent>
+          </Card>
+
+          <Dialog open={isRecipientDialogOpen} onOpenChange={setIsRecipientDialogOpen}>
+            <DialogContent className="sm:max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Destinatarios</DialogTitle>
+                <DialogDescription>
+                  Elige las personas que recibirán tu campaña.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="p-1">
+                  <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input placeholder="Buscar listas o segmentos..." className="pl-9" />
+                  </div>
+                  <Tabs defaultValue="lists" className="mt-4">
+                      <TabsList className="grid w-full grid-cols-3">
+                          <TabsTrigger value="lists"><List className="mr-2 h-4 w-4" />Listas</TabsTrigger>
+                          <TabsTrigger value="segments" disabled={!isIT}><Zap className="mr-2 h-4 w-4" />Segmentos</TabsTrigger>
+                          <TabsTrigger value="individuals"><Users className="mr-2 h-4 w-4" />Individuales</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="lists" className="mt-4">
+                          <Accordion type="single" collapsible className="w-full" onValueChange={(v) => setRecipientSource(v as RecipientSource)}>
+                              <AccordionItem value="file">
+                                  <AccordionTrigger>Subir Archivo (CSV/Excel)</AccordionTrigger>
+                                  <AccordionContent className="pt-4 space-y-2">
+                                      <Label htmlFor="file-upload">Sube un archivo de contactos</Label>
+                                      <Input id="file-upload" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" onChange={handleFileChange} />
+                                      <p className="text-sm text-muted-foreground">El archivo debe contener una columna "email".</p>
+                                  </AccordionContent>
+                              </AccordionItem>
+                              <AccordionItem value="date">
+                                  <AccordionTrigger>Contactos por Fecha (BD)</AccordionTrigger>
+                                  <AccordionContent className="pt-4 space-y-2">
+                                    <Label>Selecciona una fecha de visita</Label>
+                                    <Popover><PopoverTrigger asChild><Button variant={"outline"} className="w-[280px] justify-start text-left font-normal"><CalendarIcon className="mr-2 h-4 w-4" />{date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={date} onSelect={setDate} initialFocus locale={es} /></PopoverContent></Popover>
+                                  </AccordionContent>
+                              </AccordionItem>
+                          </Accordion>
+                      </TabsContent>
+                      <TabsContent value="segments" className="mt-4 space-y-2">
+                        <Label htmlFor="sql-query">Escribe tu consulta SQL</Label>
+                        <Textarea id="sql-query" value={sqlQuery} onChange={(e) => { setSqlQuery(e.target.value); setRecipientSource('sql'); }} rows={6} />
+                        <p className="text-sm text-muted-foreground">La consulta debe devolver una columna "email".</p>
+                      </TabsContent>
+                      <TabsContent value="individuals" className="mt-4 space-y-2">
+                          <Label htmlFor="individual-emails">Pegar Correos</Label>
+                          <Textarea id="individual-emails" placeholder="ejemplo1@dominio.com, ejemplo2@dominio.com" rows={6} value={individualEmails} onChange={(e) => { setIndividualEmails(e.target.value); setRecipientSource('individual'); }} />
+                          <p className="text-sm text-muted-foreground">Separa los correos con comas, espacios o saltos de línea.</p>
+                      </TabsContent>
+                  </Tabs>
               </div>
-            </div>
+              <DialogFooter className="mt-4">
+                  <Button variant="ghost" onClick={() => setIsRecipientDialogOpen(false)}>Cancelar</Button>
+                  <Button onClick={handleSaveRecipients}>Guardar</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
-            
-            <div className="flex items-start space-x-3 rounded-md bg-muted/50 p-3 text-sm">
-                <Info className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                <div>
-                    <p className="text-muted-foreground">Destinatarios detectados: <span className="font-bold text-foreground">{recipientCount}</span></p>
-                    <p className="text-muted-foreground">Tiempo estimado: <span className="font-bold text-foreground">{estimatedTime}</span></p>
-                    <p className="text-muted-foreground mt-1 text-xs">Los ajustes de velocidad de envío se gestionan en la sección de <span className="font-bold text-foreground">Ajustes</span>.</p>
+          <Card>
+            <CardHeader>
+                <CardTitle>Envío de Prueba</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="flex gap-2 items-end">
+                  <div className="flex-grow space-y-2">
+                    <Label htmlFor="test-email" className="sr-only">Correo de Prueba</Label>
+                    <Input id="test-email" type="email" placeholder="tu-correo@ejemplo.com" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} />
+                  </div>
+                  <Button onClick={handleSendTestEmail} variant="secondary" disabled={isSendingTest || isSending}>
+                    {isSendingTest ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  </Button>
                 </div>
-            </div>
+            </CardContent>
+          </Card>
+            
+          <div className="flex items-start space-x-3 rounded-md bg-muted/50 p-3 text-sm">
+              <Info className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <div>
+                  <p className="text-muted-foreground">Destinatarios detectados: <span className="font-bold text-foreground">{recipientCount}</span></p>
+                  <p className="text-muted-foreground">Tiempo estimado: <span className="font-bold text-foreground">{estimatedTime}</span></p>
+                  <p className="text-muted-foreground mt-1 text-xs">Los ajustes de velocidad de envío se gestionan en la sección de <span className="font-bold text-foreground">Ajustes</span>.</p>
+              </div>
+          </div>
+          
+          <Button onClick={handleSendCampaign} disabled={isSending || isSendingTest} size="lg" className="w-full">
+            <MailPlus className="mr-2 h-4 w-4" />
+            {isSending ? "Enviando..." : "Iniciar Envío Masivo"}
+          </Button>
 
-          </CardContent>
-          <CardFooter>
-            <Button onClick={handleSendCampaign} disabled={isSending || isSendingTest} className="w-full">
-              <MailPlus className="mr-2 h-4 w-4" />
-              {isSending ? "Enviando..." : "Iniciar Envío Masivo"}
-            </Button>
-          </CardFooter>
-        </Card>
+        </div>
 
         <div className="sticky top-24 space-y-8">
           <Card>

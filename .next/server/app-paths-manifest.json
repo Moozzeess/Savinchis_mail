@@ -1,4 +1,5 @@
 {
+  "/(main)/campaigns/page": "app/(main)/campaigns/page.js",
   "/(main)/dashboard/page": "app/(main)/dashboard/page.js",
   "/(main)/events/page": "app/(main)/events/page.js",
   "/(main)/send/page": "app/(main)/send/page.js",

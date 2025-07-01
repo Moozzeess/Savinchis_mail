@@ -570,6 +570,17 @@ _s(useSidebar, "b9L3QQ+jgeyIrH0NfHrJ8nn7VMU=");
     const [openMobile, setOpenMobile] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     // Este es el estado interno de la barra lateral.
     const [_open, _setOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(defaultOpen);
+    // Carga el estado de la barra lateral desde las cookies al montar
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "SidebarProvider.useEffect": ()=>{
+            const cookieValue = document.cookie.split('; ').find({
+                "SidebarProvider.useEffect": (row)=>row.startsWith(`${SIDEBAR_COOKIE_NAME}=`)
+            }["SidebarProvider.useEffect"])?.split('=')[1];
+            if (cookieValue) {
+                _setOpen(cookieValue === 'true');
+            }
+        }
+    }["SidebarProvider.useEffect"], []);
     const open = openProp ?? _open;
     const setOpen = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCallback"])({
         "SidebarProvider.useCallback[setOpen]": (value)=>{
@@ -655,24 +666,24 @@ _s(useSidebar, "b9L3QQ+jgeyIrH0NfHrJ8nn7VMU=");
                 children: children
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/sidebar.tsx",
-                lineNumber: 145,
+                lineNumber: 157,
                 columnNumber: 11
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/components/ui/sidebar.tsx",
-            lineNumber: 144,
+            lineNumber: 156,
             columnNumber: 9
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 143,
+        lineNumber: 155,
         columnNumber: 7
     }, this);
-}, "QSOkjq1AvKFJW5+zwiK52jPX7zI=", false, function() {
+}, "5WamAHf3wAJ4wrqn1YOmM3X0Xnk=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$use$2d$mobile$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useIsMobile"]
     ];
-})), "QSOkjq1AvKFJW5+zwiK52jPX7zI=", false, function() {
+})), "5WamAHf3wAJ4wrqn1YOmM3X0Xnk=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$use$2d$mobile$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useIsMobile"]
     ];
@@ -692,7 +703,7 @@ SidebarProvider.displayName = "SidebarProvider";
             children: children
         }, void 0, false, {
             fileName: "[project]/src/components/ui/sidebar.tsx",
-            lineNumber: 195,
+            lineNumber: 207,
             columnNumber: 9
         }, this);
     }
@@ -714,17 +725,17 @@ SidebarProvider.displayName = "SidebarProvider";
                     children: children
                 }, void 0, false, {
                     fileName: "[project]/src/components/ui/sidebar.tsx",
-                    lineNumber: 222,
+                    lineNumber: 234,
                     columnNumber: 13
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/sidebar.tsx",
-                lineNumber: 211,
+                lineNumber: 223,
                 columnNumber: 11
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/components/ui/sidebar.tsx",
-            lineNumber: 210,
+            lineNumber: 222,
             columnNumber: 9
         }, this);
     }
@@ -740,7 +751,7 @@ SidebarProvider.displayName = "SidebarProvider";
                 className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])("duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear", "group-data-[collapsible=offcanvas]:w-0", "group-data-[side=right]:rotate-180", variant === "floating" || variant === "inset" ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]" : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]")
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/sidebar.tsx",
-                lineNumber: 237,
+                lineNumber: 249,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -752,18 +763,18 @@ SidebarProvider.displayName = "SidebarProvider";
                     children: children
                 }, void 0, false, {
                     fileName: "[project]/src/components/ui/sidebar.tsx",
-                    lineNumber: 260,
+                    lineNumber: 272,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/sidebar.tsx",
-                lineNumber: 247,
+                lineNumber: 259,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 229,
+        lineNumber: 241,
         columnNumber: 7
     }, this);
 }, "hAL3+uRFwO9tnbDK50BUE5wZ71s=", false, function() {
@@ -796,7 +807,7 @@ Sidebar.displayName = "Sidebar";
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$panel$2d$left$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__PanelLeft$3e$__["PanelLeft"], {}, void 0, false, {
                 fileName: "[project]/src/components/ui/sidebar.tsx",
-                lineNumber: 295,
+                lineNumber: 307,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -804,13 +815,13 @@ Sidebar.displayName = "Sidebar";
                 children: "Toggle Sidebar"
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/sidebar.tsx",
-                lineNumber: 296,
+                lineNumber: 308,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 283,
+        lineNumber: 295,
         columnNumber: 5
     }, this);
 }, "dRnjPhQbCChcVGr4xvQkpNxnqyg=", false, function() {
@@ -838,7 +849,7 @@ const SidebarRail = /*#__PURE__*/ _s4((0, __TURBOPACK__imported__module__$5b$pro
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 309,
+        lineNumber: 321,
         columnNumber: 5
     }, this);
 }, "dRnjPhQbCChcVGr4xvQkpNxnqyg=", false, function() {
@@ -862,7 +873,7 @@ SidebarRail.displayName = "SidebarRail";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 340,
+        lineNumber: 352,
         columnNumber: 5
     }, this);
 });
@@ -876,7 +887,7 @@ const SidebarInput = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$projec
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 358,
+        lineNumber: 370,
         columnNumber: 5
     }, this);
 });
@@ -892,7 +903,7 @@ SidebarInput.displayName = "SidebarInput";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 379,
+        lineNumber: 391,
         columnNumber: 5
     }, this);
 });
@@ -908,7 +919,7 @@ SidebarHeader.displayName = "SidebarHeader";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 397,
+        lineNumber: 409,
         columnNumber: 5
     }, this);
 });
@@ -924,7 +935,7 @@ SidebarFooter.displayName = "SidebarFooter";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 415,
+        lineNumber: 427,
         columnNumber: 5
     }, this);
 });
@@ -940,7 +951,7 @@ SidebarSeparator.displayName = "SidebarSeparator";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 433,
+        lineNumber: 445,
         columnNumber: 5
     }, this);
 });
@@ -954,7 +965,7 @@ const SidebarGroup = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$projec
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 451,
+        lineNumber: 463,
         columnNumber: 5
     }, this);
 });
@@ -969,7 +980,7 @@ const SidebarGroupLabel = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$p
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 468,
+        lineNumber: 480,
         columnNumber: 5
     }, this);
 });
@@ -985,7 +996,7 @@ const SidebarGroupAction = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 489,
+        lineNumber: 501,
         columnNumber: 5
     }, this);
 });
@@ -998,7 +1009,7 @@ const SidebarGroupContent = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 509,
+        lineNumber: 521,
         columnNumber: 3
     }, this));
 _c27 = SidebarGroupContent;
@@ -1012,7 +1023,7 @@ SidebarGroupContent.displayName = "SidebarGroupContent";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 525,
+        lineNumber: 537,
         columnNumber: 3
     }, this));
 _c29 = SidebarMenu;
@@ -1026,7 +1037,7 @@ SidebarMenu.displayName = "SidebarMenu";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 541,
+        lineNumber: 553,
         columnNumber: 3
     }, this));
 _c31 = SidebarMenuItem;
@@ -1066,7 +1077,7 @@ const sidebarMenuButtonVariants = (0, __TURBOPACK__imported__module__$5b$project
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 599,
+        lineNumber: 611,
         columnNumber: 7
     }, this);
     if (!tooltip) {
@@ -1084,7 +1095,7 @@ const sidebarMenuButtonVariants = (0, __TURBOPACK__imported__module__$5b$project
                 children: button
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/sidebar.tsx",
-                lineNumber: 621,
+                lineNumber: 633,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tooltip$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TooltipContent"], {
@@ -1094,13 +1105,13 @@ const sidebarMenuButtonVariants = (0, __TURBOPACK__imported__module__$5b$project
                 ...tooltip
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/sidebar.tsx",
-                lineNumber: 622,
+                lineNumber: 634,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 620,
+        lineNumber: 632,
         columnNumber: 7
     }, this);
 }, "DSCdbs8JtpmKVxCYgM7sPAZNgB0=", false, function() {
@@ -1124,7 +1135,7 @@ const SidebarMenuAction = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$p
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 644,
+        lineNumber: 656,
         columnNumber: 5
     }, this);
 });
@@ -1137,7 +1148,7 @@ const SidebarMenuBadge = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$pr
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 669,
+        lineNumber: 681,
         columnNumber: 3
     }, this));
 _c37 = SidebarMenuBadge;
@@ -1161,7 +1172,7 @@ const SidebarMenuSkeleton = /*#__PURE__*/ _s6((0, __TURBOPACK__imported__module_
                 "data-sidebar": "menu-skeleton-icon"
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/sidebar.tsx",
-                lineNumber: 705,
+                lineNumber: 717,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Skeleton"], {
@@ -1172,13 +1183,13 @@ const SidebarMenuSkeleton = /*#__PURE__*/ _s6((0, __TURBOPACK__imported__module_
                 }
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/sidebar.tsx",
-                lineNumber: 710,
+                lineNumber: 722,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 698,
+        lineNumber: 710,
         columnNumber: 5
     }, this);
 }, "nKFjX4dxbYo91VAj5VdWQ1XUe3I=")), "nKFjX4dxbYo91VAj5VdWQ1XUe3I=");
@@ -1191,7 +1202,7 @@ const SidebarMenuSub = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$proj
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 728,
+        lineNumber: 740,
         columnNumber: 3
     }, this));
 _c41 = SidebarMenuSub;
@@ -1201,7 +1212,7 @@ const SidebarMenuSubItem = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 744,
+        lineNumber: 756,
         columnNumber: 26
     }, this));
 _c43 = SidebarMenuSubItem;
@@ -1217,7 +1228,7 @@ const SidebarMenuSubButton = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/sidebar.tsx",
-        lineNumber: 758,
+        lineNumber: 770,
         columnNumber: 5
     }, this);
 });

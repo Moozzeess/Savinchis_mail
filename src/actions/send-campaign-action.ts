@@ -21,7 +21,7 @@ interface SendCampaignPayload {
   subject: string;
   htmlBody: string;
   recipientData: {
-    type: 'date' | 'csv' | 'sql' | 'excel';
+    type: 'date' | 'csv' | 'sql' | 'excel' | 'individual';
     value: string;
   };
   senderEmail: string;
@@ -95,6 +95,11 @@ async function getRecipients(
     }
   }
 
+  if (type === 'individual') {
+    const emails = value.split(/[\s,;]+/).filter(e => e && e.includes('@'));
+    return emails.map(email => ({ email }));
+  }
+
   const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } = process.env;
   if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
     throw new Error('Faltan las variables de entorno de la base de datos. Por favor, configúralas.');
@@ -121,7 +126,7 @@ async function getRecipients(
           JOIN eventos e ON a.id_evento = e.id_evento
           WHERE e.fecha = ?;
       `;
-      params = [value]; // El valor ya está en formato 'yyyy-MM-dd'
+      params = [value];
     } else if (type === 'sql') {
       sql_query = value;
       params = [];
