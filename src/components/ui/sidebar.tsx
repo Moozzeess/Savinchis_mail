@@ -85,6 +85,18 @@ const SidebarProvider = React.forwardRef<
 
     // Este es el estado interno de la barra lateral.
     const [_open, _setOpen] = React.useState(defaultOpen)
+    
+    // Carga el estado de la barra lateral desde las cookies al montar
+    React.useEffect(() => {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`))
+            ?.split('=')[1];
+        if (cookieValue) {
+            _setOpen(cookieValue === 'true');
+        }
+    }, []);
+
     const open = openProp ?? _open
     const setOpen = React.useCallback(
       (value: boolean | ((value: boolean) => boolean)) => {

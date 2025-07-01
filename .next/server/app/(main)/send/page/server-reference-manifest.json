@@ -1,9 +1,9 @@
 {
   "node": {
-    "401372f659c5451f99035a7f116333db4ac66a7ce4": {
+    "400ba817b0cb9d909ed01fecb14a416b84005152c7": {
       "workers": {
         "app/(main)/send/page": {
-          "moduleId": "[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/actions/send-test-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "moduleId": "[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },
@@ -11,10 +11,10 @@
         "app/(main)/send/page": "action-browser"
       }
     },
-    "406b923f738831070980d62a75596a77849741996f": {
+    "4021b06e3ddd3a00eaec703b80737f542c40396c6b": {
       "workers": {
         "app/(main)/send/page": {
-          "moduleId": "[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/actions/send-test-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "moduleId": "[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },

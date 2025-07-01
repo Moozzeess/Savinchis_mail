@@ -3,7 +3,6 @@
 ## Core Features:
 # Funcionalidades Principales:
 
-- Contact Import: Import contacts from CSV files.
 - Importación de Contactos: Importa contactos desde archivos CSV.
 - Template Editor: Create and edit email templates using a simple text editor with HTML support.
 - Editor de Plantillas: Crea y edita plantillas de correo electrónico usando un editor de texto simple con soporte HTML.

@@ -101,7 +101,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/button.tsx",
-        lineNumber: 61,
+        lineNumber: 62,
         columnNumber: 7
     }, this);
 });
@@ -141,7 +141,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 19,
+        lineNumber: 20,
         columnNumber: 3
     }, this));
 Card.displayName = "Card";
@@ -153,7 +153,7 @@ Card.displayName = "Card";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 37,
+        lineNumber: 38,
         columnNumber: 3
     }, this));
 CardHeader.displayName = "CardHeader";
@@ -165,7 +165,7 @@ CardHeader.displayName = "CardHeader";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 52,
+        lineNumber: 53,
         columnNumber: 3
     }, this));
 CardTitle.displayName = "CardTitle";
@@ -177,7 +177,7 @@ CardTitle.displayName = "CardTitle";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 70,
+        lineNumber: 71,
         columnNumber: 3
     }, this));
 CardDescription.displayName = "CardDescription";
@@ -189,7 +189,7 @@ CardDescription.displayName = "CardDescription";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 85,
+        lineNumber: 86,
         columnNumber: 3
     }, this));
 CardContent.displayName = "CardContent";
@@ -201,7 +201,7 @@ CardContent.displayName = "CardContent";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 96,
+        lineNumber: 97,
         columnNumber: 3
     }, this));
 CardFooter.displayName = "CardFooter";
@@ -253,7 +253,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/badge.tsx",
-        lineNumber: 48,
+        lineNumber: 49,
         columnNumber: 5
     }, this);
 }
@@ -275,6 +275,7 @@ var { g: global, __dirname } = __turbopack_context__;
     "certificateTemplates": (()=>certificateTemplates),
     "contacts": (()=>contacts),
     "events": (()=>events),
+    "managedSenders": (()=>managedSenders),
     "surveys": (()=>surveys),
     "templates": (()=>templates)
 });
@@ -409,6 +410,20 @@ const events = [
 const certificateTemplates = {
     '1': 'iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDlWIpAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGSSURBVHhe7dJBDQAgDAAx2NB/yHwM46GE+zs7+8HBAgQIECAwERAgQIAAgYmAAAECEAEDAgECEQEBAgECEQEBAgECBAgQCAmY+wEECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIECAQEBAgAABAq8CgU5q3+UAAAAASUVORK5CYII='
 };
+const managedSenders = [
+    {
+        name: 'Soporte Técnico',
+        email: 'soporte@emailcraft.com'
+    },
+    {
+        name: 'Notificaciones del Sistema',
+        email: 'noreply@emailcraft.com'
+    },
+    {
+        name: 'Comunicaciones Internas',
+        email: 'comms@emailcraft.com'
+    }
+];
 }}),
 "[project]/src/app/(main)/events/page.tsx [app-rsc] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
@@ -449,7 +464,7 @@ function EventsPage() {
                                 children: "Eventos"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/events/page.tsx",
-                                lineNumber: 24,
+                                lineNumber: 25,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -457,13 +472,13 @@ function EventsPage() {
                                 children: "Gestiona tus eventos y los certificados para asistentes."
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/events/page.tsx",
-                                lineNumber: 25,
+                                lineNumber: 26,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/(main)/events/page.tsx",
-                        lineNumber: 23,
+                        lineNumber: 24,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Button"], {
@@ -475,25 +490,25 @@ function EventsPage() {
                                     className: "mr-2"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(main)/events/page.tsx",
-                                    lineNumber: 31,
+                                    lineNumber: 32,
                                     columnNumber: 13
                                 }, this),
                                 "Crear Evento y Certificado"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/(main)/events/page.tsx",
-                            lineNumber: 30,
+                            lineNumber: 31,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/(main)/events/page.tsx",
-                        lineNumber: 29,
+                        lineNumber: 30,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(main)/events/page.tsx",
-                lineNumber: 22,
+                lineNumber: 23,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -507,7 +522,7 @@ function EventsPage() {
                                         children: event.name
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/events/page.tsx",
-                                        lineNumber: 41,
+                                        lineNumber: 42,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -517,13 +532,13 @@ function EventsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/events/page.tsx",
-                                        lineNumber: 44,
+                                        lineNumber: 45,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/events/page.tsx",
-                                lineNumber: 40,
+                                lineNumber: 41,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -534,7 +549,7 @@ function EventsPage() {
                                         children: event.status
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/events/page.tsx",
-                                        lineNumber: 47,
+                                        lineNumber: 48,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -544,7 +559,7 @@ function EventsPage() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/events/page.tsx",
-                                                lineNumber: 51,
+                                                lineNumber: 52,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -554,19 +569,19 @@ function EventsPage() {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/events/page.tsx",
-                                                lineNumber: 52,
+                                                lineNumber: 53,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/events/page.tsx",
-                                        lineNumber: 50,
+                                        lineNumber: 51,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/events/page.tsx",
-                                lineNumber: 46,
+                                lineNumber: 47,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["CardFooter"], {
@@ -582,17 +597,17 @@ function EventsPage() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/events/page.tsx",
-                                                lineNumber: 58,
+                                                lineNumber: 59,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/(main)/events/page.tsx",
-                                            lineNumber: 57,
+                                            lineNumber: 58,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/events/page.tsx",
-                                        lineNumber: 56,
+                                        lineNumber: 57,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Button"], {
@@ -602,35 +617,35 @@ function EventsPage() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/(main)/events/page.tsx",
-                                            lineNumber: 62,
+                                            lineNumber: 63,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/events/page.tsx",
-                                        lineNumber: 61,
+                                        lineNumber: 62,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/events/page.tsx",
-                                lineNumber: 55,
+                                lineNumber: 56,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, event.id, true, {
                         fileName: "[project]/src/app/(main)/events/page.tsx",
-                        lineNumber: 39,
+                        lineNumber: 40,
                         columnNumber: 11
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/src/app/(main)/events/page.tsx",
-                lineNumber: 37,
+                lineNumber: 38,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/(main)/events/page.tsx",
-        lineNumber: 21,
+        lineNumber: 22,
         columnNumber: 5
     }, this);
 }
