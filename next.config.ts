@@ -1,3 +1,4 @@
+
 // Este archivo es el archivo de configuración principal para tu aplicación Next.js.
 // Aquí puedes definir opciones para la construcción, rendering, y otras características de Next.js.
 import type {NextConfig} from 'next';

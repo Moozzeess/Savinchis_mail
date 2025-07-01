@@ -1,11 +1,12 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
   darkMode: ['class'], // Habilita el modo oscuro basado en la clase 'dark'
   content: [
-    './frontend/pages/**/*.{js,ts,jsx,tsx,mdx}', // Incluye archivos en el directorio pages
-    './frontend/components/**/*.{js,ts,jsx,tsx,mdx}', // Incluye archivos en el directorio components
-    './frontend/app/**/*.{js,ts,jsx,tsx,mdx}', // Incluye archivos en el directorio app
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}', // Incluye archivos en el directorio pages
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}', // Incluye archivos en el directorio components
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}', // Incluye archivos en el directorio app
   ],
   theme: {
     extend: {
