@@ -72,7 +72,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 19,
+        lineNumber: 20,
         columnNumber: 3
     }, this));
 Card.displayName = "Card";
@@ -84,7 +84,7 @@ Card.displayName = "Card";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 37,
+        lineNumber: 38,
         columnNumber: 3
     }, this));
 CardHeader.displayName = "CardHeader";
@@ -96,7 +96,7 @@ CardHeader.displayName = "CardHeader";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 52,
+        lineNumber: 53,
         columnNumber: 3
     }, this));
 CardTitle.displayName = "CardTitle";
@@ -108,7 +108,7 @@ CardTitle.displayName = "CardTitle";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 70,
+        lineNumber: 71,
         columnNumber: 3
     }, this));
 CardDescription.displayName = "CardDescription";
@@ -120,7 +120,7 @@ CardDescription.displayName = "CardDescription";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 85,
+        lineNumber: 86,
         columnNumber: 3
     }, this));
 CardContent.displayName = "CardContent";
@@ -132,7 +132,7 @@ CardContent.displayName = "CardContent";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 96,
+        lineNumber: 97,
         columnNumber: 3
     }, this));
 CardFooter.displayName = "CardFooter";
@@ -175,12 +175,12 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
             ...props
         }, void 0, false, {
             fileName: "[project]/src/components/ui/table.tsx",
-            lineNumber: 20,
+            lineNumber: 21,
             columnNumber: 5
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/ui/table.tsx",
-        lineNumber: 19,
+        lineNumber: 20,
         columnNumber: 3
     }, this));
 Table.displayName = "Table";
@@ -192,7 +192,7 @@ Table.displayName = "Table";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/table.tsx",
-        lineNumber: 36,
+        lineNumber: 37,
         columnNumber: 3
     }, this));
 TableHeader.displayName = "TableHeader";
@@ -204,7 +204,7 @@ TableHeader.displayName = "TableHeader";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/table.tsx",
-        lineNumber: 47,
+        lineNumber: 48,
         columnNumber: 3
     }, this));
 TableBody.displayName = "TableBody";
@@ -216,7 +216,7 @@ TableBody.displayName = "TableBody";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/table.tsx",
-        lineNumber: 62,
+        lineNumber: 63,
         columnNumber: 3
     }, this));
 TableFooter.displayName = "TableFooter";
@@ -228,7 +228,7 @@ TableFooter.displayName = "TableFooter";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/table.tsx",
-        lineNumber: 80,
+        lineNumber: 81,
         columnNumber: 3
     }, this));
 TableRow.displayName = "TableRow";
@@ -240,7 +240,7 @@ TableRow.displayName = "TableRow";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/table.tsx",
-        lineNumber: 98,
+        lineNumber: 99,
         columnNumber: 3
     }, this));
 TableHead.displayName = "TableHead";
@@ -252,7 +252,7 @@ TableHead.displayName = "TableHead";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/table.tsx",
-        lineNumber: 116,
+        lineNumber: 117,
         columnNumber: 3
     }, this));
 TableCell.displayName = "TableCell";
@@ -264,7 +264,7 @@ TableCell.displayName = "TableCell";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/table.tsx",
-        lineNumber: 131,
+        lineNumber: 132,
         columnNumber: 3
     }, this));
 TableCaption.displayName = "TableCaption";
@@ -323,7 +323,7 @@ function ContactsPage() {
                         children: "Historial de Contactos"
                     }, void 0, false, {
                         fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                        lineNumber: 54,
+                        lineNumber: 55,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -331,13 +331,13 @@ function ContactsPage() {
                         children: "Consulta las listas de contactos utilizadas en tus campañas pasadas."
                     }, void 0, false, {
                         fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                        lineNumber: 57,
+                        lineNumber: 58,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                lineNumber: 53,
+                lineNumber: 54,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Card"], {
@@ -348,20 +348,20 @@ function ContactsPage() {
                                 children: "Archivos y Consultas de Campañas"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                lineNumber: 64,
+                                lineNumber: 65,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["CardDescription"], {
                                 children: "Aquí se muestra un registro de los orígenes de contactos para cada campaña enviada."
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                lineNumber: 65,
+                                lineNumber: 66,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                        lineNumber: 63,
+                        lineNumber: 64,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -374,21 +374,21 @@ function ContactsPage() {
                                                 children: "Nombre de la Campaña"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                                lineNumber: 74,
+                                                lineNumber: 75,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableHead"], {
                                                 children: "Tipo de Fuente"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                                lineNumber: 75,
+                                                lineNumber: 76,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableHead"], {
                                                 children: "Nombre / Detalle de la Fuente"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                                lineNumber: 76,
+                                                lineNumber: 77,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableHead"], {
@@ -396,18 +396,18 @@ function ContactsPage() {
                                                 children: "Fecha de Envío"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                                lineNumber: 77,
+                                                lineNumber: 78,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                        lineNumber: 73,
+                                        lineNumber: 74,
                                         columnNumber: 15
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                    lineNumber: 72,
+                                    lineNumber: 73,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableBody"], {
@@ -418,14 +418,14 @@ function ContactsPage() {
                                                     children: file.campaignName
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                                    lineNumber: 83,
+                                                    lineNumber: 84,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableCell"], {
                                                     children: file.sourceType
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                                    lineNumber: 86,
+                                                    lineNumber: 87,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -436,7 +436,7 @@ function ContactsPage() {
                                                                 className: "h-4 w-4 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                                                lineNumber: 89,
+                                                                lineNumber: 90,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -444,18 +444,18 @@ function ContactsPage() {
                                                                 children: file.sourceName
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                                                lineNumber: 90,
+                                                                lineNumber: 91,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                                        lineNumber: 88,
+                                                        lineNumber: 89,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                                    lineNumber: 87,
+                                                    lineNumber: 88,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableCell"], {
@@ -463,41 +463,41 @@ function ContactsPage() {
                                                     children: file.date
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                                    lineNumber: 93,
+                                                    lineNumber: 94,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, file.campaignName, true, {
                                             fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                            lineNumber: 82,
+                                            lineNumber: 83,
                                             columnNumber: 17
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                                    lineNumber: 80,
+                                    lineNumber: 81,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                            lineNumber: 71,
+                            lineNumber: 72,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                        lineNumber: 70,
+                        lineNumber: 71,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(main)/contacts/page.tsx",
-                lineNumber: 62,
+                lineNumber: 63,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/(main)/contacts/page.tsx",
-        lineNumber: 52,
+        lineNumber: 53,
         columnNumber: 5
     }, this);
 }

@@ -576,6 +576,12 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
             throw new Error(`Error al procesar el archivo Excel: ${error.message}`);
         }
     }
+    if (type === 'individual') {
+        const emails = value.split(/[\s,;]+/).filter((e)=>e && e.includes('@'));
+        return emails.map((email)=>({
+                email
+            }));
+    }
     const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } = process.env;
     if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
         throw new Error('Faltan las variables de entorno de la base de datos. Por favor, configúralas.');
@@ -601,7 +607,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
       `;
             params = [
                 value
-            ]; // El valor ya está en formato 'yyyy-MM-dd'
+            ];
         } else if (type === 'sql') {
             sql_query = value;
             params = [];
