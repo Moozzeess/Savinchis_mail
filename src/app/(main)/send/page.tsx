@@ -153,7 +153,7 @@ export default function SendPage() {
   const [recipientSource, setRecipientSource] = useState<RecipientSource>("file");
   const [fileContent, setFileContent] = useState("");
   const [uploadedFileType, setUploadedFileType] = useState<"csv" | "excel" | null>(null);
-  const [sqlQuery, setSqlQuery] = useState("SELECT email, name FROM contacts WHERE subscribed = TRUE;");
+  const [sqlQuery, setSqlQuery] = useState("SELECT email, nombre FROM contactos WHERE suscrito = TRUE;");
   const [lastRunStats, setLastRunStats] = useState<CampaignStats | null>(null);
   
   const [recipientCount, setRecipientCount] = useState(0);
@@ -341,9 +341,27 @@ export default function SendPage() {
     }
     let recipientData;
     switch (recipientSource) {
-      case "date": recipientData = { type: "date" as const, value: format(date!, "dd/MM/yyyy") }; break;
-      case "file": recipientData = { type: uploadedFileType!, value: fileContent }; break;
-      case "sql": recipientData = { type: "sql" as const, value: sqlQuery }; break;
+      case "date": 
+        if (!date) {
+            toast({ title: "Fecha requerida", description: "Por favor, selecciona una fecha para la fuente de destinatarios.", variant: "destructive" });
+            return;
+        }
+        recipientData = { type: "date" as const, value: format(date, "yyyy-MM-dd") }; 
+        break;
+      case "file": 
+        if (!uploadedFileType || !fileContent) {
+            toast({ title: "Archivo requerido", description: "Por favor, sube un archivo para la fuente de destinatarios.", variant: "destructive" });
+            return;
+        }
+        recipientData = { type: uploadedFileType, value: fileContent }; 
+        break;
+      case "sql": 
+        if (!sqlQuery.trim()) {
+            toast({ title: "Consulta SQL requerida", description: "Por favor, escribe una consulta SQL.", variant: "destructive" });
+            return;
+        }
+        recipientData = { type: "sql" as const, value: sqlQuery }; 
+        break;
     }
 
     let attachment;
@@ -645,5 +663,3 @@ export default function SendPage() {
     </div>
   );
 }
-
-    
