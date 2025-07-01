@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getSentEmailsAction } from "@backend/actions/get-sent-emails-action";
+import { getSentEmailsAction } from "@/actions/get-sent-emails-action";
 import { AlertTriangle, Info } from "lucide-react";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
