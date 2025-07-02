@@ -64,7 +64,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { templates, events, surveys, certificateTemplates, managedSenders } from "@/lib/data";
+import { events, surveys, certificateTemplates, managedSenders } from "@/lib/data";
 import { useToast } from "@/hooks/use-toast";
 import { sendCampaign } from "@/actions/send-campaign-action";
 import { sendTestEmailAction } from "@/actions/send-test-email-action";
@@ -78,6 +78,8 @@ import * as XLSX from 'xlsx';
 import { jsPDF } from "jspdf";
 import { useAuth } from "@/context/auth-context";
 import { ROLES } from "@/lib/permissions";
+import { getTemplatesAction, type Template } from "@/actions/template-actions";
+import { generateHtmlFromBlocks } from "@/lib/template-utils";
 
 type RecipientSource = "date" | "file" | "sql" | "individual";
 type ContentType = "template" | "event" | "survey" | "custom" | "certificate";
@@ -174,10 +176,12 @@ export default function SendPage() {
   // State for recipient dialog
   const [isRecipientDialogOpen, setIsRecipientDialogOpen] = useState(false);
 
+  // templates state
+  const [templates, setTemplates] = useState<Template[]>([]);
 
   // Content type selection
   const [contentType, setContentType] = useState<ContentType>("template");
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(templates[0]?.id || "");
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
   const [selectedEventId, setSelectedEventId] = useState<string>("");
   const [selectedSurveyId, setSelectedSurveyId] = useState<string>("");
   const [attachmentName, setAttachmentName] = useState<string | null>(null);
@@ -190,6 +194,12 @@ export default function SendPage() {
       setSenderEmail(userEmail);
       setTestEmail(userEmail);
     }
+    
+    const fetchTemplates = async () => {
+      const dbTemplates = await getTemplatesAction();
+      setTemplates(dbTemplates);
+    };
+    fetchTemplates();
   }, [role, isIT]);
 
   useEffect(() => {
@@ -199,11 +209,23 @@ export default function SendPage() {
     if (contentType === 'custom') {
         setSubject("Asunto Personalizado");
         setEmailBody(defaultInitialBody);
-    } else if (contentType === "template" && selectedTemplateId) {
-        const template = templates.find(t => t.id === selectedTemplateId);
-        if (template) {
-            setSubject(`Desde plantilla: ${template.name}`);
-            setEmailBody(`<h1>${template.name}</h1><p>${template.description}</p><p>Este es un cuerpo de correo basado en una plantilla.</p>`);
+    } else if (contentType === "template") {
+        if (templates.length > 0) {
+            // Default to first template if none is selected
+            const currentTemplateId = selectedTemplateId || String(templates[0].id_plantilla);
+            if (!selectedTemplateId) {
+                setSelectedTemplateId(currentTemplateId);
+            }
+            
+            const template = templates.find(t => String(t.id_plantilla) === currentTemplateId);
+            if (template) {
+                setSubject(template.asunto_predeterminado);
+                setEmailBody(generateHtmlFromBlocks(template.contenido));
+            }
+        } else {
+            // No templates loaded yet or available
+            setSubject("");
+            setEmailBody("");
         }
     } else if (contentType === "event" && selectedEventId) {
         const event = events.find(e => e.id === selectedEventId);
@@ -230,7 +252,7 @@ export default function SendPage() {
         setSubject("");
         setEmailBody("");
     }
-  }, [contentType, selectedTemplateId, selectedEventId, selectedSurveyId]);
+  }, [contentType, selectedTemplateId, selectedEventId, selectedSurveyId, templates]);
 
   useEffect(() => {
     let count = 0;
@@ -447,7 +469,7 @@ export default function SendPage() {
   const renderContentSelector = () => {
     switch (contentType) {
         case 'template':
-            return <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}><SelectTrigger><SelectValue placeholder="Elige una plantilla..." /></SelectTrigger><SelectContent>{templates.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}</SelectContent></Select>;
+            return <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}><SelectTrigger><SelectValue placeholder="Elige una plantilla..." /></SelectTrigger><SelectContent>{templates.map(t => <SelectItem key={t.id_plantilla} value={String(t.id_plantilla)}>{t.nombre}</SelectItem>)}</SelectContent></Select>;
         case 'event':
             return <Select onValueChange={setSelectedEventId}><SelectTrigger><SelectValue placeholder="Elige un evento para la invitación..." /></SelectTrigger><SelectContent>{events.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent></Select>;
         case 'survey':

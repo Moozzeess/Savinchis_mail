@@ -1137,6 +1137,177 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
 }
 }}),
+"[project]/src/actions/data:bde38a [app-client] (ecmascript) <text/javascript>": ((__turbopack_context__) => {
+"use strict";
+
+var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_context__;
+{
+/* __next_internal_action_entry_do_not_use__ [{"00fdeee1b67912cd40169e627b506c6488d511c086":"getTemplatesAction"},"src/actions/template-actions.ts",""] */ __turbopack_context__.s({
+    "getTemplatesAction": (()=>getTemplatesAction)
+});
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$client$2d$wrapper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/action-client-wrapper.js [app-client] (ecmascript)");
+"use turbopack no side effects";
+;
+var getTemplatesAction = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$client$2d$wrapper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["createServerReference"])("00fdeee1b67912cd40169e627b506c6488d511c086", __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$client$2d$wrapper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["callServer"], void 0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$client$2d$wrapper$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["findSourceMapURL"], "getTemplatesAction"); //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4vdGVtcGxhdGUtYWN0aW9ucy50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIndXNlIHNlcnZlcic7XG5cbmltcG9ydCBteXNxbCBmcm9tICdteXNxbDIvcHJvbWlzZSc7XG5pbXBvcnQgdHlwZSB7IEJsb2NrIH0gZnJvbSAnQC9saWIvdGVtcGxhdGUtdXRpbHMnO1xuXG5hc3luYyBmdW5jdGlvbiBnZXREYkNvbm5lY3Rpb24oKSB7XG4gICAgY29uc3QgeyBNWVNRTF9IT1NULCBNWVNRTF9VU0VSLCBNWVNRTF9QQVNTV09SRCwgTVlTUUxfREFUQUJBU0UsIE1ZU1FMX1BPUlQgfSA9IHByb2Nlc3MuZW52O1xuICAgIGlmICghTVlTUUxfSE9TVCB8fCAhTVlTUUxfVVNFUiB8fCAhTVlTUUxfREFUQUJBU0UpIHtcbiAgICAgICAgdGhyb3cgbmV3IEVycm9yKCdGYWx0YW4gbGFzIHZhcmlhYmxlcyBkZSBlbnRvcm5vIGRlIGxhIGJhc2UgZGUgZGF0b3MuIFBvciBmYXZvciwgY29uZmlnw7pyYWxhcy4nKTtcbiAgICB9XG4gICAgcmV0dXJuIG15c3FsLmNyZWF0ZUNvbm5lY3Rpb24oe1xuICAgICAgICBob3N0OiBNWVNRTF9IT1NULFxuICAgICAgICBwb3J0OiBNWVNRTF9QT1JUID8gcGFyc2VJbnQoTVlTUUxfUE9SVCwgMTApIDogMzMwNixcbiAgICAgICAgdXNlcjogTVlTUUxfVVNFUixcbiAgICAgICAgcGFzc3dvcmQ6IE1ZU1FMX1BBU1NXT1JELFxuICAgICAgICBkYXRhYmFzZTogTVlTUUxfREFUQUJBU0UsXG4gICAgfSk7XG59XG5cbmV4cG9ydCBpbnRlcmZhY2UgVGVtcGxhdGUge1xuICAgIGlkX3BsYW50aWxsYTogbnVtYmVyO1xuICAgIG5vbWJyZTogc3RyaW5nO1xuICAgIGFzdW50b19wcmVkZXRlcm1pbmFkbzogc3RyaW5nO1xuICAgIGNvbnRlbmlkbzogQmxvY2tbXTtcbiAgICBmZWNoYV9jcmVhY2lvbjogc3RyaW5nO1xufVxuXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gZ2V0VGVtcGxhdGVzQWN0aW9uKCk6IFByb21pc2U8VGVtcGxhdGVbXT4ge1xuICAgIGxldCBjb25uZWN0aW9uO1xuICAgIHRyeSB7XG4gICAgICAgIGNvbm5lY3Rpb24gPSBhd2FpdCBnZXREYkNvbm5lY3Rpb24oKTtcbiAgICAgICAgY29uc3QgW3Jvd3NdID0gYXdhaXQgY29ubmVjdGlvbi5leGVjdXRlKCdTRUxFQ1QgaWRfcGxhbnRpbGxhLCBub21icmUsIGFzdW50b19wcmVkZXRlcm1pbmFkbywgY29udGVuaWRvLCBmZWNoYV9jcmVhY2lvbiBGUk9NIHBsYW50aWxsYXMgT1JERVIgQlkgZmVjaGFfY3JlYWNpb24gREVTQycpO1xuICAgICAgICBcbiAgICAgICAgY29uc3QgdGVtcGxhdGVzID0gKHJvd3MgYXMgYW55W10pLm1hcChyb3cgPT4gKHtcbiAgICAgICAgICAgIC4uLnJvdyxcbiAgICAgICAgICAgIGNvbnRlbmlkbzogcm93LmNvbnRlbmlkbyA/IEpTT04ucGFyc2Uocm93LmNvbnRlbmlkbykgOiBbXSxcbiAgICAgICAgfSkpO1xuICAgICAgICBcbiAgICAgICAgcmV0dXJuIHRlbXBsYXRlcyBhcyBUZW1wbGF0ZVtdO1xuICAgIH0gY2F0Y2ggKGVycm9yKSB7XG4gICAgICAgIGNvbnNvbGUuZXJyb3IoJ0Vycm9yIGFsIG9idGVuZXIgbGFzIHBsYW50aWxsYXM6JywgZXJyb3IpO1xuICAgICAgICByZXR1cm4gW107XG4gICAgfSBmaW5hbGx5IHtcbiAgICAgICAgaWYgKGNvbm5lY3Rpb24pIGF3YWl0IGNvbm5lY3Rpb24uZW5kKCk7XG4gICAgfVxufVxuXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gZ2V0VGVtcGxhdGVBY3Rpb24oaWQ6IG51bWJlcik6IFByb21pc2U8VGVtcGxhdGUgfCBudWxsPiB7XG4gICAgbGV0IGNvbm5lY3Rpb247XG4gICAgdHJ5IHtcbiAgICAgICAgY29ubmVjdGlvbiA9IGF3YWl0IGdldERiQ29ubmVjdGlvbigpO1xuICAgICAgICBjb25zdCBbcm93c10gPSBhd2FpdCBjb25uZWN0aW9uLmV4ZWN1dGUoJ1NFTEVDVCBpZF9wbGFudGlsbGEsIG5vbWJyZSwgYXN1bnRvX3ByZWRldGVybWluYWRvLCBjb250ZW5pZG8sIGZlY2hhX2NyZWFjaW9uIEZST00gcGxhbnRpbGxhcyBXSEVSRSBpZF9wbGFudGlsbGEgPSA/JywgW2lkXSk7XG4gICAgICAgIFxuICAgICAgICBpZiAoKHJvd3MgYXMgYW55W10pLmxlbmd0aCA9PT0gMCkgcmV0dXJuIG51bGw7XG5cbiAgICAgICAgY29uc3Qgcm93ID0gKHJvd3MgYXMgYW55W10pWzBdO1xuICAgICAgICByZXR1cm4ge1xuICAgICAgICAgICAgLi4ucm93LFxuICAgICAgICAgICAgY29udGVuaWRvOiByb3cuY29udGVuaWRvID8gSlNPTi5wYXJzZShyb3cuY29udGVuaWRvKSA6IFtdLFxuICAgICAgICB9IGFzIFRlbXBsYXRlO1xuXG4gICAgfSBjYXRjaCAoZXJyb3IpIHtcbiAgICAgICAgY29uc29sZS5lcnJvcihgRXJyb3IgYWwgb2J0ZW5lciBsYSBwbGFudGlsbGEgJHtpZH06YCwgZXJyb3IpO1xuICAgICAgICByZXR1cm4gbnVsbDtcbiAgICB9IGZpbmFsbHkge1xuICAgICAgICBpZiAoY29ubmVjdGlvbikgYXdhaXQgY29ubmVjdGlvbi5lbmQoKTtcbiAgICB9XG59XG5cbmV4cG9ydCBhc3luYyBmdW5jdGlvbiBzYXZlVGVtcGxhdGVBY3Rpb24odGVtcGxhdGVEYXRhOiB7XG4gICAgaWQ/OiBudW1iZXIsXG4gICAgbm9tYnJlOiBzdHJpbmcsXG4gICAgYXN1bnRvX3ByZWRldGVybWluYWRvOiBzdHJpbmcsXG4gICAgY29udGVuaWRvOiBCbG9ja1tdXG59KTogUHJvbWlzZTx7IHN1Y2Nlc3M6IGJvb2xlYW47IG1lc3NhZ2U6IHN0cmluZywgaWQ/OiBudW1iZXIgfT4ge1xuICAgIGNvbnN0IHsgaWQsIG5vbWJyZSwgYXN1bnRvX3ByZWRldGVybWluYWRvLCBjb250ZW5pZG8gfSA9IHRlbXBsYXRlRGF0YTtcbiAgICBjb25zdCBjb250ZW5pZG9Kc29uID0gSlNPTi5zdHJpbmdpZnkoY29udGVuaWRvKTtcbiAgICBsZXQgY29ubmVjdGlvbjtcbiAgICB0cnkge1xuICAgICAgICBjb25uZWN0aW9uID0gYXdhaXQgZ2V0RGJDb25uZWN0aW9uKCk7XG4gICAgICAgIGlmIChpZCkge1xuICAgICAgICAgICAgYXdhaXQgY29ubmVjdGlvbi5leGVjdXRlKFxuICAgICAgICAgICAgICAgICdVUERBVEUgcGxhbnRpbGxhcyBTRVQgbm9tYnJlID0gPywgYXN1bnRvX3ByZWRldGVybWluYWRvID0gPywgY29udGVuaWRvID0gPyBXSEVSRSBpZF9wbGFudGlsbGEgPSA/JyxcbiAgICAgICAgICAgICAgICBbbm9tYnJlLCBhc3VudG9fcHJlZGV0ZXJtaW5hZG8sIGNvbnRlbmlkb0pzb24sIGlkXVxuICAgICAgICAgICAgKTtcbiAgICAgICAgICAgIHJldHVybiB7IHN1Y2Nlc3M6IHRydWUsIG1lc3NhZ2U6ICdQbGFudGlsbGEgYWN0dWFsaXphZGEgY29uIMOpeGl0by4nLCBpZCB9O1xuICAgICAgICB9IGVsc2Uge1xuICAgICAgICAgICAgY29uc3QgW3Jlc3VsdF0gPSBhd2FpdCBjb25uZWN0aW9uLmV4ZWN1dGUoXG4gICAgICAgICAgICAgICAgJ0lOU0VSVCBJTlRPIHBsYW50aWxsYXMgKG5vbWJyZSwgYXN1bnRvX3ByZWRldGVybWluYWRvLCBjb250ZW5pZG8pIFZBTFVFUyAoPywgPywgPyknLFxuICAgICAgICAgICAgICAgIFtub21icmUsIGFzdW50b19wcmVkZXRlcm1pbmFkbywgY29udGVuaWRvSnNvbl1cbiAgICAgICAgICAgICk7XG4gICAgICAgICAgICBjb25zdCBpbnNlcnRJZCA9IChyZXN1bHQgYXMgYW55KS5pbnNlcnRJZDtcbiAgICAgICAgICAgIHJldHVybiB7IHN1Y2Nlc3M6IHRydWUsIG1lc3NhZ2U6ICdQbGFudGlsbGEgY3JlYWRhIGNvbiDDqXhpdG8uJywgaWQ6IGluc2VydElkIH07XG4gICAgICAgIH1cbiAgICB9IGNhdGNoIChlcnJvcikge1xuICAgICAgICBjb25zb2xlLmVycm9yKCdFcnJvciBhbCBndWFyZGFyIGxhIHBsYW50aWxsYTonLCBlcnJvcik7XG4gICAgICAgIHJldHVybiB7IHN1Y2Nlc3M6IGZhbHNlLCBtZXNzYWdlOiBgRXJyb3IgYWwgZ3VhcmRhciBsYSBwbGFudGlsbGE6ICR7KGVycm9yIGFzIEVycm9yKS5tZXNzYWdlfWAgfTtcbiAgICB9IGZpbmFsbHkge1xuICAgICAgICBpZiAoY29ubmVjdGlvbikgYXdhaXQgY29ubmVjdGlvbi5lbmQoKTtcbiAgICB9XG59XG5cbmV4cG9ydCBhc3luYyBmdW5jdGlvbiBkZWxldGVUZW1wbGF0ZUFjdGlvbihpZDogbnVtYmVyKTogUHJvbWlzZTx7IHN1Y2Nlc3M6IGJvb2xlYW47IG1lc3NhZ2U6IHN0cmluZyB9PiB7XG4gICAgbGV0IGNvbm5lY3Rpb247XG4gICAgdHJ5IHtcbiAgICAgICAgY29ubmVjdGlvbiA9IGF3YWl0IGdldERiQ29ubmVjdGlvbigpO1xuICAgICAgICBhd2FpdCBjb25uZWN0aW9uLmV4ZWN1dGUoJ0RFTEVURSBGUk9NIHBsYW50aWxsYXMgV0hFUkUgaWRfcGxhbnRpbGxhID0gPycsIFtpZF0pO1xuICAgICAgICByZXR1cm4geyBzdWNjZXNzOiB0cnVlLCBtZXNzYWdlOiAnUGxhbnRpbGxhIGVsaW1pbmFkYSBjb24gw6l4aXRvLicgfTtcbiAgICB9IGNhdGNoIChlcnJvcikge1xuICAgICAgICBjb25zb2xlLmVycm9yKGBFcnJvciBhbCBlbGltaW5hciBsYSBwbGFudGlsbGEgJHtpZH06YCwgZXJyb3IpO1xuICAgICAgICByZXR1cm4geyBzdWNjZXNzOiBmYWxzZSwgbWVzc2FnZTogYEVycm9yIGFsIGVsaW1pbmFyIGxhIHBsYW50aWxsYTogJHsoZXJyb3IgYXMgRXJyb3IpLm1lc3NhZ2V9YCB9O1xuICAgIH0gZmluYWxseSB7XG4gICAgICAgIGlmIChjb25uZWN0aW9uKSBhd2FpdCBjb25uZWN0aW9uLmVuZCgpO1xuICAgIH1cbn1cbiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiMlNBMkJzQiJ9
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
+}
+}}),
+"[project]/src/lib/template-utils.ts [app-client] (ecmascript)": ((__turbopack_context__) => {
+"use strict";
+
+var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_context__;
+{
+__turbopack_context__.s({
+    "blockSchema": (()=>blockSchema),
+    "formSchema": (()=>formSchema),
+    "generateHtmlFromBlocks": (()=>generateHtmlFromBlocks)
+});
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/zod/lib/index.mjs [app-client] (ecmascript)");
+;
+// Schema definitions
+const textBlockSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+    text: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string().default('Escribe tu texto aquí...'),
+    color: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string().default('#000000'),
+    fontSize: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].number().default(16),
+    lineHeight: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].number().default(1.5),
+    fontWeight: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].enum([
+        'normal',
+        'bold'
+    ]).default('normal'),
+    textAlign: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].enum([
+        'left',
+        'center',
+        'right'
+    ]).default('left')
+});
+const imageBlockSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+    src: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string().url().default('https://placehold.co/600x300.png'),
+    alt: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string().default('Imagen descriptiva'),
+    width: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].number().default(100),
+    align: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].enum([
+        'left',
+        'center',
+        'right'
+    ]).default('center')
+});
+const buttonBlockSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+    text: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string().default('Haz Clic Aquí'),
+    href: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string().url().default('https://example.com'),
+    backgroundColor: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string().default('#74B49B'),
+    color: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string().default('#ffffff'),
+    textAlign: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].enum([
+        'left',
+        'center',
+        'right'
+    ]).default('center'),
+    borderRadius: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].number().default(5)
+});
+const spacerBlockSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+    height: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].number().default(30)
+});
+const dividerBlockSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+    color: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string().default('#cccccc'),
+    padding: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].number().default(10)
+});
+const htmlBlockSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+    code: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string().default('<!-- Tu código HTML aquí -->')
+});
+const blockSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].discriminatedUnion('type', [
+    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+        id: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string(),
+        type: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].literal('text'),
+        content: textBlockSchema
+    }),
+    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+        id: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string(),
+        type: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].literal('image'),
+        content: imageBlockSchema
+    }),
+    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+        id: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string(),
+        type: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].literal('button'),
+        content: buttonBlockSchema
+    }),
+    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+        id: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string(),
+        type: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].literal('spacer'),
+        content: spacerBlockSchema
+    }),
+    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+        id: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string(),
+        type: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].literal('divider'),
+        content: dividerBlockSchema
+    }),
+    __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+        id: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string(),
+        type: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].literal('html'),
+        content: htmlBlockSchema
+    })
+]);
+const formSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].object({
+    templateName: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string().min(1, 'El nombre de la plantilla es requerido.'),
+    emailSubject: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].string().min(1, 'El asunto del correo es requerido.'),
+    blocks: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["z"].array(blockSchema)
+});
+function generateHtmlFromBlocks(blocks) {
+    const content = blocks.map((block)=>{
+        switch(block.type){
+            case 'text':
+                {
+                    const { text, color, fontSize, lineHeight, fontWeight, textAlign } = block.content;
+                    return `<tr><td style="padding: 10px 20px; font-family: Arial, sans-serif; text-align: ${textAlign};"><p style="margin:0; color: ${color}; font-size: ${fontSize}px; line-height: ${lineHeight}; font-weight: ${fontWeight};">${text.replace(/\n/g, '<br>')}</p></td></tr>`;
+                }
+            case 'image':
+                {
+                    const { src, alt, width, align } = block.content;
+                    return `<tr><td style="padding: 10px 20px; text-align: ${align};"><img src="${src}" alt="${alt || ''}" style="max-width: ${width}%; height: auto; border: 0;" /></td></tr>`;
+                }
+            case 'button':
+                {
+                    const { text, href, backgroundColor, color, textAlign, borderRadius } = block.content;
+                    return `<tr><td style="padding: 20px; text-align: ${textAlign};"><a href="${href}" target="_blank" style="background-color: ${backgroundColor}; color: ${color}; padding: 12px 25px; text-decoration: none; border-radius: ${borderRadius}px; font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; display: inline-block;">${text}</a></td></tr>`;
+                }
+            case 'spacer':
+                {
+                    const { height } = block.content;
+                    return `<tr><td style="height: ${height}px; line-height: ${height}px; font-size: ${height}px;">&nbsp;</td></tr>`;
+                }
+            case 'divider':
+                {
+                    const { color, padding } = block.content;
+                    return `<tr><td style="padding: ${padding}px 20px;"><hr style="border: none; border-top: 1px solid ${color}; margin: 0;" /></td></tr>`;
+                }
+            case 'html':
+                {
+                    return `<tr><td style="padding: 0; margin: 0;">${block.content.code}</td></tr>`;
+                }
+            default:
+                return '';
+        }
+    }).join('');
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head><title>${'Email Preview'}</title><meta charset="UTF-8"></head>
+    <body style="margin: 0; padding: 0; background-color: #f4f4f4;">
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td align="center" style="padding: 20px;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+              ${content}
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+}
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
+}
+}}),
 "[project]/src/app/(main)/send/page.tsx [app-client] (ecmascript)": ((__turbopack_context__) => {
 "use strict";
 
@@ -1193,9 +1364,13 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$xlsx$2f$xlsx
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jspdf$2f$dist$2f$jspdf$2e$es$2e$min$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/jspdf/dist/jspdf.es.min.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$auth$2d$context$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/context/auth-context.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$permissions$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/permissions.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$data$3a$bde38a__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$text$2f$javascript$3e$__ = __turbopack_context__.i("[project]/src/actions/data:bde38a [app-client] (ecmascript) <text/javascript>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$template$2d$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/template-utils.ts [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
+;
+;
 ;
 ;
 ;
@@ -1297,9 +1472,11 @@ function SendPage() {
     const [recipientSummary, setRecipientSummary] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("Ninguna fuente seleccionada");
     // State for recipient dialog
     const [isRecipientDialogOpen, setIsRecipientDialogOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    // templates state
+    const [templates, setTemplates] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
     // Content type selection
     const [contentType, setContentType] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("template");
-    const [selectedTemplateId, setSelectedTemplateId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["templates"][0]?.id || "");
+    const [selectedTemplateId, setSelectedTemplateId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [selectedEventId, setSelectedEventId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [selectedSurveyId, setSelectedSurveyId] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [attachmentName, setAttachmentName] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
@@ -1312,6 +1489,13 @@ function SendPage() {
                 setSenderEmail(userEmail);
                 setTestEmail(userEmail);
             }
+            const fetchTemplates = {
+                "SendPage.useEffect.fetchTemplates": async ()=>{
+                    const dbTemplates = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$data$3a$bde38a__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$text$2f$javascript$3e$__["getTemplatesAction"])();
+                    setTemplates(dbTemplates);
+                }
+            }["SendPage.useEffect.fetchTemplates"];
+            fetchTemplates();
         }
     }["SendPage.useEffect"], [
         role,
@@ -1324,13 +1508,24 @@ function SendPage() {
             if (contentType === 'custom') {
                 setSubject("Asunto Personalizado");
                 setEmailBody(defaultInitialBody);
-            } else if (contentType === "template" && selectedTemplateId) {
-                const template = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["templates"].find({
-                    "SendPage.useEffect.template": (t)=>t.id === selectedTemplateId
-                }["SendPage.useEffect.template"]);
-                if (template) {
-                    setSubject(`Desde plantilla: ${template.name}`);
-                    setEmailBody(`<h1>${template.name}</h1><p>${template.description}</p><p>Este es un cuerpo de correo basado en una plantilla.</p>`);
+            } else if (contentType === "template") {
+                if (templates.length > 0) {
+                    // Default to first template if none is selected
+                    const currentTemplateId = selectedTemplateId || String(templates[0].id_plantilla);
+                    if (!selectedTemplateId) {
+                        setSelectedTemplateId(currentTemplateId);
+                    }
+                    const template = templates.find({
+                        "SendPage.useEffect.template": (t)=>String(t.id_plantilla) === currentTemplateId
+                    }["SendPage.useEffect.template"]);
+                    if (template) {
+                        setSubject(template.asunto_predeterminado);
+                        setEmailBody((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$template$2d$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["generateHtmlFromBlocks"])(template.contenido));
+                    }
+                } else {
+                    // No templates loaded yet or available
+                    setSubject("");
+                    setEmailBody("");
                 }
             } else if (contentType === "event" && selectedEventId) {
                 const event = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["events"].find({
@@ -1368,7 +1563,8 @@ function SendPage() {
         contentType,
         selectedTemplateId,
         selectedEventId,
-        selectedSurveyId
+        selectedSurveyId,
+        templates
     ]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "SendPage.useEffect": ()=>{
@@ -1718,32 +1914,32 @@ function SendPage() {
                                 placeholder: "Elige una plantilla..."
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 450,
+                                lineNumber: 472,
                                 columnNumber: 108
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                            lineNumber: 450,
+                            lineNumber: 472,
                             columnNumber: 93
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
-                            children: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["templates"].map((t)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
-                                    value: t.id,
-                                    children: t.name
-                                }, t.id, false, {
+                            children: templates.map((t)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
+                                    value: String(t.id_plantilla),
+                                    children: t.nombre
+                                }, t.id_plantilla, false, {
                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                    lineNumber: 450,
+                                    lineNumber: 472,
                                     columnNumber: 211
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                            lineNumber: 450,
+                            lineNumber: 472,
                             columnNumber: 176
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                    lineNumber: 450,
+                    lineNumber: 472,
                     columnNumber: 20
                 }, this);
             case 'event':
@@ -1755,12 +1951,12 @@ function SendPage() {
                                 placeholder: "Elige un evento para la invitación..."
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 452,
+                                lineNumber: 474,
                                 columnNumber: 78
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                            lineNumber: 452,
+                            lineNumber: 474,
                             columnNumber: 63
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -1769,18 +1965,18 @@ function SendPage() {
                                     children: e.name
                                 }, e.id, false, {
                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                    lineNumber: 452,
+                                    lineNumber: 474,
                                     columnNumber: 193
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                            lineNumber: 452,
+                            lineNumber: 474,
                             columnNumber: 161
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                    lineNumber: 452,
+                    lineNumber: 474,
                     columnNumber: 20
                 }, this);
             case 'survey':
@@ -1792,12 +1988,12 @@ function SendPage() {
                                 placeholder: "Elige una encuesta..."
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 454,
+                                lineNumber: 476,
                                 columnNumber: 79
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                            lineNumber: 454,
+                            lineNumber: 476,
                             columnNumber: 64
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -1806,18 +2002,18 @@ function SendPage() {
                                     children: s.name
                                 }, s.id, false, {
                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                    lineNumber: 454,
+                                    lineNumber: 476,
                                     columnNumber: 179
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                            lineNumber: 454,
+                            lineNumber: 476,
                             columnNumber: 146
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                    lineNumber: 454,
+                    lineNumber: 476,
                     columnNumber: 20
                 }, this);
             case 'certificate':
@@ -1829,12 +2025,12 @@ function SendPage() {
                                 placeholder: "Elige un evento para el certificado..."
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 456,
+                                lineNumber: 478,
                                 columnNumber: 78
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                            lineNumber: 456,
+                            lineNumber: 478,
                             columnNumber: 63
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -1843,18 +2039,18 @@ function SendPage() {
                                     children: e.name
                                 }, e.id, false, {
                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                    lineNumber: 456,
+                                    lineNumber: 478,
                                     columnNumber: 194
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                            lineNumber: 456,
+                            lineNumber: 478,
                             columnNumber: 162
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                    lineNumber: 456,
+                    lineNumber: 478,
                     columnNumber: 20
                 }, this);
             default:
@@ -1871,7 +2067,7 @@ function SendPage() {
                         children: "Email del Remitente"
                     }, void 0, false, {
                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                        lineNumber: 466,
+                        lineNumber: 488,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Select"], {
@@ -1884,12 +2080,12 @@ function SendPage() {
                                     placeholder: "Selecciona un remitente..."
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                    lineNumber: 468,
+                                    lineNumber: 490,
                                     columnNumber: 54
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 468,
+                                lineNumber: 490,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -1903,24 +2099,24 @@ function SendPage() {
                                         ]
                                     }, sender.email, true, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 469,
+                                        lineNumber: 491,
                                         columnNumber: 66
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 469,
+                                lineNumber: 491,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                        lineNumber: 467,
+                        lineNumber: 489,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                lineNumber: 465,
+                lineNumber: 487,
                 columnNumber: 13
             }, this);
         }
@@ -1932,7 +2128,7 @@ function SendPage() {
                     children: "Email del Remitente"
                 }, void 0, false, {
                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                    lineNumber: 476,
+                    lineNumber: 498,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -1942,13 +2138,13 @@ function SendPage() {
                     onChange: (e)=>setSenderEmail(e.target.value)
                 }, void 0, false, {
                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                    lineNumber: 477,
+                    lineNumber: 499,
                     columnNumber: 13
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/app/(main)/send/page.tsx",
-            lineNumber: 475,
+            lineNumber: 497,
             columnNumber: 9
         }, this);
     };
@@ -1964,7 +2160,7 @@ function SendPage() {
                             children: "Nuevo Correo"
                         }, void 0, false, {
                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                            lineNumber: 486,
+                            lineNumber: 508,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1972,18 +2168,18 @@ function SendPage() {
                             children: "Compón y envía un nuevo correo electrónico masivo."
                         }, void 0, false, {
                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                            lineNumber: 487,
+                            lineNumber: 509,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                    lineNumber: 485,
+                    lineNumber: 507,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                lineNumber: 484,
+                lineNumber: 506,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1999,12 +2195,12 @@ function SendPage() {
                                             children: "Composición y Configuración"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                            lineNumber: 497,
+                                            lineNumber: 519,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 496,
+                                        lineNumber: 518,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2020,7 +2216,7 @@ function SendPage() {
                                                                 children: "Tipo de Contenido"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 503,
+                                                                lineNumber: 525,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Select"], {
@@ -2030,12 +2226,12 @@ function SendPage() {
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectTrigger"], {
                                                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectValue"], {}, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                            lineNumber: 505,
+                                                                            lineNumber: 527,
                                                                             columnNumber: 42
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 505,
+                                                                        lineNumber: 527,
                                                                         columnNumber: 27
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -2045,7 +2241,7 @@ function SendPage() {
                                                                                 children: "Usar Plantilla"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 507,
+                                                                                lineNumber: 529,
                                                                                 columnNumber: 31
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -2053,7 +2249,7 @@ function SendPage() {
                                                                                 children: "Invitación a Evento"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 508,
+                                                                                lineNumber: 530,
                                                                                 columnNumber: 31
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -2061,7 +2257,7 @@ function SendPage() {
                                                                                 children: "Enviar Encuesta"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 509,
+                                                                                lineNumber: 531,
                                                                                 columnNumber: 31
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -2069,7 +2265,7 @@ function SendPage() {
                                                                                 children: "Certificado de Evento"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 510,
+                                                                                lineNumber: 532,
                                                                                 columnNumber: 31
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -2077,25 +2273,25 @@ function SendPage() {
                                                                                 children: "Personalizado (HTML)"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 511,
+                                                                                lineNumber: 533,
                                                                                 columnNumber: 31
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 506,
+                                                                        lineNumber: 528,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 504,
+                                                                lineNumber: 526,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 502,
+                                                        lineNumber: 524,
                                                         columnNumber: 19
                                                     }, this),
                                                     contentType !== 'custom' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2103,13 +2299,13 @@ function SendPage() {
                                                         children: renderContentSelector()
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 515,
+                                                        lineNumber: 537,
                                                         columnNumber: 48
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 501,
+                                                lineNumber: 523,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2127,7 +2323,7 @@ function SendPage() {
                                                                         children: "Asunto del Correo"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 522,
+                                                                        lineNumber: 544,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -2136,19 +2332,19 @@ function SendPage() {
                                                                         onChange: (e)=>setSubject(e.target.value)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 523,
+                                                                        lineNumber: 545,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 521,
+                                                                lineNumber: 543,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 519,
+                                                        lineNumber: 541,
                                                         columnNumber: 17
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2161,7 +2357,7 @@ function SendPage() {
                                                                         children: "Cuerpo del Mensaje"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 529,
+                                                                        lineNumber: 551,
                                                                         columnNumber: 21
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2173,7 +2369,7 @@ function SendPage() {
                                                                                 children: "O sube HTML"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 531,
+                                                                                lineNumber: 553,
                                                                                 columnNumber: 23
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -2184,19 +2380,19 @@ function SendPage() {
                                                                                 onChange: handleHtmlFileChange
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 532,
+                                                                                lineNumber: 554,
                                                                                 columnNumber: 23
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 530,
+                                                                        lineNumber: 552,
                                                                         columnNumber: 21
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 528,
+                                                                lineNumber: 550,
                                                                 columnNumber: 19
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$textarea$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Textarea"], {
@@ -2206,31 +2402,31 @@ function SendPage() {
                                                                 disabled: contentType !== 'custom'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 535,
+                                                                lineNumber: 557,
                                                                 columnNumber: 19
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 527,
+                                                        lineNumber: 549,
                                                         columnNumber: 17
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 518,
+                                                lineNumber: 540,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 499,
+                                        lineNumber: 521,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 495,
+                                lineNumber: 517,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2241,20 +2437,20 @@ function SendPage() {
                                                 children: "Destinatarios"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 543,
+                                                lineNumber: 565,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                 children: recipientSummary
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 544,
+                                                lineNumber: 566,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 542,
+                                        lineNumber: 564,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2264,18 +2460,18 @@ function SendPage() {
                                             children: "Seleccionar Fuente de Destinatarios"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                            lineNumber: 547,
+                                            lineNumber: 569,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 546,
+                                        lineNumber: 568,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 541,
+                                lineNumber: 563,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Dialog"], {
@@ -2290,20 +2486,20 @@ function SendPage() {
                                                     children: "Destinatarios"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                    lineNumber: 556,
+                                                    lineNumber: 578,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogDescription"], {
                                                     children: "Elige las personas que recibirán tu campaña."
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                    lineNumber: 557,
+                                                    lineNumber: 579,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                            lineNumber: 555,
+                                            lineNumber: 577,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2316,7 +2512,7 @@ function SendPage() {
                                                             className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                            lineNumber: 563,
+                                                            lineNumber: 585,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -2324,13 +2520,13 @@ function SendPage() {
                                                             className: "pl-9"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                            lineNumber: 564,
+                                                            lineNumber: 586,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                    lineNumber: 562,
+                                                    lineNumber: 584,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Tabs"], {
@@ -2347,14 +2543,14 @@ function SendPage() {
                                                                             className: "mr-2 h-4 w-4"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                            lineNumber: 568,
+                                                                            lineNumber: 590,
                                                                             columnNumber: 54
                                                                         }, this),
                                                                         "Listas"
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                    lineNumber: 568,
+                                                                    lineNumber: 590,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsTrigger"], {
@@ -2365,14 +2561,14 @@ function SendPage() {
                                                                             className: "mr-2 h-4 w-4"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                            lineNumber: 569,
+                                                                            lineNumber: 591,
                                                                             columnNumber: 74
                                                                         }, this),
                                                                         "Segmentos"
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                    lineNumber: 569,
+                                                                    lineNumber: 591,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsTrigger"], {
@@ -2382,20 +2578,20 @@ function SendPage() {
                                                                             className: "mr-2 h-4 w-4"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                            lineNumber: 570,
+                                                                            lineNumber: 592,
                                                                             columnNumber: 60
                                                                         }, this),
                                                                         "Individuales"
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                    lineNumber: 570,
+                                                                    lineNumber: 592,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                            lineNumber: 567,
+                                                            lineNumber: 589,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -2414,7 +2610,7 @@ function SendPage() {
                                                                                 children: "Subir Archivo (CSV/Excel)"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 575,
+                                                                                lineNumber: 597,
                                                                                 columnNumber: 35
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -2425,7 +2621,7 @@ function SendPage() {
                                                                                         children: "Sube un archivo de contactos"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                        lineNumber: 577,
+                                                                                        lineNumber: 599,
                                                                                         columnNumber: 39
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -2435,7 +2631,7 @@ function SendPage() {
                                                                                         onChange: handleFileChange
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                        lineNumber: 578,
+                                                                                        lineNumber: 600,
                                                                                         columnNumber: 39
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2443,19 +2639,19 @@ function SendPage() {
                                                                                         children: 'El archivo debe contener una columna "email".'
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                        lineNumber: 579,
+                                                                                        lineNumber: 601,
                                                                                         columnNumber: 39
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 576,
+                                                                                lineNumber: 598,
                                                                                 columnNumber: 35
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 574,
+                                                                        lineNumber: 596,
                                                                         columnNumber: 31
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionItem"], {
@@ -2465,7 +2661,7 @@ function SendPage() {
                                                                                 children: "Contactos por Fecha (BD)"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 583,
+                                                                                lineNumber: 605,
                                                                                 columnNumber: 35
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -2475,7 +2671,7 @@ function SendPage() {
                                                                                         children: "Selecciona una fecha de visita"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                        lineNumber: 585,
+                                                                                        lineNumber: 607,
                                                                                         columnNumber: 37
                                                                                     }, this),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$popover$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Popover"], {
@@ -2490,7 +2686,7 @@ function SendPage() {
                                                                                                             className: "mr-2 h-4 w-4"
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                                            lineNumber: 586,
+                                                                                                            lineNumber: 608,
                                                                                                             columnNumber: 156
                                                                                                         }, this),
                                                                                                         date ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(date, "PPP", {
@@ -2499,18 +2695,18 @@ function SendPage() {
                                                                                                             children: "Elige una fecha"
                                                                                                         }, void 0, false, {
                                                                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                                            lineNumber: 586,
+                                                                                                            lineNumber: 608,
                                                                                                             columnNumber: 243
                                                                                                         }, this)
                                                                                                     ]
                                                                                                 }, void 0, true, {
                                                                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                                    lineNumber: 586,
+                                                                                                    lineNumber: 608,
                                                                                                     columnNumber: 70
                                                                                                 }, this)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                                lineNumber: 586,
+                                                                                                lineNumber: 608,
                                                                                                 columnNumber: 46
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$popover$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["PopoverContent"], {
@@ -2523,41 +2719,41 @@ function SendPage() {
                                                                                                     locale: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$locale$2f$es$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["es"]
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                                    lineNumber: 586,
+                                                                                                    lineNumber: 608,
                                                                                                     columnNumber: 337
                                                                                                 }, this)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                                lineNumber: 586,
+                                                                                                lineNumber: 608,
                                                                                                 columnNumber: 298
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                        lineNumber: 586,
+                                                                                        lineNumber: 608,
                                                                                         columnNumber: 37
                                                                                     }, this)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 584,
+                                                                                lineNumber: 606,
                                                                                 columnNumber: 35
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 582,
+                                                                        lineNumber: 604,
                                                                         columnNumber: 31
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 573,
+                                                                lineNumber: 595,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                            lineNumber: 572,
+                                                            lineNumber: 594,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -2569,7 +2765,7 @@ function SendPage() {
                                                                     children: "Escribe tu consulta SQL"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                    lineNumber: 592,
+                                                                    lineNumber: 614,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$textarea$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Textarea"], {
@@ -2582,7 +2778,7 @@ function SendPage() {
                                                                     rows: 6
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                    lineNumber: 593,
+                                                                    lineNumber: 615,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2590,13 +2786,13 @@ function SendPage() {
                                                                     children: 'La consulta debe devolver una columna "email".'
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                    lineNumber: 594,
+                                                                    lineNumber: 616,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                            lineNumber: 591,
+                                                            lineNumber: 613,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -2608,7 +2804,7 @@ function SendPage() {
                                                                     children: "Pegar Correos"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                    lineNumber: 597,
+                                                                    lineNumber: 619,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$textarea$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Textarea"], {
@@ -2622,7 +2818,7 @@ function SendPage() {
                                                                     }
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                    lineNumber: 598,
+                                                                    lineNumber: 620,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2630,25 +2826,25 @@ function SendPage() {
                                                                     children: "Separa los correos con comas, espacios o saltos de línea."
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                    lineNumber: 599,
+                                                                    lineNumber: 621,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                            lineNumber: 596,
+                                                            lineNumber: 618,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                    lineNumber: 566,
+                                                    lineNumber: 588,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                            lineNumber: 561,
+                                            lineNumber: 583,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogFooter"], {
@@ -2660,7 +2856,7 @@ function SendPage() {
                                                     children: "Cancelar"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                    lineNumber: 604,
+                                                    lineNumber: 626,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2668,24 +2864,24 @@ function SendPage() {
                                                     children: "Guardar"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                    lineNumber: 605,
+                                                    lineNumber: 627,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                            lineNumber: 603,
+                                            lineNumber: 625,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                    lineNumber: 554,
+                                    lineNumber: 576,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 553,
+                                lineNumber: 575,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2695,12 +2891,12 @@ function SendPage() {
                                             children: "Envío de Prueba"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                            lineNumber: 612,
+                                            lineNumber: 634,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 611,
+                                        lineNumber: 633,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2716,7 +2912,7 @@ function SendPage() {
                                                             children: "Correo de Prueba"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                            lineNumber: 617,
+                                                            lineNumber: 639,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -2727,13 +2923,13 @@ function SendPage() {
                                                             onChange: (e)=>setTestEmail(e.target.value)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                            lineNumber: 618,
+                                                            lineNumber: 640,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                    lineNumber: 616,
+                                                    lineNumber: 638,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2744,35 +2940,35 @@ function SendPage() {
                                                         className: "mr-2 h-4 w-4 animate-spin"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 621,
+                                                        lineNumber: 643,
                                                         columnNumber: 38
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$send$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Send$3e$__["Send"], {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 621,
+                                                        lineNumber: 643,
                                                         columnNumber: 90
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                    lineNumber: 620,
+                                                    lineNumber: 642,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                            lineNumber: 615,
+                                            lineNumber: 637,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 614,
+                                        lineNumber: 636,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 610,
+                                lineNumber: 632,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2782,7 +2978,7 @@ function SendPage() {
                                         className: "h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 628,
+                                        lineNumber: 650,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2796,13 +2992,13 @@ function SendPage() {
                                                         children: recipientCount
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 630,
+                                                        lineNumber: 652,
                                                         columnNumber: 82
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 630,
+                                                lineNumber: 652,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2814,13 +3010,13 @@ function SendPage() {
                                                         children: estimatedTime
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 631,
+                                                        lineNumber: 653,
                                                         columnNumber: 73
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 631,
+                                                lineNumber: 653,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2832,26 +3028,26 @@ function SendPage() {
                                                         children: "Ajustes"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 632,
+                                                        lineNumber: 654,
                                                         columnNumber: 133
                                                     }, this),
                                                     "."
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 632,
+                                                lineNumber: 654,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 629,
+                                        lineNumber: 651,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 627,
+                                lineNumber: 649,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2864,20 +3060,20 @@ function SendPage() {
                                         className: "mr-2 h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 637,
+                                        lineNumber: 659,
                                         columnNumber: 13
                                     }, this),
                                     isSending ? "Enviando..." : "Iniciar Envío Masivo"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 636,
+                                lineNumber: 658,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                        lineNumber: 494,
+                        lineNumber: 516,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2895,20 +3091,20 @@ function SendPage() {
                                                             children: "Vista Previa del Correo"
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                            lineNumber: 648,
+                                                            lineNumber: 670,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                             children: "Así es como los destinatarios verán tu correo."
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                            lineNumber: 649,
+                                                            lineNumber: 671,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                    lineNumber: 647,
+                                                    lineNumber: 669,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2924,12 +3120,12 @@ function SendPage() {
                                                                 className: "h-4 w-4"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 653,
+                                                                lineNumber: 675,
                                                                 columnNumber: 29
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                            lineNumber: 652,
+                                                            lineNumber: 674,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2942,29 +3138,29 @@ function SendPage() {
                                                                 className: "h-4 w-4"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 656,
+                                                                lineNumber: 678,
                                                                 columnNumber: 29
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                            lineNumber: 655,
+                                                            lineNumber: 677,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                    lineNumber: 651,
+                                                    lineNumber: 673,
                                                     columnNumber: 21
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                            lineNumber: 646,
+                                            lineNumber: 668,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 645,
+                                        lineNumber: 667,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2985,12 +3181,12 @@ function SendPage() {
                                                                             children: "AP"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                            lineNumber: 674,
+                                                                            lineNumber: 696,
                                                                             columnNumber: 37
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 673,
+                                                                        lineNumber: 695,
                                                                         columnNumber: 33
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3000,7 +3196,7 @@ function SendPage() {
                                                                                 children: senderEmail || 'remitente@ejemplo.com'
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 677,
+                                                                                lineNumber: 699,
                                                                                 columnNumber: 37
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3008,19 +3204,19 @@ function SendPage() {
                                                                                 children: "Para: destinatario@ejemplo.com"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 678,
+                                                                                lineNumber: 700,
                                                                                 columnNumber: 37
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 676,
+                                                                        lineNumber: 698,
                                                                         columnNumber: 33
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 672,
+                                                                lineNumber: 694,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3031,7 +3227,7 @@ function SendPage() {
                                                                         children: "Ahora"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 682,
+                                                                        lineNumber: 704,
                                                                         columnNumber: 33
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3042,12 +3238,12 @@ function SendPage() {
                                                                             className: "size-4"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                            lineNumber: 683,
+                                                                            lineNumber: 705,
                                                                             columnNumber: 88
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 683,
+                                                                        lineNumber: 705,
                                                                         columnNumber: 33
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3058,12 +3254,12 @@ function SendPage() {
                                                                             className: "size-4"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                            lineNumber: 684,
+                                                                            lineNumber: 706,
                                                                             columnNumber: 88
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 684,
+                                                                        lineNumber: 706,
                                                                         columnNumber: 33
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3074,12 +3270,12 @@ function SendPage() {
                                                                             className: "size-4"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                            lineNumber: 685,
+                                                                            lineNumber: 707,
                                                                             columnNumber: 88
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 685,
+                                                                        lineNumber: 707,
                                                                         columnNumber: 33
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3090,24 +3286,24 @@ function SendPage() {
                                                                             className: "size-4"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                            lineNumber: 686,
+                                                                            lineNumber: 708,
                                                                             columnNumber: 88
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 686,
+                                                                        lineNumber: 708,
                                                                         columnNumber: 33
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 681,
+                                                                lineNumber: 703,
                                                                 columnNumber: 29
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 671,
+                                                        lineNumber: 693,
                                                         columnNumber: 25
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3118,7 +3314,7 @@ function SendPage() {
                                                                 children: subject || 'Asunto del correo'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 692,
+                                                                lineNumber: 714,
                                                                 columnNumber: 29
                                                             }, this),
                                                             attachmentName && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3131,7 +3327,7 @@ function SendPage() {
                                                                                 children: "1 archivo adjunto"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 697,
+                                                                                lineNumber: 719,
                                                                                 columnNumber: 37
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3139,13 +3335,13 @@ function SendPage() {
                                                                                 children: "(~256 KB)"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 698,
+                                                                                lineNumber: 720,
                                                                                 columnNumber: 37
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 696,
+                                                                        lineNumber: 718,
                                                                         columnNumber: 33
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3155,7 +3351,7 @@ function SendPage() {
                                                                                 className: "h-6 w-6 text-primary flex-shrink-0"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 701,
+                                                                                lineNumber: 723,
                                                                                 columnNumber: 37
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3165,30 +3361,30 @@ function SendPage() {
                                                                                     children: attachmentName
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                    lineNumber: 703,
+                                                                                    lineNumber: 725,
                                                                                     columnNumber: 41
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                                lineNumber: 702,
+                                                                                lineNumber: 724,
                                                                                 columnNumber: 37
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 700,
+                                                                        lineNumber: 722,
                                                                         columnNumber: 33
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 695,
+                                                                lineNumber: 717,
                                                                 columnNumber: 29
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 691,
+                                                        lineNumber: 713,
                                                         columnNumber: 25
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3201,7 +3397,7 @@ function SendPage() {
                                                                 sandbox: "allow-scripts"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 712,
+                                                                lineNumber: 734,
                                                                 columnNumber: 29
                                                             }, this),
                                                             certificatePreview && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3212,7 +3408,7 @@ function SendPage() {
                                                                         children: "Vista Previa del Certificado"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 723,
+                                                                        lineNumber: 745,
                                                                         columnNumber: 37
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
@@ -3221,19 +3417,19 @@ function SendPage() {
                                                                         className: "max-w-full border rounded-md"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 724,
+                                                                        lineNumber: 746,
                                                                         columnNumber: 37
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 722,
+                                                                lineNumber: 744,
                                                                 columnNumber: 33
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 711,
+                                                        lineNumber: 733,
                                                         columnNumber: 25
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3246,14 +3442,14 @@ function SendPage() {
                                                                         className: "mr-2"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 731,
+                                                                        lineNumber: 753,
                                                                         columnNumber: 55
                                                                     }, this),
                                                                     " Responder"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 731,
+                                                                lineNumber: 753,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3263,42 +3459,42 @@ function SendPage() {
                                                                         className: "mr-2"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                        lineNumber: 732,
+                                                                        lineNumber: 754,
                                                                         columnNumber: 55
                                                                     }, this),
                                                                     " Reenviar"
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 732,
+                                                                lineNumber: 754,
                                                                 columnNumber: 29
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 730,
+                                                        lineNumber: 752,
                                                         columnNumber: 25
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 666,
+                                                lineNumber: 688,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/(main)/send/page.tsx",
-                                            lineNumber: 662,
+                                            lineNumber: 684,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 661,
+                                        lineNumber: 683,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 644,
+                                lineNumber: 666,
                                 columnNumber: 11
                             }, this),
                             lastRunStats && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3309,20 +3505,20 @@ function SendPage() {
                                                 children: "Resumen del Envío"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 741,
+                                                lineNumber: 763,
                                                 columnNumber: 27
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                                 children: "Estadísticas del envío finalizado."
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 741,
+                                                lineNumber: 763,
                                                 columnNumber: 67
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 741,
+                                        lineNumber: 763,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -3338,14 +3534,14 @@ function SendPage() {
                                                                 className: "h-4 w-4"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 743,
+                                                                lineNumber: 765,
                                                                 columnNumber: 132
                                                             }, this),
                                                             " Total Destinatarios"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 743,
+                                                        lineNumber: 765,
                                                         columnNumber: 68
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3353,13 +3549,13 @@ function SendPage() {
                                                         children: lastRunStats.totalRecipients
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 743,
+                                                        lineNumber: 765,
                                                         columnNumber: 188
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 743,
+                                                lineNumber: 765,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3372,14 +3568,14 @@ function SendPage() {
                                                                 className: "h-4 w-4 text-green-500"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 744,
+                                                                lineNumber: 766,
                                                                 columnNumber: 132
                                                             }, this),
                                                             " Enviados"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 744,
+                                                        lineNumber: 766,
                                                         columnNumber: 68
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3387,13 +3583,13 @@ function SendPage() {
                                                         children: lastRunStats.sentCount
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 744,
+                                                        lineNumber: 766,
                                                         columnNumber: 198
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 744,
+                                                lineNumber: 766,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3406,14 +3602,14 @@ function SendPage() {
                                                                 className: "h-4 w-4 text-destructive"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 745,
+                                                                lineNumber: 767,
                                                                 columnNumber: 132
                                                             }, this),
                                                             " Fallidos"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 745,
+                                                        lineNumber: 767,
                                                         columnNumber: 68
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3421,13 +3617,13 @@ function SendPage() {
                                                         children: lastRunStats.failedCount
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 745,
+                                                        lineNumber: 767,
                                                         columnNumber: 202
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 745,
+                                                lineNumber: 767,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3440,14 +3636,14 @@ function SendPage() {
                                                                 className: "h-4 w-4"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 746,
+                                                                lineNumber: 768,
                                                                 columnNumber: 132
                                                             }, this),
                                                             " Duración"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 746,
+                                                        lineNumber: 768,
                                                         columnNumber: 68
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3458,13 +3654,13 @@ function SendPage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 746,
+                                                        lineNumber: 768,
                                                         columnNumber: 177
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 746,
+                                                lineNumber: 768,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3477,14 +3673,14 @@ function SendPage() {
                                                                 className: "h-4 w-4"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                                lineNumber: 747,
+                                                                lineNumber: 769,
                                                                 columnNumber: 132
                                                             }, this),
                                                             " Velocidad Media"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 747,
+                                                        lineNumber: 769,
                                                         columnNumber: 68
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3495,47 +3691,47 @@ function SendPage() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                        lineNumber: 747,
+                                                        lineNumber: 769,
                                                         columnNumber: 189
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                                lineNumber: 747,
+                                                lineNumber: 769,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                                        lineNumber: 742,
+                                        lineNumber: 764,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                                lineNumber: 740,
+                                lineNumber: 762,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/(main)/send/page.tsx",
-                        lineNumber: 643,
+                        lineNumber: 665,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/(main)/send/page.tsx",
-                lineNumber: 493,
+                lineNumber: 515,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/(main)/send/page.tsx",
-        lineNumber: 483,
+        lineNumber: 505,
         columnNumber: 5
     }, this);
 }
-_s(SendPage, "ACBFwiZhTEge6Dyk2IpvQ9E0YTw=", false, function() {
+_s(SendPage, "qObvVH90WEXKs4eN01j/pO0iImk=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$use$2d$toast$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useToast"],
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$context$2f$auth$2d$context$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useAuth"]
@@ -3550,4 +3746,4 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 }}),
 }]);
 
-//# sourceMappingURL=src_635c378f._.js.map
+//# sourceMappingURL=src_db443cd1._.js.map

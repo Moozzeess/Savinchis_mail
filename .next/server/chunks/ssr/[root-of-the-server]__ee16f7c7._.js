@@ -847,7 +847,149 @@ async function sendTestEmailAction(payload) {
 ]);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(sendTestEmailAction, "4021b06e3ddd3a00eaec703b80737f542c40396c6b", null);
 }}),
-"[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript) <locals>": ((__turbopack_context__) => {
+"[project]/src/actions/template-actions.ts [app-rsc] (ecmascript)": ((__turbopack_context__) => {
+"use strict";
+
+var { g: global, __dirname } = __turbopack_context__;
+{
+/* __next_internal_action_entry_do_not_use__ [{"00fdeee1b67912cd40169e627b506c6488d511c086":"getTemplatesAction","4024a31c3d0e73da34e600b2dfb31666da4162b857":"deleteTemplateAction","40263c8206bd41e6787323cdaa6b06d06cb029fa6e":"saveTemplateAction","40fe3d066ef8bfa392b4411a87e12ed72d92fcc5c9":"getTemplateAction"},"",""] */ __turbopack_context__.s({
+    "deleteTemplateAction": (()=>deleteTemplateAction),
+    "getTemplateAction": (()=>getTemplateAction),
+    "getTemplatesAction": (()=>getTemplatesAction),
+    "saveTemplateAction": (()=>saveTemplateAction)
+});
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/server-reference.js [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$app$2d$render$2f$encryption$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/app-render/encryption.js [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$mysql2$2f$promise$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/mysql2/promise.js [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/action-validate.js [app-rsc] (ecmascript)");
+;
+;
+;
+async function getDbConnection() {
+    const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } = process.env;
+    if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
+        throw new Error('Faltan las variables de entorno de la base de datos. Por favor, configúralas.');
+    }
+    return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$mysql2$2f$promise$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].createConnection({
+        host: MYSQL_HOST,
+        port: MYSQL_PORT ? parseInt(MYSQL_PORT, 10) : 3306,
+        user: MYSQL_USER,
+        password: MYSQL_PASSWORD,
+        database: MYSQL_DATABASE
+    });
+}
+async function getTemplatesAction() {
+    let connection;
+    try {
+        connection = await getDbConnection();
+        const [rows] = await connection.execute('SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion FROM plantillas ORDER BY fecha_creacion DESC');
+        const templates = rows.map((row)=>({
+                ...row,
+                contenido: row.contenido ? JSON.parse(row.contenido) : []
+            }));
+        return templates;
+    } catch (error) {
+        console.error('Error al obtener las plantillas:', error);
+        return [];
+    } finally{
+        if (connection) await connection.end();
+    }
+}
+async function getTemplateAction(id) {
+    let connection;
+    try {
+        connection = await getDbConnection();
+        const [rows] = await connection.execute('SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion FROM plantillas WHERE id_plantilla = ?', [
+            id
+        ]);
+        if (rows.length === 0) return null;
+        const row = rows[0];
+        return {
+            ...row,
+            contenido: row.contenido ? JSON.parse(row.contenido) : []
+        };
+    } catch (error) {
+        console.error(`Error al obtener la plantilla ${id}:`, error);
+        return null;
+    } finally{
+        if (connection) await connection.end();
+    }
+}
+async function saveTemplateAction(templateData) {
+    const { id, nombre, asunto_predeterminado, contenido } = templateData;
+    const contenidoJson = JSON.stringify(contenido);
+    let connection;
+    try {
+        connection = await getDbConnection();
+        if (id) {
+            await connection.execute('UPDATE plantillas SET nombre = ?, asunto_predeterminado = ?, contenido = ? WHERE id_plantilla = ?', [
+                nombre,
+                asunto_predeterminado,
+                contenidoJson,
+                id
+            ]);
+            return {
+                success: true,
+                message: 'Plantilla actualizada con éxito.',
+                id
+            };
+        } else {
+            const [result] = await connection.execute('INSERT INTO plantillas (nombre, asunto_predeterminado, contenido) VALUES (?, ?, ?)', [
+                nombre,
+                asunto_predeterminado,
+                contenidoJson
+            ]);
+            const insertId = result.insertId;
+            return {
+                success: true,
+                message: 'Plantilla creada con éxito.',
+                id: insertId
+            };
+        }
+    } catch (error) {
+        console.error('Error al guardar la plantilla:', error);
+        return {
+            success: false,
+            message: `Error al guardar la plantilla: ${error.message}`
+        };
+    } finally{
+        if (connection) await connection.end();
+    }
+}
+async function deleteTemplateAction(id) {
+    let connection;
+    try {
+        connection = await getDbConnection();
+        await connection.execute('DELETE FROM plantillas WHERE id_plantilla = ?', [
+            id
+        ]);
+        return {
+            success: true,
+            message: 'Plantilla eliminada con éxito.'
+        };
+    } catch (error) {
+        console.error(`Error al eliminar la plantilla ${id}:`, error);
+        return {
+            success: false,
+            message: `Error al eliminar la plantilla: ${error.message}`
+        };
+    } finally{
+        if (connection) await connection.end();
+    }
+}
+;
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["ensureServerEntryExports"])([
+    getTemplatesAction,
+    getTemplateAction,
+    saveTemplateAction,
+    deleteTemplateAction
+]);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(getTemplatesAction, "00fdeee1b67912cd40169e627b506c6488d511c086", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(getTemplateAction, "40fe3d066ef8bfa392b4411a87e12ed72d92fcc5c9", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(saveTemplateAction, "40263c8206bd41e6787323cdaa6b06d06cb029fa6e", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(deleteTemplateAction, "4024a31c3d0e73da34e600b2dfb31666da4162b857", null);
+}}),
+"[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript) <locals>": ((__turbopack_context__) => {
 "use strict";
 
 var { g: global, __dirname } = __turbopack_context__;
@@ -855,10 +997,12 @@ var { g: global, __dirname } = __turbopack_context__;
 __turbopack_context__.s({});
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$template$2d$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/actions/template-actions.ts [app-rsc] (ecmascript)");
+;
 ;
 ;
 }}),
-"[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript) <module evaluation>": ((__turbopack_context__) => {
+"[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript) <module evaluation>": ((__turbopack_context__) => {
 "use strict";
 
 var { g: global, __dirname } = __turbopack_context__;
@@ -866,32 +1010,36 @@ var { g: global, __dirname } = __turbopack_context__;
 __turbopack_context__.s({});
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i('[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => "[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <locals>');
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$template$2d$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/actions/template-actions.ts [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$template$2d$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i('[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => "[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)", ACTIONS_MODULE2 => "[project]/src/actions/template-actions.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <locals>');
 }}),
-"[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript) <exports>": ((__turbopack_context__) => {
+"[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript) <exports>": ((__turbopack_context__) => {
 "use strict";
 
 var { g: global, __dirname } = __turbopack_context__;
 {
 __turbopack_context__.s({
+    "00fdeee1b67912cd40169e627b506c6488d511c086": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$template$2d$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["getTemplatesAction"]),
     "400ba817b0cb9d909ed01fecb14a416b84005152c7": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["sendCampaign"]),
     "4021b06e3ddd3a00eaec703b80737f542c40396c6b": (()=>__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["sendTestEmailAction"])
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i('[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => "[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <locals>');
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$actions$2f$template$2d$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/actions/template-actions.ts [app-rsc] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$template$2d$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i('[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => "[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)", ACTIONS_MODULE2 => "[project]/src/actions/template-actions.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <locals>');
 }}),
-"[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)": ((__turbopack_context__) => {
+"[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/actions/template-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)": ((__turbopack_context__) => {
 "use strict";
 
 var { g: global, __dirname } = __turbopack_context__;
 {
 __turbopack_context__.s({
-    "400ba817b0cb9d909ed01fecb14a416b84005152c7": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["400ba817b0cb9d909ed01fecb14a416b84005152c7"]),
-    "4021b06e3ddd3a00eaec703b80737f542c40396c6b": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["4021b06e3ddd3a00eaec703b80737f542c40396c6b"])
+    "00fdeee1b67912cd40169e627b506c6488d511c086": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$template$2d$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["00fdeee1b67912cd40169e627b506c6488d511c086"]),
+    "400ba817b0cb9d909ed01fecb14a416b84005152c7": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$template$2d$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["400ba817b0cb9d909ed01fecb14a416b84005152c7"]),
+    "4021b06e3ddd3a00eaec703b80737f542c40396c6b": (()=>__TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$template$2d$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__["4021b06e3ddd3a00eaec703b80737f542c40396c6b"])
 });
-var __TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i('[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => "[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <module evaluation>');
-var __TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__ = __turbopack_context__.i('[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => "[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <exports>');
+var __TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$template$2d$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i('[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => "[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)", ACTIONS_MODULE2 => "[project]/src/actions/template-actions.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <module evaluation>');
+var __TURBOPACK__imported__module__$5b$project$5d2f2e$next$2d$internal$2f$server$2f$app$2f28$main$292f$send$2f$page$2f$actions$2e$js__$7b$__ACTIONS_MODULE0__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$campaign$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE1__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$send$2d$test$2d$email$2d$action$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29222c$__ACTIONS_MODULE2__$3d3e$__$225b$project$5d2f$src$2f$actions$2f$template$2d$actions$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$2922$__$7d$__$5b$app$2d$rsc$5d$__$28$server__actions__loader$2c$__ecmascript$29$__$3c$exports$3e$__ = __turbopack_context__.i('[project]/.next-internal/server/app/(main)/send/page/actions.js { ACTIONS_MODULE0 => "[project]/src/actions/send-campaign-action.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/src/actions/send-test-email-action.ts [app-rsc] (ecmascript)", ACTIONS_MODULE2 => "[project]/src/actions/template-actions.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <exports>');
 }}),
 "[project]/src/app/favicon.ico.mjs { IMAGE => \"[project]/src/app/favicon.ico (static in ecmascript)\" } [app-rsc] (structured image object, ecmascript, Next.js server component)": ((__turbopack_context__) => {
 
@@ -958,4 +1106,4 @@ __turbopack_context__.n(__turbopack_context__.i("[project]/src/app/(main)/send/p
 
 };
 
-//# sourceMappingURL=%5Broot-of-the-server%5D__05bce8db._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__ee16f7c7._.js.map

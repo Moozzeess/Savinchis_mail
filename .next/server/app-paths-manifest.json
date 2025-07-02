@@ -1,7 +1,5 @@
 {
-  "/(main)/dashboard/page": "app/(main)/dashboard/page.js",
-  "/(main)/templates/editor/page": "app/(main)/templates/editor/page.js",
-  "/(main)/templates/page": "app/(main)/templates/page.js",
-  "/login/page": "app/login/page.js",
+  "/(main)/send/page": "app/(main)/send/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js"
 }
