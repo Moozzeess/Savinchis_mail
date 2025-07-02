@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,15 +13,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import {
   Pilcrow, ImageIcon, MousePointerClick, Minus, Trash2, GripVertical, Code,
-  Download, Eye, Undo, Redo, MoreVertical, StretchVertical, Rows3
+  Download, Eye, Undo, Redo, MoreVertical, StretchVertical, Rows3, Loader2
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from 'react-beautiful-dnd';
 import { nanoid } from 'nanoid';
 import { cn } from '@/lib/utils';
 import { type Block, formSchema, type FormValues, generateHtmlFromBlocks } from '@/lib/template-utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { saveTemplateAction, type Template } from '@/actions/template-actions';
 
-// Definición de los bloques disponibles en la paleta
 const PALETTE_BLOCKS: {
   type: Block['type'];
   label: string;
@@ -39,17 +40,19 @@ const PALETTE_BLOCKS: {
 /**
  * Componente de cliente para crear y editar plantillas de correo electrónico con un editor visual por bloques.
  */
-export function TemplateEditorClient() {
+export function TemplateEditorClient({ template }: { template: Template | null }) {
   const { toast } = useToast();
+  const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [activeTab, setActiveTab] = useState("bloques");
+  const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      templateName: 'Mi Plantilla',
-      emailSubject: 'Asunto del Correo',
-      blocks: [],
+      templateName: template?.nombre || 'Mi Nueva Plantilla',
+      emailSubject: template?.asunto_predeterminado || 'Asunto del Correo',
+      blocks: template?.contenido || [],
     },
   });
 
@@ -64,30 +67,60 @@ export function TemplateEditorClient() {
     setIsMounted(true);
   }, []);
 
-  function onSubmit(values: FormValues) {
-    const finalHtml = generateHtmlFromBlocks(values.blocks);
-    console.log({ ...values, emailBody: finalHtml });
-    toast({
-      title: 'Plantilla guardada',
-      description: `La plantilla "${values.templateName}" ha sido guardada con éxito.`,
-    });
+  useEffect(() => {
+    if (template) {
+        form.reset({
+            templateName: template.nombre,
+            emailSubject: template.asunto_predeterminado,
+            blocks: template.contenido,
+        });
+    }
+  }, [template, form]);
+
+  async function onSubmit(values: FormValues) {
+    setIsSaving(true);
+    try {
+        const result = await saveTemplateAction({
+            id: template?.id_plantilla,
+            nombre: values.templateName,
+            asunto_predeterminado: values.emailSubject,
+            contenido: values.blocks,
+        });
+
+        if (result.success) {
+            toast({
+                title: 'Plantilla guardada',
+                description: result.message,
+            });
+            router.push('/templates');
+            router.refresh();
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (error) {
+        toast({
+            title: 'Error al guardar',
+            description: (error as Error).message,
+            variant: 'destructive',
+        });
+    } finally {
+        setIsSaving(false);
+    }
   }
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
     if (!destination) return;
 
-    // Arrastrando desde la paleta al lienzo
     if (source.droppableId === 'palette' && destination.droppableId === 'canvas') {
       const itemToClone = PALETTE_BLOCKS[source.index];
       const newBlock: Block = {
         id: nanoid(),
         type: itemToClone.type,
-        content: JSON.parse(JSON.stringify(itemToClone.content)), // Deep clone content
+        content: JSON.parse(JSON.stringify(itemToClone.content)),
       };
       insert(destination.index, newBlock);
     }
-    // Reordenando dentro del lienzo
     else if (source.droppableId === 'canvas' && destination.droppableId === 'canvas') {
       if (source.index !== destination.index) {
         move(source.index, destination.index);
@@ -126,7 +159,6 @@ export function TemplateEditorClient() {
       <div className="flex h-screen w-full bg-muted/30 text-foreground">
         {isMounted && (
           <DragDropContext onDragEnd={onDragEnd}>
-            {/* Left Sidebar */}
             <aside className="w-[350px] flex-shrink-0 bg-background border-r flex flex-col">
               <div className="p-4 border-b h-16 flex items-center">
                  <h2 className="text-lg font-semibold font-headline">Contenido</h2>
@@ -162,7 +194,6 @@ export function TemplateEditorClient() {
                               )}
                             </Draggable>
                           ))}
-                          {/* El placeholder no se necesita para una lista clonable */}
                         </div>
                       )}
                     </Droppable>
@@ -171,24 +202,29 @@ export function TemplateEditorClient() {
               </div>
             </aside>
 
-            {/* Main Editor */}
             <div className="flex-1 flex flex-col">
-              {/* Editor Header */}
               <header className="h-16 border-b bg-background flex items-center justify-between px-6 flex-shrink-0">
                 <div className="flex items-center gap-4">
-                  <span className="text-sm font-medium">{form.watch('templateName')}</span>
-                  <span className="text-xs text-muted-foreground">Cambios sin guardar</span>
+                  <FormField
+                    control={form.control}
+                    name="templateName"
+                    render={({ field }) => (
+                      <Input {...field} className="text-lg font-medium border-none shadow-none focus-visible:ring-0 p-0 h-auto" />
+                    )}
+                  />
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon"><Undo className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon"><Redo className="h-4 w-4" /></Button>
-                  <Button variant="outline">Vista previa y prueba</Button>
-                  <Button onClick={form.handleSubmit(onSubmit)}>Guardar y salir</Button>
-                   <Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" disabled><Undo className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" disabled><Redo className="h-4 w-4" /></Button>
+                  <Button variant="outline" disabled>Vista previa y prueba</Button>
+                  <Button onClick={form.handleSubmit(onSubmit)} disabled={isSaving}>
+                     {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                     Guardar y salir
+                  </Button>
+                   <Button variant="ghost" size="icon" disabled><MoreVertical className="h-4 w-4" /></Button>
                 </div>
               </header>
 
-              {/* Canvas */}
               <main className="flex-1 overflow-y-auto bg-[radial-gradient(hsl(var(--border))_0.5px,transparent_0.5px)] [background-size:16px_16px]">
                 <div className="max-w-3xl mx-auto py-12">
                    <Droppable droppableId="canvas">
@@ -201,7 +237,7 @@ export function TemplateEditorClient() {
                         {fields.length === 0 ? (
                            <div className="flex flex-col items-center justify-center h-96 text-muted-foreground">
                             <Download className="h-10 w-10 mb-4" />
-                            <p className="font-semibold">Soltar tu bloque aqui</p>
+                            <p className="font-semibold">Arrastra un bloque aquí</p>
                           </div>
                         ) : (
                           fields.map((field, index) => (
