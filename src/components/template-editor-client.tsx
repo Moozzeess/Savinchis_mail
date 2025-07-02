@@ -1,7 +1,8 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useState, useEffect, useMemo } from 'react';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -10,33 +11,32 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage, FormLabel } from '@/components/ui/form';
 import {
-  Pilcrow, ImageIcon, MousePointerClick, Minus, Trash2, GripVertical, Code,
-  Download, Eye, Undo, Redo, MoreVertical, StretchVertical, Rows3, Loader2
+  Pilcrow, ImageIcon, MousePointerClick, Minus, GripVertical, Code,
+  Loader2, Trash2, StretchVertical, Upload
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from 'react-beautiful-dnd';
 import { nanoid } from 'nanoid';
 import { cn } from '@/lib/utils';
-import { type Block, formSchema, type FormValues, generateHtmlFromBlocks } from '@/lib/template-utils';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { type Block, formSchema, type FormValues, generateHtmlFromBlocks, blockSchema } from '@/lib/template-utils';
 import { saveTemplateAction, type Template } from '@/actions/template-actions';
 import { Slider } from './ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { ScrollArea } from './ui/scroll-area';
 
 const PALETTE_BLOCKS: {
   type: Block['type'];
   label: string;
   icon: React.ElementType;
-  content: Block['content'];
 }[] = [
-  { type: 'text', label: 'Texto', icon: Pilcrow, content: { text: 'Escribe tu texto aquí...' } },
-  { type: 'image', label: 'Imagen', icon: ImageIcon, content: { src: 'https://placehold.co/600x300.png', alt: 'Imagen descriptiva' } },
-  { type: 'button', label: 'Botón', icon: MousePointerClick, content: { text: 'Haz Clic Aquí', href: 'https://example.com' } },
-  { type: 'divider', label: 'Divisor', icon: Minus, content: {} },
-  { type: 'spacer', label: 'Espaciador', icon: StretchVertical, content: { height: 30 } },
-  { type: 'html', label: 'HTML', icon: Code, content: { code: '<!-- Tu código HTML aquí -->' } },
+  { type: 'text', label: 'Texto', icon: Pilcrow },
+  { type: 'image', label: 'Imagen', icon: ImageIcon },
+  { type: 'button', label: 'Botón', icon: MousePointerClick },
+  { type: 'divider', label: 'Divisor', icon: Minus },
+  { type: 'spacer', label: 'Espaciador', icon: StretchVertical },
+  { type: 'html', label: 'HTML', icon: Code },
 ];
-
 
 /**
  * Componente de cliente para crear y editar plantillas de correo electrónico con un editor visual por bloques.
@@ -45,8 +45,8 @@ export function TemplateEditorClient({ template }: { template: Template | null }
   const { toast } = useToast();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState("bloques");
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -57,12 +57,18 @@ export function TemplateEditorClient({ template }: { template: Template | null }
     },
   });
 
-  const { fields, move, append, remove } = useFieldArray({
+  const { fields, move, append, remove, update } = useFieldArray({
     control: form.control,
     name: 'blocks',
   });
 
   const watchedBlocks = form.watch('blocks');
+
+  const selectedBlockIndex = useMemo(() => {
+    if (!selectedBlockId) return -1;
+    return fields.findIndex(field => field.id === selectedBlockId);
+  }, [selectedBlockId, fields]);
+
 
   useEffect(() => {
     setIsMounted(true);
@@ -79,15 +85,15 @@ export function TemplateEditorClient({ template }: { template: Template | null }
   }, [template, form]);
 
   const addBlock = (type: Block['type']) => {
-    const blockConfig = PALETTE_BLOCKS.find(b => b.type === type);
-    if (blockConfig) {
-      const newBlock: Block = {
-        id: nanoid(),
-        type: blockConfig.type,
-        content: JSON.parse(JSON.stringify(blockConfig.content)), // Deep copy
-      };
-      append(newBlock);
-    }
+    const contentSchema = blockSchema.options.find(o => o.shape.type.value === type)?.shape.content;
+    const defaultContent = contentSchema ? contentSchema.parse({}) : {};
+
+    const newBlock: Block = {
+      id: nanoid(),
+      type: type,
+      content: defaultContent as any,
+    };
+    append(newBlock);
   };
 
   async function onSubmit(values: FormValues) {
@@ -126,86 +132,70 @@ export function TemplateEditorClient({ template }: { template: Template | null }
     if (!destination || source.droppableId !== 'canvas' || destination.droppableId !== 'canvas') {
       return;
     }
-
     if (source.index !== destination.index) {
       move(source.index, destination.index);
     }
   };
 
-  const renderBlockControls = (index: number) => {
-    const block = watchedBlocks[index];
-    switch (block.type) {
-      case 'text':
-        return <FormField control={form.control} name={`blocks.${index}.content.text`} render={({ field }) => <Textarea {...field} rows={4} className="bg-muted" />} />;
-      case 'image':
-        return <div className="space-y-2">
-            <FormField control={form.control} name={`blocks.${index}.content.src`} render={({ field }) => <div><Label className="text-xs">URL de la imagen</Label><Input {...field} className="bg-muted"/></div>} />
-            <FormField control={form.control} name={`blocks.${index}.content.alt`} render={({ field }) => <div><Label className="text-xs">Texto alternativo</Label><Input {...field} className="bg-muted"/></div>} />
-        </div>;
-      case 'button':
-        return <div className="space-y-2">
-            <FormField control={form.control} name={`blocks.${index}.content.text`} render={({ field }) => <div><Label className="text-xs">Texto del botón</Label><Input {...field} className="bg-muted"/></div>} />
-            <FormField control={form.control} name={`blocks.${index}.content.href`} render={({ field }) => <div><Label className="text-xs">URL del enlace</Label><Input {...field} className="bg-muted"/></div>} />
-        </div>;
-      case 'spacer':
-        return (
-          <FormField
-            control={form.control}
-            name={`blocks.${index}.content.height`}
-            render={({ field }) => (
-              <div className="flex items-center gap-2">
-                <Label className="text-xs">Altura ({field.value}px)</Label>
-                <Slider
-                    value={[field.value]}
-                    onValueChange={([val]) => field.onChange(val)}
-                    min={10} max={200} step={5}
-                />
-              </div>
-            )}
-          />
-        );
-      case 'divider':
-        return <p className="text-xs text-muted-foreground">No hay propiedades para editar.</p>;
-      case 'html':
-        return <FormField control={form.control} name={`blocks.${index}.content.code`} render={({ field }) => <div><Label className="text-xs">Código HTML</Label><Textarea {...field} rows={6} className="bg-muted font-mono" /></div>} />;
-      default:
-        return null;
+  const handleHtmlFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (selectedBlockIndex === -1) return;
+    const file = e.target.files?.[0];
+    if (file && file.type === 'text/html') {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const htmlContent = event.target?.result as string;
+        form.setValue(`blocks.${selectedBlockIndex}.content.code`, htmlContent);
+        toast({ title: 'HTML importado' });
+      };
+      reader.readAsText(file);
+    } else {
+      toast({ title: 'Archivo no válido', description: 'Por favor, selecciona un archivo .html', variant: 'destructive' });
     }
+    e.target.value = ''; // Reset file input
   };
+  
+  const BlockPreview = ({ block }: { block: Block }) => {
+    const html = generateHtmlFromBlocks([block]);
+    return (
+        <div className="w-full pointer-events-none transform scale-[0.5] origin-top-left -ml-16">
+            <iframe
+                srcDoc={html}
+                className="w-[200%] h-auto border-0"
+                scrolling="no"
+                onLoad={(e) => {
+                    const iframe = e.currentTarget;
+                    iframe.style.height = `${iframe.contentWindow?.document.body.scrollHeight}px`;
+                }}
+            />
+        </div>
+    );
+};
+
 
   return (
     <Form {...form}>
-      <div className="flex h-screen w-full bg-muted/30 text-foreground">
+      <div className="flex h-screen w-full bg-muted/40 text-foreground">
         {isMounted && (
           <DragDropContext onDragEnd={onDragEnd}>
-            <aside className="w-[350px] flex-shrink-0 bg-background border-r flex flex-col">
-              <div className="p-4 border-b h-16 flex items-center">
-                 <h2 className="text-lg font-semibold font-headline">Contenido</h2>
-              </div>
-              <div className="flex-grow p-4 overflow-y-auto">
-                <Tabs defaultValue="bloques" className="w-full" value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="bloques">Bloques</TabsTrigger>
-                    <TabsTrigger value="secciones" disabled>Secciones</TabsTrigger>
-                    <TabsTrigger value="guardados" disabled>Guardados</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="bloques" className="mt-4">
-                    <div className="grid grid-cols-2 gap-2">
-                      {PALETTE_BLOCKS.map((block) => (
-                        <button
-                          key={block.type}
-                          type="button"
-                          onClick={() => addBlock(block.type)}
-                          className="flex flex-col items-center justify-center p-4 border rounded-lg bg-card hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors"
-                        >
-                          <block.icon className="h-6 w-6 mb-2" />
-                          <span className="text-xs font-medium">{block.label}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </div>
+            <aside className="w-[280px] flex-shrink-0 bg-background border-r flex flex-col">
+              <header className="p-4 border-b h-16 flex items-center">
+                 <h2 className="text-lg font-semibold font-headline">Bloques</h2>
+              </header>
+              <ScrollArea className="flex-grow">
+                <div className="p-4 grid grid-cols-2 gap-2">
+                  {PALETTE_BLOCKS.map((block) => (
+                    <button
+                      key={block.type}
+                      type="button"
+                      onClick={() => addBlock(block.type)}
+                      className="flex flex-col items-center justify-center p-4 border rounded-lg bg-card hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors"
+                    >
+                      <block.icon className="h-6 w-6 mb-2" />
+                      <span className="text-xs font-medium">{block.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
             </aside>
 
             <div className="flex-1 flex flex-col">
@@ -214,69 +204,51 @@ export function TemplateEditorClient({ template }: { template: Template | null }
                   <FormField
                     control={form.control}
                     name="templateName"
-                    render={({ field }) => (
-                      <Input {...field} className="text-lg font-medium border-none shadow-none focus-visible:ring-0 p-0 h-auto" />
-                    )}
+                    render={({ field }) => ( <Input {...field} className="text-lg font-medium border-none shadow-none focus-visible:ring-0 p-0 h-auto" /> )}
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" disabled><Undo className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon" disabled><Redo className="h-4 w-4" /></Button>
-                  <Button variant="outline" disabled>Vista previa y prueba</Button>
                   <Button onClick={form.handleSubmit(onSubmit)} disabled={isSaving}>
                      {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                      Guardar y salir
                   </Button>
-                   <Button variant="ghost" size="icon" disabled><MoreVertical className="h-4 w-4" /></Button>
                 </div>
               </header>
 
               <main className="flex-1 overflow-y-auto bg-[radial-gradient(hsl(var(--border))_0.5px,transparent_0.5px)] [background-size:16px_16px]">
-                <div className="max-w-3xl mx-auto py-12">
+                <div className="max-w-2xl mx-auto py-12">
                    <Droppable droppableId="canvas">
-                    {(provided, snapshot) => (
+                    {(provided) => (
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className={cn("min-h-[500px] w-full rounded-lg bg-background shadow-md", snapshot.isDraggingOver && "outline-dashed outline-2 outline-primary")}
+                        className="min-h-[500px] w-full bg-background shadow-md rounded-lg"
                       >
-                        {fields.length === 0 ? (
-                           <div className="flex flex-col items-center justify-center h-96 text-muted-foreground">
-                            <Download className="h-10 w-10 mb-4" />
-                            <p className="font-semibold">Haz clic en un bloque para añadirlo</p>
-                          </div>
-                        ) : (
-                          fields.map((field, index) => (
-                            <Draggable key={field.id} draggableId={field.id} index={index}>
-                              {(provided, snapshot) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  className={cn("p-2", snapshot.isDragging && "opacity-80")}
-                                >
-                                  <div className="flex items-start gap-2 p-4 border rounded-md bg-card hover:border-primary/50 relative">
-                                    <div {...provided.dragHandleProps} className="cursor-grab p-2">
-                                      <GripVertical className="h-5 w-5 text-muted-foreground" />
-                                    </div>
-                                    <div className="flex-grow space-y-2">
-                                      <h4 className="font-medium capitalize text-sm">{watchedBlocks[index].type}</h4>
-                                      {renderBlockControls(index)}
-                                    </div>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => remove(index)}
-                                      className="absolute top-2 right-2"
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
+                        {fields.map((field, index) => (
+                          <Draggable key={field.id} draggableId={field.id} index={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                onClick={() => setSelectedBlockId(field.id)}
+                                className={cn(
+                                    "p-2 group",
+                                    snapshot.isDragging && "opacity-80"
+                                )}
+                              >
+                                <div className={cn(
+                                    "border-2 border-transparent group-hover:border-primary/50 relative rounded-md",
+                                    selectedBlockId === field.id && "border-primary"
+                                )}>
+                                  <div {...provided.dragHandleProps} className="absolute -left-8 top-1/2 -translate-y-1/2 cursor-grab p-2 opacity-0 group-hover:opacity-100 bg-background rounded-md border">
+                                    <GripVertical className="h-5 w-5 text-muted-foreground" />
                                   </div>
+                                  <BlockPreview block={watchedBlocks[index]} />
                                 </div>
-                              )}
-                            </Draggable>
-                          ))
-                        )}
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
                         {provided.placeholder}
                       </div>
                     )}
@@ -284,6 +256,86 @@ export function TemplateEditorClient({ template }: { template: Template | null }
                 </div>
               </main>
             </div>
+
+            <aside className={cn("w-[350px] flex-shrink-0 bg-background border-l flex flex-col transition-all duration-300",
+                selectedBlockId ? 'mr-0' : '-mr-[350px]'
+            )}>
+              {selectedBlockIndex !== -1 && (
+                <>
+                <header className="p-4 border-b h-16 flex items-center justify-between">
+                   <h2 className="text-lg font-semibold font-headline capitalize">{watchedBlocks[selectedBlockIndex].type}</h2>
+                   <Button variant="ghost" size="icon" onClick={() => remove(selectedBlockIndex)}><Trash2 className="h-4 w-4" /></Button>
+                </header>
+                <ScrollArea className="flex-grow">
+                    <div className="p-4 space-y-6">
+                        {(() => {
+                            const block = watchedBlocks[selectedBlockIndex];
+                            switch (block.type) {
+                                case 'text': return (
+                                    <>
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.text`} render={({ field }) => <FormItem><FormLabel>Texto</FormLabel><Textarea {...field} rows={5} /></FormItem>} />
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.fontSize`} render={({ field }) => <FormItem><FormLabel>Tamaño ({field.value}px)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={8} max={72} /></FormItem>} />
+                                            <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.lineHeight`} render={({ field }) => <FormItem><FormLabel>Interlineado ({field.value})</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={1} max={3} step={0.1} /></FormItem>} />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.fontWeight`} render={({ field }) => <FormItem><FormLabel>Grosor</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="normal">Normal</SelectItem><SelectItem value="bold">Negrita</SelectItem></SelectContent></Select></FormItem>} />
+                                            <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.textAlign`} render={({ field }) => <FormItem><FormLabel>Alineación</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="left">Izquierda</SelectItem><SelectItem value="center">Centro</SelectItem><SelectItem value="right">Derecha</SelectItem></SelectContent></Select></FormItem>} />
+                                        </div>
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.color`} render={({ field }) => <FormItem><FormLabel>Color</FormLabel><Input type="color" {...field} className="p-1 h-10" /></FormItem>} />
+                                    </>
+                                );
+                                case 'image': return (
+                                    <>
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.src`} render={({ field }) => <FormItem><FormLabel>URL de imagen</FormLabel><Input {...field} /></FormItem>} />
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.alt`} render={({ field }) => <FormItem><FormLabel>Texto Alternativo</FormLabel><Input {...field} /></FormItem>} />
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.width`} render={({ field }) => <FormItem><FormLabel>Ancho ({field.value}%)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={10} max={100} /></FormItem>} />
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.align`} render={({ field }) => <FormItem><FormLabel>Alineación</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="left">Izquierda</SelectItem><SelectItem value="center">Centro</SelectItem><SelectItem value="right">Derecha</SelectItem></SelectContent></Select></FormItem>} />
+                                    </>
+                                );
+                                case 'button': return (
+                                    <>
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.text`} render={({ field }) => <FormItem><FormLabel>Texto del botón</FormLabel><Input {...field} /></FormItem>} />
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.href`} render={({ field }) => <FormItem><FormLabel>URL de enlace</FormLabel><Input {...field} /></FormItem>} />
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.textAlign`} render={({ field }) => <FormItem><FormLabel>Alineación</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="left">Izquierda</SelectItem><SelectItem value="center">Centro</SelectItem><SelectItem value="right">Derecha</SelectItem></SelectContent></Select></FormItem>} />
+                                        <div className="grid grid-cols-2 gap-4">
+                                           <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.backgroundColor`} render={({ field }) => <FormItem><FormLabel>Color Fondo</FormLabel><Input type="color" {...field} className="p-1 h-10" /></FormItem>} />
+                                           <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.color`} render={({ field }) => <FormItem><FormLabel>Color Texto</FormLabel><Input type="color" {...field} className="p-1 h-10" /></FormItem>} />
+                                        </div>
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.borderRadius`} render={({ field }) => <FormItem><FormLabel>Radio Borde ({field.value}px)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={0} max={30} /></FormItem>} />
+                                    </>
+                                );
+                                case 'spacer': return (
+                                     <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.height`} render={({ field }) => <FormItem><FormLabel>Altura ({field.value}px)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={10} max={200} /></FormItem>} />
+                                );
+                                case 'divider': return (
+                                    <>
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.color`} render={({ field }) => <FormItem><FormLabel>Color</FormLabel><Input type="color" {...field} className="p-1 h-10" /></FormItem>} />
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.padding`} render={({ field }) => <FormItem><FormLabel>Espaciado ({field.value}px)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={0} max={50} /></FormItem>} />
+                                    </>
+                                );
+                                case 'html': return (
+                                    <>
+                                        <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.code`} render={({ field }) => <FormItem><FormLabel>Código HTML</FormLabel><Textarea {...field} rows={10} className="font-mono" /></FormItem>} />
+                                        <FormItem>
+                                            <FormLabel>Importar desde Archivo</FormLabel>
+                                            <Button asChild variant="outline" className="w-full">
+                                                <label>
+                                                    <Upload className="mr-2 h-4 w-4"/> Subir archivo .html
+                                                    <Input type="file" accept=".html" className="hidden" onChange={handleHtmlFileChange} />
+                                                </label>
+                                            </Button>
+                                        </FormItem>
+                                    </>
+                                );
+                                default: return null;
+                            }
+                        })()}
+                    </div>
+                </ScrollArea>
+                </>
+              )}
+            </aside>
           </DragDropContext>
         )}
       </div>
