@@ -1063,48 +1063,51 @@ function TemplateEditorClient({ template }) {
                                                         ref: provided.innerRef,
                                                         ...provided.droppableProps,
                                                         className: "grid grid-cols-2 gap-2",
-                                                        children: PALETTE_BLOCKS.map((block, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$beautiful$2d$dnd$2f$dist$2f$react$2d$beautiful$2d$dnd$2e$esm$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Draggable"], {
-                                                                draggableId: block.type,
-                                                                index: index,
-                                                                children: (provided, snapshot)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                        ref: provided.innerRef,
-                                                                        ...provided.draggableProps,
-                                                                        ...provided.dragHandleProps,
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                            className: "flex flex-col items-center justify-center p-4 border rounded-lg bg-card hover:bg-accent hover:text-accent-foreground cursor-grab active:cursor-grabbing",
-                                                                            children: [
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(block.icon, {
-                                                                                    className: "h-6 w-6 mb-2"
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                    lineNumber: 190,
-                                                                                    columnNumber: 37
-                                                                                }, this),
-                                                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                                                    className: "text-xs font-medium",
-                                                                                    children: block.label
-                                                                                }, void 0, false, {
-                                                                                    fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                    lineNumber: 191,
-                                                                                    columnNumber: 37
-                                                                                }, this)
-                                                                            ]
-                                                                        }, void 0, true, {
+                                                        children: [
+                                                            PALETTE_BLOCKS.map((block, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$beautiful$2d$dnd$2f$dist$2f$react$2d$beautiful$2d$dnd$2e$esm$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Draggable"], {
+                                                                    draggableId: block.type,
+                                                                    index: index,
+                                                                    children: (provided, snapshot)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                            ref: provided.innerRef,
+                                                                            ...provided.draggableProps,
+                                                                            ...provided.dragHandleProps,
+                                                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "flex flex-col items-center justify-center p-4 border rounded-lg bg-card hover:bg-accent hover:text-accent-foreground cursor-grab active:cursor-grabbing",
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(block.icon, {
+                                                                                        className: "h-6 w-6 mb-2"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/src/components/template-editor-client.tsx",
+                                                                                        lineNumber: 190,
+                                                                                        columnNumber: 37
+                                                                                    }, this),
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                                        className: "text-xs font-medium",
+                                                                                        children: block.label
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/src/components/template-editor-client.tsx",
+                                                                                        lineNumber: 191,
+                                                                                        columnNumber: 37
+                                                                                    }, this)
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/src/components/template-editor-client.tsx",
+                                                                                lineNumber: 189,
+                                                                                columnNumber: 35
+                                                                            }, this)
+                                                                        }, void 0, false, {
                                                                             fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                            lineNumber: 189,
-                                                                            columnNumber: 35
+                                                                            lineNumber: 184,
+                                                                            columnNumber: 33
                                                                         }, this)
-                                                                    }, void 0, false, {
-                                                                        fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                        lineNumber: 184,
-                                                                        columnNumber: 33
-                                                                    }, this)
-                                                            }, block.type, false, {
-                                                                fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                lineNumber: 182,
-                                                                columnNumber: 29
-                                                            }, this))
-                                                    }, void 0, false, {
+                                                                }, block.type, false, {
+                                                                    fileName: "[project]/src/components/template-editor-client.tsx",
+                                                                    lineNumber: 182,
+                                                                    columnNumber: 29
+                                                                }, this)),
+                                                            provided.placeholder
+                                                        ]
+                                                    }, void 0, true, {
                                                         fileName: "[project]/src/components/template-editor-client.tsx",
                                                         lineNumber: 176,
                                                         columnNumber: 25
@@ -1152,17 +1155,17 @@ function TemplateEditorClient({ template }) {
                                                     className: "text-lg font-medium border-none shadow-none focus-visible:ring-0 p-0 h-auto"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                    lineNumber: 212,
+                                                    lineNumber: 213,
                                                     columnNumber: 23
                                                 }, void 0)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/template-editor-client.tsx",
-                                            lineNumber: 208,
+                                            lineNumber: 209,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                        lineNumber: 207,
+                                        lineNumber: 208,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1176,12 +1179,12 @@ function TemplateEditorClient({ template }) {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                    lineNumber: 217,
+                                                    lineNumber: 218,
                                                     columnNumber: 64
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                lineNumber: 217,
+                                                lineNumber: 218,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1192,12 +1195,12 @@ function TemplateEditorClient({ template }) {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                    lineNumber: 218,
+                                                    lineNumber: 219,
                                                     columnNumber: 64
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                lineNumber: 218,
+                                                lineNumber: 219,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1206,7 +1209,7 @@ function TemplateEditorClient({ template }) {
                                                 children: "Vista previa y prueba"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                lineNumber: 219,
+                                                lineNumber: 220,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1217,14 +1220,14 @@ function TemplateEditorClient({ template }) {
                                                         className: "mr-2 h-4 w-4 animate-spin"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                        lineNumber: 221,
+                                                        lineNumber: 222,
                                                         columnNumber: 35
                                                     }, this),
                                                     "Guardar y salir"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                lineNumber: 220,
+                                                lineNumber: 221,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1235,24 +1238,24 @@ function TemplateEditorClient({ template }) {
                                                     className: "h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                    lineNumber: 224,
+                                                    lineNumber: 225,
                                                     columnNumber: 65
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                lineNumber: 224,
+                                                lineNumber: 225,
                                                 columnNumber: 20
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                        lineNumber: 216,
+                                        lineNumber: 217,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                lineNumber: 206,
+                                lineNumber: 207,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -1273,7 +1276,7 @@ function TemplateEditorClient({ template }) {
                                                                 className: "h-10 w-10 mb-4"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                lineNumber: 239,
+                                                                lineNumber: 240,
                                                                 columnNumber: 29
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1281,13 +1284,13 @@ function TemplateEditorClient({ template }) {
                                                                 children: "Arrastra un bloque aquí"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                lineNumber: 240,
+                                                                lineNumber: 241,
                                                                 columnNumber: 29
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                        lineNumber: 238,
+                                                        lineNumber: 239,
                                                         columnNumber: 28
                                                     }, this) : fields.map((field, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$beautiful$2d$dnd$2f$dist$2f$react$2d$beautiful$2d$dnd$2e$esm$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Draggable"], {
                                                             draggableId: field.id,
@@ -1306,12 +1309,12 @@ function TemplateEditorClient({ template }) {
                                                                                     className: "h-5 w-5 text-muted-foreground"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                    lineNumber: 253,
+                                                                                    lineNumber: 254,
                                                                                     columnNumber: 39
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                lineNumber: 252,
+                                                                                lineNumber: 253,
                                                                                 columnNumber: 37
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1322,14 +1325,14 @@ function TemplateEditorClient({ template }) {
                                                                                         children: watchedBlocks[index].type
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                        lineNumber: 256,
+                                                                                        lineNumber: 257,
                                                                                         columnNumber: 39
                                                                                     }, this),
                                                                                     renderBlockControls(index)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                lineNumber: 255,
+                                                                                lineNumber: 256,
                                                                                 columnNumber: 37
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1342,56 +1345,56 @@ function TemplateEditorClient({ template }) {
                                                                                     className: "h-4 w-4"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                    lineNumber: 266,
+                                                                                    lineNumber: 267,
                                                                                     columnNumber: 39
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                                lineNumber: 259,
+                                                                                lineNumber: 260,
                                                                                 columnNumber: 37
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                        lineNumber: 251,
+                                                                        lineNumber: 252,
                                                                         columnNumber: 35
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                                                    lineNumber: 246,
+                                                                    lineNumber: 247,
                                                                     columnNumber: 33
                                                                 }, this)
                                                         }, field.id, false, {
                                                             fileName: "[project]/src/components/template-editor-client.tsx",
-                                                            lineNumber: 244,
+                                                            lineNumber: 245,
                                                             columnNumber: 29
                                                         }, this)),
                                                     provided.placeholder
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                                lineNumber: 232,
+                                                lineNumber: 233,
                                                 columnNumber: 23
                                             }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/template-editor-client.tsx",
-                                        lineNumber: 230,
+                                        lineNumber: 231,
                                         columnNumber: 20
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/template-editor-client.tsx",
-                                    lineNumber: 229,
+                                    lineNumber: 230,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/template-editor-client.tsx",
-                                lineNumber: 228,
+                                lineNumber: 229,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/template-editor-client.tsx",
-                        lineNumber: 205,
+                        lineNumber: 206,
                         columnNumber: 13
                     }, this)
                 ]

@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { type Block, formSchema, type FormValues, generateHtmlFromBlocks } from '@/lib/template-utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { saveTemplateAction, type Template } from '@/actions/template-actions';
+import { Slider } from './ui/slider';
 
 const PALETTE_BLOCKS: {
   type: Block['type'];
@@ -56,7 +57,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
     },
   });
 
-  const { fields, move, insert, remove } = useFieldArray({
+  const { fields, move, append, remove } = useFieldArray({
     control: form.control,
     name: 'blocks',
   });
@@ -76,6 +77,18 @@ export function TemplateEditorClient({ template }: { template: Template | null }
         });
     }
   }, [template, form]);
+
+  const addBlock = (type: Block['type']) => {
+    const blockConfig = PALETTE_BLOCKS.find(b => b.type === type);
+    if (blockConfig) {
+      const newBlock: Block = {
+        id: nanoid(),
+        type: blockConfig.type,
+        content: JSON.parse(JSON.stringify(blockConfig.content)), // Deep copy
+      };
+      append(newBlock);
+    }
+  };
 
   async function onSubmit(values: FormValues) {
     setIsSaving(true);
@@ -110,21 +123,12 @@ export function TemplateEditorClient({ template }: { template: Template | null }
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
-    if (!destination) return;
-
-    if (source.droppableId === 'palette' && destination.droppableId === 'canvas') {
-      const itemToClone = PALETTE_BLOCKS[source.index];
-      const newBlock: Block = {
-        id: nanoid(),
-        type: itemToClone.type,
-        content: JSON.parse(JSON.stringify(itemToClone.content)),
-      };
-      insert(destination.index, newBlock);
+    if (!destination || source.droppableId !== 'canvas' || destination.droppableId !== 'canvas') {
+      return;
     }
-    else if (source.droppableId === 'canvas' && destination.droppableId === 'canvas') {
-      if (source.index !== destination.index) {
-        move(source.index, destination.index);
-      }
+
+    if (source.index !== destination.index) {
+      move(source.index, destination.index);
     }
   };
 
@@ -144,7 +148,22 @@ export function TemplateEditorClient({ template }: { template: Template | null }
             <FormField control={form.control} name={`blocks.${index}.content.href`} render={({ field }) => <div><Label className="text-xs">URL del enlace</Label><Input {...field} className="bg-muted"/></div>} />
         </div>;
       case 'spacer':
-        return <FormField control={form.control} name={`blocks.${index}.content.height`} render={({ field }) => <div className="flex items-center gap-2"><Label className="text-xs">Altura</Label><Input type="number" {...field} onChange={e => field.onChange(parseInt(e.target.value, 10))} className="w-20 bg-muted"/><span>px</span></div>} />;
+        return (
+          <FormField
+            control={form.control}
+            name={`blocks.${index}.content.height`}
+            render={({ field }) => (
+              <div className="flex items-center gap-2">
+                <Label className="text-xs">Altura ({field.value}px)</Label>
+                <Slider
+                    value={[field.value]}
+                    onValueChange={([val]) => field.onChange(val)}
+                    min={10} max={200} step={5}
+                />
+              </div>
+            )}
+          />
+        );
       case 'divider':
         return <p className="text-xs text-muted-foreground">No hay propiedades para editar.</p>;
       case 'html':
@@ -171,33 +190,19 @@ export function TemplateEditorClient({ template }: { template: Template | null }
                     <TabsTrigger value="guardados" disabled>Guardados</TabsTrigger>
                   </TabsList>
                   <TabsContent value="bloques" className="mt-4">
-                    <Droppable droppableId="palette" isDropDisabled={true}>
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
-                          className="grid grid-cols-2 gap-2"
+                    <div className="grid grid-cols-2 gap-2">
+                      {PALETTE_BLOCKS.map((block) => (
+                        <button
+                          key={block.type}
+                          type="button"
+                          onClick={() => addBlock(block.type)}
+                          className="flex flex-col items-center justify-center p-4 border rounded-lg bg-card hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors"
                         >
-                          {PALETTE_BLOCKS.map((block, index) => (
-                            <Draggable key={block.type} draggableId={block.type} index={index}>
-                              {(provided, snapshot) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  <div className="flex flex-col items-center justify-center p-4 border rounded-lg bg-card hover:bg-accent hover:text-accent-foreground cursor-grab active:cursor-grabbing">
-                                    <block.icon className="h-6 w-6 mb-2" />
-                                    <span className="text-xs font-medium">{block.label}</span>
-                                  </div>
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
+                          <block.icon className="h-6 w-6 mb-2" />
+                          <span className="text-xs font-medium">{block.label}</span>
+                        </button>
+                      ))}
+                    </div>
                   </TabsContent>
                 </Tabs>
               </div>
@@ -238,7 +243,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
                         {fields.length === 0 ? (
                            <div className="flex flex-col items-center justify-center h-96 text-muted-foreground">
                             <Download className="h-10 w-10 mb-4" />
-                            <p className="font-semibold">Arrastra un bloque aquí</p>
+                            <p className="font-semibold">Haz clic en un bloque para añadirlo</p>
                           </div>
                         ) : (
                           fields.map((field, index) => (
