@@ -194,6 +194,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
                               )}
                             </Draggable>
                           ))}
+                          {provided.placeholder}
                         </div>
                       )}
                     </Droppable>
