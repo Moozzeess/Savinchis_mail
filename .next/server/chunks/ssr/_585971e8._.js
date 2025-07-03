@@ -377,114 +377,11 @@ var { g: global, __dirname } = __turbopack_context__;
     "managedSenders": (()=>managedSenders),
     "surveys": (()=>surveys)
 });
-const campaigns = [
-    {
-        name: "Campaña de Bienvenida",
-        status: "TERMINADA",
-        sent: "5,000",
-        opens: "35%",
-        clicks: "8%",
-        date: "2024-07-01"
-    },
-    {
-        name: "Oferta Flash 24h",
-        status: "EXPIRADA",
-        sent: "2,500",
-        opens: "45%",
-        clicks: "15%",
-        date: "2024-07-10"
-    },
-    {
-        name: "Lanzamiento Nuevo Producto",
-        status: "INICIADA",
-        sent: "1,200",
-        opens: "12%",
-        clicks: "2%",
-        date: "2024-07-18"
-    },
-    {
-        name: "Promoción Black Friday",
-        status: "TIEMPO LIMITADO",
-        sent: "0",
-        opens: "-",
-        clicks: "-",
-        date: "2024-11-29"
-    },
-    {
-        name: "Venta de Aniversario",
-        status: "AGOTADA",
-        sent: "10,000",
-        opens: "50%",
-        clicks: "20%",
-        date: "2024-06-15"
-    }
-];
-const contacts = [
-    {
-        email: "juan.perez@example.com",
-        name: "Juan Perez",
-        status: "Suscrito",
-        dateAdded: "2024-07-10"
-    },
-    {
-        email: "maria.garcia@example.com",
-        name: "Maria Garcia",
-        status: "Suscrito",
-        dateAdded: "2024-07-09"
-    },
-    {
-        email: "baja@example.com",
-        name: "Carlos Baja",
-        status: "Baja",
-        dateAdded: "2024-06-20"
-    }
-];
-const surveys = [
-    {
-        id: "1",
-        name: "Feedback de Producto de TI",
-        description: "Encuesta para recopilar opiniones sobre nuestro último software.",
-        responses: 150
-    },
-    {
-        id: "2",
-        name: "Satisfacción del Cliente Tech",
-        description: "Mide la satisfacción general de nuestros clientes con el soporte técnico.",
-        responses: 278
-    },
-    {
-        id: "3",
-        name: "Interés en Nuevos Cursos",
-        description: "Sondeo sobre posibles nuevos cursos de desarrollo y TI.",
-        responses: 45
-    }
-];
-const events = [
-    {
-        id: "1",
-        name: "Taller de Marketing Digital",
-        date: "2024-08-15",
-        status: "Realizado",
-        attendees: 75
-    },
-    {
-        id: "2",
-        name: "Conferencia de Liderazgo",
-        date: "2024-09-05",
-        status: "Próximo",
-        attendees: 120
-    },
-    {
-        id: "3",
-        name: "Webinar de Nuevas Tecnologías",
-        date: "2024-07-20",
-        status: "Realizado",
-        attendees: 250
-    }
-];
-const certificateTemplates = {
-    '1': 'iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDlWIpAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGSSURBVHhe7dJBDQAgDAAx2NB/yHwM46GE+zs7+8HBAgQIECAwERAgQIAAgYmAAAECEAEDAgECEQEBAgECEQEBAgECBAgQCAmY+wEECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIEAgISDOAwQIECBAICEgzoMECBAgQCAhIM4DBAgQIECAQEBAgAABAq8CgU5q3+UAAAAASUVORK5CYII='
-};
+const campaigns = [];
+const contacts = [];
+const surveys = [];
+const events = [];
+const certificateTemplates = {};
 const managedSenders = [
     {
         name: 'Soporte Técnico',
@@ -587,7 +484,7 @@ function DashboardPage() {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "text-2xl font-bold",
-                                        children: "12"
+                                        children: "0"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/dashboard/page.tsx",
                                         lineNumber: 47,
@@ -595,7 +492,7 @@ function DashboardPage() {
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-xs text-muted-foreground",
-                                        children: "+2 desde el mes pasado"
+                                        children: " "
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/dashboard/page.tsx",
                                         lineNumber: 48,
@@ -643,7 +540,7 @@ function DashboardPage() {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "text-2xl font-bold",
-                                        children: "+180"
+                                        children: "0"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/dashboard/page.tsx",
                                         lineNumber: 59,
@@ -651,7 +548,7 @@ function DashboardPage() {
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-xs text-muted-foreground",
-                                        children: "Total: 1,257 contactos"
+                                        children: "Total: 0 contactos"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/dashboard/page.tsx",
                                         lineNumber: 60,
@@ -699,7 +596,7 @@ function DashboardPage() {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         className: "text-2xl font-bold",
-                                        children: "24.5%"
+                                        children: "0%"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/dashboard/page.tsx",
                                         lineNumber: 73,
@@ -707,7 +604,7 @@ function DashboardPage() {
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-xs text-muted-foreground",
-                                        children: "+1.2% desde la última campaña"
+                                        children: " "
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/(main)/dashboard/page.tsx",
                                         lineNumber: 74,
@@ -812,7 +709,21 @@ function DashboardPage() {
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableBody"], {
-                                            children: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["campaigns"].slice(0, 5).map((campaign)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableRow"], {
+                                            children: __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["campaigns"].length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableRow"], {
+                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableCell"], {
+                                                    colSpan: 4,
+                                                    className: "h-24 text-center",
+                                                    children: "No hay campañas recientes."
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/(main)/dashboard/page.tsx",
+                                                    lineNumber: 104,
+                                                    columnNumber: 25
+                                                }, this)
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/(main)/dashboard/page.tsx",
+                                                lineNumber: 103,
+                                                columnNumber: 21
+                                            }, this) : __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$data$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["campaigns"].slice(0, 5).map((campaign)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableRow"], {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableCell"], {
                                                             children: [
@@ -821,22 +732,22 @@ function DashboardPage() {
                                                                     children: campaign.name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/(main)/dashboard/page.tsx",
-                                                                    lineNumber: 105,
-                                                                    columnNumber: 23
+                                                                    lineNumber: 112,
+                                                                    columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                                     className: "text-sm text-muted-foreground",
                                                                     children: campaign.date
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/app/(main)/dashboard/page.tsx",
-                                                                    lineNumber: 106,
-                                                                    columnNumber: 23
+                                                                    lineNumber: 113,
+                                                                    columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/app/(main)/dashboard/page.tsx",
-                                                            lineNumber: 104,
-                                                            columnNumber: 21
+                                                            lineNumber: 111,
+                                                            columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableCell"], {
                                                             className: "text-center",
@@ -852,35 +763,35 @@ function DashboardPage() {
                                                                 children: campaign.status
                                                             }, void 0, false, {
                                                                 fileName: "[project]/src/app/(main)/dashboard/page.tsx",
-                                                                lineNumber: 109,
-                                                                columnNumber: 24
+                                                                lineNumber: 116,
+                                                                columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/dashboard/page.tsx",
-                                                            lineNumber: 108,
-                                                            columnNumber: 21
+                                                            lineNumber: 115,
+                                                            columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableCell"], {
                                                             className: "text-right font-medium",
                                                             children: campaign.opens
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/dashboard/page.tsx",
-                                                            lineNumber: 122,
-                                                            columnNumber: 21
+                                                            lineNumber: 129,
+                                                            columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$table$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["TableCell"], {
                                                             className: "text-right font-medium",
                                                             children: campaign.clicks
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/app/(main)/dashboard/page.tsx",
-                                                            lineNumber: 123,
-                                                            columnNumber: 21
+                                                            lineNumber: 130,
+                                                            columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, campaign.name, true, {
                                                     fileName: "[project]/src/app/(main)/dashboard/page.tsx",
-                                                    lineNumber: 103,
-                                                    columnNumber: 19
+                                                    lineNumber: 110,
+                                                    columnNumber: 21
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/(main)/dashboard/page.tsx",

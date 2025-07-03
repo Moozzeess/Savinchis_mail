@@ -498,38 +498,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$c
 ;
 ;
 ;
-const chartData = [
-    {
-        month: "Enero",
-        sent: 186,
-        open: 80
-    },
-    {
-        month: "Febrero",
-        sent: 305,
-        open: 200
-    },
-    {
-        month: "Marzo",
-        sent: 237,
-        open: 120
-    },
-    {
-        month: "Abril",
-        sent: 73,
-        open: 190
-    },
-    {
-        month: "Mayo",
-        sent: 209,
-        open: 130
-    },
-    {
-        month: "Junio",
-        sent: 214,
-        open: 140
-    }
-];
+const chartData = [];
 const chartConfig = {
     sent: {
         label: "Enviados",
@@ -549,24 +518,47 @@ function AnalyticsCharts() {
                         children: "Rendimiento de Campañas"
                     }, void 0, false, {
                         fileName: "[project]/src/components/analytics-charts.tsx",
-                        lineNumber: 47,
+                        lineNumber: 40,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
-                        children: "Enero - Junio 2024"
+                        children: "Datos de los últimos 6 meses."
                     }, void 0, false, {
                         fileName: "[project]/src/components/analytics-charts.tsx",
-                        lineNumber: 48,
+                        lineNumber: 41,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/analytics-charts.tsx",
-                lineNumber: 46,
+                lineNumber: 39,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartContainer"], {
+                children: chartData.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex flex-col items-center justify-center min-h-[200px] text-center text-muted-foreground",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            children: "No hay datos para mostrar."
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/analytics-charts.tsx",
+                            lineNumber: 46,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            className: "text-xs",
+                            children: "Envía campañas para ver el rendimiento aquí."
+                        }, void 0, false, {
+                            fileName: "[project]/src/components/analytics-charts.tsx",
+                            lineNumber: 47,
+                            columnNumber: 13
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/src/components/analytics-charts.tsx",
+                    lineNumber: 45,
+                    columnNumber: 11
+                }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartContainer"], {
                     config: chartConfig,
                     className: "min-h-[200px] w-full",
                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$chart$2f$BarChart$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["BarChart"], {
@@ -577,8 +569,8 @@ function AnalyticsCharts() {
                                 vertical: false
                             }, void 0, false, {
                                 fileName: "[project]/src/components/analytics-charts.tsx",
-                                lineNumber: 53,
-                                columnNumber: 13
+                                lineNumber: 52,
+                                columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["XAxis"], {
                                 dataKey: "month",
@@ -588,24 +580,24 @@ function AnalyticsCharts() {
                                 tickFormatter: (value)=>value.slice(0, 3)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/analytics-charts.tsx",
-                                lineNumber: 54,
-                                columnNumber: 13
+                                lineNumber: 53,
+                                columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["YAxis"], {}, void 0, false, {
                                 fileName: "[project]/src/components/analytics-charts.tsx",
-                                lineNumber: 61,
-                                columnNumber: 13
+                                lineNumber: 60,
+                                columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltip"], {
                                 content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltipContent"], {}, void 0, false, {
                                     fileName: "[project]/src/components/analytics-charts.tsx",
-                                    lineNumber: 62,
-                                    columnNumber: 36
+                                    lineNumber: 61,
+                                    columnNumber: 38
                                 }, void 0)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/analytics-charts.tsx",
-                                lineNumber: 62,
-                                columnNumber: 13
+                                lineNumber: 61,
+                                columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Bar"], {
                                 dataKey: "sent",
@@ -613,8 +605,8 @@ function AnalyticsCharts() {
                                 radius: 4
                             }, void 0, false, {
                                 fileName: "[project]/src/components/analytics-charts.tsx",
-                                lineNumber: 63,
-                                columnNumber: 13
+                                lineNumber: 62,
+                                columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Bar"], {
                                 dataKey: "open",
@@ -622,29 +614,29 @@ function AnalyticsCharts() {
                                 radius: 4
                             }, void 0, false, {
                                 fileName: "[project]/src/components/analytics-charts.tsx",
-                                lineNumber: 64,
-                                columnNumber: 13
+                                lineNumber: 63,
+                                columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/analytics-charts.tsx",
-                        lineNumber: 52,
-                        columnNumber: 11
+                        lineNumber: 51,
+                        columnNumber: 13
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/components/analytics-charts.tsx",
-                    lineNumber: 51,
-                    columnNumber: 9
+                    lineNumber: 50,
+                    columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/analytics-charts.tsx",
-                lineNumber: 50,
+                lineNumber: 43,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/analytics-charts.tsx",
-        lineNumber: 45,
+        lineNumber: 38,
         columnNumber: 5
     }, this);
 }
