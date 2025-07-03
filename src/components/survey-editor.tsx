@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useEffect } from 'react';
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -81,6 +82,31 @@ export function SurveyEditor() {
       ],
     },
   });
+
+  useEffect(() => {
+    const importedDataString = sessionStorage.getItem('importedSurveyData');
+    if (importedDataString) {
+      try {
+        const importedData = JSON.parse(importedDataString);
+        // Validate the shape of the imported data before using it
+        const parsedData = surveyFormSchema.safeParse(importedData);
+        if (parsedData.success) {
+          form.reset(parsedData.data);
+          toast({ title: "Datos de la encuesta cargados", description: "Revisa y guarda tu nueva encuesta." });
+        } else {
+            console.error("Imported data does not match schema:", parsedData.error);
+             toast({ title: "Error de datos", description: "Los datos importados no tienen el formato correcto.", variant: "destructive" });
+        }
+      } catch (e) {
+        console.error("Failed to parse imported survey data:", e);
+        toast({ title: "Error de importación", description: "No se pudieron procesar los datos de la encuesta importada.", variant: "destructive" });
+      } finally {
+        // Clean up sessionStorage
+        sessionStorage.removeItem('importedSurveyData');
+      }
+    }
+  }, [form, toast]);
+
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -171,7 +197,13 @@ export function SurveyEditor() {
                       <FormItem>
                         <FormLabel>Tipo de Pregunta</FormLabel>
                         <Select
-                          onValueChange={field.onChange}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            // When changing type, clear options if new type doesn't support them
+                             if (value === 'text' || value === 'textarea') {
+                                form.setValue(`questions.${index}.options`, []);
+                            }
+                          }}
                           defaultValue={field.value}
                         >
                           <FormControl>

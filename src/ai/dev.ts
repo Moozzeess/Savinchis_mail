@@ -8,3 +8,4 @@ import { config } from 'dotenv';
 config();
 
 import '@/ai/flows/optimize-email-content';
+import '@/ai/flows/import-survey-flow';

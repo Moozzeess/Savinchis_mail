@@ -33,7 +33,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 19,
+        lineNumber: 20,
         columnNumber: 3
     }, this));
 _c1 = Card;
@@ -46,7 +46,7 @@ Card.displayName = "Card";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 37,
+        lineNumber: 38,
         columnNumber: 3
     }, this));
 _c3 = CardHeader;
@@ -59,7 +59,7 @@ CardHeader.displayName = "CardHeader";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 52,
+        lineNumber: 53,
         columnNumber: 3
     }, this));
 _c5 = CardTitle;
@@ -72,7 +72,7 @@ CardTitle.displayName = "CardTitle";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 70,
+        lineNumber: 71,
         columnNumber: 3
     }, this));
 _c7 = CardDescription;
@@ -85,7 +85,7 @@ CardDescription.displayName = "CardDescription";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 85,
+        lineNumber: 86,
         columnNumber: 3
     }, this));
 _c9 = CardContent;
@@ -98,7 +98,7 @@ CardContent.displayName = "CardContent";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 96,
+        lineNumber: 97,
         columnNumber: 3
     }, this));
 _c11 = CardFooter;
@@ -154,7 +154,7 @@ const labelVariants = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_m
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/label.tsx",
-        lineNumber: 27,
+        lineNumber: 28,
         columnNumber: 3
     }, this));
 _c1 = Label;
@@ -195,7 +195,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/textarea.tsx",
-        lineNumber: 17,
+        lineNumber: 18,
         columnNumber: 7
     }, this);
 });
@@ -259,12 +259,12 @@ const FormFieldContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$pr
             ...props
         }, void 0, false, {
             fileName: "[project]/src/components/ui/form.tsx",
-            lineNumber: 52,
+            lineNumber: 53,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/ui/form.tsx",
-        lineNumber: 51,
+        lineNumber: 52,
         columnNumber: 5
     }, this);
 };
@@ -311,12 +311,12 @@ const FormItemContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$pro
             ...props
         }, void 0, false, {
             fileName: "[project]/src/components/ui/form.tsx",
-            lineNumber: 102,
+            lineNumber: 103,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/ui/form.tsx",
-        lineNumber: 101,
+        lineNumber: 102,
         columnNumber: 5
     }, this);
 }, "WhsuKpSQZEWeFcB7gWlfDRQktoQ=")), "WhsuKpSQZEWeFcB7gWlfDRQktoQ=");
@@ -334,7 +334,7 @@ FormItem.displayName = "FormItem";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/form.tsx",
-        lineNumber: 118,
+        lineNumber: 119,
         columnNumber: 5
     }, this);
 }, "Z4R+rKjylfAcqmbRnqWEg1TfTcg=", false, function() {
@@ -361,7 +361,7 @@ FormLabel.displayName = "FormLabel";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/form.tsx",
-        lineNumber: 138,
+        lineNumber: 139,
         columnNumber: 5
     }, this);
 }, "mI3rlmONcPPBVtOc6UefMrXAJ6w=", false, function() {
@@ -387,7 +387,7 @@ FormControl.displayName = "FormControl";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/form.tsx",
-        lineNumber: 163,
+        lineNumber: 164,
         columnNumber: 5
     }, this);
 }, "573aRXA8dloSrMaQM9SdAF4A9NI=", false, function() {
@@ -418,7 +418,7 @@ FormDescription.displayName = "FormDescription";
         children: body
     }, void 0, false, {
         fileName: "[project]/src/components/ui/form.tsx",
-        lineNumber: 188,
+        lineNumber: 189,
         columnNumber: 5
     }, this);
 }, "WONNS8VCMr8LShuUovb8QgOmMVY=", false, function() {
@@ -507,18 +507,18 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
                     className: "h-4 w-4 opacity-50"
                 }, void 0, false, {
                     fileName: "[project]/src/components/ui/select.tsx",
-                    lineNumber: 47,
+                    lineNumber: 48,
                     columnNumber: 7
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/select.tsx",
-                lineNumber: 46,
+                lineNumber: 47,
                 columnNumber: 5
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/ui/select.tsx",
-        lineNumber: 37,
+        lineNumber: 38,
         columnNumber: 3
     }, this));
 _c1 = SelectTrigger;
@@ -531,12 +531,12 @@ const SelectScrollUpButton = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5
             className: "h-4 w-4"
         }, void 0, false, {
             fileName: "[project]/src/components/ui/select.tsx",
-            lineNumber: 65,
+            lineNumber: 66,
             columnNumber: 5
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/ui/select.tsx",
-        lineNumber: 57,
+        lineNumber: 58,
         columnNumber: 3
     }, this));
 _c2 = SelectScrollUpButton;
@@ -549,12 +549,12 @@ const SelectScrollDownButton = /*#__PURE__*/ (0, __TURBOPACK__imported__module__
             className: "h-4 w-4"
         }, void 0, false, {
             fileName: "[project]/src/components/ui/select.tsx",
-            lineNumber: 82,
+            lineNumber: 83,
             columnNumber: 5
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/ui/select.tsx",
-        lineNumber: 74,
+        lineNumber: 75,
         columnNumber: 3
     }, this));
 _c3 = SelectScrollDownButton;
@@ -570,7 +570,7 @@ SelectScrollDownButton.displayName = __TURBOPACK__imported__module__$5b$project$
             children: [
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(SelectScrollUpButton, {}, void 0, false, {
                     fileName: "[project]/src/components/ui/select.tsx",
-                    lineNumber: 107,
+                    lineNumber: 108,
                     columnNumber: 7
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$select$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Viewport"], {
@@ -578,23 +578,23 @@ SelectScrollDownButton.displayName = __TURBOPACK__imported__module__$5b$project$
                     children: children
                 }, void 0, false, {
                     fileName: "[project]/src/components/ui/select.tsx",
-                    lineNumber: 108,
+                    lineNumber: 109,
                     columnNumber: 7
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(SelectScrollDownButton, {}, void 0, false, {
                     fileName: "[project]/src/components/ui/select.tsx",
-                    lineNumber: 117,
+                    lineNumber: 118,
                     columnNumber: 7
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/ui/select.tsx",
-            lineNumber: 96,
+            lineNumber: 97,
             columnNumber: 5
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/ui/select.tsx",
-        lineNumber: 95,
+        lineNumber: 96,
         columnNumber: 3
     }, this));
 _c5 = SelectContent;
@@ -607,7 +607,7 @@ SelectContent.displayName = __TURBOPACK__imported__module__$5b$project$5d2f$node
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/select.tsx",
-        lineNumber: 130,
+        lineNumber: 131,
         columnNumber: 3
     }, this));
 _c7 = SelectLabel;
@@ -626,30 +626,30 @@ SelectLabel.displayName = __TURBOPACK__imported__module__$5b$project$5d2f$node_m
                         className: "h-4 w-4"
                     }, void 0, false, {
                         fileName: "[project]/src/components/ui/select.tsx",
-                        lineNumber: 155,
+                        lineNumber: 156,
                         columnNumber: 9
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/src/components/ui/select.tsx",
-                    lineNumber: 154,
+                    lineNumber: 155,
                     columnNumber: 7
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/select.tsx",
-                lineNumber: 153,
+                lineNumber: 154,
                 columnNumber: 5
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$radix$2d$ui$2f$react$2d$select$2f$dist$2f$index$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ItemText"], {
                 children: children
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/select.tsx",
-                lineNumber: 159,
+                lineNumber: 160,
                 columnNumber: 5
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/ui/select.tsx",
-        lineNumber: 145,
+        lineNumber: 146,
         columnNumber: 3
     }, this));
 _c9 = SelectItem;
@@ -662,7 +662,7 @@ SelectItem.displayName = __TURBOPACK__imported__module__$5b$project$5d2f$node_mo
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/select.tsx",
-        lineNumber: 171,
+        lineNumber: 172,
         columnNumber: 3
     }, this));
 _c11 = SelectSeparator;
@@ -791,12 +791,12 @@ function SurveyEditor() {
                                 children: "Detalles de la Encuesta"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/survey-editor.tsx",
-                                lineNumber: 107,
+                                lineNumber: 108,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/survey-editor.tsx",
-                            lineNumber: 106,
+                            lineNumber: 107,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -811,7 +811,7 @@ function SurveyEditor() {
                                                     children: "Título"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                    lineNumber: 115,
+                                                    lineNumber: 116,
                                                     columnNumber: 19
                                                 }, void 0),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -820,28 +820,28 @@ function SurveyEditor() {
                                                         ...field
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/survey-editor.tsx",
-                                                        lineNumber: 117,
+                                                        lineNumber: 118,
                                                         columnNumber: 21
                                                     }, void 0)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                    lineNumber: 116,
+                                                    lineNumber: 117,
                                                     columnNumber: 19
                                                 }, void 0),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                    lineNumber: 119,
+                                                    lineNumber: 120,
                                                     columnNumber: 19
                                                 }, void 0)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/survey-editor.tsx",
-                                            lineNumber: 114,
+                                            lineNumber: 115,
                                             columnNumber: 17
                                         }, void 0)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                    lineNumber: 110,
+                                    lineNumber: 111,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -853,7 +853,7 @@ function SurveyEditor() {
                                                     children: "Descripción"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                    lineNumber: 128,
+                                                    lineNumber: 129,
                                                     columnNumber: 19
                                                 }, void 0),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -862,40 +862,40 @@ function SurveyEditor() {
                                                         ...field
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/survey-editor.tsx",
-                                                        lineNumber: 130,
+                                                        lineNumber: 131,
                                                         columnNumber: 21
                                                     }, void 0)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                    lineNumber: 129,
+                                                    lineNumber: 130,
                                                     columnNumber: 19
                                                 }, void 0),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                    lineNumber: 135,
+                                                    lineNumber: 136,
                                                     columnNumber: 19
                                                 }, void 0)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/survey-editor.tsx",
-                                            lineNumber: 127,
+                                            lineNumber: 128,
                                             columnNumber: 17
                                         }, void 0)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                    lineNumber: 123,
+                                    lineNumber: 124,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/survey-editor.tsx",
-                            lineNumber: 109,
+                            lineNumber: 110,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/survey-editor.tsx",
-                    lineNumber: 105,
+                    lineNumber: 106,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -906,20 +906,20 @@ function SurveyEditor() {
                                     children: "Preguntas"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                    lineNumber: 144,
+                                    lineNumber: 145,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
                                     children: "Añade y configura las preguntas para tu encuesta."
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                    lineNumber: 145,
+                                    lineNumber: 146,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/survey-editor.tsx",
-                            lineNumber: 143,
+                            lineNumber: 144,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -942,7 +942,7 @@ function SurveyEditor() {
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                                    lineNumber: 158,
+                                                                    lineNumber: 159,
                                                                     columnNumber: 25
                                                                 }, void 0),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -951,28 +951,28 @@ function SurveyEditor() {
                                                                         ...field
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/src/components/survey-editor.tsx",
-                                                                        lineNumber: 160,
+                                                                        lineNumber: 161,
                                                                         columnNumber: 27
                                                                     }, void 0)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                                    lineNumber: 159,
+                                                                    lineNumber: 160,
                                                                     columnNumber: 25
                                                                 }, void 0),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                                    lineNumber: 162,
+                                                                    lineNumber: 163,
                                                                     columnNumber: 25
                                                                 }, void 0)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/survey-editor.tsx",
-                                                            lineNumber: 157,
+                                                            lineNumber: 158,
                                                             columnNumber: 23
                                                         }, void 0)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                    lineNumber: 153,
+                                                    lineNumber: 154,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$hook$2d$form$2f$dist$2f$index$2e$esm$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Controller"], {
@@ -984,7 +984,7 @@ function SurveyEditor() {
                                                                     children: "Tipo de Pregunta"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                                    lineNumber: 171,
+                                                                    lineNumber: 172,
                                                                     columnNumber: 25
                                                                 }, void 0),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Select"], {
@@ -997,17 +997,17 @@ function SurveyEditor() {
                                                                                     placeholder: "Selecciona un tipo"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                                                    lineNumber: 178,
+                                                                                    lineNumber: 179,
                                                                                     columnNumber: 31
                                                                                 }, void 0)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/src/components/survey-editor.tsx",
-                                                                                lineNumber: 177,
+                                                                                lineNumber: 178,
                                                                                 columnNumber: 29
                                                                             }, void 0)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/src/components/survey-editor.tsx",
-                                                                            lineNumber: 176,
+                                                                            lineNumber: 177,
                                                                             columnNumber: 27
                                                                         }, void 0),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectContent"], {
@@ -1017,7 +1017,7 @@ function SurveyEditor() {
                                                                                     children: "Respuesta corta"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                                                    lineNumber: 182,
+                                                                                    lineNumber: 183,
                                                                                     columnNumber: 29
                                                                                 }, void 0),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -1025,7 +1025,7 @@ function SurveyEditor() {
                                                                                     children: "Párrafo"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                                                    lineNumber: 183,
+                                                                                    lineNumber: 184,
                                                                                     columnNumber: 29
                                                                                 }, void 0),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -1033,7 +1033,7 @@ function SurveyEditor() {
                                                                                     children: "Opción múltiple"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                                                    lineNumber: 184,
+                                                                                    lineNumber: 185,
                                                                                     columnNumber: 29
                                                                                 }, void 0),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$select$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["SelectItem"], {
@@ -1041,35 +1041,35 @@ function SurveyEditor() {
                                                                                     children: "Casillas de verificación"
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                                                    lineNumber: 185,
+                                                                                    lineNumber: 186,
                                                                                     columnNumber: 29
                                                                                 }, void 0)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/src/components/survey-editor.tsx",
-                                                                            lineNumber: 181,
+                                                                            lineNumber: 182,
                                                                             columnNumber: 27
                                                                         }, void 0)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                                    lineNumber: 172,
+                                                                    lineNumber: 173,
                                                                     columnNumber: 25
                                                                 }, void 0),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                                    lineNumber: 188,
+                                                                    lineNumber: 189,
                                                                     columnNumber: 25
                                                                 }, void 0)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/survey-editor.tsx",
-                                                            lineNumber: 170,
+                                                            lineNumber: 171,
                                                             columnNumber: 23
                                                         }, void 0)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                    lineNumber: 166,
+                                                    lineNumber: 167,
                                                     columnNumber: 19
                                                 }, this),
                                                 (form.watch(`questions.${index}.type`) === "multiple-choice" || form.watch(`questions.${index}.type`) === "checkboxes") && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(OptionsArray, {
@@ -1077,7 +1077,7 @@ function SurveyEditor() {
                                                     nestIndex: index
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                    lineNumber: 195,
+                                                    lineNumber: 196,
                                                     columnNumber: 21
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1090,23 +1090,23 @@ function SurveyEditor() {
                                                         className: "h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/survey-editor.tsx",
-                                                        lineNumber: 205,
+                                                        lineNumber: 206,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                                    lineNumber: 198,
+                                                    lineNumber: 199,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/survey-editor.tsx",
-                                            lineNumber: 152,
+                                            lineNumber: 153,
                                             columnNumber: 17
                                         }, this)
                                     }, field.id, false, {
                                         fileName: "[project]/src/components/survey-editor.tsx",
-                                        lineNumber: 151,
+                                        lineNumber: 152,
                                         columnNumber: 15
                                     }, this)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1120,19 +1120,19 @@ function SurveyEditor() {
                                     children: "Añadir Pregunta"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                    lineNumber: 210,
+                                    lineNumber: 211,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/survey-editor.tsx",
-                            lineNumber: 149,
+                            lineNumber: 150,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/survey-editor.tsx",
-                    lineNumber: 142,
+                    lineNumber: 143,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1140,18 +1140,18 @@ function SurveyEditor() {
                     children: "Guardar Encuesta"
                 }, void 0, false, {
                     fileName: "[project]/src/components/survey-editor.tsx",
-                    lineNumber: 220,
+                    lineNumber: 221,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/survey-editor.tsx",
-            lineNumber: 104,
+            lineNumber: 105,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/survey-editor.tsx",
-        lineNumber: 103,
+        lineNumber: 104,
         columnNumber: 5
     }, this);
 }
@@ -1181,7 +1181,7 @@ _c = SurveyEditor;
                 children: "Opciones"
             }, void 0, false, {
                 fileName: "[project]/src/components/survey-editor.tsx",
-                lineNumber: 240,
+                lineNumber: 241,
                 columnNumber: 7
             }, this),
             fields.map((item, k)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1199,28 +1199,28 @@ _c = SurveyEditor;
                                                 placeholder: `Opción ${k + 1}`
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/survey-editor.tsx",
-                                                lineNumber: 249,
+                                                lineNumber: 250,
                                                 columnNumber: 19
                                             }, void 0)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/survey-editor.tsx",
-                                            lineNumber: 248,
+                                            lineNumber: 249,
                                             columnNumber: 17
                                         }, void 0),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                             fileName: "[project]/src/components/survey-editor.tsx",
-                                            lineNumber: 251,
+                                            lineNumber: 252,
                                             columnNumber: 17
                                         }, void 0)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/survey-editor.tsx",
-                                    lineNumber: 247,
+                                    lineNumber: 248,
                                     columnNumber: 15
                                 }, void 0)
                         }, void 0, false, {
                             fileName: "[project]/src/components/survey-editor.tsx",
-                            lineNumber: 243,
+                            lineNumber: 244,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1232,18 +1232,18 @@ _c = SurveyEditor;
                                 className: "h-4 w-4"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/survey-editor.tsx",
-                                lineNumber: 261,
+                                lineNumber: 262,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/survey-editor.tsx",
-                            lineNumber: 255,
+                            lineNumber: 256,
                             columnNumber: 11
                         }, this)
                     ]
                 }, item.id, true, {
                     fileName: "[project]/src/components/survey-editor.tsx",
-                    lineNumber: 242,
+                    lineNumber: 243,
                     columnNumber: 9
                 }, this)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1258,20 +1258,20 @@ _c = SurveyEditor;
                         className: "mr-2 h-4 w-4"
                     }, void 0, false, {
                         fileName: "[project]/src/components/survey-editor.tsx",
-                        lineNumber: 271,
+                        lineNumber: 272,
                         columnNumber: 9
                     }, this),
                     "Añadir Opción"
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/survey-editor.tsx",
-                lineNumber: 265,
+                lineNumber: 266,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/survey-editor.tsx",
-        lineNumber: 239,
+        lineNumber: 240,
         columnNumber: 5
     }, this);
 }
