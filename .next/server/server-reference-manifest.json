@@ -101,6 +101,17 @@
       "layer": {
         "app/(main)/mailbox/page": "rsc"
       }
+    },
+    "40543ab948698f4b314a0457131817e58d3e8e1622": {
+      "workers": {
+        "app/(main)/surveys/page": {
+          "moduleId": "[project]/.next-internal/server/app/(main)/surveys/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/survey-actions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/(main)/surveys/page": "action-browser"
+      }
     }
   },
   "edge": {},
