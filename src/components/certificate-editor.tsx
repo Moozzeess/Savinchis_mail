@@ -109,7 +109,7 @@ export function CertificateEditor() {
   };
 
   /**
-   * Gestiona la descarga del certificado como una imagen PNG.
+   * Gestiona la descarga del certificado como un archivo PDF.
    * Utiliza html-to-image para convertir el DOM en una imagen y la descarga.
    */
   const handleDownload = () => {
@@ -128,7 +128,7 @@ export function CertificateEditor() {
         const pdf = new jsPDF({
           orientation: 'landscape',
           unit: 'px',
-          // Use element's dimensions for PDF size to match aspect ratio
+          // Usar las dimensiones del elemento para el tamaño del PDF y así mantener la relación de aspecto
           format: [element.offsetWidth, element.offsetHeight],
         });
         const pdfWidth = pdf.internal.pageSize.getWidth();

@@ -250,11 +250,11 @@ export function TemplateEditorClient({ template }: { template: Template | null }
 
             <main className="bg-[radial-gradient(hsl(var(--border))_0.5px,transparent_0.5px)] [background-size:16px_16px] p-4 sm:p-8 rounded-lg min-h-[500px]">
               <div className="flex justify-center mb-4">
-                  <div className="flex items-center gap-1 rounded-md bg-muted p-1">
-                      <Button variant={previewMode === 'desktop' ? 'secondary' : 'ghost'} size="icon" className="h-8 w-8 rounded-none" onClick={() => setPreviewMode('desktop')} aria-label="Vista de escritorio">
+                  <div className="flex items-center gap-1 bg-muted p-1">
+                      <Button variant={previewMode === 'desktop' ? 'secondary' : 'ghost'} size="icon" className="h-8 w-8" onClick={() => setPreviewMode('desktop')} aria-label="Vista de escritorio">
                           <Computer className="h-4 w-4" />
                       </Button>
-                      <Button variant={previewMode === 'mobile' ? 'secondary' : 'ghost'} size="icon" className="h-8 w-8 rounded-none" onClick={() => setPreviewMode('mobile')} aria-label="Vista móvil">
+                      <Button variant={previewMode === 'mobile' ? 'secondary' : 'ghost'} size="icon" className="h-8 w-8" onClick={() => setPreviewMode('mobile')} aria-label="Vista móvil">
                           <Smartphone className="h-4 w-4" />
                       </Button>
                   </div>

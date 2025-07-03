@@ -11,15 +11,15 @@ import { useToast } from "@/hooks/use-toast";
 import { CertificateEditor } from '@/components/certificate-editor';
 
 /**
- * Componente cliente para el editor de eventos y certificados.
+ * Componente de cliente para el editor de eventos y certificados.
  * Permite definir los detalles del evento y personalizar la plantilla del certificado.
  */
 export function EventEditor() {
   const { toast } = useToast();
 
   const handleSaveEvent = () => {
-    // Here you would normally gather all the data and send to a server action.
-    // For now, we'll just show a toast.
+    // Aquí normalmente reunirías todos los datos y los enviarías a una acción de servidor.
+    // Por ahora, solo mostraremos una notificación.
     toast({
       title: "Evento Guardado",
       description: "La configuración del evento y el certificado se ha guardado.",
