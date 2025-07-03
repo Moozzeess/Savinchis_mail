@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useForm, useFieldArray, useWatch } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormLabel } from '@/components/ui/form';
 import {
   Pilcrow, ImageIcon, MousePointerClick, Minus, GripVertical, Code,
-  Loader2, Trash2, StretchVertical, Upload
+  Loader2, Trash2, StretchVertical, Upload, Computer, Smartphone, ScreenShare
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from 'react-beautiful-dnd';
 import { nanoid } from 'nanoid';
@@ -57,7 +57,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
     },
   });
 
-  const { fields, move, insert, remove } = useFieldArray({
+  const { fields, move, append, remove } = useFieldArray({
     control: form.control,
     name: 'blocks',
   });
@@ -68,7 +68,6 @@ export function TemplateEditorClient({ template }: { template: Template | null }
     if (!selectedBlockId) return -1;
     return fields.findIndex(field => field.id === selectedBlockId);
   }, [selectedBlockId, fields]);
-
 
   useEffect(() => {
     setIsMounted(true);
@@ -117,31 +116,27 @@ export function TemplateEditorClient({ template }: { template: Template | null }
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
-    if (!destination) return;
-
-    // Handle dropping from palette to canvas
-    if (source.droppableId === 'palette' && destination.droppableId === 'canvas') {
-      const blockType = PALETTE_BLOCKS[source.index].id;
-      const contentSchema = blockSchema.options.find(o => o.shape.type.value === blockType)?.shape.content;
-      const defaultContent = contentSchema ? contentSchema.parse({}) : {};
-
-      const newBlock: Block = {
-        id: nanoid(),
-        type: blockType,
-        content: defaultContent as any,
-      };
-
-      insert(destination.index, newBlock);
-      setSelectedBlockId(newBlock.id); // Select the new block
+    if (!destination || source.droppableId !== 'canvas' || destination.droppableId !== 'canvas') {
       return;
     }
-
-    // Handle reordering within the canvas
-    if (source.droppableId === 'canvas' && destination.droppableId === 'canvas') {
-      if (source.index !== destination.index) {
-        move(source.index, destination.index);
-      }
+    if (source.index !== destination.index) {
+      move(source.index, destination.index);
     }
+  };
+
+  const addBlock = (blockType: Block['type']) => {
+    const contentSchema = blockSchema.options.find(o => o.shape.type.value === blockType)?.shape.content;
+    const defaultContent = contentSchema ? contentSchema.parse({}) : {};
+
+    const newBlock: Block = {
+      id: nanoid(),
+      type: blockType,
+      content: defaultContent as any,
+      visibility: { device: 'all' } // Default visibility
+    };
+
+    append(newBlock);
+    setSelectedBlockId(newBlock.id);
   };
 
   const handleHtmlFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,7 +153,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
     } else {
       toast({ title: 'Archivo no válido', description: 'Por favor, selecciona un archivo .html', variant: 'destructive' });
     }
-    e.target.value = ''; // Reset file input
+    e.target.value = '';
   };
   
   const BlockPreview = ({ block }: { block: Block }) => {
@@ -180,7 +175,6 @@ export function TemplateEditorClient({ template }: { template: Template | null }
     );
 };
 
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex h-full w-full bg-muted/40 text-foreground">
@@ -190,34 +184,21 @@ export function TemplateEditorClient({ template }: { template: Template | null }
               <header className="p-4 border-b h-16 flex items-center">
                  <h2 className="text-lg font-semibold font-headline">Bloques</h2>
               </header>
-              <Droppable droppableId="palette" isDropDisabled={true}>
-                {(provided) => (
-                    <ScrollArea
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className="flex-grow"
-                    >
-                        <div className="p-4 grid grid-cols-2 gap-2">
-                        {PALETTE_BLOCKS.map((block, index) => (
-                            <Draggable key={block.id} draggableId={block.id} index={index}>
-                                {(provided) => (
-                                    <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        className="flex flex-col items-center justify-center p-4 border rounded-lg bg-card hover:bg-accent hover:text-accent-foreground cursor-grab transition-colors"
-                                    >
-                                    <block.icon className="h-6 w-6 mb-2" />
-                                    <span className="text-xs font-medium">{block.label}</span>
-                                    </div>
-                                )}
-                            </Draggable>
-                        ))}
-                        {provided.placeholder}
-                        </div>
-                    </ScrollArea>
-                )}
-              </Droppable>
+              <ScrollArea className="flex-grow">
+                  <div className="p-4 grid grid-cols-2 gap-2">
+                  {PALETTE_BLOCKS.map((block) => (
+                      <button
+                          key={block.id}
+                          type="button"
+                          onClick={() => addBlock(block.id)}
+                          className="flex flex-col items-center justify-center p-4 border rounded-lg bg-card hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors"
+                      >
+                          <block.icon className="h-6 w-6 mb-2" />
+                          <span className="text-xs font-medium">{block.label}</span>
+                      </button>
+                  ))}
+                  </div>
+              </ScrollArea>
             </aside>
 
             <div className="flex-1 flex flex-col">
@@ -353,6 +334,34 @@ export function TemplateEditorClient({ template }: { template: Template | null }
                                 default: return null;
                             }
                         })()}
+                        
+                        <div className="space-y-4 border-t pt-4">
+                            <h3 className="font-semibold text-base">Visibilidad del contenido</h3>
+                            <p className="text-sm text-muted-foreground">Muestra u oculta este bloque en función del tipo de dispositivo.</p>
+                            
+                            <FormField
+                                control={form.control}
+                                name={`blocks.${selectedBlockIndex}.visibility.device`}
+                                render={({ field }) => (
+                                    <FormItem className="space-y-3">
+                                        <FormLabel>Mostrar en:</FormLabel>
+                                        <FormControl>
+                                            <div className="flex flex-wrap gap-2">
+                                                <Button type="button" variant={field.value === 'all' ? 'secondary' : 'outline'} size="sm" onClick={() => field.onChange('all')} className="flex-1">
+                                                    <ScreenShare className="mr-2 h-4 w-4" /> Todos
+                                                </Button>
+                                                <Button type="button" variant={field.value === 'desktop' ? 'secondary' : 'outline'} size="sm" onClick={() => field.onChange('desktop')} className="flex-1">
+                                                    <Computer className="mr-2 h-4 w-4" /> Escritorio
+                                                </Button>
+                                                <Button type="button" variant={field.value === 'mobile' ? 'secondary' : 'outline'} size="sm" onClick={() => field.onChange('mobile')} className="flex-1">
+                                                    <Smartphone className="mr-2 h-4 w-4" /> Móvil
+                                                </Button>
+                                            </div>
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                     </div>
                 </ScrollArea>
                 </>
