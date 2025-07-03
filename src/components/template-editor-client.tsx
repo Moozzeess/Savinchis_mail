@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormLabel } from '@/components/ui/form';
 import {
   Pilcrow, ImageIcon, MousePointerClick, Minus, GripVertical, Code,
-  Loader2, Trash2, StretchVertical, Upload, Computer, Smartphone, ScreenShare
+  Loader2, Trash2, StretchVertical, Upload, Computer, Smartphone
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, type DropResult } from 'react-beautiful-dnd';
 import { nanoid } from 'nanoid';
@@ -101,6 +101,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
   const [isMounted, setIsMounted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -186,7 +187,6 @@ export function TemplateEditorClient({ template }: { template: Template | null }
       id: nanoid(),
       type: blockType,
       content: defaultContent as any,
-      visibility: { device: 'all' }
     };
 
     append(newBlock);
@@ -249,11 +249,29 @@ export function TemplateEditorClient({ template }: { template: Template | null }
             </aside>
 
             <main className="bg-[radial-gradient(hsl(var(--border))_0.5px,transparent_0.5px)] [background-size:16px_16px] p-4 sm:p-8 rounded-lg min-h-[500px]">
+              <div className="flex justify-center mb-4">
+                  <div className="flex items-center gap-1 rounded-md bg-muted p-1">
+                      <Button variant={previewMode === 'desktop' ? 'secondary' : 'ghost'} size="icon" className="h-8 w-8 rounded-none" onClick={() => setPreviewMode('desktop')} aria-label="Vista de escritorio">
+                          <Computer className="h-4 w-4" />
+                      </Button>
+                      <Button variant={previewMode === 'mobile' ? 'secondary' : 'ghost'} size="icon" className="h-8 w-8 rounded-none" onClick={() => setPreviewMode('mobile')} aria-label="Vista móvil">
+                          <Smartphone className="h-4 w-4" />
+                      </Button>
+                  </div>
+              </div>
+
               {isMounted && (
                 <DragDropContext onDragEnd={onDragEnd}>
                     <Droppable droppableId="canvas">
                         {(provided) => (
-                            <div ref={provided.innerRef} {...provided.droppableProps} className="max-w-2xl mx-auto w-full bg-background shadow-lg rounded-lg">
+                            <div 
+                              ref={provided.innerRef} 
+                              {...provided.droppableProps} 
+                              className={cn(
+                                "mx-auto bg-background shadow-lg transition-all duration-300 ease-in-out",
+                                previewMode === 'desktop' ? "w-full max-w-2xl" : "w-[375px]"
+                              )}
+                            >
                                 {fields.length === 0 && (
                                     <div className="text-center text-muted-foreground p-12">
                                         <p>Añade bloques desde el panel de la izquierda para empezar.</p>
@@ -358,34 +376,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
                           default: return null;
                       }
                   })()}
-                  
-                  <div className="space-y-4 border-t pt-4">
-                      <h3 className="font-semibold text-base">Visibilidad del contenido</h3>
-                      <p className="text-sm text-muted-foreground">Muestra u oculta este bloque en función del tipo de dispositivo.</p>
-                      
-                      <FormField
-                          control={form.control}
-                          name={`blocks.${selectedBlockIndex}.visibility.device`}
-                          render={({ field }) => (
-                              <FormItem className="space-y-3">
-                                  <FormLabel>Mostrar en:</FormLabel>
-                                  <FormControl>
-                                      <div className="flex flex-wrap gap-2">
-                                          <Button type="button" variant={field.value === 'all' ? 'secondary' : 'outline'} size="sm" onClick={() => field.onChange('all')} className="flex-1">
-                                              <ScreenShare className="mr-2 h-4 w-4" /> Todos
-                                          </Button>
-                                          <Button type="button" variant={field.value === 'desktop' ? 'secondary' : 'outline'} size="sm" onClick={() => field.onChange('desktop')} className="flex-1">
-                                              <Computer className="mr-2 h-4 w-4" /> Escritorio
-                                          </Button>
-                                          <Button type="button" variant={field.value === 'mobile' ? 'secondary' : 'outline'} size="sm" onClick={() => field.onChange('mobile')} className="flex-1">
-                                              <Smartphone className="mr-2 h-4 w-4" /> Móvil
-                                          </Button>
-                                      </div>
-                                  </FormControl>
-                              </FormItem>
-                          )}
-                      />
-                  </div>
+
                 </div>
                 </ScrollArea>
               ) : (
