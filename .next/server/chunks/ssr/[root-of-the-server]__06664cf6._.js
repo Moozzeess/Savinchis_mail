@@ -493,7 +493,6 @@ __turbopack_context__.s({
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/zod/lib/index.mjs [app-rsc] (ecmascript)");
 ;
-// Schema definitions
 const textBlockSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].object({
     text: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string().default('Escribe tu texto aquí...'),
     color: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string().default('#000000'),
@@ -617,7 +616,10 @@ function generateHtmlFromBlocks(blocks) {
     return `
     <!DOCTYPE html>
     <html>
-    <head><title>${'Email Preview'}</title><meta charset="UTF-8"></head>
+    <head>
+        <title>Email Preview</title>
+        <meta charset="UTF-8">
+    </head>
     <body style="margin: 0; padding: 0; background-color: #f4f4f4;">
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
         <tr>
