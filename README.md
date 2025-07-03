@@ -1,3 +1,4 @@
+
 # EmailCraft Lite
 
 EmailCraft Lite es una potente plataforma de marketing por correo electrónico de código abierto, construida con Next.js. Está diseñada para ayudarte a gestionar, enviar y analizar campañas de correo de manera eficiente, con características como un editor visual de plantillas, control de acceso basado en roles y análisis detallado del rendimiento.
@@ -23,83 +24,101 @@ EmailCraft Lite es una potente plataforma de marketing por correo electrónico d
 -   **Base de Datos**: [MySQL](https://www.mysql.com/)
 -   **Envío de Correos**: [Microsoft Graph API](https://developer.microsoft.com/en-us/graph)
 
-## Cómo Empezar
+## Cómo Empezar: Guía de Instalación Local
 
-Sigue estas instrucciones para poner en marcha el proyecto en tu máquina local.
+Sigue estos pasos para configurar y ejecutar el proyecto en tu computadora.
 
-### Prerrequisitos
+### 1. Prerrequisitos
 
--   [Node.js](https://nodejs.org/) (versión 18 o superior).
--   Un servidor [MySQL](https://www.mysql.com/) en ejecución.
+Antes de comenzar, asegúrate de tener instalado lo siguiente:
 
-### 1. Instalación del Proyecto
+-   **Node.js**: Versión 18 o superior.
+-   **MySQL**: Un servidor de base de datos MySQL debe estar en ejecución.
 
-Primero, clona el repositorio del proyecto en tu máquina local y navega hasta el directorio recién creado.
+### 2. Clona el Repositorio
+
+Abre tu terminal, navega al directorio donde deseas guardar el proyecto y clona el repositorio.
 
 ```bash
 # Reemplaza <URL_DEL_REPOSITORIO> con la URL de tu repositorio Git
 git clone <URL_DEL_REPOSITORIO>
+
+# Navega al directorio del proyecto
 cd emailcraft-lite
 ```
 
-A continuación, instala todas las dependencias del proyecto utilizando `npm`.
+### 3. Instala las Dependencias
+
+Una vez dentro del directorio del proyecto, instala todas las dependencias necesarias usando `npm`.
 
 ```bash
 npm install
 ```
 
-### 2. Configuración de Variables de Entorno
+### 4. Configura las Variables de Entorno
 
-Para que la aplicación funcione correctamente, necesita credenciales para conectarse a la base de datos y al servicio de envío de correos.
+La aplicación necesita credenciales para funcionar. Crea un archivo para almacenarlas de forma segura.
 
-1.  Crea un archivo llamado `.env` en el directorio raíz del proyecto.
-2.  Copia y pega el siguiente contenido en el archivo `.env`, reemplazando los valores de ejemplo con tus credenciales reales.
+1.  En la raíz del proyecto, crea un nuevo archivo llamado `.env`.
+2.  Copia y pega el siguiente contenido en el archivo `.env`.
+3.  **Reemplaza los valores de ejemplo** con tus credenciales reales.
 
-    ```env
-    # --- Base de Datos MySQL ---
-    # El host donde se ejecuta tu servidor MySQL (normalmente localhost)
-    MYSQL_HOST=localhost
-    # El puerto de tu servidor MySQL (el predeterminado es 3306)
-    MYSQL_PORT=3306
-    # El nombre de usuario para acceder a la base de datos
-    MYSQL_USER=root
-    # La contraseña para el usuario de la base de datos
-    MYSQL_PASSWORD=tu_contraseña_secreta
-    # El nombre de la base de datos que usará la aplicación
-    MYSQL_DATABASE=emailcraft_db
+```env
+# --- Base de Datos MySQL ---
+# El host donde se ejecuta tu servidor MySQL (normalmente localhost)
+MYSQL_HOST=localhost
+# El puerto de tu servidor MySQL (el predeterminado es 3306)
+MYSQL_PORT=3306
+# El nombre de usuario para acceder a la base de datos
+MYSQL_USER=root
+# La contraseña para el usuario de la base de datos
+MYSQL_PASSWORD=tu_contraseña_secreta
+# El nombre de la base de datos que usará la aplicación
+MYSQL_DATABASE=emailcraft_db
 
-    # --- API de Microsoft Graph (para enviar correos) ---
-    # El ID de Cliente (Aplicación) de tu registro de aplicación en Azure AD
-    GRAPH_CLIENT_ID=tu_client_id
-    # El ID de Inquilino (Directorio) de tu Azure AD
-    GRAPH_TENANT_ID=tu_tenant_id
-    # El secreto de cliente generado para tu aplicación en Azure AD
-    GRAPH_CLIENT_SECRET=tu_client_secret
-    # La cuenta de correo desde la cual se enviarán los correos
-    GRAPH_USER_MAIL=correo_remitente@tu_dominio.com
+# --- API de Microsoft Graph (para enviar correos) ---
+# El ID de Cliente (Aplicación) de tu registro de aplicación en Azure AD
+GRAPH_CLIENT_ID=tu_client_id
+# El ID de Inquilino (Directorio) de tu Azure AD
+GRAPH_TENANT_ID=tu_tenant_id
+# El secreto de cliente generado para tu aplicación en Azure AD
+GRAPH_CLIENT_SECRET=tu_client_secret
+# La cuenta de correo desde la cual se enviarán los correos
+GRAPH_USER_MAIL=correo_remitente@tu_dominio.com
+```
+
+### 5. Configura la Base de Datos
+
+Ahora, vamos a preparar la base de datos para que la aplicación pueda conectarse y almacenar datos.
+
+1.  **Asegúrate de que tu servidor MySQL esté en ejecución.**
+2.  **Crea la base de datos.** Puedes usar un cliente de MySQL o la línea de comandos. El nombre debe coincidir con el que pusiste en `MYSQL_DATABASE`.
+
+    ```sql
+    CREATE DATABASE emailcraft_db;
     ```
-
-### 3. Configuración de la Base de Datos
-
-1.  Asegúrate de que tu servidor MySQL esté en funcionamiento.
-2.  Crea una base de datos con el nombre que especificaste en `MYSQL_DATABASE` (por ejemplo, `emailcraft_db`).
-3.  Ejecuta el script de inicialización `sql/init.sql` para crear las tablas necesarias y cargar datos de ejemplo.
+3.  **Ejecuta el script de inicialización.** Este comando creará las tablas necesarias y cargará datos de ejemplo. Ejecútalo desde la raíz de tu proyecto.
 
     ```bash
-    # Reemplaza [usuario] y [nombre_basedatos] con tus credenciales.
     # Te pedirá la contraseña que especificaste en MYSQL_PASSWORD.
     mysql -u [usuario] -p [nombre_basedatos] < sql/init.sql
     ```
-    *Ejemplo:* `mysql -u root -p emailcraft_db < sql/init.sql`
+    -   `[usuario]`: Reemplázalo con el valor de tu `MYSQL_USER`.
+    -   `[nombre_basedatos]`: Reemplázalo con el valor de tu `MYSQL_DATABASE`.
 
-### 4. Ejecución de la Aplicación
+    *Ejemplo de comando:*
+    ```bash
+    mysql -u root -p emailcraft_db < sql/init.sql
+    ```
 
-Una vez que hayas configurado las variables de entorno y la base de datos, puedes iniciar el servidor de desarrollo de Next.js.
+### 6. Ejecuta la Aplicación
+
+¡Ya casi terminamos! Inicia el servidor de desarrollo de Next.js.
 
 ```bash
 npm run dev
 ```
 
-Este comando iniciará la aplicación en modo de desarrollo con `turbopack` para un rendimiento óptimo.
+Este comando iniciará la aplicación en modo de desarrollo.
 
-¡Y eso es todo! Abre [http://localhost:9002](http://localhost:9002) en tu navegador para ver la aplicación en funcionamiento.
+**¡Y eso es todo!** Abre [http://localhost:9002](http://localhost:9002) en tu navegador para ver la aplicación en funcionamiento.
