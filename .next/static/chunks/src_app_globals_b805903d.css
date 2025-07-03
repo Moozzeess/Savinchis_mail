@@ -483,6 +483,10 @@ body {
   z-index: 100;
 }
 
+.-m-6 {
+  margin: -1.5rem;
+}
+
 .-mx-1 {
   margin-left: -.25rem;
   margin-right: -.25rem;

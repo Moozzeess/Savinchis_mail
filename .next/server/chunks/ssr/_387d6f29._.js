@@ -404,16 +404,13 @@ var { g: global, __dirname } = __turbopack_context__;
  * @fileOverview Datos de prueba para la aplicación.
  * Este archivo contiene datos de ejemplo para campañas y contactos,
  * utilizados para poblar la interfaz de usuario hasta que se conecte una base de datos real.
- */ /**
- * Datos de ejemplo para las campañas de correo electrónico.
  */ __turbopack_context__.s({
     "campaigns": (()=>campaigns),
     "certificateTemplates": (()=>certificateTemplates),
     "contacts": (()=>contacts),
     "events": (()=>events),
     "managedSenders": (()=>managedSenders),
-    "surveys": (()=>surveys),
-    "templates": (()=>templates)
+    "surveys": (()=>surveys)
 });
 const campaigns = [
     {
@@ -455,29 +452,6 @@ const campaigns = [
         opens: "50%",
         clicks: "20%",
         date: "2024-06-15"
-    }
-];
-const templates = [
-    {
-        id: "1",
-        name: "Newsletter Mensual",
-        description: "Plantilla estándar para el boletín informativo de cada mes.",
-        image: "https://placehold.co/600x400.png",
-        aiHint: "abstract pattern"
-    },
-    {
-        id: "2",
-        name: "Anuncio de Producto",
-        description: "Plantilla para anunciar nuevos productos o características.",
-        image: "https://placehold.co/600x400.png",
-        aiHint: "product launch"
-    },
-    {
-        id: "3",
-        name: "Oferta Especial",
-        description: "Diseño llamativo para promociones y descuentos.",
-        image: "https://placehold.co/600x400.png",
-        aiHint: "special offer"
     }
 ];
 const contacts = [

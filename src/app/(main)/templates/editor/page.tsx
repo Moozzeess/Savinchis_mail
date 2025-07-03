@@ -17,6 +17,10 @@ export default async function TemplateEditorPage({ searchParams }: { searchParam
     templateData = await getTemplateAction(templateId);
   }
 
-  // El componente cliente ahora maneja el diseño de pantalla completa y los datos iniciales.
-  return <TemplateEditorClient template={templateData} />;
+  // Envuelve el editor para que ocupe toda la altura y anule el padding del layout principal
+  return (
+    <div className="-m-6 h-full">
+      <TemplateEditorClient template={templateData} />
+    </div>
+  );
 }

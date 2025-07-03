@@ -33,7 +33,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 19,
+        lineNumber: 20,
         columnNumber: 3
     }, this));
 _c1 = Card;
@@ -46,7 +46,7 @@ Card.displayName = "Card";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 37,
+        lineNumber: 38,
         columnNumber: 3
     }, this));
 _c3 = CardHeader;
@@ -59,7 +59,7 @@ CardHeader.displayName = "CardHeader";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 52,
+        lineNumber: 53,
         columnNumber: 3
     }, this));
 _c5 = CardTitle;
@@ -72,7 +72,7 @@ CardTitle.displayName = "CardTitle";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 70,
+        lineNumber: 71,
         columnNumber: 3
     }, this));
 _c7 = CardDescription;
@@ -85,7 +85,7 @@ CardDescription.displayName = "CardDescription";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 85,
+        lineNumber: 86,
         columnNumber: 3
     }, this));
 _c9 = CardContent;
@@ -98,7 +98,7 @@ CardContent.displayName = "CardContent";
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/card.tsx",
-        lineNumber: 96,
+        lineNumber: 97,
         columnNumber: 3
     }, this));
 _c11 = CardFooter;
@@ -154,7 +154,7 @@ const labelVariants = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_m
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/label.tsx",
-        lineNumber: 27,
+        lineNumber: 28,
         columnNumber: 3
     }, this));
 _c1 = Label;
@@ -203,17 +203,17 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
                 className: "h-4 w-4"
             }, void 0, false, {
                 fileName: "[project]/src/components/ui/checkbox.tsx",
-                lineNumber: 33,
+                lineNumber: 34,
                 columnNumber: 7
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/components/ui/checkbox.tsx",
-            lineNumber: 30,
+            lineNumber: 31,
             columnNumber: 5
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/ui/checkbox.tsx",
-        lineNumber: 22,
+        lineNumber: 23,
         columnNumber: 3
     }, this));
 _c1 = Checkbox;
@@ -265,7 +265,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$utils$2e$ts__$
         ...props
     }, void 0, false, {
         fileName: "[project]/src/components/ui/accordion.tsx",
-        lineNumber: 28,
+        lineNumber: 29,
         columnNumber: 3
     }, this));
 _c1 = AccordionItem;
@@ -284,18 +284,18 @@ AccordionItem.displayName = "AccordionItem";
                     className: "h-4 w-4 shrink-0 transition-transform duration-200"
                 }, void 0, false, {
                     fileName: "[project]/src/components/ui/accordion.tsx",
-                    lineNumber: 53,
+                    lineNumber: 54,
                     columnNumber: 7
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/ui/accordion.tsx",
-            lineNumber: 44,
+            lineNumber: 45,
             columnNumber: 5
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/ui/accordion.tsx",
-        lineNumber: 43,
+        lineNumber: 44,
         columnNumber: 3
     }, this));
 _c3 = AccordionTrigger;
@@ -311,12 +311,12 @@ AccordionTrigger.displayName = __TURBOPACK__imported__module__$5b$project$5d2f$n
             children: children
         }, void 0, false, {
             fileName: "[project]/src/components/ui/accordion.tsx",
-            lineNumber: 71,
+            lineNumber: 72,
             columnNumber: 5
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/ui/accordion.tsx",
-        lineNumber: 66,
+        lineNumber: 67,
         columnNumber: 3
     }, this));
 _c5 = AccordionContent;
@@ -342,16 +342,13 @@ var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_
  * @fileOverview Datos de prueba para la aplicación.
  * Este archivo contiene datos de ejemplo para campañas y contactos,
  * utilizados para poblar la interfaz de usuario hasta que se conecte una base de datos real.
- */ /**
- * Datos de ejemplo para las campañas de correo electrónico.
  */ __turbopack_context__.s({
     "campaigns": (()=>campaigns),
     "certificateTemplates": (()=>certificateTemplates),
     "contacts": (()=>contacts),
     "events": (()=>events),
     "managedSenders": (()=>managedSenders),
-    "surveys": (()=>surveys),
-    "templates": (()=>templates)
+    "surveys": (()=>surveys)
 });
 const campaigns = [
     {
@@ -393,29 +390,6 @@ const campaigns = [
         opens: "50%",
         clicks: "20%",
         date: "2024-06-15"
-    }
-];
-const templates = [
-    {
-        id: "1",
-        name: "Newsletter Mensual",
-        description: "Plantilla estándar para el boletín informativo de cada mes.",
-        image: "https://placehold.co/600x400.png",
-        aiHint: "abstract pattern"
-    },
-    {
-        id: "2",
-        name: "Anuncio de Producto",
-        description: "Plantilla para anunciar nuevos productos o características.",
-        image: "https://placehold.co/600x400.png",
-        aiHint: "product launch"
-    },
-    {
-        id: "3",
-        name: "Oferta Especial",
-        description: "Diseño llamativo para promociones y descuentos.",
-        image: "https://placehold.co/600x400.png",
-        aiHint: "special offer"
     }
 ];
 const contacts = [

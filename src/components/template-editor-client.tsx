@@ -26,16 +26,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { ScrollArea } from './ui/scroll-area';
 
 const PALETTE_BLOCKS: {
-  type: Block['type'];
+  id: Block['type'];
   label: string;
   icon: React.ElementType;
 }[] = [
-  { type: 'text', label: 'Texto', icon: Pilcrow },
-  { type: 'image', label: 'Imagen', icon: ImageIcon },
-  { type: 'button', label: 'Botón', icon: MousePointerClick },
-  { type: 'divider', label: 'Divisor', icon: Minus },
-  { type: 'spacer', label: 'Espaciador', icon: StretchVertical },
-  { type: 'html', label: 'HTML', icon: Code },
+  { id: 'text', label: 'Texto', icon: Pilcrow },
+  { id: 'image', label: 'Imagen', icon: ImageIcon },
+  { id: 'button', label: 'Botón', icon: MousePointerClick },
+  { id: 'divider', label: 'Divisor', icon: Minus },
+  { id: 'spacer', label: 'Espaciador', icon: StretchVertical },
+  { id: 'html', label: 'HTML', icon: Code },
 ];
 
 /**
@@ -57,7 +57,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
     },
   });
 
-  const { fields, move, append, remove, update } = useFieldArray({
+  const { fields, move, insert, remove } = useFieldArray({
     control: form.control,
     name: 'blocks',
   });
@@ -83,18 +83,6 @@ export function TemplateEditorClient({ template }: { template: Template | null }
         });
     }
   }, [template, form]);
-
-  const addBlock = (type: Block['type']) => {
-    const contentSchema = blockSchema.options.find(o => o.shape.type.value === type)?.shape.content;
-    const defaultContent = contentSchema ? contentSchema.parse({}) : {};
-
-    const newBlock: Block = {
-      id: nanoid(),
-      type: type,
-      content: defaultContent as any,
-    };
-    append(newBlock);
-  };
 
   async function onSubmit(values: FormValues) {
     setIsSaving(true);
@@ -129,11 +117,30 @@ export function TemplateEditorClient({ template }: { template: Template | null }
 
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
-    if (!destination || source.droppableId !== 'canvas' || destination.droppableId !== 'canvas') {
+    if (!destination) return;
+
+    // Handle dropping from palette to canvas
+    if (source.droppableId === 'palette' && destination.droppableId === 'canvas') {
+      const blockType = PALETTE_BLOCKS[source.index].id;
+      const contentSchema = blockSchema.options.find(o => o.shape.type.value === blockType)?.shape.content;
+      const defaultContent = contentSchema ? contentSchema.parse({}) : {};
+
+      const newBlock: Block = {
+        id: nanoid(),
+        type: blockType,
+        content: defaultContent as any,
+      };
+
+      insert(destination.index, newBlock);
+      setSelectedBlockId(newBlock.id); // Select the new block
       return;
     }
-    if (source.index !== destination.index) {
-      move(source.index, destination.index);
+
+    // Handle reordering within the canvas
+    if (source.droppableId === 'canvas' && destination.droppableId === 'canvas') {
+      if (source.index !== destination.index) {
+        move(source.index, destination.index);
+      }
     }
   };
 
@@ -164,7 +171,9 @@ export function TemplateEditorClient({ template }: { template: Template | null }
                 scrolling="no"
                 onLoad={(e) => {
                     const iframe = e.currentTarget;
-                    iframe.style.height = `${iframe.contentWindow?.document.body.scrollHeight}px`;
+                    if (iframe.contentWindow) {
+                      iframe.style.height = `${iframe.contentWindow.document.body.scrollHeight}px`;
+                    }
                 }}
             />
         </div>
@@ -174,28 +183,41 @@ export function TemplateEditorClient({ template }: { template: Template | null }
 
   return (
     <Form {...form}>
-      <div className="flex h-screen w-full bg-muted/40 text-foreground">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex h-full w-full bg-muted/40 text-foreground">
         {isMounted && (
           <DragDropContext onDragEnd={onDragEnd}>
             <aside className="w-[280px] flex-shrink-0 bg-background border-r flex flex-col">
               <header className="p-4 border-b h-16 flex items-center">
                  <h2 className="text-lg font-semibold font-headline">Bloques</h2>
               </header>
-              <ScrollArea className="flex-grow">
-                <div className="p-4 grid grid-cols-2 gap-2">
-                  {PALETTE_BLOCKS.map((block) => (
-                    <button
-                      key={block.type}
-                      type="button"
-                      onClick={() => addBlock(block.type)}
-                      className="flex flex-col items-center justify-center p-4 border rounded-lg bg-card hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors"
+              <Droppable droppableId="palette" isDropDisabled={true}>
+                {(provided) => (
+                    <ScrollArea
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className="flex-grow"
                     >
-                      <block.icon className="h-6 w-6 mb-2" />
-                      <span className="text-xs font-medium">{block.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </ScrollArea>
+                        <div className="p-4 grid grid-cols-2 gap-2">
+                        {PALETTE_BLOCKS.map((block, index) => (
+                            <Draggable key={block.id} draggableId={block.id} index={index}>
+                                {(provided) => (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        className="flex flex-col items-center justify-center p-4 border rounded-lg bg-card hover:bg-accent hover:text-accent-foreground cursor-grab transition-colors"
+                                    >
+                                    <block.icon className="h-6 w-6 mb-2" />
+                                    <span className="text-xs font-medium">{block.label}</span>
+                                    </div>
+                                )}
+                            </Draggable>
+                        ))}
+                        {provided.placeholder}
+                        </div>
+                    </ScrollArea>
+                )}
+              </Droppable>
             </aside>
 
             <div className="flex-1 flex flex-col">
@@ -208,7 +230,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button onClick={form.handleSubmit(onSubmit)} disabled={isSaving}>
+                  <Button type="submit" disabled={isSaving}>
                      {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                      Guardar y salir
                   </Button>
@@ -258,7 +280,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
             </div>
 
             <aside className={cn("w-[350px] flex-shrink-0 bg-background border-l flex flex-col transition-all duration-300",
-                selectedBlockId ? 'mr-0' : '-mr-[350px]'
+                selectedBlockId ? 'mr-0' : 'hidden'
             )}>
               {selectedBlockIndex !== -1 && (
                 <>
@@ -338,7 +360,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
             </aside>
           </DragDropContext>
         )}
-      </div>
+      </form>
     </Form>
   );
 }
