@@ -32,8 +32,8 @@ Sigue estos pasos para configurar y ejecutar el proyecto en tu computadora.
 
 Antes de comenzar, asegúrate de tener instalado lo siguiente:
 
--   **Node.js**: Versión 18 o superior.
--   **MySQL**: Un servidor de base de datos MySQL debe estar en ejecución.
+-   **Node.js**: Versión 18 o superior. Puedes verificar tu versión con el comando `node -v`.
+-   **MySQL**: Un servidor de base de datos MySQL debe estar en ejecución. Puedes usar herramientas como Docker, XAMPP, MAMP o una instalación nativa.
 
 ### 2. Clona el Repositorio
 
@@ -49,7 +49,7 @@ cd emailcraft-lite
 
 ### 3. Instala las Dependencias
 
-Una vez dentro del directorio del proyecto, instala todas las dependencias necesarias usando `npm`.
+Una vez dentro del directorio del proyecto, instala todas las dependencias necesarias usando `npm`. Este comando leerá el archivo `package.json` y descargará todas las librerías que el proyecto necesita para funcionar.
 
 ```bash
 npm install
@@ -113,12 +113,38 @@ Ahora, vamos a preparar la base de datos para que la aplicación pueda conectars
 
 ### 6. Ejecuta la Aplicación
 
-¡Ya casi terminamos! Inicia el servidor de desarrollo de Next.js.
+Para que la aplicación funcione completamente, necesitas ejecutar dos procesos en terminales separadas: el servidor de desarrollo de Next.js (la aplicación web) y el servidor de desarrollo de Genkit (para las funcionalidades de IA).
+
+#### a) Ejecuta el Servidor de Desarrollo Web
+
+Este comando inicia la aplicación principal en modo de desarrollo. Next.js compilará el proyecto y lo servirá localmente con "Fast Refresh", lo que significa que los cambios que hagas en el código se reflejarán en el navegador casi al instante.
+
+En tu terminal, desde la raíz del proyecto, ejecuta:
 
 ```bash
 npm run dev
 ```
 
-Este comando iniciará la aplicación en modo de desarrollo.
+Una vez que se inicie, verás un mensaje en la terminal indicando que el servidor está listo, generalmente en la siguiente dirección:
 
-**¡Y eso es todo!** Abre [http://localhost:9002](http://localhost:9002) en tu navegador para ver la aplicación en funcionamiento.
+```
+✓ Listo en XXms
+- Local:   http://localhost:9002
+```
+
+**¡Eso es todo para la parte web!** Abre [http://localhost:9002](http://localhost:9002) en tu navegador para ver la aplicación en funcionamiento.
+
+#### b) Ejecuta los Servicios de IA (Genkit)
+
+Para probar las funcionalidades que dependen de inteligencia artificial (como la importación de encuestas), necesitas iniciar el servidor de desarrollo de Genkit.
+
+Abre una **segunda terminal** en la raíz del proyecto y ejecuta:
+
+```bash
+npm run genkit:watch
+```
+Este comando:
+-   Inicia el entorno de desarrollo de Genkit.
+-   Vigila los archivos en el directorio `src/ai/` por cambios y los recarga automáticamente, lo cual es muy útil para el desarrollo.
+
+Con ambos servidores (Next.js y Genkit) en ejecución, tendrás acceso a todas las características de la aplicación.
