@@ -696,7 +696,7 @@ function CertificateEditor() {
         });
     };
     /**
-   * Gestiona la descarga del certificado como una imagen PNG.
+   * Gestiona la descarga del certificado como un archivo PDF.
    * Utiliza html-to-image para convertir el DOM en una imagen y la descarga.
    */ const handleDownload = ()=>{
         const element = certificateRef.current;
@@ -715,7 +715,7 @@ function CertificateEditor() {
             const pdf = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jspdf$2f$dist$2f$jspdf$2e$es$2e$min$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsPDF"]({
                 orientation: 'landscape',
                 unit: 'px',
-                // Use element's dimensions for PDF size to match aspect ratio
+                // Usar las dimensiones del elemento para el tamaño del PDF y así mantener la relación de aspecto
                 format: [
                     element.offsetWidth,
                     element.offsetHeight
@@ -1660,8 +1660,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$certifi
 function EventEditor() {
     const { toast } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$use$2d$toast$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useToast"])();
     const handleSaveEvent = ()=>{
-        // Here you would normally gather all the data and send to a server action.
-        // For now, we'll just show a toast.
+        // Aquí normalmente reunirías todos los datos y los enviarías a una acción de servidor.
+        // Por ahora, solo mostraremos una notificación.
         toast({
             title: "Evento Guardado",
             description: "La configuración del evento y el certificado se ha guardado."

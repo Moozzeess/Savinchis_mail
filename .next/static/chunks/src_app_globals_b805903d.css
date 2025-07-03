@@ -728,6 +728,10 @@ body {
   height: calc(100vh - 8rem);
 }
 
+.h-24 {
+  height: 6rem;
+}
+
 .max-h-96 {
   max-height: 24rem;
 }

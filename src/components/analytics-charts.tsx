@@ -16,14 +16,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-const chartData = [
-  { month: "Enero", sent: 186, open: 80 },
-  { month: "Febrero", sent: 305, open: 200 },
-  { month: "Marzo", sent: 237, open: 120 },
-  { month: "Abril", sent: 73, open: 190 },
-  { month: "Mayo", sent: 209, open: 130 },
-  { month: "Junio", sent: 214, open: 140 },
-]
+const chartData: any[] = []
 
 const chartConfig = {
   sent: {
@@ -45,25 +38,32 @@ export function AnalyticsCharts() {
     <Card>
       <CardHeader>
         <CardTitle>Rendimiento de Campañas</CardTitle>
-        <CardDescription>Enero - Junio 2024</CardDescription>
+        <CardDescription>Datos de los últimos 6 meses.</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-          <BarChart accessibilityLayer data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <YAxis />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Bar dataKey="sent" fill="var(--color-sent)" radius={4} />
-            <Bar dataKey="open" fill="var(--color-open)" radius={4} />
-          </BarChart>
-        </ChartContainer>
+        {chartData.length === 0 ? (
+          <div className="flex flex-col items-center justify-center min-h-[200px] text-center text-muted-foreground">
+            <p>No hay datos para mostrar.</p>
+            <p className="text-xs">Envía campañas para ver el rendimiento aquí.</p>
+          </div>
+        ) : (
+          <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+            <BarChart accessibilityLayer data={chartData}>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                tickFormatter={(value) => value.slice(0, 3)}
+              />
+              <YAxis />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Bar dataKey="sent" fill="var(--color-sent)" radius={4} />
+              <Bar dataKey="open" fill="var(--color-open)" radius={4} />
+            </BarChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   )

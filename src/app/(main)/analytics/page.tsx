@@ -37,8 +37,8 @@ export default function PerformancePage() {
   const { role } = useAuth();
   
   const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(2024, 0, 1),
-    to: addDays(new Date(2024, 5, 30), 20),
+    from: new Date(),
+    to: addDays(new Date(), 7),
   });
 
   // Permisos granulares
@@ -183,8 +183,8 @@ export default function PerformancePage() {
                 <Mail className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">45,231</div>
-                <p className="text-xs text-muted-foreground">+20.1% vs período anterior</p>
+                <div className="text-2xl font-bold">0</div>
+                <p className="text-xs text-muted-foreground">&nbsp;</p>
               </CardContent>
             </Card>
             <Card>
@@ -193,8 +193,8 @@ export default function PerformancePage() {
                 <Eye className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">28.7%</div>
-                <p className="text-xs text-muted-foreground">+2.3% vs período anterior</p>
+                <div className="text-2xl font-bold">0%</div>
+                <p className="text-xs text-muted-foreground">&nbsp;</p>
               </CardContent>
             </Card>
             <Card>
@@ -203,8 +203,8 @@ export default function PerformancePage() {
                 <MousePointerClick className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">4.2%</div>
-                <p className="text-xs text-muted-foreground">+0.5% vs período anterior</p>
+                <div className="text-2xl font-bold">0%</div>
+                <p className="text-xs text-muted-foreground">&nbsp;</p>
               </CardContent>
             </Card>
             <Card>
@@ -213,8 +213,8 @@ export default function PerformancePage() {
                 <AlertCircle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">1.1%</div>
-                <p className="text-xs text-muted-foreground text-green-600">-0.2% vs período anterior</p>
+                <div className="text-2xl font-bold">0%</div>
+                <p className="text-xs text-muted-foreground">&nbsp;</p>
               </CardContent>
             </Card>
           </div>
@@ -237,12 +237,8 @@ export default function PerformancePage() {
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
                    <div className="flex items-start gap-3">
-                      <TrendingUp className="h-5 w-5 text-green-500 mt-1 flex-shrink-0"/>
-                      <p>Se proyecta una <span className="font-bold">tasa de apertura del 32%</span> para la campaña "Verano 2024", un 10% más alta que campañas similares.</p>
-                   </div>
-                   <div className="flex items-start gap-3">
-                      <TriangleAlert className="h-5 w-5 text-yellow-500 mt-1 flex-shrink-0"/>
-                      <p>El segmento "Inactivos (90 días)" tiene un <span className="font-bold">riesgo de rebote del 5%</span>. Considere una campaña de reactivación.</p>
+                      <TrendingUp className="h-5 w-5 text-muted-foreground mt-1 flex-shrink-0"/>
+                      <p>No hay suficientes datos para generar predicciones. Envía más campañas para habilitar esta función.</p>
                    </div>
                 </CardContent>
               </Card>
@@ -256,15 +252,15 @@ export default function PerformancePage() {
                 <CardContent className="space-y-3">
                     <div className="flex justify-between items-center text-sm">
                         <span className="flex items-center gap-2"><XCircle className="h-4 w-4 text-red-500"/>Rebotes Duros (Hard)</span>
-                        <span className="font-bold">78</span>
+                        <span className="font-bold">0</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
                         <span className="flex items-center gap-2"><AlertCircle className="h-4 w-4 text-yellow-500"/>Rebotes Suaves (Soft)</span>
-                        <span className="font-bold">123</span>
+                        <span className="font-bold">0</span>
                     </div>
                      <div className="flex justify-between items-center text-sm">
                         <span className="flex items-center gap-2"><TriangleAlert className="h-4 w-4 text-orange-500"/>Quejas de Spam</span>
-                        <span className="font-bold">12</span>
+                        <span className="font-bold">0</span>
                     </div>
                 </CardContent>
               </Card>
@@ -276,13 +272,13 @@ export default function PerformancePage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Análisis de Embudo de Conversión</CardTitle>
-                  <CardDescription>Flujo de usuarios desde el envío hasta el clic para la campaña "Newsletter Julio".</CardDescription>
+                  <CardDescription>Flujo de usuarios desde el envío hasta el clic. Envía una campaña para ver datos.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-4">
-                    <FunnelStep title="Enviados" value="15,000" percentage={100} change="100%" color="bg-blue-500" />
-                    <FunnelStep title="Entregados" value="14,835" percentage={98.9} change="-1.1%" color="bg-sky-500" />
-                    <FunnelStep title="Abiertos" value="4,272" percentage={28.8} change="-71.2%" color="bg-teal-500" />
-                    <FunnelStep title="Clics" value="635" percentage={14.8} change="-85.2%" color="bg-green-500" />
+                    <FunnelStep title="Enviados" value="0" percentage={0} change="0%" color="bg-blue-500" />
+                    <FunnelStep title="Entregados" value="0" percentage={0} change="0%" color="bg-sky-500" />
+                    <FunnelStep title="Abiertos" value="0" percentage={0} change="0%" color="bg-teal-500" />
+                    <FunnelStep title="Clics" value="0" percentage={0} change="0%" color="bg-green-500" />
                 </CardContent>
               </Card>
             </div>
@@ -302,15 +298,15 @@ export default function PerformancePage() {
                       <TabsTrigger value="device">Dispositivo</TabsTrigger>
                     </TabsList>
                     <TabsContent value="geography" className="mt-4 space-y-4">
-                        <div className="flex justify-between items-center text-sm"><p>Norteamérica</p><div className="flex items-center gap-2"><Progress value={45} className="w-24 h-2"/><span className="font-bold">45%</span></div></div>
-                        <div className="flex justify-between items-center text-sm"><p>Europa</p><div className="flex items-center gap-2"><Progress value={35} className="w-24 h-2" /><span className="font-bold">35%</span></div></div>
-                        <div className="flex justify-between items-center text-sm"><p>Latinoamérica</p><div className="flex items-center gap-2"><Progress value={20} className="w-24 h-2"/><span className="font-bold">20%</span></div></div>
+                        <div className="flex justify-between items-center text-sm"><p>Norteamérica</p><div className="flex items-center gap-2"><Progress value={0} className="w-24 h-2"/><span className="font-bold">0%</span></div></div>
+                        <div className="flex justify-between items-center text-sm"><p>Europa</p><div className="flex items-center gap-2"><Progress value={0} className="w-24 h-2" /><span className="font-bold">0%</span></div></div>
+                        <div className="flex justify-between items-center text-sm"><p>Latinoamérica</p><div className="flex items-center gap-2"><Progress value={0} className="w-24 h-2"/><span className="font-bold">0%</span></div></div>
                     </TabsContent>
                     <TabsContent value="new_users" className="mt-4">
-                        <p className="text-sm text-muted-foreground text-center p-4">Los nuevos usuarios muestran una tasa de apertura un 15% mayor que los usuarios existentes.</p>
+                        <p className="text-sm text-muted-foreground text-center p-4">No hay datos de rendimiento para nuevos usuarios.</p>
                     </TabsContent>
                     <TabsContent value="device" className="mt-4">
-                        <p className="text-sm text-muted-foreground text-center p-4">El 72% de las aperturas ocurren en dispositivos móviles.</p>
+                        <p className="text-sm text-muted-foreground text-center p-4">No hay datos de rendimiento por dispositivo.</p>
                     </TabsContent>
                   </Tabs>
                 </CardContent>
@@ -334,7 +330,7 @@ export default function PerformancePage() {
                           <CardDescription>Conecta con tus herramientas de BI o descarga los datos.</CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
-                          <Button className="w-full"><Share2 className="mr-2" /> Exportar Datos (CSV)</Button>
+                          <Button className="w-full" disabled><Share2 className="mr-2" /> Exportar Datos (CSV)</Button>
                           <p className="text-xs text-muted-foreground text-center">Próximamente: Conexión API para PowerBI y Looker Studio.</p>
                       </CardContent>
                   </Card>

@@ -20,7 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { Target, Users, Megaphone, Code, Globe, Server } from "lucide-react";
+import { Target, Users, Megaphone, Code, Globe } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { ROLES, type Role } from "@/lib/permissions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -37,17 +37,8 @@ type Campaign = {
     role: Role;
 };
 
-// Datos de ejemplo para el monitor de envíos
-const allCampaigns: Campaign[] = [
-  { name: "Lanzamiento Nuevo Producto", sender: "marketing@emailcraft.com", status: "INICIADA", sent: 8200, total: 15000, date: "2024-07-18", role: ROLES.MARKETING },
-  { name: "Encuesta de Satisfacción Q3 (TI)", sender: "soporte@emailcraft.com", status: "INICIADA", sent: 3500, total: 5000, date: "2024-07-20", role: ROLES.IT },
-  { name: "Contrataciones Abiertas", sender: "rh@emailcraft.com", status: "TERMINADA", sent: 500, total: 500, date: "2024-07-15", role: ROLES.HR },
-  { name: "Newsletter Mensual - Julio", sender: "marketing@emailcraft.com", status: "TERMINADA", sent: 1500, total: 1500, date: "2024-07-01", role: ROLES.MARKETING },
-  { name: "Aviso de Mantenimiento", sender: "soporte@emailcraft.com", status: "TERMINADA", sent: 4000, total: 4000, date: "2024-07-21", role: ROLES.IT },
-  { name: "Recordatorio Webinar (RH)", sender: "rh@emailcraft.com", status: "PAUSADA", sent: 50, total: 400, date: "2024-07-22", role: ROLES.HR },
-  { name: "Actualización de Servidores", sender: "noreply@emailcraft.com", status: "TERMINADA", sent: 2500, total: 2500, date: "2024-07-19", role: ROLES.IT },
-  { name: "Comunicado Interno de TI", sender: "comms@emailcraft.com", status: "TERMINADA", sent: 150, total: 150, date: "2024-07-10", role: ROLES.IT },
-];
+// Los datos de ejemplo han sido eliminados para simular un entorno real.
+const allCampaigns: Campaign[] = [];
 
 const getStatusVariant = (status: string) => {
   switch (status) {
@@ -91,33 +82,41 @@ const CampaignsTable = ({ campaigns }: { campaigns: Campaign[] }) => (
         </TableRow>
       </TableHeader>
       <TableBody>
-        {campaigns.map((campaign) => {
-          const progress = (campaign.total > 0) ? (campaign.sent / campaign.total) * 100 : 0;
-          return (
-            <TableRow key={campaign.name}>
-              <TableCell className="font-medium">{campaign.name}</TableCell>
-              <TableCell>{campaign.sender}</TableCell>
-              <TableCell>
-                <Badge
-                  variant={getStatusVariant(campaign.status)}
-                  className={cn(getStatusClass(campaign.status))}
-                >
-                  {campaign.status}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {campaign.sent.toLocaleString()} / {campaign.total.toLocaleString()}
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Progress value={progress} className="h-2" />
-                  <span className="text-xs text-muted-foreground">{Math.round(progress)}%</span>
-                </div>
-              </TableCell>
-              <TableCell>{campaign.date}</TableCell>
-            </TableRow>
-          );
-        })}
+        {campaigns.length === 0 ? (
+          <TableRow>
+            <TableCell colSpan={6} className="h-24 text-center">
+              No hay campañas para mostrar.
+            </TableCell>
+          </TableRow>
+        ) : (
+          campaigns.map((campaign) => {
+            const progress = (campaign.total > 0) ? (campaign.sent / campaign.total) * 100 : 0;
+            return (
+              <TableRow key={campaign.name}>
+                <TableCell className="font-medium">{campaign.name}</TableCell>
+                <TableCell>{campaign.sender}</TableCell>
+                <TableCell>
+                  <Badge
+                    variant={getStatusVariant(campaign.status)}
+                    className={cn(getStatusClass(campaign.status))}
+                  >
+                    {campaign.status}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {campaign.sent.toLocaleString()} / {campaign.total.toLocaleString()}
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Progress value={progress} className="h-2" />
+                    <span className="text-xs text-muted-foreground">{Math.round(progress)}%</span>
+                  </div>
+                </TableCell>
+                <TableCell>{campaign.date}</TableCell>
+              </TableRow>
+            );
+          })
+        )}
       </TableBody>
     </Table>
   );

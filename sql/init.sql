@@ -1,141 +1,85 @@
--- EmailCraft Lite - Script de Inicialización de Base de Datos
--- Versión: 1.0
--- Descripción: Este script crea las tablas necesarias para la aplicación
--- y las puebla con datos de ejemplo para un entorno de desarrollo.
+-- Active: 1720546949575@@127.0.0.1@3306@emailcraft_db
+-- Script de inicialización de la base de datos para EmailCraft Lite
 
--- Eliminar tablas existentes en orden inverso para evitar problemas de claves foráneas.
+-- Crear la base de datos si no existe
+-- CREATE DATABASE IF NOT EXISTS emailcraft_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Usar la base de datos
+-- USE emailcraft_db;
+
+-- Eliminar tablas existentes para una instalación limpia
 DROP TABLE IF EXISTS `asistentes`;
-DROP TABLE IF EXISTS `plantillas`;
 DROP TABLE IF EXISTS `eventos`;
 DROP TABLE IF EXISTS `contactos`;
+DROP TABLE IF EXISTS `plantillas`;
 
--- =============================================
--- Tabla: contactos
--- Almacena la información de los contactos a los que se envían correos.
--- =============================================
-CREATE TABLE `contactos` (
-  `id_contacto` INT PRIMARY KEY AUTO_INCREMENT,
-  `nombre` VARCHAR(255) NOT NULL,
-  `email` VARCHAR(255) NOT NULL UNIQUE,
-  `suscrito` BOOLEAN DEFAULT TRUE,
-  `fecha_registro` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) COMMENT='Tabla para almacenar los contactos de correo.';
 
--- =============================================
--- Tabla: eventos
--- Almacena información sobre los eventos organizados.
--- =============================================
-CREATE TABLE `eventos` (
-  `id_evento` INT PRIMARY KEY AUTO_INCREMENT,
-  `nombre` VARCHAR(255) NOT NULL,
-  `descripcion` TEXT,
-  `fecha` DATE NOT NULL,
-  `estado` VARCHAR(50) DEFAULT 'Próximo'
-) COMMENT='Tabla para gestionar eventos.';
-
--- =============================================
--- Tabla: asistentes
--- Tabla de unión para la relación muchos a muchos entre contactos y eventos.
--- =============================================
-CREATE TABLE `asistentes` (
-  `id_asistente` INT PRIMARY KEY AUTO_INCREMENT,
-  `id_evento` INT,
-  `id_contacto` INT,
-  FOREIGN KEY (`id_evento`) REFERENCES `eventos`(`id_evento`) ON DELETE CASCADE,
-  FOREIGN KEY (`id_contacto`) REFERENCES `contactos`(`id_contacto`) ON DELETE CASCADE
-) COMMENT='Tabla de unión para los asistentes a los eventos.';
-
--- =============================================
--- Tabla: plantillas
+-- -----------------------------------------------------
+-- Tabla `plantillas`
 -- Almacena las plantillas de correo electrónico creadas por los usuarios.
--- =============================================
+-- -----------------------------------------------------
 CREATE TABLE `plantillas` (
-  `id_plantilla` INT PRIMARY KEY AUTO_INCREMENT,
+  `id_plantilla` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(255) NOT NULL,
-  `asunto_predeterminado` VARCHAR(255),
-  `contenido` JSON,
-  `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) COMMENT='Almacena las plantillas de correo con un editor de bloques.';
+  `asunto_predeterminado` VARCHAR(255) NOT NULL,
+  `contenido` JSON NOT NULL,
+  `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_plantilla`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- =============================================
--- Inserción de Datos de Ejemplo
--- =============================================
+-- -----------------------------------------------------
+-- Tabla `contactos`
+-- Almacena la información de los contactos a quienes se les envían correos.
+-- -----------------------------------------------------
+CREATE TABLE `contactos` (
+  `id_contacto` INT NOT NULL AUTO_INCREMENT,
+  `email` VARCHAR(255) NOT NULL,
+  `nombre` VARCHAR(255) NULL,
+  `fecha_agregado` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_contacto`),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Insertar contactos de ejemplo
-INSERT INTO `contactos` (`nombre`, `email`, `suscrito`) VALUES
-('Juan Pérez', 'juan.perez@example.com', TRUE),
-('Ana López', 'ana.lopez@example.com', TRUE),
-('Carlos García', 'carlos.garcia@example.com', FALSE),
-('Laura Martínez', 'laura.martinez@example.com', TRUE),
-('Miguel Rodríguez', 'miguel.rodriguez@example.com', TRUE);
 
--- Insertar eventos de ejemplo
-INSERT INTO `eventos` (`nombre`, `descripcion`, `fecha`, `estado`) VALUES
-('Taller de Marketing Digital', 'Un taller intensivo sobre las últimas tendencias en marketing digital.', '2024-08-15', 'Realizado'),
-('Conferencia Anual de Tecnología', 'El evento más grande del año sobre innovación tecnológica.', '2024-09-05', 'Próximo'),
-('Webinar de Liderazgo', 'Aprende a liderar equipos de alto rendimiento.', '2024-07-20', 'Realizado');
+-- -----------------------------------------------------
+-- Tabla `eventos`
+-- Almacena información sobre los eventos creados en la plataforma.
+-- -----------------------------------------------------
+CREATE TABLE `eventos` (
+  `id_evento` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(255) NOT NULL,
+  `fecha` DATE NOT NULL,
+  `descripcion` TEXT NULL,
+  `plantilla_certificado` JSON NULL,
+  PRIMARY KEY (`id_evento`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Vincular contactos a eventos como asistentes
-INSERT INTO `asistentes` (`id_evento`, `id_contacto`) VALUES
-(1, 1), -- Juan asistió al Taller de Marketing
-(1, 2), -- Ana asistió al Taller de Marketing
-(2, 4), -- Laura asistirá a la Conferencia de Tecnología
-(3, 1), -- Juan asistió al Webinar
-(3, 5); -- Miguel asistió al Webinar
 
--- Insertar una plantilla de bienvenida de ejemplo
-INSERT INTO `plantillas` (`nombre`, `asunto_predeterminado`, `contenido`) VALUES
-('Plantilla de Bienvenida', '¡Bienvenido a nuestra comunidad!', '
-[
-  {
-    "id": "intro_text",
-    "type": "text",
-    "content": {
-      "text": "¡Hola {{contact.name}}!",
-      "color": "#333333",
-      "fontSize": 24,
-      "lineHeight": 1.4,
-      "fontWeight": "bold",
-      "textAlign": "center"
-    }
-  },
-  {
-    "id": "welcome_image",
-    "type": "image",
-    "content": {
-      "src": "https://placehold.co/600x200.png",
-      "alt": "Banner de Bienvenida",
-      "width": 100,
-      "align": "center"
-    }
-  },
-  {
-    "id": "body_text",
-    "type": "text",
-    "content": {
-      "text": "Gracias por unirte a nosotros. Estamos muy contentos de tenerte a bordo. Aquí encontrarás contenido exclusivo, noticias y mucho más. Si tienes alguna pregunta, no dudes en contactarnos.",
-      "color": "#555555",
-      "fontSize": 16,
-      "lineHeight": 1.6,
-      "fontWeight": "normal",
-      "textAlign": "left"
-    }
-  },
-  {
-    "id": "main_button",
-    "type": "button",
-    "content": {
-      "text": "Explorar Ahora",
-      "href": "https://example.com",
-      "backgroundColor": "#159A9C",
-      "color": "#FFFFFF",
-      "textAlign": "center",
-      "borderRadius": 8
-    }
-  }
-]
-');
+-- -----------------------------------------------------
+-- Tabla `asistentes`
+-- Tabla de unión para relacionar contactos y eventos.
+-- -----------------------------------------------------
+CREATE TABLE `asistentes` (
+  `id_asistente` INT NOT NULL AUTO_INCREMENT,
+  `id_evento` INT NOT NULL,
+  `id_contacto` INT NOT NULL,
+  `fecha_registro` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_asistente`),
+  INDEX `fk_asistentes_eventos_idx` (`id_evento` ASC),
+  INDEX `fk_asistentes_contactos_idx` (`id_contacto` ASC),
+  CONSTRAINT `fk_asistentes_eventos`
+    FOREIGN KEY (`id_evento`)
+    REFERENCES `eventos` (`id_evento`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_asistentes_contactos`
+    FOREIGN KEY (`id_contacto`)
+    REFERENCES `contactos` (`id_contacto`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Fin del script de inicialización
-SELECT 'Base de datos inicializada con éxito.' AS 'Estado';
+
+-- Finalización del script.
+-- La base de datos está lista para ser utilizada por la aplicación.

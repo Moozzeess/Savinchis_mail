@@ -145,38 +145,45 @@ export default function SurveysPage() {
         </DialogContent>
       </Dialog>
       
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {surveys.map((survey) => (
-          <Card key={survey.id}>
-            <CardHeader>
-              <CardTitle className="text-xl font-headline">
-                {survey.name}
-              </CardTitle>
-              <CardDescription>{survey.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                <span className="font-bold text-foreground">{survey.responses}</span> respuestas
-              </p>
-            </CardContent>
-            <CardFooter className="flex justify-end gap-2">
-               <Button variant="ghost" size="icon" asChild>
-                <Link href="#">
-                  <BarChart2 className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="/surveys/editor">
-                  <Edit className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+      {surveys.length === 0 ? (
+        <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-lg">
+          <p>No se encontraron encuestas.</p>
+          <p>¡Crea tu primera encuesta para empezar!</p>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {surveys.map((survey) => (
+            <Card key={survey.id}>
+              <CardHeader>
+                <CardTitle className="text-xl font-headline">
+                  {survey.name}
+                </CardTitle>
+                <CardDescription>{survey.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-bold text-foreground">{survey.responses}</span> respuestas
+                </p>
+              </CardContent>
+              <CardFooter className="flex justify-end gap-2">
+                <Button variant="ghost" size="icon" asChild>
+                  <Link href="#">
+                    <BarChart2 className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="icon" asChild>
+                  <Link href="/surveys/editor">
+                    <Edit className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

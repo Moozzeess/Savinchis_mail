@@ -253,11 +253,11 @@ var { g: global, __dirname } = __turbopack_context__;
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/server-reference.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$app$2d$render$2f$encryption$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/app-render/encryption.js [app-rsc] (ecmascript)");
 /**
- * @fileOverview An AI flow for importing a survey from a public URL.
+ * @fileOverview Flujo de IA para importar una encuesta desde una URL pública.
  *
- * - importSurvey - A function that handles the survey import process.
- * - ImportSurveyInput - The input type for the importSurvey function.
- * - ImportSurveyOutput - The return type for the importSurvey function.
+ * - importSurvey - Una función que maneja el proceso de importación de la encuesta.
+ * - ImportSurveyInput - El tipo de entrada para la función importSurvey.
+ * - ImportSurveyOutput - El tipo de retorno para la función importSurvey.
  */ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$ai$2f$genkit$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/ai/genkit.ts [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/zod/lib/index.mjs [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$isomorphic$2d$fetch$2f$fetch$2d$npm$2d$node$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/isomorphic-fetch/fetch-npm-node.js [app-rsc] (ecmascript)");
@@ -268,39 +268,39 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 ;
 ;
 const QuestionSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].object({
-    text: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string().describe('The text of the survey question.'),
+    text: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string().describe('El texto de la pregunta de la encuesta.'),
     type: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].enum([
         'text',
         'textarea',
         'multiple-choice',
         'checkboxes'
-    ]).describe('The type of the question. Infer this from the input elements. "text" for short answer, "textarea" for paragraph, "multiple-choice" for radio buttons (select one), and "checkboxes" for checkboxes (select many).'),
+    ]).describe('El tipo de pregunta. Infiera esto de los elementos de entrada. "text" para respuesta corta, "textarea" para párrafo, "multiple-choice" para botones de radio (seleccionar uno), y "checkboxes" para casillas de verificación (seleccionar varios).'),
     options: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].array(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].object({
         value: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string()
-    })).optional().describe('An array of options for multiple-choice or checkbox questions.')
+    })).optional().describe('Un arreglo de opciones para preguntas de opción múltiple o casillas de verificación.')
 });
 const ImportSurveyInputSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].object({
-    surveyUrl: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string().url().describe('The public URL of the survey to import.')
+    surveyUrl: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string().url().describe('La URL pública de la encuesta a importar.')
 });
 const ImportSurveyOutputSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].object({
-    title: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string().describe('The main title of the survey.'),
-    description: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string().optional().describe('The description of the survey.'),
-    questions: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].array(QuestionSchema).describe('An array of questions found in the survey.')
+    title: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string().describe('El título principal de la encuesta.'),
+    description: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].string().optional().describe('La descripción de la encuesta.'),
+    questions: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["z"].array(QuestionSchema).describe('Un arreglo de preguntas encontradas en la encuesta.')
 });
 async function getPageContent(url) {
     try {
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`Failed to fetch URL: ${response.statusText}`);
+            throw new Error(`Error al obtener la URL: ${response.statusText}`);
         }
-        // Basic text extraction to simplify for the LLM. This is a very naive approach.
-        // A better approach would be to use a library like Cheerio to parse and clean the HTML,
-        // but for this task, we will rely on the LLM's ability to parse raw HTML.
+        // Extracción de texto básica para simplificar para el LLM. Este es un enfoque muy ingenuo.
+        // Un mejor enfoque sería usar una biblioteca como Cheerio para analizar y limpiar el HTML,
+        // pero para esta tarea, confiaremos en la capacidad del LLM para analizar HTML crudo.
         const html = await response.text();
         return html;
     } catch (error) {
-        console.error('Error fetching page content:', error);
-        throw new Error('Could not retrieve the content from the provided URL.');
+        console.error('Error al obtener el contenido de la página:', error);
+        throw new Error('No se pudo recuperar el contenido de la URL proporcionada.');
     }
 }
 async function importSurvey(input) {
@@ -316,18 +316,18 @@ const prompt = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$ai$2f$genk
     output: {
         schema: ImportSurveyOutputSchema
     },
-    prompt: `You are an expert at parsing HTML content from online survey tools like Google Forms or Microsoft Forms.
-Your task is to analyze the provided HTML and extract the survey's structure into the specified JSON format.
+    prompt: `Eres un experto en analizar contenido HTML de herramientas de encuestas en línea como Google Forms o Microsoft Forms.
+Tu tarea es analizar el HTML proporcionado y extraer la estructura de la encuesta en el formato JSON especificado.
 
-Pay close attention to the input fields (radio buttons, checkboxes, text inputs, textareas) to correctly identify the question type.
-- Radio buttons imply a 'multiple-choice' question.
-- Checkboxes imply a 'checkboxes' question.
-- A single-line text input implies a 'text' question.
-- A multi-line textarea implies a 'textarea' question.
+Presta mucha atención a los campos de entrada (botones de radio, casillas de verificación, entradas de texto, áreas de texto) para identificar correctamente el tipo de pregunta.
+- Los botones de radio implican una pregunta de 'opción múltiple'.
+- Las casillas de verificación implican una pregunta de 'casillas de verificación'.
+- Una entrada de texto de una sola línea implica una pregunta de 'texto'.
+- Un área de texto de varias líneas implica una pregunta de 'textarea'.
 
-Extract the title, description, and all questions with their respective types and options if applicable.
+Extrae el título, la descripción y todas las preguntas con sus respectivos tipos y opciones si corresponde.
 
-HTML to analyze:
+HTML a analizar:
 \`\`\`html
 {{{htmlContent}}}
 \`\`\`
@@ -343,7 +343,7 @@ const importSurveyFlow = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$
         htmlContent
     });
     if (!output) {
-        throw new Error('The AI could not extract survey data from the URL.');
+        throw new Error('La IA no pudo extraer los datos de la encuesta de la URL.');
     }
     return output;
 });

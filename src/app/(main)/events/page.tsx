@@ -34,38 +34,45 @@ export default function EventsPage() {
           </Link>
         </Button>
       </div>
-
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.map((event) => (
-          <Card key={event.id}>
-            <CardHeader>
-              <CardTitle className="text-xl font-headline">
-                {event.name}
-              </CardTitle>
-              <CardDescription>Fecha: {event.date}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Badge variant={event.status === "Realizado" ? "secondary" : "default"}>
-                {event.status}
-              </Badge>
-              <p className="text-sm text-muted-foreground flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                <span>{event.attendees} asistentes</span>
-              </p>
-            </CardContent>
-            <CardFooter className="flex justify-end gap-2">
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="/events/editor">
-                  <Edit className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+      
+      {events.length === 0 ? (
+        <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-lg">
+          <p>No se encontraron eventos.</p>
+          <p>¡Crea tu primer evento para empezar!</p>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {events.map((event) => (
+            <Card key={event.id}>
+              <CardHeader>
+                <CardTitle className="text-xl font-headline">
+                  {event.name}
+                </CardTitle>
+                <CardDescription>Fecha: {event.date}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Badge variant={event.status === "Realizado" ? "secondary" : "default"}>
+                  {event.status}
+                </Badge>
+                <p className="text-sm text-muted-foreground flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  <span>{event.attendees} asistentes</span>
+                </p>
+              </CardContent>
+              <CardFooter className="flex justify-end gap-2">
+                <Button variant="ghost" size="icon" asChild>
+                  <Link href="/events/editor">
+                    <Edit className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button variant="ghost" size="icon">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
