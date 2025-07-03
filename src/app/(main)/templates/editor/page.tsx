@@ -17,10 +17,7 @@ export default async function TemplateEditorPage({ searchParams }: { searchParam
     templateData = await getTemplateAction(templateId);
   }
 
-  // Envuelve el editor para que ocupe toda la altura y anule el padding del layout principal
   return (
-    <div className="-m-6 h-full">
-      <TemplateEditorClient template={templateData} />
-    </div>
+    <TemplateEditorClient template={templateData} />
   );
 }
