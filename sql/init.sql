@@ -50,9 +50,13 @@ CREATE TABLE `eventos` (
   `id_evento` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(255) NOT NULL,
   `fecha` DATE NOT NULL,
-  `descripcion` TEXT NULL,
-  `plantilla_certificado` JSON NULL,
-  PRIMARY KEY (`id_evento`)
+  `id_plantilla` INT NOT NULL,
+  PRIMARY KEY (`id_evento`),
+  INDEX `fk_eventos_plantillas_idx` (`id_plantilla` ASC),
+  CONSTRAINT `fk_eventos_plantillas`
+    FOREIGN KEY (`id_plantilla`)
+    REFERENCES `plantillas` (`id_plantilla`)
+    ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 

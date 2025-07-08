@@ -33,7 +33,7 @@ export async function getTemplatesAction(): Promise<Template[]> {
         
         const templates = (rows as any[]).map(row => ({
             ...row,
-            contenido: row.contenido ? JSON.parse(row.contenido) : [],
+            contenido: row.contenido ? (typeof row.contenido === 'string' ? JSON.parse(row.contenido) : row.contenido) : [],
         }));
         
         return templates as Template[];
@@ -67,14 +67,17 @@ export async function getTemplateAction(id: number): Promise<Template | null> {
     }
 }
 
-export async function saveTemplateAction(templateData: {
+export async function saveTemplateAction(data: {
     id?: number,
     nombre: string,
     asunto_predeterminado: string,
-    contenido: Block[]
+    contenido: any
 }): Promise<{ success: boolean; message: string, id?: number }> {
-    const { id, nombre, asunto_predeterminado, contenido } = templateData;
-    const contenidoJson = JSON.stringify(contenido);
+    const { id, nombre, asunto_predeterminado, contenido } = data;
+    
+    // Asegurarse de que el contenido se guarde como un string JSON
+    const contenidoJson = typeof contenido === 'object' ? JSON.stringify(contenido) : contenido;
+
     let connection;
     try {
         connection = await getDbConnection();
