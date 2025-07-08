@@ -50,14 +50,25 @@ export default async function TemplatesPage() {
           {templates.map((template) => {
             const isCertificate = template.tipo === 'certificate';
             const editUrl = isCertificate
-              ? `/templates/certificate/edit/${template.id_plantilla}`
-              : `/templates/edit/${template.id_plantilla}`;
+              ? `/certificates/editor/${template.id_plantilla}`
+              : `/templates/editor/${template.id_plantilla}`;
 
-            const blocks = template.contenido && typeof template.contenido === 'string'
-              ? JSON.parse(template.contenido)
-              : template.contenido;
+            let blocks = [];
+            if (template.contenido) {
+              try {
+                const parsedContent = typeof template.contenido === 'string' 
+                  ? JSON.parse(template.contenido) 
+                  : template.contenido;
+                
+                if (Array.isArray(parsedContent)) {
+                  blocks = parsedContent;
+                }
+              } catch (error) {
+                console.error(`Error al parsear contenido de plantilla ${template.id_plantilla}:`, error);
+              }
+            }
 
-            const templateHtml = !isCertificate && Array.isArray(blocks)
+            const templateHtml = !isCertificate && blocks.length > 0
               ? generateHtmlFromBlocks(blocks)
               : '';
 

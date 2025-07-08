@@ -221,8 +221,19 @@ export default function SendPage() {
             if (template) {
                 setSubject(template.asunto_predeterminado || '');
                 if (template.contenido) {
-                  // El contenido viene como un string JSON, hay que parsearlo
-                  const blocks = typeof template.contenido === 'string' ? JSON.parse(template.contenido) : template.contenido;
+                  let blocks = [];
+                  try {
+                    const parsedContent = typeof template.contenido === 'string' 
+                      ? JSON.parse(template.contenido) 
+                      : template.contenido;
+                    
+                    if (Array.isArray(parsedContent)) {
+                      blocks = parsedContent;
+                    }
+                  } catch (error) {
+                    console.error('Error al parsear el contenido de la plantilla:', error);
+                    // Si falla el parseo, blocks se mantendrá como un array vacío.
+                  }
                   setEmailBody(generateHtmlFromBlocks(blocks));
                 }
             }
