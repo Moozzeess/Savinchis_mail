@@ -21,15 +21,16 @@ export interface Template {
     id_plantilla: number;
     nombre: string;
     asunto_predeterminado: string;
-    contenido: Block[];
+    contenido: any; // Puede ser Block[] o la estructura del certificado
     fecha_creacion: string;
+    tipo: 'template' | 'certificate';
 }
 
 export async function getTemplatesAction(): Promise<Template[]> {
     let connection;
     try {
         connection = await getDbConnection();
-        const [rows] = await connection.execute('SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion FROM plantillas ORDER BY fecha_creacion DESC');
+        const [rows] = await connection.execute('SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas ORDER BY fecha_creacion DESC');
         
         const templates = (rows as any[]).map(row => ({
             ...row,
@@ -49,14 +50,14 @@ export async function getTemplateAction(id: number): Promise<Template | null> {
     let connection;
     try {
         connection = await getDbConnection();
-        const [rows] = await connection.execute('SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion FROM plantillas WHERE id_plantilla = ?', [id]);
+        const [rows] = await connection.execute('SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas WHERE id_plantilla = ?', [id]);
         
         if ((rows as any[]).length === 0) return null;
 
         const row = (rows as any[])[0];
         return {
             ...row,
-            contenido: row.contenido ? JSON.parse(row.contenido) : [],
+            contenido: row.contenido ? (typeof row.contenido === 'string' ? JSON.parse(row.contenido) : row.contenido) : [],
         } as Template;
 
     } catch (error) {
@@ -71,9 +72,10 @@ export async function saveTemplateAction(data: {
     id?: number,
     nombre: string,
     asunto_predeterminado: string,
-    contenido: any
+    contenido: any,
+    tipo: 'template' | 'certificate';
 }): Promise<{ success: boolean; message: string, id?: number }> {
-    const { id, nombre, asunto_predeterminado, contenido } = data;
+    const { id, nombre, asunto_predeterminado, contenido, tipo } = data;
     
     // Asegurarse de que el contenido se guarde como un string JSON
     const contenidoJson = typeof contenido === 'object' ? JSON.stringify(contenido) : contenido;
@@ -83,14 +85,14 @@ export async function saveTemplateAction(data: {
         connection = await getDbConnection();
         if (id) {
             await connection.execute(
-                'UPDATE plantillas SET nombre = ?, asunto_predeterminado = ?, contenido = ? WHERE id_plantilla = ?',
-                [nombre, asunto_predeterminado, contenidoJson, id]
+                'UPDATE plantillas SET nombre = ?, asunto_predeterminado = ?, contenido = ?, tipo = ? WHERE id_plantilla = ?',
+                [nombre, asunto_predeterminado, contenidoJson, tipo, id]
             );
             return { success: true, message: 'Plantilla actualizada con éxito.', id };
         } else {
             const [result] = await connection.execute(
-                'INSERT INTO plantillas (nombre, asunto_predeterminado, contenido) VALUES (?, ?, ?)',
-                [nombre, asunto_predeterminado, contenidoJson]
+                'INSERT INTO plantillas (nombre, asunto_predeterminado, contenido, tipo) VALUES (?, ?, ?, ?)',
+                [nombre, asunto_predeterminado, contenidoJson, tipo]
             );
             const insertId = (result as any).insertId;
             return { success: true, message: 'Plantilla creada con éxito.', id: insertId };

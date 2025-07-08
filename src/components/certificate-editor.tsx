@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, type ChangeEvent, useRef } from 'react';
@@ -14,8 +13,11 @@ import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { toPng } from 'html-to-image';
-import { Download } from 'lucide-react';
+import { Download, Loader2, Save } from 'lucide-react';
 import { jsPDF } from 'jspdf';
+import { saveTemplateAction, type Template } from '@/actions/template-actions';
+import { useRouter } from 'next/navigation';
+import type { DraggableEvent, DraggableData } from 'react-draggable';
 
 type TextAlign = 'left' | 'center' | 'right';
 type FontWeight = 'normal' | 'bold' | '300' | '600';
@@ -30,20 +32,31 @@ interface StyleProps {
   fontFamily: FontFamily;
 }
 
+interface Position {
+  x: number;
+  y: number;
+}
+
 /**
  * Componente de cliente para el editor de plantillas de certificados.
  * Permite subir una imagen de fondo, personalizar los textos del certificado
  * y mover los elementos en una vista previa en tiempo real.
  */
-export function CertificateEditor() {
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
-  const [title, setTitle] = useState('Certificado de Asistencia');
-  const [issuedToText, setIssuedToText] = useState('Otorgado a:');
-  const [description, setDescription] = useState('Por completar exitosamente el taller de Email Marketing Avanzado.');
-  const [dateText, setDateText] = useState('Fecha:');
-  const [signatureText, setSignatureText] = useState('Firma del Organizador');
+export function CertificateEditor({ certificate }: { certificate: Partial<Template> | null }) {
+  const router = useRouter();
+  const { toast } = useToast();
+
+  // Contenido del certificado
+  const [templateName, setTemplateName] = useState(certificate?.nombre || 'Mi Nuevo Certificado');
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(certificate?.contenido?.backgroundImage || null);
+  const [title, setTitle] = useState(certificate?.contenido?.texts?.title || 'Certificado de Asistencia');
+  const [issuedToText, setIssuedToText] = useState(certificate?.contenido?.texts?.issuedToText || 'Otorgado a:');
+  const [description, setDescription] = useState(certificate?.contenido?.texts?.description || 'Por completar exitosamente el taller de Email Marketing Avanzado.');
+  const [dateText, setDateText] = useState(certificate?.contenido?.texts?.dateText || 'Fecha:');
+  const [signatureText, setSignatureText] = useState(certificate?.contenido?.texts?.signatureText || 'Firma del Organizador');
   
-  const [elementStyles, setElementStyles] = useState<{ [key: string]: StyleProps }>({
+  // Estilos y posiciones
+  const [elementStyles, setElementStyles] = useState<{ [key: string]: StyleProps }>(certificate?.contenido?.styles || {
     title: { fontSize: 48, color: '#000000', width: 80, textAlign: 'center', fontWeight: 'bold', fontFamily: 'headline' },
     issuedTo: { fontSize: 18, color: '#000000', width: 80, textAlign: 'center', fontWeight: 'normal', fontFamily: 'body' },
     contactName: { fontSize: 36, color: '#000000', width: 80, textAlign: 'center', fontWeight: '600', fontFamily: 'headline' },
@@ -52,15 +65,18 @@ export function CertificateEditor() {
     date: { fontSize: 16, color: '#000000', width: 50, textAlign: 'center', fontWeight: '600', fontFamily: 'body' },
   });
 
-  const { toast } = useToast();
+  const [positions, setPositions] = useState<{ [key: string]: Position }>(certificate?.contenido?.positions || {
+    title: { x: 50, y: 50 },
+    issuedTo: { x: 50, y: 120 },
+    contactName: { x: 50, y: 160 },
+    description: { x: 50, y: 220 },
+    signature: { x: 100, y: 380 },
+    date: { x: 550, y: 380 },
+  });
+
+  const [isSaving, setIsSaving] = useState(false);
 
   const certificateRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef(null);
-  const issuedToRef = useRef(null);
-  const contactNameRef = useRef(null);
-  const descriptionRef = useRef(null);
-  const signatureRef = useRef(null);
-  const dateRef = useRef(null);
 
   const handleStyleChange = (element: string, property: keyof StyleProps, value: string | number) => {
     setElementStyles(prev => ({
@@ -72,40 +88,48 @@ export function CertificateEditor() {
     }));
   };
 
-  /**
-   * Gestiona el cambio de la imagen de fondo.
-   * Lee el archivo seleccionado, lo convierte a un Data URL y lo establece en el estado
-   * para actualizar la vista previa. Muestra un error si el archivo no es una imagen.
-   * @param e - El evento de cambio del input de archivo.
-   */
-  const handleBackgroundImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: 'Archivo no válido',
-          description: 'Por favor, selecciona un archivo de imagen.',
-          variant: 'destructive',
-        });
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setBackgroundImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const handleSave = async () => {
+    setIsSaving(true);
+    const contenido = {
+      backgroundImage,
+      texts: {
+        title,
+        issuedToText,
+        description,
+        dateText,
+        signatureText,
+      },
+      styles: elementStyles,
+      positions,
+    };
 
-  /**
-   * Gestiona el guardado de la plantilla de certificado.
-   * Actualmente, muestra una notificación de éxito.
-   */
-  const handleSaveTemplate = () => {
-    toast({
-      title: 'Plantilla Guardada',
-      description: 'Tu plantilla de certificado ha sido guardada con éxito.',
+    const result = await saveTemplateAction({
+      id: certificate?.id_plantilla,
+      nombre: templateName,
+      asunto_predeterminado: 'Certificado - ' + templateName,
+      contenido: contenido,
+      tipo: 'certificate',
     });
+
+    setIsSaving(false);
+
+    if (result.success) {
+      toast({
+        title: result.message,
+      });
+      if (result.id) {
+        // Para evitar que el usuario haga cambios mientras redirige
+        setTimeout(() => {
+          router.push(`/templates/certificate/edit/${result.id}`);
+        }, 1000);
+      }
+    } else {
+      toast({
+        title: 'Error al guardar',
+        description: result.message,
+        variant: 'destructive',
+      });
+    }
   };
 
   /**
@@ -150,7 +174,6 @@ export function CertificateEditor() {
         });
       });
   };
-
 
   const styleControls = (elementName: string, elementLabel: string, textState: string | null, setTextState: ((val: string) => void) | null) => (
     <AccordionItem value={elementName}>
@@ -240,68 +263,100 @@ export function CertificateEditor() {
     </AccordionItem>
   );
 
-  return (
-    <div className="grid md:grid-cols-2 gap-8 items-start">
-      <Card>
-        <CardHeader>
-          <CardTitle>Personalizar Certificado</CardTitle>
-          <CardDescription>
-            Ajusta los textos y estilos. Arrastra los elementos en la vista previa para moverlos. Usa{' '}
-            <code className="bg-muted px-1 py-0.5 rounded-sm font-code">{'{{contact.name}}'}</code> y{' '}
-            <code className="bg-muted px-1 py-0.5 rounded-sm font-code">{'{{event.date}}'}</code>{' '}
-            como marcadores de posición.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="bg-image">Imagen de Fondo</Label>
-            <Input id="bg-image" type="file" accept="image/*" onChange={handleBackgroundImageChange} />
-          </div>
+  const handleStop = (elementName: string) => (e: DraggableEvent, data: DraggableData) => {
+    setPositions(prev => ({
+      ...prev,
+      [elementName]: { x: data.x, y: data.y },
+    }));
+  };
 
-          <Accordion type="multiple" className="w-full space-y-2">
-            {styleControls('title', 'Título', title, setTitle)}
-            {styleControls('issuedTo', 'Texto "Otorgado a"', issuedToText, setIssuedToText)}
-            {styleControls('contactName', 'Nombre del Contacto', null, null)}
-            {styleControls('description', 'Descripción/Motivo', description, setDescription)}
-            {styleControls('signature', 'Firma', signatureText, setSignatureText)}
-            {styleControls('date', 'Texto de Fecha', dateText, setDateText)}
-          </Accordion>
-          
-          <Button onClick={handleSaveTemplate} className="mt-4 w-full">Guardar Plantilla</Button>
-        </CardContent>
-      </Card>
-      
-      <div className="sticky top-24">
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-4 md:p-8">
+      {/* Columna de Controles */}
+      <div className="md:col-span-1">
+        <Card>
+          <CardHeader>
+            <CardTitle>Controles del Certificado</CardTitle>
+            <CardDescription>Ajusta los elementos de tu diseño.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="templateName">Nombre del Certificado</Label>
+              <Input
+                id="templateName"
+                value={templateName}
+                onChange={(e) => setTemplateName(e.target.value)}
+                placeholder="Ej: Certificado Taller de Marketing"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="background-image">Imagen de Fondo</Label>
+              <Input id="background-image" type="file" onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  if (!file.type.startsWith('image/')) {
+                    toast({
+                      title: 'Archivo no válido',
+                      description: 'Por favor, selecciona un archivo de imagen.',
+                      variant: 'destructive',
+                    });
+                    return;
+                  }
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setBackgroundImage(reader.result as string);
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }} accept="image/*" />
+              {backgroundImage && (
+                <Button variant="outline" size="sm" onClick={() => setBackgroundImage(null)} className="w-full">
+                  Eliminar Fondo
+                </Button>
+              )}
+            </div>
+
+            <Accordion type="single" collapsible className="w-full">
+              {styleControls('title', 'Título', title, setTitle)}
+              {styleControls('issuedTo', 'Texto "Otorgado a"', issuedToText, setIssuedToText)}
+              {styleControls('description', 'Descripción', description, setDescription)}
+              {styleControls('signature', 'Texto de Firma', signatureText, setSignatureText)}
+              {styleControls('date', 'Texto de Fecha', dateText, setDateText)}
+            </Accordion>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Columna de Vista Previa */}
+      <div className="md:col-span-2">
         <Card>
           <CardHeader>
             <CardTitle>Vista Previa del Certificado</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div ref={certificateRef} className="relative aspect-[11/8.5] w-full bg-card-foreground/5 border rounded-lg overflow-hidden">
-              {backgroundImage ? (
-                <Image src={backgroundImage} alt="Fondo del certificado" fill objectFit="cover" />
-              ) : (
-                <div className="grid place-content-center h-full">
-                  <p className="text-muted-foreground">Sube una imagen de fondo</p>
-                </div>
+          <CardContent className="relative aspect-[11/8.5] w-full overflow-hidden border rounded-lg" ref={certificateRef}>
+            <div id="certificate-design" className="absolute inset-0 w-full h-full bg-white">
+              {backgroundImage && (
+                <Image src={backgroundImage} layout="fill" objectFit="cover" alt="Fondo del certificado" />
               )}
-              <div className="absolute inset-0">
-                
-                <Draggable bounds="parent" nodeRef={titleRef}>
-                  <div ref={titleRef} className="absolute cursor-move p-2" style={{ top: '10%', left: '10%' }}>
+
+              <div className="relative w-full h-full">
+                {/* Elementos Arrastrables */}
+                <Draggable bounds="parent" position={positions.title} onStop={handleStop('title')}>
+                  <div className="absolute cursor-move p-2" style={{ transform: `translate(${positions.title.x}px, ${positions.title.y}px)` }}>
                     <div style={{ width: `${elementStyles.title.width}%`, textAlign: elementStyles.title.textAlign }}>
-                      <h1
-                        className={cn('tracking-wider', `font-${elementStyles.title.fontFamily}`)}
+                      <h2
+                        className={cn(`font-${elementStyles.title.fontFamily}`)}
                         style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.title.fontSize, color: elementStyles.title.color, fontWeight: elementStyles.title.fontWeight }}
                       >
                         {title}
-                      </h1>
+                      </h2>
                     </div>
                   </div>
                 </Draggable>
 
-                <Draggable bounds="parent" nodeRef={issuedToRef}>
-                  <div ref={issuedToRef} className="absolute cursor-move p-2" style={{ top: '25%', left: '10%' }}>
+                <Draggable bounds="parent" position={positions.issuedTo} onStop={handleStop('issuedTo')}>
+                  <div className="absolute cursor-move p-2" style={{ transform: `translate(${positions.issuedTo.x}px, ${positions.issuedTo.y}px)` }}>
                     <div style={{ width: `${elementStyles.issuedTo.width}%`, textAlign: elementStyles.issuedTo.textAlign }}>
                       <p
                         className={cn(`font-${elementStyles.issuedTo.fontFamily}`)}
@@ -313,8 +368,8 @@ export function CertificateEditor() {
                   </div>
                 </Draggable>
 
-                <Draggable bounds="parent" nodeRef={contactNameRef}>
-                  <div ref={contactNameRef} className="absolute cursor-move p-2" style={{ top: '32%', left: '10%' }}>
+                <Draggable bounds="parent" position={positions.contactName} onStop={handleStop('contactName')}>
+                  <div className="absolute cursor-move p-2" style={{ transform: `translate(${positions.contactName.x}px, ${positions.contactName.y}px)` }}>
                     <div style={{ width: `${elementStyles.contactName.width}%`, textAlign: elementStyles.contactName.textAlign }}>
                       <p
                         className={cn(`font-${elementStyles.contactName.fontFamily}`)}
@@ -326,8 +381,8 @@ export function CertificateEditor() {
                   </div>
                 </Draggable>
                 
-                <Draggable bounds="parent" nodeRef={descriptionRef}>
-                  <div ref={descriptionRef} className="absolute cursor-move p-2" style={{ top: '45%', left: '10%' }}>
+                <Draggable bounds="parent" position={positions.description} onStop={handleStop('description')}>
+                  <div className="absolute cursor-move p-2" style={{ transform: `translate(${positions.description.x}px, ${positions.description.y}px)` }}>
                     <div style={{ width: `${elementStyles.description.width}%`, textAlign: elementStyles.description.textAlign }}>
                       <p
                         className={cn(`font-${elementStyles.description.fontFamily}`)}
@@ -339,8 +394,8 @@ export function CertificateEditor() {
                   </div>
                 </Draggable>
 
-                <Draggable bounds="parent" nodeRef={signatureRef}>
-                  <div ref={signatureRef} className="absolute cursor-move p-2" style={{ bottom: '15%', left: '5%' }}>
+                <Draggable bounds="parent" position={positions.signature} onStop={handleStop('signature')}>
+                  <div className="absolute cursor-move p-2" style={{ transform: `translate(${positions.signature.x}px, ${positions.signature.y}px)` }}>
                     <div style={{ width: `${elementStyles.signature.width}%`, textAlign: elementStyles.signature.textAlign }}>
                       <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.signature.color}}>
                         <p
@@ -354,8 +409,8 @@ export function CertificateEditor() {
                   </div>
                 </Draggable>
 
-                <Draggable bounds="parent" nodeRef={dateRef}>
-                  <div ref={dateRef} className="absolute cursor-move p-2" style={{ bottom: '15%', right: '5%' }}>
+                <Draggable bounds="parent" position={positions.date} onStop={handleStop('date')}>
+                  <div className="absolute cursor-move p-2" style={{ transform: `translate(${positions.date.x}px, ${positions.date.y}px)` }}>
                     <div style={{ width: `${elementStyles.date.width}%`, textAlign: elementStyles.date.textAlign }}>
                       <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.date.color}}>
                         <p
@@ -371,10 +426,14 @@ export function CertificateEditor() {
               </div>
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="gap-2">
+            <Button onClick={handleSave} disabled={isSaving} className="w-full">
+              {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              Guardar
+            </Button>
             <Button onClick={handleDownload} className="w-full">
-              <Download className="mr-2" />
-              Descargar Certificado
+              <Download className="mr-2 h-4 w-4" />
+              Descargar
             </Button>
           </CardFooter>
         </Card>

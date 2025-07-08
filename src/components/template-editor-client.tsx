@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -16,7 +15,8 @@ import {
   Pilcrow, ImageIcon, MousePointerClick, Minus, GripVertical, Code,
   Loader2, Trash2, StretchVertical, Upload, Computer, Smartphone
 } from 'lucide-react';
-import { DragDropContext, Droppable, Draggable, type DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import type { DropResult, DraggableProvided, DraggableStateSnapshot, DroppableProvided } from '@hello-pangea/dnd';
 import { nanoid } from 'nanoid';
 import { cn } from '@/lib/utils';
 import { type Block, formSchema, type FormValues, blockSchema } from '@/lib/template-utils';
@@ -39,63 +39,62 @@ const PALETTE_BLOCKS: {
 ];
 
 const BlockRenderer = ({ block }: { block: Block }) => {
-    const content = block.content;
-    const style: React.CSSProperties = {
-        padding: '10px 20px',
-        fontFamily: 'Arial, sans-serif'
-    };
-
-    switch (block.type) {
-        case 'text':
-            return (
-                <div style={style}>
-                    <p style={{
-                        color: content.color,
-                        fontSize: `${content.fontSize}px`,
-                        lineHeight: content.lineHeight,
-                        fontWeight: content.fontWeight,
-                        textAlign: content.textAlign,
-                        margin: 0
-                    }} dangerouslySetInnerHTML={{ __html: content.text.replace(/\n/g, '<br />') }} />
-                </div>
-            );
-        case 'image':
-            return (
-                <div style={{ ...style, textAlign: content.align }}>
-                    <img src={content.src} alt={content.alt} style={{ maxWidth: `${content.width}%`, height: 'auto', display: 'inline-block' }} />
-                </div>
-            );
-        case 'button':
-            return (
-                <div style={{ ...style, textAlign: content.textAlign }}>
-                    <table cellPadding="0" cellSpacing="0" border="0" style={{ margin: content.textAlign === 'center' ? 'auto' : '0' }}>
-                        <tbody>
-                            <tr>
-                                <td align="center" style={{ borderRadius: `${content.borderRadius}px`, backgroundColor: content.backgroundColor }}>
-                                    <a href={content.href} target="_blank" rel="noopener noreferrer" style={{ fontSize: '16px', fontWeight: 'bold', fontFamily: 'Arial, sans-serif', color: content.color, textDecoration: 'none', borderRadius: `${content.borderRadius}px`, padding: '12px 25px', display: 'inline-block' }}>
-                                        {content.text}
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            );
-        case 'spacer':
-            return <div style={{ height: `${content.height}px`, lineHeight: `${content.height}px`, fontSize: `${content.height}px` }}>&nbsp;</div>;
-        case 'divider':
-            return <div style={{ padding: `${content.padding}px 20px` }}><hr style={{ border: 'none', borderTop: `1px solid ${content.color}`, margin: 0 }} /></div>;
-        case 'html':
-            return <div className="w-full h-auto pointer-events-none" dangerouslySetInnerHTML={{ __html: content.code }}></div>;
-        default:
-            return <div className="text-red-500 p-4">Bloque desconocido</div>;
-    }
+  switch (block.type) {
+    case 'text':
+      if ('color' in block.content && 'fontSize' in block.content && 'lineHeight' in block.content && 'fontWeight' in block.content && 'textAlign' in block.content && 'text' in block.content) {
+        return <p style={{ color: block.content.color, fontSize: `${block.content.fontSize}px`, lineHeight: block.content.lineHeight, fontWeight: block.content.fontWeight, textAlign: block.content.textAlign, whiteSpace: 'pre-wrap' }}>{block.content.text}</p>;
+      }
+      return null;
+    case 'image':
+      if ('align' in block.content && 'src' in block.content && 'alt' in block.content && 'width' in block.content) {
+        const alignStyle: React.CSSProperties = {
+          display: 'block',
+          margin: block.content.align === 'center' ? '0 auto' : (block.content.align === 'right' ? '0 0 0 auto' : '0 auto 0 0')
+        };
+        return <img src={block.content.src} alt={block.content.alt} style={{ ...alignStyle, width: `${block.content.width}%` }} />;
+      }
+      return null;
+    case 'button':
+      if ('textAlign' in block.content && 'borderRadius' in block.content && 'backgroundColor' in block.content && 'href' in block.content && 'color' in block.content && 'text' in block.content) {
+        return (
+          <table cellPadding="0" cellSpacing="0" border={0} style={{ width: '100%', textAlign: block.content.textAlign }}>
+            <tbody>
+              <tr>
+                <td style={{ textAlign: block.content.textAlign }}>
+                  <a href={block.content.href} target="_blank" style={{ display: 'inline-block', padding: '12px 24px', backgroundColor: block.content.backgroundColor, color: block.content.color, borderRadius: `${block.content.borderRadius}px`, textDecoration: 'none' }}>
+                    {block.content.text}
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        );
+      }
+      return null;
+    case 'spacer':
+      if ('height' in block.content) {
+        return <div style={{ height: `${block.content.height}px` }} />;
+      }
+      return null;
+    case 'divider':
+      if ('padding' in block.content && 'color' in block.content) {
+        return <div style={{ padding: `${block.content.padding}px 0` }}><hr style={{ borderColor: block.content.color }} /></div>;
+      }
+      return null;
+    case 'html':
+      if ('code' in block.content) {
+        return <div dangerouslySetInnerHTML={{ __html: block.content.code }} />;
+      }
+      return null;
+    default:
+      return <div className="text-red-500">Bloque desconocido</div>;
+  }
 };
 
 /**
  * Componente de cliente para crear y editar plantillas de correo electrónico con un editor visual por bloques.
  */
-export function TemplateEditorClient({ template }: { template: Template | null }) {
+export function TemplateEditorClient({ templateData }: { templateData?: Template }) {
   const { toast } = useToast();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
@@ -106,9 +105,9 @@ export function TemplateEditorClient({ template }: { template: Template | null }
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      templateName: template?.nombre || 'Mi Nueva Plantilla',
-      emailSubject: template?.asunto_predeterminado || 'Asunto del Correo',
-      blocks: template?.contenido || [],
+      templateName: templateData?.nombre || 'Mi Nueva Plantilla',
+      emailSubject: templateData?.asunto_predeterminado || 'Asunto del Correo',
+      blocks: templateData?.contenido || [],
     },
   });
 
@@ -129,53 +128,54 @@ export function TemplateEditorClient({ template }: { template: Template | null }
   }, []);
 
   useEffect(() => {
-    if (template) {
+    if (templateData) {
         form.reset({
-            templateName: template.nombre,
-            emailSubject: template.asunto_predeterminado,
-            blocks: template.contenido,
+            templateName: templateData.nombre,
+            emailSubject: templateData.asunto_predeterminado,
+            blocks: templateData.contenido,
         });
     }
-  }, [template, form]);
+  }, [templateData, form]);
 
-  async function onSubmit(values: FormValues) {
+  const handleSave = async () => {
     setIsSaving(true);
-    try {
-        const result = await saveTemplateAction({
-            id: template?.id_plantilla,
-            nombre: values.templateName,
-            asunto_predeterminado: values.emailSubject,
-            contenido: values.blocks,
-        });
+    const result = await saveTemplateAction({
+      id: templateData?.id_plantilla,
+      nombre: form.getValues('templateName'),
+      asunto_predeterminado: form.getValues('emailSubject'),
+      contenido: form.getValues('blocks'),
+      tipo: templateData?.tipo || 'template',
+    });
 
-        if (result.success) {
-            toast({
-                title: 'Plantilla guardada',
-                description: result.message,
-            });
-            router.push('/templates');
-            router.refresh();
-        } else {
-            throw new Error(result.message);
-        }
-    } catch (error) {
-        toast({
-            title: 'Error al guardar',
-            description: (error as Error).message,
-            variant: 'destructive',
-        });
-    } finally {
-        setIsSaving(false);
+    setIsSaving(false);
+
+    if (result.success) {
+      toast({
+        title: result.message,
+      });
+      if (result.id) {
+        // Esperar un momento para que el toast sea visible y luego redirigir
+        setTimeout(() => {
+          router.push(`/templates/edit/${result.id}`);
+        }, 1000);
+      } else {
+        router.push('/templates');
+      }
+    } else {
+      toast({
+        title: 'Error al guardar',
+        description: result.message,
+        variant: 'destructive',
+      });
     }
   }
 
   const onDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
-    if (!destination) {
+    if (!result.destination) {
       return;
     }
-    if (source.droppableId === destination.droppableId && source.index !== destination.index) {
-      move(source.index, destination.index);
+    if (result.source.droppableId === result.destination.droppableId && result.source.index !== result.destination.index) {
+      move(result.source.index, result.destination.index);
     }
   };
 
@@ -212,7 +212,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
   
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSave)} className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex-1 min-w-[250px] space-y-2">
                 <Label htmlFor="templateName">Nombre de la Plantilla</Label>
@@ -262,8 +262,8 @@ export function TemplateEditorClient({ template }: { template: Template | null }
 
               {isMounted && (
                 <DragDropContext onDragEnd={onDragEnd}>
-                    <Droppable droppableId="canvas">
-                        {(provided) => (
+                    <Droppable droppableId="canvas" isDropDisabled={false}>
+                        {(provided: DroppableProvided) => (
                             <div 
                               ref={provided.innerRef} 
                               {...provided.droppableProps} 
@@ -279,7 +279,7 @@ export function TemplateEditorClient({ template }: { template: Template | null }
                                 )}
                                 {fields.map((field, index) => (
                                     <Draggable key={field.id} draggableId={field.id} index={index}>
-                                        {(provided, snapshot) => (
+                                        {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
                                             <div
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
@@ -314,71 +314,71 @@ export function TemplateEditorClient({ template }: { template: Template | null }
                   <h2 className="text-lg font-semibold font-headline capitalize">{watchedBlocks[selectedBlockIndex].type}</h2>
                   
                   {(() => {
-                      const block = watchedBlocks[selectedBlockIndex];
-                      switch (block.type) {
-                          case 'text': return (
-                              <>
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.text`} render={({ field }) => <FormItem><FormLabel>Texto</FormLabel><Textarea {...field} rows={5} /></FormItem>} />
-                                  <div className="grid grid-cols-2 gap-4">
-                                      <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.fontSize`} render={({ field }) => <FormItem><FormLabel>Tamaño ({field.value}px)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={8} max={72} /></FormItem>} />
-                                      <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.lineHeight`} render={({ field }) => <FormItem><FormLabel>Interlineado ({field.value})</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={1} max={3} step={0.1} /></FormItem>} />
-                                  </div>
-                                  <div className="grid grid-cols-2 gap-4">
-                                      <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.fontWeight`} render={({ field }) => <FormItem><FormLabel>Grosor</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="normal">Normal</SelectItem><SelectItem value="bold">Negrita</SelectItem></SelectContent></Select></FormItem>} />
-                                      <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.textAlign`} render={({ field }) => <FormItem><FormLabel>Alineación</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="left">Izquierda</SelectItem><SelectItem value="center">Centro</SelectItem><SelectItem value="right">Derecha</SelectItem></SelectContent></Select></FormItem>} />
-                                  </div>
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.color`} render={({ field }) => <FormItem><FormLabel>Color</FormLabel><Input type="color" {...field} className="p-1 h-10 w-full" /></FormItem>} />
-                              </>
-                          );
-                          case 'image': return (
-                              <>
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.src`} render={({ field }) => <FormItem><FormLabel>URL de imagen</FormLabel><Input {...field} /></FormItem>} />
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.alt`} render={({ field }) => <FormItem><FormLabel>Texto Alternativo</FormLabel><Input {...field} /></FormItem>} />
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.width`} render={({ field }) => <FormItem><FormLabel>Ancho ({field.value}%)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={10} max={100} /></FormItem>} />
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.align`} render={({ field }) => <FormItem><FormLabel>Alineación</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="left">Izquierda</SelectItem><SelectItem value="center">Centro</SelectItem><SelectItem value="right">Derecha</SelectItem></SelectContent></Select></FormItem>} />
-                              </>
-                          );
-                          case 'button': return (
-                              <>
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.text`} render={({ field }) => <FormItem><FormLabel>Texto del botón</FormLabel><Input {...field} /></FormItem>} />
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.href`} render={({ field }) => <FormItem><FormLabel>URL de enlace</FormLabel><Input {...field} /></FormItem>} />
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.textAlign`} render={({ field }) => <FormItem><FormLabel>Alineación</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="left">Izquierda</SelectItem><SelectItem value="center">Centro</SelectItem><SelectItem value="right">Derecha</SelectItem></SelectContent></Select></FormItem>} />
-                                  <div className="grid grid-cols-2 gap-4">
-                                     <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.backgroundColor`} render={({ field }) => <FormItem><FormLabel>Color Fondo</FormLabel><Input type="color" {...field} className="p-1 h-10 w-full" /></FormItem>} />
-                                     <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.color`} render={({ field }) => <FormItem><FormLabel>Color Texto</FormLabel><Input type="color" {...field} className="p-1 h-10 w-full" /></FormItem>} />
-                                  </div>
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.borderRadius`} render={({ field }) => <FormItem><FormLabel>Radio Borde ({field.value}px)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={0} max={30} /></FormItem>} />
-                              </>
-                          );
-                          case 'spacer': return (
-                               <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.height`} render={({ field }) => <FormItem><FormLabel>Altura ({field.value}px)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={10} max={200} /></FormItem>} />
-                          );
-                          case 'divider': return (
-                              <>
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.color`} render={({ field }) => <FormItem><FormLabel>Color</FormLabel><Input type="color" {...field} className="p-1 h-10 w-full" /></FormItem>} />
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.padding`} render={({ field }) => <FormItem><FormLabel>Espaciado ({field.value}px)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={0} max={50} /></FormItem>} />
-                              </>
-                          );
-                          case 'html': return (
-                              <>
-                                  <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.code`} render={({ field }) => <FormItem><FormLabel>Código HTML</FormLabel><Textarea {...field} rows={10} className="font-mono" /></FormItem>} />
-                                  <FormItem>
-                                      <FormLabel>Importar desde Archivo</FormLabel>
-                                      <Button asChild variant="outline" className="w-full">
-                                          <label>
-                                              <Upload className="mr-2 h-4 w-4"/> Subir archivo .html
-                                              <Input type="file" accept=".html" className="hidden" onChange={handleHtmlFileChange} />
-                                          </label>
-                                      </Button>
-                                  </FormItem>
-                              </>
-                          );
-                          default: return null;
-                      }
+                    const block = watchedBlocks[selectedBlockIndex];
+                    switch (block.type) {
+                      case 'text': return (
+                        <>
+                          <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.text`} render={({ field }) => <FormItem><FormLabel>Texto</FormLabel><Textarea {...field} rows={5} /></FormItem>} />
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.fontSize`} render={({ field }) => <FormItem><FormLabel>Tamaño ({field.value}px)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={8} max={72} /></FormItem>} />
+                            <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.lineHeight`} render={({ field }) => <FormItem><FormLabel>Interlineado ({field.value})</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={1} max={3} step={0.1} /></FormItem>} />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.fontWeight`} render={({ field }) => <FormItem><FormLabel>Grosor</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="normal">Normal</SelectItem><SelectItem value="bold">Negrita</SelectItem></SelectContent></Select></FormItem>} />
+                            <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.textAlign`} render={({ field }) => <FormItem><FormLabel>Alineación</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="left">Izquierda</SelectItem><SelectItem value="center">Centro</SelectItem><SelectItem value="right">Derecha</SelectItem></SelectContent></Select></FormItem>} />
+                          </div>
+                          <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.color`} render={({ field }) => <FormItem><FormLabel>Color</FormLabel><Input type="color" {...field} className="p-1 h-10 w-full" /></FormItem>} />
+                        </>
+                      );
+                      case 'image': return (
+                        <>
+                          <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.src`} render={({ field }) => <FormItem><FormLabel>URL de imagen</FormLabel><Input {...field} /></FormItem>} />
+                          <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.alt`} render={({ field }) => <FormItem><FormLabel>Texto Alternativo</FormLabel><Input {...field} /></FormItem>} />
+                          <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.width`} render={({ field }) => <FormItem><FormLabel>Ancho ({field.value}%)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={10} max={100} /></FormItem>} />
+                          <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.align`} render={({ field }) => <FormItem><FormLabel>Alineación</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="left">Izquierda</SelectItem><SelectItem value="center">Centro</SelectItem><SelectItem value="right">Derecha</SelectItem></SelectContent></Select></FormItem>} />
+                        </>
+                      );
+                      case 'button': return (
+                        <>
+                          <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.text`} render={({ field }) => <FormItem><FormLabel>Texto del botón</FormLabel><Input {...field} /></FormItem>} />
+                          <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.href`} render={({ field }) => <FormItem><FormLabel>URL de enlace</FormLabel><Input {...field} /></FormItem>} />
+                          <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.textAlign`} render={({ field }) => <FormItem><FormLabel>Alineación</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="left">Izquierda</SelectItem><SelectItem value="center">Centro</SelectItem><SelectItem value="right">Derecha</SelectItem></SelectContent></Select></FormItem>} />
+                          <div className="grid grid-cols-2 gap-4">
+                             <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.backgroundColor`} render={({ field }) => <FormItem><FormLabel>Color Fondo</FormLabel><Input type="color" {...field} className="p-1 h-10 w-full" /></FormItem>} />
+                             <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.color`} render={({ field }) => <FormItem><FormLabel>Color Texto</FormLabel><Input type="color" {...field} className="p-1 h-10 w-full" /></FormItem>} />
+                          </div>
+                          <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.borderRadius`} render={({ field }) => <FormItem><FormLabel>Radio Borde ({field.value}px)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={0} max={30} /></FormItem>} />
+                        </>
+                      );
+                      case 'spacer': return (
+                           <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.height`} render={({ field }) => <FormItem><FormLabel>Altura ({field.value}px)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={10} max={200} /></FormItem>} />
+                      );
+                      case 'divider': return (
+                          <>
+                              <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.color`} render={({ field }) => <FormItem><FormLabel>Color</FormLabel><Input type="color" {...field} className="p-1 h-10 w-full" /></FormItem>} />
+                              <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.padding`} render={({ field }) => <FormItem><FormLabel>Espaciado ({field.value}px)</FormLabel><Slider value={[field.value]} onValueChange={([v]) => field.onChange(v)} min={0} max={50} /></FormItem>} />
+                          </>
+                      );
+                      case 'html': return (
+                          <>
+                              <FormField control={form.control} name={`blocks.${selectedBlockIndex}.content.code`} render={({ field }) => <FormItem><FormLabel>Código HTML</FormLabel><Textarea {...field} rows={10} className="font-mono" /></FormItem>} />
+                              <FormItem>
+                                  <FormLabel>Importar desde Archivo</FormLabel>
+                                  <Button asChild variant="outline" className="w-full">
+                                      <label>
+                                          <Upload className="mr-2 h-4 w-4"/> Subir archivo .html
+                                          <Input type="file" accept=".html" className="hidden" onChange={handleHtmlFileChange} />
+                                      </label>
+                                  </Button>
+                              </FormItem>
+                          </>
+                      );
+                      default: return null;
+                    }
                   })()}
 
                 </div>
-                </ScrollArea>
+              </ScrollArea>
               ) : (
                    <div className="text-center text-muted-foreground p-12 border-dashed border-2 rounded-lg h-full flex items-center justify-center">
                       <p>Selecciona un bloque para editar sus propiedades.</p>

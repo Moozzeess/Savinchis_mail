@@ -1,11 +1,3 @@
--- Active: 1720546949575@@127.0.0.1@3306@emailcraft_db
--- Script de inicialización de la base de datos para EmailCraft Lite
-
--- Crear la base de datos si no existe
--- CREATE DATABASE IF NOT EXISTS emailcraft_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- Usar la base de datos
--- USE emailcraft_db;
 
 -- Eliminar tablas existentes para una instalación limpia
 DROP TABLE IF EXISTS `asistentes`;
@@ -23,7 +15,9 @@ CREATE TABLE `plantillas` (
   `nombre` VARCHAR(255) NOT NULL,
   `asunto_predeterminado` VARCHAR(255) NOT NULL,
   `contenido` JSON NOT NULL,
+  `tipo` VARCHAR(50) NOT NULL DEFAULT 'template', 
   `fecha_creacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `fecha_actualizacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_plantilla`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -83,7 +77,3 @@ CREATE TABLE `asistentes` (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
--- Finalización del script.
--- La base de datos está lista para ser utilizada por la aplicación.
