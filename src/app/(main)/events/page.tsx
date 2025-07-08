@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle, Edit, Trash2, Users } from "lucide-react";
 import Link from "next/link";
-import { getEventsAction, saveEventAction } from "@/actions/event-actions-corrected"; // Actualizado
+import { getEventsAction, saveEventAction } from "@/actions/event-actions";
 import { getTemplatesAction, type Template } from "@/actions/template-actions";
 import { useEffect, useState } from "react";
 import {

@@ -1,7 +1,24 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { getDbConnection } from '@/lib/db/index';
+import mysql from 'mysql2/promise';
+
+async function getDbConnection() {
+    const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } = process.env;
+    if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
+        throw new Error('Faltan las variables de entorno de la base de datos. Por favor, configúralas.');
+    }
+
+    const port = MYSQL_PORT ? parseInt(MYSQL_PORT, 10) : 3306;
+
+    return await mysql.createConnection({
+        host: MYSQL_HOST,
+        user: MYSQL_USER,
+        password: MYSQL_PASSWORD,
+        database: MYSQL_DATABASE,
+        port: port
+    });
+}
 
 export async function getEventsAction() {
     let connection;
