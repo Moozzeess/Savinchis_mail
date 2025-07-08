@@ -219,8 +219,12 @@ export default function SendPage() {
             
             const template = templates.find(t => String(t.id_plantilla) === currentTemplateId);
             if (template) {
-                setSubject(template.asunto_predeterminado);
-                setEmailBody(generateHtmlFromBlocks(template.contenido));
+                setSubject(template.asunto_predeterminado || '');
+                if (template.contenido) {
+                  // El contenido viene como un string JSON, hay que parsearlo
+                  const blocks = typeof template.contenido === 'string' ? JSON.parse(template.contenido) : template.contenido;
+                  setEmailBody(generateHtmlFromBlocks(blocks));
+                }
             }
         } else {
             // No templates loaded yet or available

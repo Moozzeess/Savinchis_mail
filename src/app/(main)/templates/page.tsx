@@ -53,12 +53,18 @@ export default async function TemplatesPage() {
               ? `/templates/certificate/edit/${template.id_plantilla}`
               : `/templates/edit/${template.id_plantilla}`;
 
-            const templateHtml = !isCertificate && template.contenido ? generateHtmlFromBlocks(template.contenido) : '';
+            const blocks = template.contenido && typeof template.contenido === 'string'
+              ? JSON.parse(template.contenido)
+              : template.contenido;
+
+            const templateHtml = !isCertificate && Array.isArray(blocks)
+              ? generateHtmlFromBlocks(blocks)
+              : '';
 
             return (
               <Card key={template.id_plantilla} className="flex flex-col">
                 <CardHeader className="p-0 relative">
-                   <div className="absolute top-2 right-2 z-10">
+                  <div className="absolute top-2 right-2 z-10">
                     <Badge variant="secondary" className="flex items-center gap-1.5">
                       {isCertificate ? <Award className="h-3 w-3" /> : <Mail className="h-3 w-3" />}
                       {isCertificate ? 'Certificado' : 'Plantilla'}

@@ -269,8 +269,8 @@ export function CertificateEditor({ certificate }: { certificate: Partial<Templa
     </AccordionItem>
   );
 
-  const handleStop = (elementName: string) => (e: DraggableEvent, data: DraggableData) => {
-    setPositions(prev => ({
+  const handleStop = (elementName: string) => (e: import('react-draggable').DraggableEvent, data: import('react-draggable').DraggableData) => {
+  setPositions(prev => ({
       ...prev,
       [elementName]: { x: data.x, y: data.y },
     }));
