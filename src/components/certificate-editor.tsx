@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import Draggable from 'react-draggable';
+import type { DraggableEvent, DraggableData } from 'react-draggable';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -17,7 +18,6 @@ import { Download, Loader2, Save } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import { saveTemplateAction, type Template } from '@/actions/template-actions';
 import { useRouter } from 'next/navigation';
-import type { DraggableEvent, DraggableData } from 'react-draggable';
 
 type TextAlign = 'left' | 'center' | 'right';
 type FontWeight = 'normal' | 'bold' | '300' | '600';
@@ -77,6 +77,12 @@ export function CertificateEditor({ certificate }: { certificate: Partial<Templa
   const [isSaving, setIsSaving] = useState(false);
 
   const certificateRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
+  const issuedToRef = useRef<HTMLDivElement>(null);
+  const contactNameRef = useRef<HTMLDivElement>(null);
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  const signatureRef = useRef<HTMLDivElement>(null);
+  const dateRef = useRef<HTMLDivElement>(null);
 
   const handleStyleChange = (element: string, property: keyof StyleProps, value: string | number) => {
     setElementStyles(prev => ({
@@ -341,13 +347,13 @@ export function CertificateEditor({ certificate }: { certificate: Partial<Templa
               )}
 
               <div className="relative w-full h-full">
-                {/* Elementos Arrastrables */}
-                <Draggable bounds="parent" position={positions.title} onStop={handleStop('title')}>
-                  <div className="absolute cursor-move p-2" style={{ transform: `translate(${positions.title.x}px, ${positions.title.y}px)` }}>
+                               {/* Elementos Arrastrables */}
+                               <Draggable bounds="parent" position={positions.title} onStop={handleStop('title')} nodeRef={titleRef}>
+                  <div className="absolute cursor-move p-2" ref={titleRef}>
                     <div style={{ width: `${elementStyles.title.width}%`, textAlign: elementStyles.title.textAlign }}>
                       <h2
                         className={cn(`font-${elementStyles.title.fontFamily}`)}
-                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.title.fontSize, color: elementStyles.title.color, fontWeight: elementStyles.title.fontWeight }}
+                        style={{ color: elementStyles.title.color, fontSize: `${elementStyles.title.fontSize}px`, fontWeight: elementStyles.title.fontWeight as FontWeight }}
                       >
                         {title}
                       </h2>
@@ -355,12 +361,12 @@ export function CertificateEditor({ certificate }: { certificate: Partial<Templa
                   </div>
                 </Draggable>
 
-                <Draggable bounds="parent" position={positions.issuedTo} onStop={handleStop('issuedTo')}>
-                  <div className="absolute cursor-move p-2" style={{ transform: `translate(${positions.issuedTo.x}px, ${positions.issuedTo.y}px)` }}>
+                <Draggable bounds="parent" position={positions.issuedTo} onStop={handleStop('issuedTo')} nodeRef={issuedToRef}>
+                  <div className="absolute cursor-move p-2" ref={issuedToRef}>
                     <div style={{ width: `${elementStyles.issuedTo.width}%`, textAlign: elementStyles.issuedTo.textAlign }}>
                       <p
                         className={cn(`font-${elementStyles.issuedTo.fontFamily}`)}
-                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.issuedTo.fontSize, color: elementStyles.issuedTo.color, fontWeight: elementStyles.issuedTo.fontWeight }}
+                        style={{ color: elementStyles.issuedTo.color, fontSize: `${elementStyles.issuedTo.fontSize}px`, fontWeight: elementStyles.issuedTo.fontWeight as FontWeight }}
                       >
                         {issuedToText}
                       </p>
@@ -368,12 +374,12 @@ export function CertificateEditor({ certificate }: { certificate: Partial<Templa
                   </div>
                 </Draggable>
 
-                <Draggable bounds="parent" position={positions.contactName} onStop={handleStop('contactName')}>
-                  <div className="absolute cursor-move p-2" style={{ transform: `translate(${positions.contactName.x}px, ${positions.contactName.y}px)` }}>
+                <Draggable bounds="parent" position={positions.contactName} onStop={handleStop('contactName')} nodeRef={contactNameRef}>
+                  <div className="absolute cursor-move p-2" ref={contactNameRef}>
                     <div style={{ width: `${elementStyles.contactName.width}%`, textAlign: elementStyles.contactName.textAlign }}>
                       <p
                         className={cn(`font-${elementStyles.contactName.fontFamily}`)}
-                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.contactName.fontSize, color: elementStyles.contactName.color, fontWeight: elementStyles.contactName.fontWeight }}
+                        style={{ color: elementStyles.contactName.color, fontSize: `${elementStyles.contactName.fontSize}px`, fontWeight: elementStyles.contactName.fontWeight as FontWeight }}
                       >
                         &#123;&#123;contact.name&#125;&#125;
                       </p>
@@ -381,12 +387,12 @@ export function CertificateEditor({ certificate }: { certificate: Partial<Templa
                   </div>
                 </Draggable>
                 
-                <Draggable bounds="parent" position={positions.description} onStop={handleStop('description')}>
-                  <div className="absolute cursor-move p-2" style={{ transform: `translate(${positions.description.x}px, ${positions.description.y}px)` }}>
+                <Draggable bounds="parent" position={positions.description} onStop={handleStop('description')} nodeRef={descriptionRef}>
+                  <div className="absolute cursor-move p-2" ref={descriptionRef}>
                     <div style={{ width: `${elementStyles.description.width}%`, textAlign: elementStyles.description.textAlign }}>
                       <p
                         className={cn(`font-${elementStyles.description.fontFamily}`)}
-                        style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.description.fontSize, color: elementStyles.description.color, fontWeight: elementStyles.description.fontWeight }}
+                        style={{ color: elementStyles.description.color, fontSize: `${elementStyles.description.fontSize}px`, fontWeight: elementStyles.description.fontWeight as FontWeight }}
                       >
                         {description}
                       </p>
@@ -394,13 +400,13 @@ export function CertificateEditor({ certificate }: { certificate: Partial<Templa
                   </div>
                 </Draggable>
 
-                <Draggable bounds="parent" position={positions.signature} onStop={handleStop('signature')}>
-                  <div className="absolute cursor-move p-2" style={{ transform: `translate(${positions.signature.x}px, ${positions.signature.y}px)` }}>
+                <Draggable bounds="parent" position={positions.signature} onStop={handleStop('signature')} nodeRef={signatureRef}>
+                  <div className="absolute cursor-move p-2" ref={signatureRef}>
                     <div style={{ width: `${elementStyles.signature.width}%`, textAlign: elementStyles.signature.textAlign }}>
                       <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.signature.color}}>
                         <p
                           className={cn(`font-${elementStyles.signature.fontFamily}`)}
-                          style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.signature.fontSize, color: elementStyles.signature.color, fontWeight: elementStyles.signature.fontWeight }}
+                          style={{ color: elementStyles.signature.color, fontSize: `${elementStyles.signature.fontSize}px`, fontWeight: elementStyles.signature.fontWeight as FontWeight }}
                         >
                           {signatureText}
                         </p>
@@ -409,13 +415,13 @@ export function CertificateEditor({ certificate }: { certificate: Partial<Templa
                   </div>
                 </Draggable>
 
-                <Draggable bounds="parent" position={positions.date} onStop={handleStop('date')}>
-                  <div className="absolute cursor-move p-2" style={{ transform: `translate(${positions.date.x}px, ${positions.date.y}px)` }}>
+                <Draggable bounds="parent" position={positions.date} onStop={handleStop('date')} nodeRef={dateRef}>
+                  <div className="absolute cursor-move p-2" ref={dateRef}>
                     <div style={{ width: `${elementStyles.date.width}%`, textAlign: elementStyles.date.textAlign }}>
                       <div className="border-t-2 border-current pt-1" style={{borderColor: elementStyles.date.color}}>
                         <p
                           className={cn(`font-${elementStyles.date.fontFamily}`)}
-                          style={{ textShadow: '1px 1px 2px white', fontSize: elementStyles.date.fontSize, color: elementStyles.date.color, fontWeight: elementStyles.date.fontWeight }}
+                          style={{ color: elementStyles.date.color, fontSize: `${elementStyles.date.fontSize}px`, fontWeight: elementStyles.date.fontWeight as FontWeight }}
                         >
                           {dateText} &#123;&#123;event.date&#125;&#125;
                         </p>
