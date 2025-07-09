@@ -1,5 +1,5 @@
 import { TemplateEditorClient } from "@/components/template-editor-client";
-import { getTemplateAction } from "@/actions/template-actions";
+import { getTemplateAction, Template } from "@/actions/template-actions";
 
 /**
  * Página del Editor de Plantillas.
@@ -7,17 +7,18 @@ import { getTemplateAction } from "@/actions/template-actions";
  * o prepara el editor para una nueva plantilla.
  * @param {object} props - Propiedades del componente.
  * @param {object} props.searchParams - Parámetros de la URL.
- * @param {string} props.searchParams.id - El ID de la plantilla a editar.
+ * @param {string} props.params.id - El ID de la plantilla a editar.
  */
-export default async function TemplateEditorPage({ searchParams }: { searchParams: { id?: string } }) {
-  const templateId = searchParams.id ? parseInt(searchParams.id, 10) : undefined;
-  let templateData = null;
+export default async function TemplateEditorPage({ params }: { params: { id: string } }) {
+  const templateId = params.id !== 'new' ? parseInt(params.id, 10) : undefined;
+  let templateData: Template | undefined = undefined;
 
   if (templateId) {
-    templateData = await getTemplateAction(templateId);
+    const result = await getTemplateAction(templateId);
+    templateData = result || undefined;
   }
 
   return (
-    <TemplateEditorClient template={templateData} />
+    <TemplateEditorClient templateData={templateData} />
   );
 }

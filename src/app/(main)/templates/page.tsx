@@ -33,7 +33,7 @@ export default async function TemplatesPage() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/templates/new">
+          <Link href="/templates/select-type">
             <PlusCircle className="mr-2" />
             Crear Diseño
           </Link>

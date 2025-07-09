@@ -13,7 +13,7 @@ export default function NewTemplatePage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-        <Link href="/templates/edit/new" className="group">
+        <Link href="/templates/editor/new" className="group">
           <Card className="h-full flex flex-col items-center justify-center text-center p-8 transition-all duration-300 ease-in-out group-hover:shadow-xl group-hover:-translate-y-2 border-2 border-transparent hover:border-primary">
             <CardHeader>
               <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full mb-4">
@@ -27,7 +27,7 @@ export default function NewTemplatePage() {
           </Card>
         </Link>
 
-        <Link href="/templates/certificate/new" className="group">
+        <Link href="/certificates/editor/new" className="group">
           <Card className="h-full flex flex-col items-center justify-center text-center p-8 transition-all duration-300 ease-in-out group-hover:shadow-xl group-hover:-translate-y-2 border-2 border-transparent hover:border-primary">
             <CardHeader>
               <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full mb-4">
