@@ -126,7 +126,7 @@ export function CertificateEditor({ certificate }: { certificate: Partial<Templa
       if (result.id) {
         // Para evitar que el usuario haga cambios mientras redirige
         setTimeout(() => {
-          router.push(`/templates/certificate/edit/${result.id}`);
+          router.push(`/certificates/editor/${result.id}`);
         }, 1000);
       }
     } else {

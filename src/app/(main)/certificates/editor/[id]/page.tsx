@@ -3,14 +3,18 @@ import { CertificateEditor } from '@/components/certificate-editor';
 import { notFound } from 'next/navigation';
 
 export default async function EditCertificatePage({ params }: { params: { id: string } }) {
-  const id = Number(params.id);
-  if (isNaN(id)) {
-    return notFound();
-  }
+  const certificateId = params.id !== 'new' ? parseInt(params.id, 10) : undefined;
+  let certificate: any = undefined; // Usamos 'any' temporalmente para flexibilidad
 
-  const certificate = await getTemplateAction(id);
-
-  if (!certificate || certificate.tipo !== 'certificate') {
+  if (certificateId) {
+    const data = await getTemplateAction(certificateId);
+    // Nos aseguramos de que sea un certificado
+    if (!data || data.tipo !== 'certificate') {
+      return notFound();
+    }
+    certificate = data;
+  } else if (params.id !== 'new') {
+    // Si el ID no es 'new' y tampoco es un número válido, es un error.
     return notFound();
   }
 

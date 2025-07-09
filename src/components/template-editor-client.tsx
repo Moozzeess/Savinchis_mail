@@ -156,7 +156,7 @@ export function TemplateEditorClient({ templateData }: { templateData?: Template
       if (result.id) {
         // Esperar un momento para que el toast sea visible y luego redirigir
         setTimeout(() => {
-          router.push(`/templates/edit/${result.id}`);
+          router.push(`/templates/editor/${result.id}`);
         }, 1000);
       } else {
         router.push('/templates');
