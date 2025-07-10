@@ -26,11 +26,22 @@ export interface Template {
     tipo: 'template' | 'certificate';
 }
 
-export async function getTemplatesAction(): Promise<Template[]> {
+export async function getTemplatesAction(params?: { tipo: 'template' | 'certificate' }): Promise<Template[]> {
     let connection;
     try {
         connection = await getDbConnection();
-        const [rows] = await connection.execute('SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas ORDER BY fecha_creacion DESC');
+        
+        let query = 'SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas';
+        const queryParams: string[] = [];
+
+        if (params?.tipo) {
+            query += ' WHERE tipo = ?';
+            queryParams.push(params.tipo);
+        }
+
+        query += ' ORDER BY fecha_creacion DESC';
+
+        const [rows] = await connection.execute(query, queryParams);
         
         const templates = (rows as any[]).map(row => ({
             ...row,

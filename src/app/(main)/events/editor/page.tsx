@@ -1,15 +1,21 @@
-
 import { EventEditor } from "@/components/event-editor";
+import { getTemplatesAction } from "@/actions/template-actions";
 
 /**
  * Página del Editor de Eventos.
- * Contiene el componente cliente que gestiona la creación y edición
- * de eventos, incluyendo la personalización de certificados.
+ * Obtiene las plantillas de invitaciones y certificados y las pasa al componente cliente
+ * que gestiona la creación y edición de eventos.
  */
-export default function EventEditorPage() {
+export default async function EventEditorPage() {
+  const invitationTemplates = await getTemplatesAction({ tipo: 'template' });
+  const certificateTemplates = await getTemplatesAction({ tipo: 'certificate' });
+
   return (
     <div className="space-y-6">
-      <EventEditor />
+      <EventEditor 
+        invitationTemplates={invitationTemplates}
+        certificateTemplates={certificateTemplates}
+      />
     </div>
   );
 }

@@ -36,7 +36,7 @@ export async function getEventsAction() {
                 END AS estado,
                 0 as asistentes
             FROM eventos e
-            JOIN plantillas p ON e.id_plantilla = p.id_plantilla
+            JOIN plantillas p ON e.id_plantilla_invitacion = p.id_plantilla
             ORDER BY e.fecha DESC
         `);
         return rows as any[];
@@ -51,15 +51,16 @@ export async function getEventsAction() {
 export async function saveEventAction(data: {
     nombre: string;
     fecha: Date;
-    id_plantilla: number;
+    id_plantilla_invitacion: number;
+    id_plantilla_certificado: number;
 }) {
-    const { nombre, fecha, id_plantilla } = data;
+    const { nombre, fecha, id_plantilla_invitacion, id_plantilla_certificado } = data;
     let connection;
     try {
         connection = await getDbConnection();
         await connection.execute(
-            'INSERT INTO eventos (nombre, fecha, id_plantilla) VALUES (?, ?, ?)',
-            [nombre, fecha, id_plantilla]
+            'INSERT INTO eventos (nombre, fecha, id_plantilla_invitacion, id_plantilla_certificado) VALUES (?, ?, ?, ?)',
+            [nombre, fecha, id_plantilla_invitacion, id_plantilla_certificado]
         );
 
         revalidatePath('/events');
