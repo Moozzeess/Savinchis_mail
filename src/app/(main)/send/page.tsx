@@ -483,38 +483,86 @@ export default function SendPage() {
 
   const renderContentSelector = () => {
     switch (contentType) {
-        case 'template':
-            return <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}><SelectTrigger><SelectValue placeholder="Elige una plantilla..." /></SelectTrigger><SelectContent>{templates.map(t => <SelectItem key={t.id_plantilla} value={String(t.id_plantilla)}>{t.nombre}</SelectItem>)}</SelectContent></Select>;
-        case 'event':
-            return <Select onValueChange={setSelectedEventId}><SelectTrigger><SelectValue placeholder="Elige un evento para la invitación..." /></SelectTrigger><SelectContent>{events.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent></Select>;
-        case 'survey':
-            return <Select onValueChange={setSelectedSurveyId}><SelectTrigger><SelectValue placeholder="Elige una encuesta..." /></SelectTrigger><SelectContent>{surveys.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent></Select>;
-        case 'certificate':
-            return <Select onValueChange={setSelectedEventId}><SelectTrigger><SelectValue placeholder="Elige un evento para el certificado..." /></SelectTrigger><SelectContent>{events.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}</SelectContent></Select>;
-        default:
-            return null;
+      case 'template':
+        return (
+          <div className="space-y-2">
+            <Label>Usar Plantilla</Label>
+            <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}>
+              <SelectTrigger><SelectValue placeholder="Selecciona una plantilla" /></SelectTrigger>
+              <SelectContent>
+                {templates.map((t: Template) => (
+                  <SelectItem key={t.id_plantilla} value={String(t.id_plantilla)}>
+                    {t.nombre}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      case 'event':
+        return (
+          <div className="space-y-2">
+            <Label>Seleccionar Evento</Label>
+            <Select value={selectedEventId} onValueChange={setSelectedEventId}>
+              <SelectTrigger><SelectValue placeholder="Selecciona un evento" /></SelectTrigger>
+              <SelectContent>
+                {events.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      case 'survey':
+        return (
+          <div className="space-y-2">
+            <Label>Seleccionar Encuesta</Label>
+            <Select value={selectedSurveyId} onValueChange={setSelectedSurveyId}>
+              <SelectTrigger><SelectValue placeholder="Selecciona una encuesta" /></SelectTrigger>
+              <SelectContent>
+                {surveys.map((survey) => (
+                  <SelectItem key={survey.id} value={survey.id}>{survey.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      case 'certificate':
+        return (
+          <div className="space-y-2">
+            <Label>Seleccionar Plantilla de Certificado</Label>
+            <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}>
+              <SelectTrigger><SelectValue placeholder="Selecciona una plantilla de certificado" /></SelectTrigger>
+              <SelectContent>
+                {certificateTemplates.map((template: { id: string; name: string; content: string }) => (
+                  <SelectItem key={template.id} value={template.id}>{template.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      default:
+        return null;
     }
-  }
-  
+  };
+
   const renderSenderInput = () => {
     if (isIT) {
-        return (
-            <div className="space-y-2">
-                <Label htmlFor="sender-email">Email del Remitente</Label>
-                <Select value={senderEmail} onValueChange={setSenderEmail}>
-                    <SelectTrigger id="sender-email"><SelectValue placeholder="Selecciona un remitente..." /></SelectTrigger>
-                    <SelectContent>{managedSenders.map(sender => <SelectItem key={sender.email} value={sender.email}>{sender.name} ({sender.email})</SelectItem>)}</SelectContent>
-                </Select>
-            </div>
-        )
+      return (
+        <div className="space-y-2">
+          <Label htmlFor="sender-email">Email del Remitente</Label>
+          <Select value={senderEmail} onValueChange={setSenderEmail}>
+            <SelectTrigger id="sender-email"><SelectValue placeholder="Selecciona un remitente..." /></SelectTrigger>
+            <SelectContent>{managedSenders.map(sender => <SelectItem key={sender.email} value={sender.email}>{sender.name} ({sender.email})</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+      );
     }
     return (
-        <div className="space-y-2">
-            <Label htmlFor="sender-email">Email del Remitente</Label>
-            <Input id="sender-email" type="email" value={senderEmail} onChange={(e) => setSenderEmail(e.target.value)} />
-        </div>
-    )
-  }
+      <div className="space-y-2">
+        <Label htmlFor="sender-email">Email del Remitente</Label>
+        <Input id="sender-email" type="email" value={senderEmail} onChange={(e) => setSenderEmail(e.target.value)} />
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -534,31 +582,30 @@ export default function SendPage() {
               <CardTitle>Composición y Configuración</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              
               <div className="space-y-4">
-                  <div className="space-y-2">
-                      <Label>Tipo de Contenido</Label>
-                      <Select value={contentType} onValueChange={(v) => setContentType(v as ContentType)}>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                              <SelectItem value="template">Usar Plantilla</SelectItem>
-                              <SelectItem value="event">Invitación a Evento</SelectItem>
-                              <SelectItem value="survey">Enviar Encuesta</SelectItem>
-                              <SelectItem value="certificate">Certificado de Evento</SelectItem>
-                              <SelectItem value="custom">Personalizado (HTML)</SelectItem>
-                          </SelectContent>
-                      </Select>
-                  </div>
-                  {contentType !== 'custom' && <div className="space-y-2">{renderContentSelector()}</div>}
+                <div className="space-y-2">
+                  <Label>Tipo de Contenido</Label>
+                  <Select value={contentType} onValueChange={(value) => setContentType(value as ContentType)}>
+                    <SelectTrigger><SelectValue placeholder="Seleccionar tipo de contenido" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="template">Usar Plantilla</SelectItem>
+                      <SelectItem value="event">Invitación a Evento</SelectItem>
+                      <SelectItem value="survey">Enviar Encuesta</SelectItem>
+                      <SelectItem value="certificate">Certificado de Evento</SelectItem>
+                      <SelectItem value="custom">Personalizado (HTML)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {renderContentSelector()}
               </div>
 
               <div className="space-y-4 border-t pt-4">
                 <div className="grid md:grid-cols-2 gap-4">
-                    {renderSenderInput()}
-                    <div className="space-y-2">
-                        <Label htmlFor="subject">Asunto del Correo</Label>
-                        <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
-                    </div>
+                  {renderSenderInput()}
+                  <div className="space-y-2">
+                    <Label htmlFor="subject">Asunto del Correo</Label>
+                    <Input id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -577,13 +624,13 @@ export default function SendPage() {
           
           <Card>
             <CardHeader>
-                <CardTitle>Destinatarios</CardTitle>
-                <CardDescription>{recipientSummary}</CardDescription>
+              <CardTitle>Destinatarios</CardTitle>
+              <CardDescription>{recipientSummary}</CardDescription>
             </CardHeader>
             <CardContent>
-                <Button variant="outline" onClick={() => setIsRecipientDialogOpen(true)}>
-                    Seleccionar Fuente de Destinatarios
-                </Button>
+              <Button variant="outline" onClick={() => setIsRecipientDialogOpen(true)}>
+                Seleccionar Fuente de Destinatarios
+              </Button>
             </CardContent>
           </Card>
 
@@ -596,78 +643,78 @@ export default function SendPage() {
                 </DialogDescription>
               </DialogHeader>
               <div className="p-1">
-                  <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input placeholder="Buscar listas o segmentos..." className="pl-9" />
-                  </div>
-                  <Tabs defaultValue="lists" className="mt-4">
-                      <TabsList className="grid w-full grid-cols-3">
-                          <TabsTrigger value="lists"><List className="mr-2 h-4 w-4" />Listas</TabsTrigger>
-                          <TabsTrigger value="segments" disabled={!isIT}><Zap className="mr-2 h-4 w-4" />Segmentos</TabsTrigger>
-                          <TabsTrigger value="individuals"><Users className="mr-2 h-4 w-4" />Individuales</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="lists" className="mt-4">
-                          <Accordion type="single" collapsible className="w-full" onValueChange={(v) => setRecipientSource(v as RecipientSource)}>
-                              <AccordionItem value="file">
-                                  <AccordionTrigger>Subir Archivo (CSV/Excel)</AccordionTrigger>
-                                  <AccordionContent className="pt-4 space-y-2">
-                                      <Label htmlFor="file-upload">Sube un archivo de contactos</Label>
-                                      <Input id="file-upload" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" onChange={handleFileChange} />
-                                      <p className="text-sm text-muted-foreground">El archivo debe contener una columna "email".</p>
-                                  </AccordionContent>
-                              </AccordionItem>
-                              <AccordionItem value="date">
-                                  <AccordionTrigger>Contactos por Fecha (BD)</AccordionTrigger>
-                                  <AccordionContent className="pt-4 space-y-2">
-                                    <Label>Selecciona una fecha de visita</Label>
-                                    <Popover><PopoverTrigger asChild><Button variant={"outline"} className="w-[280px] justify-start text-left font-normal"><CalendarIcon className="mr-2 h-4 w-4" />{date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={date} onSelect={setDate} initialFocus locale={es} /></PopoverContent></Popover>
-                                  </AccordionContent>
-                              </AccordionItem>
-                          </Accordion>
-                      </TabsContent>
-                      <TabsContent value="segments" className="mt-4 space-y-2">
-                        <Label htmlFor="sql-query">Escribe tu consulta SQL</Label>
-                        <Textarea id="sql-query" value={sqlQuery} onChange={(e) => { setSqlQuery(e.target.value); setRecipientSource('sql'); }} rows={6} />
-                        <p className="text-sm text-muted-foreground">La consulta debe devolver una columna "email".</p>
-                      </TabsContent>
-                      <TabsContent value="individuals" className="mt-4 space-y-2">
-                          <Label htmlFor="individual-emails">Pegar Correos</Label>
-                          <Textarea id="individual-emails" placeholder="ejemplo1@dominio.com, ejemplo2@dominio.com" rows={6} value={individualEmails} onChange={(e) => { setIndividualEmails(e.target.value); setRecipientSource('individual'); }} />
-                          <p className="text-sm text-muted-foreground">Separa los correos con comas, espacios o saltos de línea.</p>
-                      </TabsContent>
-                  </Tabs>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input placeholder="Buscar listas o segmentos..." className="pl-9" />
+                </div>
+                <Tabs defaultValue="lists" className="mt-4">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="lists"><List className="mr-2 h-4 w-4" />Listas</TabsTrigger>
+                    <TabsTrigger value="segments" disabled={!isIT}><Zap className="mr-2 h-4 w-4" />Segmentos</TabsTrigger>
+                    <TabsTrigger value="individuals"><Users className="mr-2 h-4 w-4" />Individuales</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="lists" className="mt-4">
+                    <Accordion type="single" collapsible className="w-full" onValueChange={(v) => setRecipientSource(v as RecipientSource)}>
+                      <AccordionItem value="file">
+                        <AccordionTrigger>Subir Archivo (CSV/Excel)</AccordionTrigger>
+                        <AccordionContent className="pt-4 space-y-2">
+                          <Label htmlFor="file-upload">Sube un archivo de contactos</Label>
+                          <Input id="file-upload" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" onChange={handleFileChange} />
+                          <p className="text-sm text-muted-foreground">El archivo debe contener una columna "email".</p>
+                        </AccordionContent>
+                      </AccordionItem>
+                      <AccordionItem value="date">
+                        <AccordionTrigger>Contactos por Fecha (BD)</AccordionTrigger>
+                        <AccordionContent className="pt-4 space-y-2">
+                          <Label>Selecciona una fecha de visita</Label>
+                          <Popover><PopoverTrigger asChild><Button variant={"outline"} className="w-[280px] justify-start text-left font-normal"><CalendarIcon className="mr-2 h-4 w-4" />{date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}</Button></PopoverTrigger><PopoverContent className="w-auto p-0"><Calendar mode="single" selected={date} onSelect={setDate} initialFocus locale={es} /></PopoverContent></Popover>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </TabsContent>
+                  <TabsContent value="segments" className="mt-4 space-y-2">
+                    <Label htmlFor="sql-query">Escribe tu consulta SQL</Label>
+                    <Textarea id="sql-query" value={sqlQuery} onChange={(e) => { setSqlQuery(e.target.value); setRecipientSource('sql'); }} rows={6} />
+                    <p className="text-sm text-muted-foreground">La consulta debe devolver una columna "email".</p>
+                  </TabsContent>
+                  <TabsContent value="individuals" className="mt-4 space-y-2">
+                    <Label htmlFor="individual-emails">Pegar Correos</Label>
+                    <Textarea id="individual-emails" placeholder="ejemplo1@dominio.com, ejemplo2@dominio.com" rows={6} value={individualEmails} onChange={(e) => { setIndividualEmails(e.target.value); setRecipientSource('individual'); }} />
+                    <p className="text-sm text-muted-foreground">Separa los correos con comas, espacios o saltos de línea.</p>
+                  </TabsContent>
+                </Tabs>
               </div>
               <DialogFooter className="mt-4">
-                  <Button variant="ghost" onClick={() => setIsRecipientDialogOpen(false)}>Cancelar</Button>
-                  <Button onClick={handleSaveRecipients}>Guardar</Button>
+                <Button variant="ghost" onClick={() => setIsRecipientDialogOpen(false)}>Cancelar</Button>
+                <Button onClick={handleSaveRecipients}>Guardar</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
 
           <Card>
             <CardHeader>
-                <CardTitle>Envío de Prueba</CardTitle>
+              <CardTitle>Envío de Prueba</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="flex gap-2 items-end">
-                  <div className="flex-grow space-y-2">
-                    <Label htmlFor="test-email" className="sr-only">Correo de Prueba</Label>
-                    <Input id="test-email" type="email" placeholder="tu-correo@ejemplo.com" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} />
-                  </div>
-                  <Button onClick={handleSendTestEmail} variant="secondary" disabled={isSendingTest || isSending}>
-                    {isSendingTest ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                  </Button>
+              <div className="flex gap-2 items-end">
+                <div className="flex-grow space-y-2">
+                  <Label htmlFor="test-email" className="sr-only">Correo de Prueba</Label>
+                  <Input id="test-email" type="email" placeholder="tu-correo@ejemplo.com" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} />
                 </div>
+                <Button onClick={handleSendTestEmail} variant="secondary" disabled={isSendingTest || isSending}>
+                  {isSendingTest ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                </Button>
+              </div>
             </CardContent>
           </Card>
             
           <div className="flex items-start space-x-3 rounded-md bg-muted/50 p-3 text-sm">
-              <Info className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-              <div>
-                  <p className="text-muted-foreground">Destinatarios detectados: <span className="font-bold text-foreground">{recipientCount}</span></p>
-                  <p className="text-muted-foreground">Tiempo estimado: <span className="font-bold text-foreground">{estimatedTime}</span></p>
-                  <p className="text-muted-foreground mt-1 text-xs">Los ajustes de velocidad de envío se gestionan en la sección de <span className="font-bold text-foreground">Ajustes</span>.</p>
-              </div>
+            <Info className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-muted-foreground">Destinatarios detectados: <span className="font-bold text-foreground">{recipientCount}</span></p>
+              <p className="text-muted-foreground">Tiempo estimado: <span className="font-bold text-foreground">{estimatedTime}</span></p>
+              <p className="text-muted-foreground mt-1 text-xs">Los ajustes de velocidad de envío se gestionan en la sección de <span className="font-bold text-foreground">Ajustes</span>.</p>
+            </div>
           </div>
           
           <Button onClick={handleSendCampaign} disabled={isSending || isSendingTest} size="lg" className="w-full">
@@ -680,98 +727,98 @@ export default function SendPage() {
         <div className="sticky top-24 space-y-8">
           <Card>
             <CardHeader>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <CardTitle>Vista Previa del Correo</CardTitle>
-                        <CardDescription>Así es como los destinatarios verán tu correo.</CardDescription>
-                    </div>
-                    <div className="flex items-center gap-1 rounded-md bg-muted p-1">
-                        <Button variant={previewMode === 'desktop' ? 'secondary' : 'ghost'} size="icon" className="h-8 w-8" onClick={() => setPreviewMode('desktop')} aria-label="Vista de escritorio">
-                            <Laptop className="h-4 w-4" />
-                        </Button>
-                        <Button variant={previewMode === 'mobile' ? 'secondary' : 'ghost'} size="icon" className="h-8 w-8" onClick={() => setPreviewMode('mobile')} aria-label="Vista móvil">
-                            <Smartphone className="h-4 w-4" />
-                        </Button>
-                    </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Vista Previa del Correo</CardTitle>
+                  <CardDescription>Así es como los destinatarios verán tu correo.</CardDescription>
                 </div>
+                <div className="flex items-center gap-1 rounded-md bg-muted p-1">
+                  <Button variant={previewMode === 'desktop' ? 'secondary' : 'ghost'} size="icon" className="h-8 w-8" onClick={() => setPreviewMode('desktop')} aria-label="Vista de escritorio">
+                    <Laptop className="h-4 w-4" />
+                  </Button>
+                  <Button variant={previewMode === 'mobile' ? 'secondary' : 'ghost'} size="icon" className="h-8 w-8" onClick={() => setPreviewMode('mobile')} aria-label="Vista móvil">
+                    <Smartphone className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
+              <div className={cn(
+                "w-full transition-all duration-300 ease-in-out",
+                previewMode === 'mobile' && 'mx-auto w-[375px]'
+              )}>
                 <div className={cn(
-                    "w-full transition-all duration-300 ease-in-out",
-                    previewMode === 'mobile' && 'mx-auto w-[375px]'
+                  "rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden",
+                  previewMode === 'mobile' && 'border-8 border-black rounded-[40px] shadow-lg'
                 )}>
-                    <div className={cn(
-                        "rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden",
-                        previewMode === 'mobile' && 'border-8 border-black rounded-[40px] shadow-lg'
-                    )}>
-                        {/* Header */}
-                        <div className="flex items-center justify-between p-3 border-b bg-muted/30">
-                            <div className="flex items-center gap-3">
-                                <Avatar className="h-8 w-8">
-                                    <AvatarFallback>AP</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="font-semibold text-sm">{senderEmail || 'remitente@ejemplo.com'}</p>
-                                    <p className="text-xs text-muted-foreground">Para: destinatario@ejemplo.com</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-1 text-muted-foreground">
-                                <span className="text-xs mr-2">Ahora</span>
-                                <Button variant="ghost" size="icon" className="size-8"><Reply className="size-4" /></Button>
-                                <Button variant="ghost" size="icon" className="size-8"><ReplyAll className="size-4" /></Button>
-                                <Button variant="ghost" size="icon" className="size-8"><Forward className="size-4" /></Button>
-                                <Button variant="ghost" size="icon" className="size-8"><MoreHorizontal className="size-4" /></Button>
-                            </div>
-                        </div>
-
-                        {/* Subject and Attachments */}
-                        <div className="p-4 border-b space-y-4">
-                            <h2 className="text-xl font-bold">{subject || 'Asunto del correo'}</h2>
-
-                            {attachmentName && (
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <p className="text-sm font-medium">1 archivo adjunto</p>
-                                    <span className="text-sm text-muted-foreground">(~256 KB)</span>
-                                </div>
-                                <div className="mt-2 flex items-center gap-2 rounded-md border p-2 max-w-xs bg-muted/30">
-                                    <File className="h-6 w-6 text-primary flex-shrink-0" />
-                                    <div className="truncate">
-                                        <p className="text-sm font-medium truncate">{attachmentName}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            )}
-                        </div>
-
-                        {/* Body */}
-                        <div className="bg-white w-full">
-                            <iframe
-                                srcDoc={emailBody}
-                                title="Email Preview"
-                                className={cn(
-                                    "w-full h-[600px] border-0",
-                                    previewMode === 'mobile' && 'rounded-[32px]'
-                                )}
-                                sandbox="allow-scripts"
-                            />
-                            {certificatePreview && (
-                                <div className="p-4 bg-gray-100">
-                                    <h3 className="text-lg font-semibold mb-2">Vista Previa del Certificado</h3>
-                                    <img src={certificatePreview} alt="Vista previa del certificado" className="max-w-full border rounded-md" />
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Footer actions */}
-                        <div className="p-2 border-t flex items-center gap-2 bg-muted/30">
-                            <Button variant="outline"><Reply className="mr-2"/> Responder</Button>
-                            <Button variant="outline"><Forward className="mr-2"/> Reenviar</Button>
-                        </div>
+                  {/* Header */}
+                  <div className="flex items-center justify-between p-3 border-b bg-muted/30">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback>AP</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-semibold text-sm">{senderEmail || 'remitente@ejemplo.com'}</p>
+                        <p className="text-xs text-muted-foreground">Para: destinatario@ejemplo.com</p>
+                      </div>
                     </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <span className="text-xs mr-2">Ahora</span>
+                      <Button variant="ghost" size="icon" className="size-8"><Reply className="size-4" /></Button>
+                      <Button variant="ghost" size="icon" className="size-8"><ReplyAll className="size-4" /></Button>
+                      <Button variant="ghost" size="icon" className="size-8"><Forward className="size-4" /></Button>
+                      <Button variant="ghost" size="icon" className="size-8"><MoreHorizontal className="size-4" /></Button>
+                    </div>
+                  </div>
+
+                  {/* Subject and Attachments */}
+                  <div className="p-4 border-b space-y-4">
+                    <h2 className="text-xl font-bold">{subject || 'Asunto del correo'}</h2>
+
+                    {attachmentName && (
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium">1 archivo adjunto</p>
+                        <span className="text-sm text-muted-foreground">(~256 KB)</span>
+                      </div>
+                      <div className="mt-2 flex items-center gap-2 rounded-md border p-2 max-w-xs bg-muted/30">
+                        <File className="h-6 w-6 text-primary flex-shrink-0" />
+                        <div className="truncate">
+                          <p className="text-sm font-medium truncate">{attachmentName}</p>
+                        </div>
+                      </div>
+                    </div>
+                    )}
+                  </div>
+
+                  {/* Body */}
+                  <div className="bg-white w-full">
+                    <iframe
+                      srcDoc={emailBody}
+                      title="Email Preview"
+                      className={cn(
+                        "w-full h-[600px] border-0",
+                        previewMode === 'mobile' && 'rounded-[32px]'
+                      )}
+                      sandbox="allow-scripts"
+                    />
+                    {certificatePreview && (
+                      <div className="p-4 bg-gray-100">
+                        <h3 className="text-lg font-semibold mb-2">Vista Previa del Certificado</h3>
+                        <img src={certificatePreview} alt="Vista previa del certificado" className="max-w-full border rounded-md" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Footer actions */}
+                  <div className="p-2 border-t flex items-center gap-2 bg-muted/30">
+                    <Button variant="outline"><Reply className="mr-2"/> Responder</Button>
+                    <Button variant="outline"><Forward className="mr-2"/> Reenviar</Button>
+                  </div>
                 </div>
+              </div>
             </CardContent>
-        </Card>
+          </Card>
 
           {lastRunStats && (
             <Card>

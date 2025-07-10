@@ -36,7 +36,7 @@ export const events: any[] = [];
  * El contenido es una imagen PNG codificada en base64.
  * Los datos de ejemplo han sido eliminados.
  */
-export const certificateTemplates: Record<string, string> = {};
+export const certificateTemplates: { id: string; name: string; content: string }[] = [];
 
 /**
  * Datos de ejemplo para los remitentes gestionados por TI.
