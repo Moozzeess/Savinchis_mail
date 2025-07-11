@@ -21,8 +21,8 @@ export function EventEditor({
   invitationTemplates, 
   certificateTemplates 
 }: { 
-  invitationTemplates: Template[], 
-  certificateTemplates: Template[] 
+  invitationTemplates: Pick<Template, 'id_plantilla' | 'nombre'>[], 
+  certificateTemplates: Pick<Template, 'id_plantilla' | 'nombre'>[] 
 }) {
   const { toast } = useToast();
   const router = useRouter();

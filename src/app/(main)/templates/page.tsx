@@ -9,19 +9,23 @@ import {
 } from "@/components/ui/card";
 import { PlusCircle, Edit, Mail, Award } from "lucide-react";
 import Link from "next/link";
-import { getTemplatesAction } from "@/actions/template-actions";
+import { getTemplatesAction, type Template } from "@/actions/template-actions";
 import { generateHtmlFromBlocks } from "@/lib/template-utils";
 import { DeleteTemplateButton } from "./delete-template-button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 
 /**
  * Página de Diseños.
  * Muestra una lista de las plantillas de correo y certificados existentes
  * y permite crear nuevos o editar/eliminar los actuales.
  */
-export default async function TemplatesPage() {
-  const templates = await getTemplatesAction();
+export default async function TemplatesPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+  const page = Number(searchParams?.page) || 1;
+  const limit = 9;
+
+  const { templates, total } = await getTemplatesAction({ page, limit });
 
   return (
     <div className="space-y-6">
@@ -47,7 +51,7 @@ export default async function TemplatesPage() {
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {templates.map((template) => {
+          {templates.map((template: Template) => {
             const isCertificate = template.tipo === 'certificate';
             const editUrl = isCertificate
               ? `/certificates/editor/${template.id_plantilla}`
@@ -120,6 +124,7 @@ export default async function TemplatesPage() {
           })}
         </div>
       )}
+      <PaginationControls total={total} limit={limit} />
     </div>
   );
 }

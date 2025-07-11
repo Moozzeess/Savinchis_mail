@@ -26,20 +26,33 @@ export interface Template {
     tipo: 'template' | 'certificate';
 }
 
-export async function getTemplatesAction(params?: { tipo: 'template' | 'certificate' }): Promise<Template[]> {
+export async function getTemplatesAction(params: { 
+    tipo?: 'template' | 'certificate',
+    page?: number,
+    limit?: number,
+}): Promise<{templates: Template[], total: number}> {
     let connection;
     try {
         connection = await getDbConnection();
         
-        let query = 'SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas';
-        const queryParams: string[] = [];
+        const { tipo, page = 1, limit = 9 } = params;
+        const offset = (page - 1) * limit;
 
-        if (params?.tipo) {
-            query += ' WHERE tipo = ?';
-            queryParams.push(params.tipo);
+        let whereClause = '';
+        const queryParams: (string | number)[] = [];
+
+        if (tipo) {
+            whereClause = ' WHERE tipo = ?';
+            queryParams.push(tipo);
         }
 
-        query += ' ORDER BY fecha_creacion DESC';
+        // Query for total count
+        const countQuery = `SELECT COUNT(*) as total FROM plantillas${whereClause}`;
+        const [countRows] = await connection.execute(countQuery, queryParams);
+        const total = (countRows as any[])[0].total;
+
+        // Query for paginated data
+        const query = `SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas${whereClause} ORDER BY fecha_creacion DESC LIMIT ${limit} OFFSET ${offset}`;
 
         const [rows] = await connection.execute(query, queryParams);
         
@@ -48,9 +61,38 @@ export async function getTemplatesAction(params?: { tipo: 'template' | 'certific
             contenido: row.contenido ? (typeof row.contenido === 'string' ? JSON.parse(row.contenido) : row.contenido) : [],
         }));
         
-        return templates as Template[];
+        return { templates: templates as Template[], total };
     } catch (error) {
         console.error('Error al obtener las plantillas:', error);
+        throw error; // Re-lanza el error para que el componente que llama pueda manejarlo.
+    } finally {
+        if (connection) await connection.end();
+    }
+}
+
+/**
+ * Obtiene una lista ligera de plantillas (solo ID y nombre).
+ * Ideal para rellenar selectores y listas sin cargar datos pesados como el `contenido`.
+ */
+export async function getTemplateListAction(params?: { tipo: 'template' | 'certificate' }): Promise<Pick<Template, 'id_plantilla' | 'nombre'>[]> {
+    let connection;
+    try {
+        connection = await getDbConnection();
+        
+        let query = 'SELECT id_plantilla, nombre FROM plantillas';
+        const queryParams: string[] = [];
+
+        if (params?.tipo) {
+            query += ' WHERE tipo = ?';
+            queryParams.push(params.tipo);
+        }
+
+        query += ' ORDER BY nombre ASC';
+
+        const [rows] = await connection.execute(query, queryParams);
+        return rows as Pick<Template, 'id_plantilla' | 'nombre'>[];
+    } catch (error) {
+        console.error('Error al obtener la lista de plantillas:', error);
         return [];
     } finally {
         if (connection) await connection.end();
