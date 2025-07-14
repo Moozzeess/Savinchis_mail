@@ -10,7 +10,7 @@ import {
 import { PlusCircle, Edit, Mail, Award } from "lucide-react";
 import Link from "next/link";
 import { getTemplatesAction, type Template } from "@/actions/template-actions";
-import { generateHtmlFromBlocks } from "@/lib/template-utils";
+import { Block, generateHtmlFromBlocks } from "@/lib/template-utils";
 import { DeleteTemplateButton } from "./delete-template-button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
@@ -57,8 +57,8 @@ export default async function TemplatesPage({ searchParams }: { searchParams: { 
               ? `/certificates/editor/${template.id_plantilla}`
               : `/templates/editor/${template.id_plantilla}`;
 
-            let blocks = [];
-            if (template.contenido) {
+            let blocks: Block[] = [];
+            /*if (template.contenido) {
               try {
                 const parsedContent = typeof template.contenido === 'string' 
                   ? JSON.parse(template.contenido) 
@@ -70,7 +70,7 @@ export default async function TemplatesPage({ searchParams }: { searchParams: { 
               } catch (error) {
                 console.error(`Error al parsear contenido de plantilla ${template.id_plantilla}:`, error);
               }
-            }
+            }*/
 
             const templateHtml = !isCertificate && blocks.length > 0
               ? generateHtmlFromBlocks(blocks)

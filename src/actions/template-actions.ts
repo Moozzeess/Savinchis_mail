@@ -71,7 +71,8 @@ export async function getTemplatesAction(params: {
         
         const templates = (rows as any[]).map(row => ({
             ...row,
-            contenido: row.contenido ? (typeof row.contenido === 'string' ? JSON.parse(row.contenido) : row.contenido) : [],
+            contenido: row.contenido,
+            //contenido: row.contenido ? (typeof row.contenido === 'string' ? JSON.parse(row.contenido) : row.contenido) : [],
         }));
         
         return { templates: templates as Template[], total };
@@ -116,24 +117,37 @@ export async function getTemplateAction(id: number): Promise<Template | null> {
     let connection;
     try {
         connection = await getDbConnection();
-        const [rows] = await connection.execute('SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas WHERE id_plantilla = ?', [id]);
+        const [rows] = await connection.execute
+            ('SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas WHERE id_plantilla = ?',
+            [id]);
         
         if ((rows as any[]).length === 0) return null;
 
         const row = (rows as any[])[0];
-        return {
-            ...row,
-            contenido: row.contenido ? (typeof row.contenido === 'string' ? JSON.parse(row.contenido) : row.contenido) : [],
-        } as Template;
+        let contenidoReal:object | null = null;
 
-    } catch (error) {
+        // Manejo de errores 
+        if(typeof row.contenido === 'string'&& row.contenido){
+            try {
+                const filePath = path.join(process.cwd(), row.contenido);
+                const fileContent= await fs.readFile(filePath, 'utf-8');
+                contenidoReal = JSON.parse(fileContent);
+            } catch (error) {
+                console.error(`Error al obtener la plantilla ${id}:`, error);
+            }
+        }
+        return {
+            //...row,
+            contenido: contenidoReal,
+        }as Template;
+    } catch(error){
         console.error(`Error al obtener la plantilla ${id}:`, error);
         return null;
     } finally {
         if (connection) await connection.end();
     }
 }
-
+ 
 export async function saveTemplateAction(data: Omit<Template, 'id_plantilla' | 'fecha_creacion'>) {
     let connection;
     try {

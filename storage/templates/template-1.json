@@ -1,0 +1,82 @@
+[
+  {
+    "id": "-8qi8gxDhd4d9--3BHn26",
+    "type": "divider",
+    "content": {
+      "color": "#cccccc",
+      "padding": 10
+    }
+  },
+  {
+    "id": "x6Sp61LF9VNiREgXRiTxX",
+    "type": "image",
+    "content": {
+      "src": "https://placehold.co/600x300.png",
+      "alt": "Imagen descriptiva",
+      "width": 73,
+      "align": "center"
+    }
+  },
+  {
+    "id": "bC7rDtsZ7NrVgJ8Njr8bg",
+    "type": "divider",
+    "content": {
+      "color": "#cccccc",
+      "padding": 10
+    }
+  },
+  {
+    "id": "CgwWzbb5DkcWv3a20CocG",
+    "type": "spacer",
+    "content": {
+      "height": 30
+    }
+  },
+  {
+    "id": "qgfXRlhpgCSoSl-neek3p",
+    "type": "text",
+    "content": {
+      "text": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.\n\n",
+      "color": "#000000",
+      "fontSize": 15,
+      "lineHeight": 1.5,
+      "fontWeight": "normal",
+      "textAlign": "center"
+    }
+  },
+  {
+    "id": "a2GUDR4ryZj79Hfb-272T",
+    "type": "divider",
+    "content": {
+      "color": "#cccccc",
+      "padding": 10
+    }
+  },
+  {
+    "id": "nxp5qBbzncs5LqrHUHIiK",
+    "type": "button",
+    "content": {
+      "text": "Haz Clic Aquí",
+      "href": "https://www.lipsum.com/",
+      "backgroundColor": "#74B49B",
+      "color": "#ffffff",
+      "textAlign": "center",
+      "borderRadius": 5
+    }
+  },
+  {
+    "id": "f1nt_NyfkPOSrc2MwP1zb",
+    "type": "divider",
+    "content": {
+      "color": "#cccccc",
+      "padding": 10
+    }
+  },
+  {
+    "id": "nTmeIqsElVu9kDC6MubZc",
+    "type": "spacer",
+    "content": {
+      "height": 30
+    }
+  }
+]

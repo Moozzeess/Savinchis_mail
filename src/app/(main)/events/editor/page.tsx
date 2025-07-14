@@ -7,8 +7,8 @@ import { getTemplatesAction } from "@/actions/template-actions";
  * que gestiona la creación y edición de eventos.
  */
 export default async function EventEditorPage() {
-  const invitationTemplates = await getTemplatesAction({ tipo: 'template' });
-  const certificateTemplates = await getTemplatesAction({ tipo: 'certificate' });
+  const {templates: invitationTemplates} = await getTemplatesAction({ tipo: 'template' });
+  const {templates: certificateTemplates} = await getTemplatesAction({ tipo: 'certificate' });
 
   return (
     <div className="space-y-6">
