@@ -6,207 +6,313 @@ import { revalidatePath } from 'next/cache';
 import fs from 'fs/promises';
 import path from 'path';
 
+/**
+ * @function getDbConnection
+ * @description Establece y retorna una conexión a la base de datos MySQL.
+ * Configura la conexión usando variables de entorno para host, usuario, contraseña, base de datos y puerto.
+ * @returns {Promise<mysql.Connection>} Una promesa que resuelve con un objeto de conexión a la base de datos.
+ * @throws {Error} Si las variables de entorno esenciales de la base de datos (MYSQL_HOST, MYSQL_USER, MYSQL_DATABASE) no están definidas.
+ * @async
+ */
 async function getDbConnection() {
-    const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } = process.env;
-    if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
-        throw new Error('Faltan las variables de entorno de la base de datos. Por favor, configúralas.');
-    }
-    return mysql.createConnection({
-        host: MYSQL_HOST,
-        port: MYSQL_PORT ? parseInt(MYSQL_PORT, 10) : 3306,
-        user: MYSQL_USER,
-        password: MYSQL_PASSWORD,
-        database: MYSQL_DATABASE,
-    });
-}
-
-export interface Template {
-    id_plantilla: number;
-    nombre: string;
-    asunto_predeterminado: string;
-    contenido: any; // Puede ser Block[] o la estructura del certificado
-    fecha_creacion: string;
-    tipo: 'template' | 'certificate';
-}
-
-const TEMPLATES_STORAGE_PATH = path.join(process.cwd(), 'storage', 'templates');
-
-async function ensureStorageDirectoryExists() {
-    try {
-        await fs.access(TEMPLATES_STORAGE_PATH);
-    } catch {
-        await fs.mkdir(TEMPLATES_STORAGE_PATH, { recursive: true });
-    }
-}
-
-export async function getTemplatesAction(params: { 
-    tipo?: 'template' | 'certificate',
-    page?: number,
-    limit?: number,
-}): Promise<{templates: Template[], total: number}> {
-    let connection;
-    try {
-        connection = await getDbConnection();
-        
-        const { tipo, page = 1, limit = 9 } = params;
-        const offset = (page - 1) * limit;
-
-        let whereClause = '';
-        const queryParams: (string | number)[] = [];
-
-        if (tipo) {
-            whereClause = ' WHERE tipo = ?';
-            queryParams.push(tipo);
-        }
-
-        // Query for total count
-        const countQuery = `SELECT COUNT(*) as total FROM plantillas${whereClause}`;
-        const [countRows] = await connection.execute(countQuery, queryParams);
-        const total = (countRows as any[])[0].total;
-
-        // Query for paginated data
-        const query = `SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas${whereClause} ORDER BY fecha_creacion DESC LIMIT ${limit} OFFSET ${offset}`;
-
-        const [rows] = await connection.execute(query, queryParams);
-        
-        const templates = (rows as any[]).map(row => ({
-            ...row,
-            contenido: row.contenido,
-            //contenido: row.contenido ? (typeof row.contenido === 'string' ? JSON.parse(row.contenido) : row.contenido) : [],
-        }));
-        
-        return { templates: templates as Template[], total };
-    } catch (error) {
-        console.error('Error al obtener las plantillas:', error);
-        throw error; // Re-lanza el error para que el componente que llama pueda manejarlo.
-    } finally {
-        if (connection) await connection.end();
-    }
+  const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } = process.env;
+  if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
+    throw new Error('Faltan las variables de entorno de la base de datos. Por favor, configúralas.');
+  }
+  return mysql.createConnection({
+    host: MYSQL_HOST,
+    port: MYSQL_PORT ? parseInt(MYSQL_PORT, 10) : 3306, // Convierte el puerto a entero, por defecto 3306.
+    user: MYSQL_USER,
+    password: MYSQL_PASSWORD,
+    database: MYSQL_DATABASE,
+  });
 }
 
 /**
- * Obtiene una lista ligera de plantillas (solo ID y nombre).
- * Ideal para rellenar selectores y listas sin cargar datos pesados como el `contenido`.
+ * @interface Template
+ * @description Define la estructura de una plantilla de correo electrónico o certificado.
+ * @property {number} id_plantilla - Identificador único de la plantilla.
+ * @property {string} nombre - Nombre descriptivo de la plantilla.
+ * @property {string} asunto_predeterminado - Asunto predeterminado para plantillas de correo.
+ * @property {any} contenido - El contenido de la plantilla, puede ser un arreglo de bloques (para correos) o una estructura específica para certificados.
+ * @property {string} fecha_creacion - Fecha de creación de la plantilla en formato de cadena.
+ * @property {'template' | 'certificate'} tipo - Tipo de plantilla: 'template' para correos, 'certificate' para certificados.
+ */
+export interface Template {
+  id_plantilla: number;
+  nombre: string;
+  asunto_predeterminado: string;
+  contenido: any; // Puede ser Block[] o la estructura del certificado
+  fecha_creacion: string;
+  tipo: 'template' | 'certificate';
+}
+
+/**
+ * @constant TEMPLATES_STORAGE_PATH
+ * @description Ruta absoluta al directorio donde se almacenarán los archivos JSON de contenido de las plantillas.
+ * Se construye uniendo el directorio de trabajo actual con 'storage' y 'templates'.
+ */
+const TEMPLATES_STORAGE_PATH = path.join(process.cwd(), 'storage', 'templates');
+
+/**
+ * @function ensureStorageDirectoryExists
+ * @description Verifica si el directorio de almacenamiento de plantillas existe. Si no, lo crea de forma recursiva.
+ * Esto asegura que el sistema de archivos esté listo para guardar los contenidos de las plantillas.
+ * @returns {Promise<void>} Una promesa que se resuelve cuando el directorio existe o ha sido creado.
+ * @async
+ */
+async function ensureStorageDirectoryExists() {
+  try {
+    await fs.access(TEMPLATES_STORAGE_PATH); // Intenta acceder al directorio.
+  } catch {
+    await fs.mkdir(TEMPLATES_STORAGE_PATH, { recursive: true }); // Si no existe, lo crea recursivamente.
+  }
+}
+
+/**
+ * @function getTemplatesAction
+ * @description Acción de servidor para obtener una lista paginada de plantillas desde la base de datos.
+ * Permite filtrar las plantillas por tipo y controlar la paginación de los resultados.
+ * @param {object} params - Parámetros para la consulta de plantillas.
+ * @param {'template' | 'certificate'} [params.tipo] - Filtra las plantillas por este tipo.
+ * @param {number} [params.page=1] - El número de página a recuperar (por defecto 1).
+ * @param {number} [params.limit=9] - El número máximo de plantillas por página (por defecto 9).
+ * @returns {Promise<{templates: Template[], total: number}>} Una promesa que resuelve con un objeto que contiene
+ * un arreglo de objetos `Template` y el número total de plantillas que cumplen el criterio.
+ * @throws {Error} Si ocurre un error al conectar o consultar la base de datos.
+ * @async
+ */
+export async function getTemplatesAction(params: {
+  tipo?: 'template' | 'certificate',
+  page?: number,
+  limit?: number,
+}): Promise<{ templates: Template[], total: number }> {
+  let connection;
+  try {
+    connection = await getDbConnection();
+
+    const { tipo, page = 1, limit = 9 } = params;
+    const offset = (page - 1) * limit; // Calcula el desplazamiento para la paginación.
+
+    let whereClause = ''; // Inicializa la cláusula WHERE.
+    const queryParams: (string | number)[] = []; // Inicializa los parámetros de la consulta.
+
+    // Si se especifica un tipo, añade la condición WHERE.
+    if (tipo) {
+      whereClause = ' WHERE tipo = ?';
+      queryParams.push(tipo);
+    }
+
+    // Consulta para obtener el conteo total de plantillas (para la paginación).
+    const countQuery = `SELECT COUNT(*) as total FROM plantillas${whereClause}`;
+    const [countRows] = await connection.execute(countQuery, queryParams);
+    const total = (countRows as any[])[0].total; // Extrae el total del resultado.
+
+    // Consulta para obtener los datos paginados de las plantillas.
+    const query = `SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas${whereClause} ORDER BY fecha_creacion DESC LIMIT ${limit} OFFSET ${offset}`;
+
+    const [rows] = await connection.execute(query, queryParams);
+
+    // Mapea las filas de la base de datos a objetos Template.
+    const templates = (rows as any[]).map(row => ({
+      ...row,
+      contenido: row.contenido, // El contenido se maneja como viene de la DB (se asume que es el path o el JSON directo)
+      // La línea comentada sugiere una lógica previa para parsear JSON si venía como string.
+      // contenido: row.contenido ? (typeof row.contenido === 'string' ? JSON.parse(row.contenido) : row.contenido) : [],
+    }));
+
+    return { templates: templates as Template[], total };
+  } catch (error) {
+    console.error('Error al obtener las plantillas:', error);
+    throw error; // Re-lanza el error para que el componente que llama pueda manejarlo.
+  } finally {
+    // Asegura que la conexión a la base de datos se cierre.
+    if (connection) await connection.end();
+  }
+}
+
+/**
+ * @function getTemplateListAction
+ * @description Obtiene una lista ligera de plantillas (solo ID y nombre).
+ * Es ideal para rellenar selectores o listas donde no se necesita cargar el contenido completo de la plantilla,
+ * optimizando el rendimiento.
+ * @param {object} [params] - Parámetros opcionales.
+ * @param {'template' | 'certificate'} [params.tipo] - Filtra la lista por tipo de plantilla.
+ * @returns {Promise<Pick<Template, 'id_plantilla' | 'nombre'>[]>} Una promesa que resuelve con un arreglo de objetos,
+ * cada uno conteniendo `id_plantilla` y `nombre` de la plantilla. Retorna un arreglo vacío en caso de error.
+ * @async
  */
 export async function getTemplateListAction(params?: { tipo: 'template' | 'certificate' }): Promise<Pick<Template, 'id_plantilla' | 'nombre'>[]> {
-    let connection;
-    try {
-        connection = await getDbConnection();
-        
-        let query = 'SELECT id_plantilla, nombre FROM plantillas';
-        const queryParams: string[] = [];
+  let connection;
+  try {
+    connection = await getDbConnection();
 
-        if (params?.tipo) {
-            query += ' WHERE tipo = ?';
-            queryParams.push(params.tipo);
-        }
+    let query = 'SELECT id_plantilla, nombre FROM plantillas';
+    const queryParams: string[] = [];
 
-        query += ' ORDER BY nombre ASC';
-
-        const [rows] = await connection.execute(query, queryParams);
-        return rows as Pick<Template, 'id_plantilla' | 'nombre'>[];
-    } catch (error) {
-        console.error('Error al obtener la lista de plantillas:', error);
-        return [];
-    } finally {
-        if (connection) await connection.end();
+    // Si se especifica un tipo, añade la condición WHERE.
+    if (params?.tipo) {
+      query += ' WHERE tipo = ?';
+      queryParams.push(params.tipo);
     }
+
+    query += ' ORDER BY nombre ASC'; // Ordena las plantillas por nombre.
+
+    const [rows] = await connection.execute(query, queryParams);
+    return rows as Pick<Template, 'id_plantilla' | 'nombre'>[];
+  } catch (error) {
+    console.error('Error al obtener la lista de plantillas:', error);
+    return []; // Retorna un arreglo vacío en caso de error.
+  } finally {
+    // Asegura que la conexión a la base de datos se cierre.
+    if (connection) await connection.end();
+  }
 }
 
+/**
+ * @function getTemplateAction
+ * @description Obtiene los detalles completos de una plantilla específica por su ID.
+ * Si el contenido está almacenado como una ruta de archivo, lee y parsea el archivo JSON.
+ * @param {number} id - El ID de la plantilla a recuperar.
+ * @returns {Promise<Template | null>} Una promesa que resuelve con el objeto `Template` completo si se encuentra,
+ * o `null` si la plantilla no existe o si ocurre un error.
+ * @async
+ */
 export async function getTemplateAction(id: number): Promise<Template | null> {
-    let connection;
-    try {
-        connection = await getDbConnection();
-        const [rows] = await connection.execute
-            ('SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas WHERE id_plantilla = ?',
-            [id]);
-        
-        if ((rows as any[]).length === 0) return null;
+  let connection;
+  try {
+    connection = await getDbConnection();
+    // Consulta la base de datos para obtener los metadatos de la plantilla.
+    const [rows] = await connection.execute(
+      'SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas WHERE id_plantilla = ?',
+      [id]
+    );
 
-        const row = (rows as any[])[0];
-        let contenidoReal:object | null = null;
+    // Si no se encuentra la plantilla, retorna null.
+    if ((rows as any[]).length === 0) return null;
 
-        // Manejo de errores 
-        if(typeof row.contenido === 'string'&& row.contenido){
-            try {
-                const filePath = path.join(process.cwd(), row.contenido);
-                const fileContent= await fs.readFile(filePath, 'utf-8');
-                contenidoReal = JSON.parse(fileContent);
-            } catch (error) {
-                console.error(`Error al obtener la plantilla ${id}:`, error);
-            }
-        }
-        return {
-            //...row,
-            contenido: contenidoReal,
-        }as Template;
-    } catch(error){
-        console.error(`Error al obtener la plantilla ${id}:`, error);
-        return null;
-    } finally {
-        if (connection) await connection.end();
+    const row = (rows as any[])[0];
+    let contenidoReal: object | null = null;
+
+    // Manejo del contenido: si es una cadena, se asume que es una ruta a un archivo JSON.
+    if (typeof row.contenido === 'string' && row.contenido) {
+      try {
+        // Construye la ruta completa al archivo de contenido.
+        const filePath = path.join(process.cwd(), row.contenido);
+        // Lee el contenido del archivo.
+        const fileContent = await fs.readFile(filePath, 'utf-8');
+        // Parsea el contenido JSON del archivo.
+        contenidoReal = JSON.parse(fileContent);
+      } catch (error) {
+        console.error(`Error al leer o parsear el archivo de contenido para la plantilla ${id}:`, error);
+        // Si hay un error en el archivo, contenidoReal permanece null.
+      }
+    } else {
+      // Si el contenido no es una cadena (ej. ya es un objeto JSON directo de la DB, o es null/undefined), lo asigna directamente.
+      contenidoReal = row.contenido;
     }
+
+    // Retorna la plantilla con el contenido real (desde el archivo o directamente de la DB).
+    return {
+      id_plantilla: row.id_plantilla,
+      nombre: row.nombre,
+      asunto_predeterminado: row.asunto_predeterminado,
+      fecha_creacion: row.fecha_creacion,
+      tipo: row.tipo,
+      contenido: contenidoReal,
+    } as Template;
+  } catch (error) {
+    console.error(`Error al obtener la plantilla ${id}:`, error);
+    return null; // Retorna null en caso de cualquier error general.
+  } finally {
+    // Asegura que la conexión a la base de datos se cierre.
+    if (connection) await connection.end();
+  }
 }
- 
+
+/**
+ * @function saveTemplateAction
+ * @description Guarda una nueva plantilla en la base de datos y su contenido en un archivo JSON en el sistema de archivos.
+ * Implementa una transacción para asegurar la consistencia entre la base de datos y el archivo.
+ * Después de guardar, revalida la caché de la ruta '/templates'.
+ * @param {Omit<Template, 'id_plantilla' | 'fecha_creacion'>} data - Los datos de la plantilla a guardar, excluyendo
+ * `id_plantilla` y `fecha_creacion` (ya que se generan automáticamente).
+ * @returns {Promise<{success: boolean, message: string}>} Una promesa que resuelve con un objeto indicando
+ * si la operación fue exitosa y un mensaje descriptivo.
+ * @async
+ */
 export async function saveTemplateAction(data: Omit<Template, 'id_plantilla' | 'fecha_creacion'>) {
-    let connection;
-    try {
-        connection = await getDbConnection();
-        await connection.beginTransaction();
+  let connection;
+  try {
+    connection = await getDbConnection();
+    await connection.beginTransaction(); // Inicia una transacción para operaciones atómicas.
 
-        // 1. Insertar los metadatos con un contenido temporal para obtener el ID
-        const { nombre, asunto_predeterminado, contenido, tipo } = data;
-        const placeholderContent = 'pending_file_path';
-        
-        const [insertResult] = await connection.execute(
-            'INSERT INTO plantillas (nombre, asunto_predeterminado, contenido, tipo, fecha_creacion) VALUES (?, ?, ?, ?, NOW())',
-            [nombre, asunto_predeterminado, placeholderContent, tipo]
-        );
+    // 1. Insertar los metadatos de la plantilla con un contenido temporal (placeholder).
+    // Esto es necesario para obtener el `insertId` antes de guardar el archivo.
+    const { nombre, asunto_predeterminado, contenido, tipo } = data;
+    const placeholderContent = 'pending_file_path'; // Contenido temporal para la DB.
 
-        const newTemplateId = (insertResult as any).insertId;
-        if (!newTemplateId) {
-            throw new Error('No se pudo obtener el ID de la nueva plantilla.');
-        }
+    const [insertResult] = await connection.execute(
+      'INSERT INTO plantillas (nombre, asunto_predeterminado, contenido, tipo, fecha_creacion) VALUES (?, ?, ?, ?, NOW())',
+      [nombre, asunto_predeterminado, placeholderContent, tipo]
+    );
 
-        // 2. Preparar y guardar el archivo JSON en el disco
-        await ensureStorageDirectoryExists();
-        const fileName = `template-${newTemplateId}.json`;
-        const filePath = path.join(TEMPLATES_STORAGE_PATH, fileName);
-        const fileContent = JSON.stringify(contenido, null, 2); // Formateado para legibilidad
-
-        await fs.writeFile(filePath, fileContent);
-
-        // 3. Actualizar el registro con la ruta real del archivo
-        const relativePath = path.join('storage', 'templates', fileName).replace(/\\/g, '/'); // Guardar con slashes
-        await connection.execute(
-            'UPDATE plantillas SET contenido = ? WHERE id_plantilla = ?',
-            [relativePath, newTemplateId]
-        );
-
-        await connection.commit();
-
-        revalidatePath('/templates');
-        return { success: true, message: 'Plantilla guardada con éxito.' };
-
-    } catch (error) {
-        if (connection) await connection.rollback();
-        console.error('Error al guardar la plantilla:', error);
-        return { success: false, message: 'Error al guardar la plantilla.' };
-    } finally {
-        if (connection) await connection.end();
+    const newTemplateId = (insertResult as any).insertId; // Obtiene el ID de la plantilla recién insertada.
+    if (!newTemplateId) {
+      throw new Error('No se pudo obtener el ID de la nueva plantilla.');
     }
+
+    // 2. Preparar y guardar el contenido de la plantilla como un archivo JSON en el disco.
+    await ensureStorageDirectoryExists(); // Asegura que el directorio de almacenamiento exista.
+    const fileName = `template-${newTemplateId}.json`; // Nombre del archivo basado en el nuevo ID.
+    const filePath = path.join(TEMPLATES_STORAGE_PATH, fileName); // Ruta completa del archivo.
+    const fileContent = JSON.stringify(contenido, null, 2); // Convierte el contenido a una cadena JSON formateada.
+
+    await fs.writeFile(filePath, fileContent); // Escribe el contenido en el archivo.
+
+    // 3. Actualizar el registro en la base de datos con la ruta real del archivo de contenido.
+    // Almacena la ruta relativa para mayor portabilidad y uso correcto con `path.join`.
+    const relativePath = path.join('storage', 'templates', fileName).replace(/\\/g, '/'); // Asegura slashes consistentes.
+    await connection.execute(
+      'UPDATE plantillas SET contenido = ? WHERE id_plantilla = ?',
+      [relativePath, newTemplateId]
+    );
+
+    await connection.commit(); // Confirma la transacción si todo fue exitoso.
+
+    revalidatePath('/templates'); // Revalida la caché para que los cambios se reflejen en la UI.
+    return { success: true, message: 'Plantilla guardada con éxito.' };
+
+  } catch (error) {
+    if (connection) await connection.rollback(); // En caso de error, revierte la transacción.
+    console.error('Error al guardar la plantilla:', error);
+    return { success: false, message: 'Error al guardar la plantilla.' };
+  } finally {
+    if (connection) await connection.end(); // Asegura que la conexión a la base de datos se cierre.
+  }
 }
 
+/**
+ * @function deleteTemplateAction
+ * @description Elimina una plantilla de la base de datos por su ID.
+ * Nota: Actualmente, solo elimina el registro de la base de datos, no el archivo de contenido asociado.
+ * @param {number} id - El ID de la plantilla a eliminar.
+ * @returns {Promise<{success: boolean; message: string}>} Una promesa que resuelve con un objeto indicando
+ * si la operación fue exitosa y un mensaje descriptivo.
+ * @async
+ */
 export async function deleteTemplateAction(id: number): Promise<{ success: boolean; message: string }> {
-    let connection;
-    try {
-        connection = await getDbConnection();
-        await connection.execute('DELETE FROM plantillas WHERE id_plantilla = ?', [id]);
-        return { success: true, message: 'Plantilla eliminada con éxito.' };
-    } catch (error) {
-        console.error(`Error al eliminar la plantilla ${id}:`, error);
-        return { success: false, message: `Error al eliminar la plantilla: ${(error as Error).message}` };
-    } finally {
-        if (connection) await connection.end();
-    }
+  let connection;
+  try {
+    connection = await getDbConnection();
+    // Ejecuta la consulta DELETE para eliminar la plantilla por ID.
+    await connection.execute('DELETE FROM plantillas WHERE id_plantilla = ?', [id]);
+    return { success: true, message: 'Plantilla eliminada con éxito.' };
+  } catch (error) {
+    console.error(`Error al eliminar la plantilla ${id}:`, error);
+    return { success: false, message: `Error al eliminar la plantilla: ${(error as Error).message}` };
+  } finally {
+    // Asegura que la conexión a la base de datos se cierre.
+    if (connection) await connection.end();
+  }
 }
