@@ -21,7 +21,7 @@ import { PaginationControls } from "@/components/ui/pagination-controls";
  * Muestra una lista de las plantillas de correo y certificados existentes
  * y permite crear nuevos o editar/eliminar los actuales.
  */
-export default async function TemplatesPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+export default async function TemplatesPage({ searchParams }: { searchParams: any }) {
   const page = Number(searchParams?.page) || 1;
   const limit = 9;
 

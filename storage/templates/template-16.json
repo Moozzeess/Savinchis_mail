@@ -1,0 +1,78 @@
+[
+  {
+    "id": "Vur9C3ZzsX5PQ4LmdhZ_N",
+    "type": "image",
+    "content": {
+      "src": "https://placehold.co/600x300.png",
+      "alt": "Imagen descriptiva",
+      "width": 100,
+      "align": "center"
+    }
+  },
+  {
+    "id": "YbQqavz-t6oN-MzcYIIyN",
+    "type": "text",
+    "content": {
+      "text": "Escribe tu texto aquí...",
+      "color": "#000000",
+      "fontSize": 16,
+      "lineHeight": 1.5,
+      "fontWeight": "normal",
+      "textAlign": "left"
+    }
+  },
+  {
+    "id": "bxmCXfYmoMsCBVot41IgN",
+    "type": "divider",
+    "content": {
+      "color": "#cccccc",
+      "padding": 10
+    }
+  },
+  {
+    "id": "2lnfCWhcNJEJ5mgFqf_JW",
+    "type": "text",
+    "content": {
+      "text": "Escribe tu texto aquí...",
+      "color": "#000000",
+      "fontSize": 16,
+      "lineHeight": 1.5,
+      "fontWeight": "normal",
+      "textAlign": "left"
+    }
+  },
+  {
+    "id": "egegGSGfMUuG4YC8q3NzO",
+    "type": "button",
+    "content": {
+      "text": "Haz Clic Aquí",
+      "href": "https://example.com",
+      "backgroundColor": "#74B49B",
+      "color": "#ffffff",
+      "textAlign": "center",
+      "borderRadius": 5
+    }
+  },
+  {
+    "id": "l6_QuEi9MbXQiKv-nqZ1v",
+    "type": "spacer",
+    "content": {
+      "height": 30
+    }
+  },
+  {
+    "id": "sbAAQ66KaDSig_BMJFTBn",
+    "type": "html",
+    "content": {
+      "code": "<!-- Tu código HTML aquí -->"
+    }
+  },
+  {
+    "id": "fs_G9QYfPrFrRG2YBxwBa",
+    "type": "divider",
+    "content": {
+      "color": "#cccccc",
+      "padding": 10
+    }
+  }
+]

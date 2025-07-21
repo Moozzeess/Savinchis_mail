@@ -89,7 +89,7 @@ export async function saveEventAction(data: {
   try {
     connection = await getDbConnection();
     await connection.execute(
-      'INSERT INTO eventos (nombre, fecha, id_plantilla_invitacion, id_plantilla_certificado) VALUES (?, ?, ?, ?)',
+      'INSERT INTO eventos (nombre, fecha, id_plantilla WHERE tipo = "template", id_plantilla_certificado WHERE TIPO = "certificate") VALUES (?, ?, ?, ?)',
       [nombre, fecha, id_plantilla_invitacion, id_plantilla_certificado]
     );
 

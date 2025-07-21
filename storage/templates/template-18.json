@@ -1,0 +1,86 @@
+{
+  "backgroundImage": null,
+  "texts": {
+    "title": "Certificado de Asistencia",
+    "issuedToText": "Otorgado a:",
+    "description": "Por completar exitosamente el taller de Email Marketing Avanzado.",
+    "dateText": "Fecha:",
+    "signatureText": "Firma del Organizador"
+  },
+  "styles": {
+    "title": {
+      "fontSize": 48,
+      "color": "#000000",
+      "width": 80,
+      "textAlign": "center",
+      "fontWeight": "bold",
+      "fontFamily": "headline"
+    },
+    "issuedTo": {
+      "fontSize": 18,
+      "color": "#000000",
+      "width": 80,
+      "textAlign": "center",
+      "fontWeight": "normal",
+      "fontFamily": "body"
+    },
+    "contactName": {
+      "fontSize": 36,
+      "color": "#000000",
+      "width": 80,
+      "textAlign": "center",
+      "fontWeight": "600",
+      "fontFamily": "headline"
+    },
+    "description": {
+      "fontSize": 16,
+      "color": "#000000",
+      "width": 80,
+      "textAlign": "center",
+      "fontWeight": "normal",
+      "fontFamily": "body"
+    },
+    "signature": {
+      "fontSize": 16,
+      "color": "#000000",
+      "width": 50,
+      "textAlign": "center",
+      "fontWeight": "600",
+      "fontFamily": "body"
+    },
+    "date": {
+      "fontSize": 16,
+      "color": "#000000",
+      "width": 50,
+      "textAlign": "center",
+      "fontWeight": "600",
+      "fontFamily": "body"
+    }
+  },
+  "positions": {
+    "title": {
+      "x": 387,
+      "y": 34
+    },
+    "issuedTo": {
+      "x": 50,
+      "y": 120
+    },
+    "contactName": {
+      "x": 50,
+      "y": 160
+    },
+    "description": {
+      "x": 50,
+      "y": 220
+    },
+    "signature": {
+      "x": 100,
+      "y": 380
+    },
+    "date": {
+      "x": 550,
+      "y": 380
+    }
+  }
+}

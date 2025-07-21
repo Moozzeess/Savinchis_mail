@@ -91,59 +91,6 @@ interface CampaignStats {
   duration: number;
 }
 
-const defaultInitialBody = `<div style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 16px; line-height: 1.5; color: #333333; background-color: #ffffff; margin: 0; padding: 0;">
-  <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #ffffff;">
-    <tr>
-      <td align="center">
-        <table role="presentation" width="600" border="0" cellpadding="0" cellspacing="0" class="content-table" style="width: 100%; max-width: 600px; margin: 0 auto;">
-          <!-- Header -->
-          <tr>
-            <td>
-              <img src="https://placehold.co/600x95.png" alt="Header Banner" style="width: 100%; height: auto; display: block;" data-ai-hint="papalote museum header" />
-            </td>
-          </tr>
-          <!-- Body -->
-          <tr>
-            <td style="padding: 30px 20px;">
-              <p style="margin: 0 0 16px 0;"><strong>Maestra, Maestro:</strong></p>
-              <p style="margin: 0 0 16px 0;">Nos alegra mucho que hayas utilizado nuestra página para planear tu visita a Papalote Museo del Niño.</p>
-              <p style="margin: 0 0 16px 0;">En este correo encontrarás adjuntos:</p>
-              <ul style="margin: 0 0 16px 0; padding-left: 20px;">
-                <li style="margin-bottom: 8px;">Formato Proyecto de visita (prellenado)</li>
-                <li style="margin-bottom: 8px;">Formatos administrativos</li>
-              </ul>
-              <p style="margin: 0 0 16px 0;">Esperamos que estas herramientas te ayuden a detonar proyectos increíbles y faciliten la visita con tu grupo escolar.</p>
-              
-              <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td valign="top" style="padding-right: 20px; width: 60%;">
-                    <p style="margin: 0 0 16px 0;"><strong>Si requieres más información:</strong></p>
-                    <p style="margin: 0 0 8px 0;">Llámanos a: 5552371710 - 5546017873</p>
-                    <p style="margin: 0 0 16px 0;">O escríbenos un whatsApp.</p>
-                    <p style="margin: 0 0 16px 0;">
-                      <img src="https://placehold.co/40x40.png" alt="WhatsApp" width="30" height="30" style="vertical-align: middle;" data-ai-hint="whatsapp logo" />
-                    </p>
-                    <p style="margin: 0;"><strong>¡Nos vemos muy pronto!</strong></p>
-                  </td>
-                  <td width="40%" valign="top" align="center">
-                    <img src="https://placehold.co/200x150.png" alt="¡No olvides descargar la guía educativa! Da clic aquí" style="max-width: 100%; height: auto; display: block;" data-ai-hint="educational guide monster" />
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <!-- Footer -->
-          <tr>
-            <td>
-              <img src="https://placehold.co/600x50.png" alt="Footer Banner" style="width: 100%; height: auto; display: block;" data-ai-hint="papalote museum footer" />
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</div>`;
-
 /**
  * Página de Nuevo Correo.
  * Permite a los usuarios componer un nuevo envío de correo, seleccionar plantillas,
@@ -197,7 +144,7 @@ export default function SendPage() {
     
     const fetchTemplates = async () => {
       const dbTemplates = await getTemplatesAction();
-      setTemplates(dbTemplates);
+      setTemplates(dbTemplates.templates);
     };
     fetchTemplates();
   }, [role, isIT]);
@@ -208,7 +155,6 @@ export default function SendPage() {
     
     if (contentType === 'custom') {
         setSubject("Asunto Personalizado");
-        setEmailBody(defaultInitialBody);
     } else if (contentType === "template") {
         if (templates.length > 0) {
             // Default to first template if none is selected
@@ -481,68 +427,78 @@ export default function SendPage() {
     setIsRecipientDialogOpen(false);
   };
 
-  const renderContentSelector = () => {
-    switch (contentType) {
-      case 'template':
-        return (
-          <div className="space-y-2">
-            <Label>Usar Plantilla</Label>
-            <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}>
-              <SelectTrigger><SelectValue placeholder="Selecciona una plantilla" /></SelectTrigger>
-              <SelectContent>
-                {templates.map((t: Template) => (
-                  <SelectItem key={t.id_plantilla} value={String(t.id_plantilla)}>
-                    {t.nombre}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        );
-      case 'event':
-        return (
-          <div className="space-y-2">
-            <Label>Seleccionar Evento</Label>
-            <Select value={selectedEventId} onValueChange={setSelectedEventId}>
-              <SelectTrigger><SelectValue placeholder="Selecciona un evento" /></SelectTrigger>
-              <SelectContent>
-                {events.map(e => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-        );
-      case 'survey':
-        return (
-          <div className="space-y-2">
-            <Label>Seleccionar Encuesta</Label>
-            <Select value={selectedSurveyId} onValueChange={setSelectedSurveyId}>
-              <SelectTrigger><SelectValue placeholder="Selecciona una encuesta" /></SelectTrigger>
-              <SelectContent>
-                {surveys.map((survey) => (
-                  <SelectItem key={survey.id} value={survey.id}>{survey.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        );
-      case 'certificate':
-        return (
-          <div className="space-y-2">
-            <Label>Seleccionar Plantilla de Certificado</Label>
-            <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}>
-              <SelectTrigger><SelectValue placeholder="Selecciona una plantilla de certificado" /></SelectTrigger>
-              <SelectContent>
-                {certificateTemplates.map((template: { id: string; name: string; content: string }) => (
-                  <SelectItem key={template.id} value={template.id}>{template.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
+  const [seletedTipo, setSelectedTipo] = useState<string>('');
+  const [template, setTemplate] = useState<string>('');
+
+// Filtrado centralizado
+const filteredTemplates = templates.filter(t => t.tipo === contentType);
+
+const renderContentSelector = () => {
+  // Para tipos que requieren selector de plantilla
+  if (['template', 'certificate'].includes(contentType)) {
+    return (
+      <div className="space-y-2">
+        <Label>
+          {contentType === 'template' ? 'Usar Plantilla' : 'Seleccionar Plantilla de Certificado'}
+        </Label>
+        <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}>
+          <SelectTrigger>
+            <SelectValue placeholder={
+              contentType === 'template'
+                ? 'Selecciona una plantilla'
+                : 'Selecciona una plantilla de certificado'
+            } />
+          </SelectTrigger>
+          <SelectContent>
+            {filteredTemplates.length > 0 ? (
+              filteredTemplates.map((t: Template) => (
+                <SelectItem key={t.id_plantilla} value={String(t.id_plantilla)}>
+                  {t.nombre}
+                </SelectItem>
+              ))
+            ) : (
+              <div className="p-2 text-muted-foreground">No hay plantillas disponibles</div>
+            )}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+  }
+  // Para eventos
+  if (contentType === 'event') {
+    return (
+      <div className="space-y-2">
+        <Label>Seleccionar Evento</Label>
+        <Select value={selectedEventId} onValueChange={setSelectedEventId}>
+          <SelectTrigger><SelectValue placeholder="Selecciona un evento" /></SelectTrigger>
+          <SelectContent>
+            {events.map(e => (
+              <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+  }
+  // Para encuestas
+  if (contentType === 'survey') {
+    return (
+      <div className="space-y-2">
+        <Label>Seleccionar Encuesta</Label>
+        <Select value={selectedSurveyId} onValueChange={setSelectedSurveyId}>
+          <SelectTrigger><SelectValue placeholder="Selecciona una encuesta" /></SelectTrigger>
+          <SelectContent>
+            {surveys.map(survey => (
+              <SelectItem key={survey.id} value={survey.id}>{survey.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+  }
+  // Para personalizado, no mostrar nada extra
+  return null;
+};
 
   const renderSenderInput = () => {
     if (isIT) {
@@ -592,7 +548,7 @@ export default function SendPage() {
                       <SelectItem value="event">Invitación a Evento</SelectItem>
                       <SelectItem value="survey">Enviar Encuesta</SelectItem>
                       <SelectItem value="certificate">Certificado de Evento</SelectItem>
-                      <SelectItem value="custom">Personalizado (HTML)</SelectItem>
+                      <SelectItem value="custom">Personalizado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

@@ -86,7 +86,8 @@ export async function getTemplatesAction(params: {
   tipo?: 'template' | 'certificate',
   page?: number,
   limit?: number,
-}): Promise<{ templates: Template[], total: number }> {
+}= {}): Promise<{ templates: Template[], total: number }> {
+  
   let connection;
   try {
     connection = await getDbConnection();
