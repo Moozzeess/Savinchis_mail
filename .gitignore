@@ -17,7 +17,7 @@
 # next.js: Archivos y directorios generados por el framework Next.js.
 /.next/ # Ignora la carpeta .next/ que contiene la construcción optimizada de Next.js.
 /out/ # Ignora la carpeta out/ que contiene la salida estática si se genera.
-
+.next
 # Producción: Archivos generados para la producción.
 /build # Ignora la carpeta build/ que puede contener archivos de construcción.
 
