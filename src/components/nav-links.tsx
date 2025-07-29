@@ -35,6 +35,7 @@ const links = [
   { href: "/events", label: "Eventos", icon: Award, permission: APP_PERMISSIONS.VIEW_EVENTS },
   { href: "/surveys", label: "Encuestas", icon: ClipboardList, permission: APP_PERMISSIONS.VIEW_SURVEYS },
   { href: "/settings", label: "Ajustes", icon: Settings, permission: APP_PERMISSIONS.VIEW_SETTINGS },
+  { href: "/campaigns", label: "Campañas", icon: Monitor, permission: APP_PERMISSIONS.VIEW_CAMPAIGN_MONITOR },
 ];
 
 /**
