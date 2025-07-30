@@ -99,22 +99,7 @@ export function DetailsStep({ className = '' }: { className?: string }) {
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="fromName">
-              Nombre del remitente <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="fromName"
-              placeholder="Ej: Equipo de Marketing"
-              {...register('fromName')}
-              className={errors.fromName && 'border-destructive'}
-            />
-            {errors.fromName && (
-              <p className="text-sm text-destructive">
-                {errors.fromName.message as string}
-              </p>
-            )}
-          </div>
+          
 
           <div className="space-y-2">
             <Label htmlFor="fromEmail">
@@ -135,21 +120,7 @@ export function DetailsStep({ className = '' }: { className?: string }) {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="replyTo">
-            Correo para respuestas (opcional)
-          </Label>
-          <Input
-            id="replyTo"
-            type="email"
-            placeholder="respuestas@midominio.com"
-            {...register('replyTo')}
-            className={errors.replyTo && 'border-destructive'}
-          />
-          <p className="text-xs text-muted-foreground">
-            Si se deja vacío, se usará el correo del remitente.
-          </p>
-        </div>
+        
       </div>
     </div>
   );

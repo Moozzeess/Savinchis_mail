@@ -68,27 +68,14 @@ export function SchedulingStep({ className = '' }: { className?: string }) {
 
 // Efecto para actualizar la fecha/hora programada cuando cambian los valores
 useEffect(() => {
-  if (date && !isOptimalTime) {
+  if (date && !isOptimalTime && !isNaN(new Date(date).getTime())) {
     const newDate = new Date(date);
     newDate.setHours(parseInt(hour, 10), parseInt(minute, 10), 0, 0);
-    setValue('scheduledAt', newDate, { shouldValidate: true });
+    if (!isNaN(newDate.getTime())) {  // Validate before setting
+      setValue('scheduledAt', newDate, { shouldValidate: true });
+    }
   }
 }, [date, hour, minute, isOptimalTime, setValue]);
-
-  // Inicializar valores
-  useEffect(() => {
-    // Si ya hay una fecha programada, establecer los valores
-    if (scheduledAt) {
-      const scheduledDate = new Date(scheduledAt);
-      setDate(scheduledDate);
-      setHour(scheduledDate.getHours().toString().padStart(2, '0'));
-      setMinute(scheduledDate.getMinutes().toString().padStart(2, '0'));
-    }
-    // Establecer la zona horaria guardada
-    if (timeZone) {
-      setTimezone(timeZone);
-    }
-  }, [scheduledAt, timeZone]);
 
   // Actualizar fecha y hora programada cuando cambian los valores
   useEffect(() => {

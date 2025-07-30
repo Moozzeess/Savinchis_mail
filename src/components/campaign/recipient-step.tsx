@@ -8,7 +8,15 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { Upload, Users, FileText, CheckCircle2, XCircle } from 'lucide-react';
+import { Upload, Users, FileText, CheckCircle2, XCircle, Search, List, Zap } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { Calendar } from '@/components/ui/calendar';
+import { Textarea } from '@/components/ui/textarea';
+import { Database } from 'lucide-react';
 
 // Mock data - Reemplazar con llamadas a la API real
 const CONTACT_LISTS = [
@@ -23,6 +31,10 @@ export function RecipientStep({ className = '' }: { className?: string }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [activeTab, setActiveTab] = useState('existing');
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [sqlQuery, setSqlQuery] = useState('');
+  const [individualEmails, setIndividualEmails] = useState('');
+  const [isIT, setIsIT] = useState(false);
 
   const selectedListId = watch('contactList');
   const selectedListName = watch('contactListName');
@@ -76,7 +88,7 @@ export function RecipientStep({ className = '' }: { className?: string }) {
           </TabsTrigger>
           <TabsTrigger value="upload">
             <Upload className="mr-2 h-4 w-4" />
-            Cargar lista
+            Nuevos contactos
           </TabsTrigger>
         </TabsList>
 
@@ -116,92 +128,141 @@ export function RecipientStep({ className = '' }: { className?: string }) {
         </TabsContent>
 
         <TabsContent value="upload" className="mt-6">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Cargar lista de contactos</Label>
-              <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 text-center">
-                {!selectedFile ? (
-                  <div className="space-y-4">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                      <Upload className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">Arrastra tu archivo aquí o haz clic para seleccionar</p>
-                      <p className="text-xs text-muted-foreground">
-                        Formatos soportados: .csv, .xlsx (máx. 10MB)
-                      </p>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="mt-2"
-                      onClick={() => document.getElementById('file-upload')?.click()}
-                    >
-                      Seleccionar archivo
-                    </Button>
-                    <input
-                      id="file-upload"
-                      type="file"
-                      accept=".csv,.xlsx"
-                      className="hidden"
-                      onChange={handleFileChange}
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                          <FileText className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium">{selectedFile.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                          </p>
-                        </div>
+          <Tabs defaultValue="file" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="file">
+              <Upload className="mr-2 h-4 w-4" />
+              Subir archivo
+            </TabsTrigger>
+            <TabsTrigger value="individuals">
+              <Users className="mr-2 h-4 w-4" />
+              Correos individuales
+            </TabsTrigger>
+            <TabsTrigger value="segments">
+              <Database className="mr-2 h-4 w-4" />
+              Base de datos
+            </TabsTrigger>
+          </TabsList>
+
+            <TabsContent value="file" className="mt-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="file-upload">Sube un archivo de contactos</Label>
+                  <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 text-center">
+                    <div className="space-y-4">
+                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                        <Upload className="h-6 w-6 text-primary" />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">Arrastra tu archivo aquí o haz clic para seleccionar</p>
+                        <p className="text-xs text-muted-foreground">
+                          Formatos soportados: .csv, .xlsx (máx. 10MB)
+                        </p>
                       </div>
                       <Button
                         type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setSelectedFile(null);
-                          setUploadProgress(0);
-                          setValue('contactList', '');
-                          setValue('contactListName', '');
-                          setValue('totalRecipients', 0);
-                        }}
+                        variant="outline"
+                        className="mt-2"
+                        onClick={() => document.getElementById('file-upload')?.click()}
                       >
-                        <XCircle className="h-5 w-5 text-destructive" />
+                        Seleccionar archivo
                       </Button>
+                      <input
+                        id="file-upload"
+                        type="file"
+                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                        className="hidden"
+                        onChange={handleFileChange}
+                      />
                     </div>
-                    
-                    {uploadProgress > 0 && uploadProgress < 100 && (
-                      <div className="space-y-2">
-                        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-                          <div
-                            className="h-full bg-primary transition-all duration-300"
-                            style={{ width: `${uploadProgress}%` }}
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Procesando archivo... {uploadProgress}%
-                        </p>
-                      </div>
-                    )}
-                    
-                    {uploadProgress === 100 && (
-                      <div className="flex items-center space-x-2 text-sm text-green-600 dark:text-green-400">
-                        <CheckCircle2 className="h-4 w-4" />
-                        <span>Archivo cargado correctamente</span>
-                      </div>
-                    )}
                   </div>
-                )}
+                  <p className="text-sm text-muted-foreground mt-2">El archivo debe contener una columna "email".</p>
+                </div>
               </div>
-            </div>
-          </div>
+            </TabsContent>
+
+            <TabsContent value="individuals" className="mt-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="individual-emails">Agregar correos electrónicos</Label>
+                  <Textarea
+                    id="individual-emails"
+                    placeholder="ejemplo1@dominio.com, ejemplo2@dominio.com, ejemplo3@dominio.com"
+                    className="min-h-[200px]"
+                    value={individualEmails}
+                    onChange={(e) => {
+                      setIndividualEmails(e.target.value);
+                      // Update form context with individual emails
+                      const emails = e.target.value
+                        .split(/[,\n\s]+/)
+                        .filter(email => email.includes('@'));
+                      setValue('contactList', emails.join(','));
+                      setValue('totalRecipients', emails.length);
+                      setValue('contactListName', 'Correos individuales');
+                    }}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Separa los correos con comas, espacios o saltos de línea.
+                  </p>
+                  {individualEmails && (
+                    <div className="mt-2 text-sm text-muted-foreground">
+                      {individualEmails.split(/[,\n\s]+/).filter(Boolean).length} correos ingresados
+                    </div>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="date" className="mt-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Selecciona una fecha de visita</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar 
+                        mode="single"
+                        selected={date}
+                        onSelect={(selectedDate) => setDate(selectedDate)}
+                        initialFocus
+                        locale={es}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="segments" className="mt-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Selecciona una fecha de visita</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, "PPP", { locale: es }) : <span>Elige una fecha</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar 
+                        mode="single"
+                        selected={date}
+                        onSelect={(selectedDate) => setDate(selectedDate)}
+                        initialFocus
+                        locale={es}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
         </TabsContent>
       </Tabs>
 

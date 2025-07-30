@@ -5,7 +5,7 @@ export interface Campaign {
     objective: 'promotional' | 'newsletter' | 'announcement' | 'event' | 'welcome' | 'other';
     subject: string;
     emailBody: string;
-    fromName: string;
+   // fromName: string;
     fromEmail: string;
     replyTo?: string;
     contactList: string;

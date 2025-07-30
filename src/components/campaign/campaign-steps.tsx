@@ -8,7 +8,7 @@ const steps = [
   { id: '1', name: 'Detalles', description: 'Información básica' },
   { id: '2', name: 'Destinatarios', description: 'Lista de contactos' },
   { id: '3', name: 'Contenido', description: 'Redactar correo' },
-  { id: '4', 'name': 'Programar', description: 'Fecha y hora' },
+  { id: '4', 'name': 'Recurencia', description: 'Fecha y hora' },
   { id: '5', name: 'Revisar', description: 'Confirmar detalles' },
 ];
 
@@ -33,13 +33,13 @@ export function CampaignSteps({ currentStep, onStepClick }: CampaignStepsProps) 
             <li
               key={step.id}
               className={cn(
-                'relative flex-1', // Make each step take equal width
-                stepIdx !== steps.length - 1 ? 'pr-8 sm:pr-20' : '' // Add right padding between steps
+                'relative flex-1', 
+                stepIdx !== steps.length - 1 ? 'pr-8 sm:pr-20' : '' 
               )}
               onClick={() => onStepClick(stepIdx)}
             >
               {stepIdx !== steps.length - 1 && (
-                // Horizontal line between steps
+               
                 <div
                   className="absolute inset-0 flex items-center"
                   aria-hidden="true"
@@ -55,7 +55,7 @@ export function CampaignSteps({ currentStep, onStepClick }: CampaignStepsProps) 
 
               <a
                 href="#"
-                className="group relative flex flex-col items-center" // Center content for each step
+                className="group relative flex flex-col items-center"
               >
                 {status !== 'upcoming' ? (
                   <>

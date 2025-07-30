@@ -33,9 +33,9 @@ const campaignFormSchema = z.object({
   // Contenido del correo
   subject: z.string(),
   emailBody: z.string(),
-  fromName: z.string().min(1, 'El nombre del remitente es requerido'),
+//  fromName: z.string().min(1, 'El nombre del remitente es requerido'),
   fromEmail: z.string().email('Ingresa un correo electrónico válido'),
-  replyTo: z.string().email('Ingresa un correo electrónico válido').optional(),
+//  replyTo: z.string().email('Ingresa un correo electrónico válido').optional(),
   
   // Destinatarios
   contactList: z.string().min(1, 'Debes seleccionar una lista de contactos'),
@@ -67,7 +67,7 @@ export default function NewCampaignPage() {
       objective: 'promotional',
       subject: '',
       emailBody: '',
-      fromName: '',
+//      fromName: '',
       fromEmail: '',
       contactList: '',
       sendNow: true,

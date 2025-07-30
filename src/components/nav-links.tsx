@@ -27,7 +27,7 @@ import { hasPermission, APP_PERMISSIONS } from "@/lib/permissions";
 const links = [
   { href: "/dashboard", label: "Panel", icon: Home, permission: APP_PERMISSIONS.VIEW_DASHBOARD },
   { href: "/send", label: "Nuevo Correo", icon: MailPlus, permission: APP_PERMISSIONS.SEND_CAMPAIGN },
-  { href: "/campaigns", label: "Monitor de Envíos", icon: Monitor, permission: APP_PERMISSIONS.VIEW_CAMPAIGN_MONITOR },
+  //{ href: "/campaigns", label: "Monitor de Envíos", icon: Monitor, permission: APP_PERMISSIONS.VIEW_CAMPAIGN_MONITOR },
   { href: "/mailbox", label: "Buzón", icon: Inbox, permission: APP_PERMISSIONS.VIEW_MAILBOX },
   { href: "/contacts", label: "Contactos", icon: Users, permission: APP_PERMISSIONS.VIEW_CONTACTS },
   { href: "/templates", label: "Plantillas", icon: FileText, permission: APP_PERMISSIONS.VIEW_TEMPLATES },

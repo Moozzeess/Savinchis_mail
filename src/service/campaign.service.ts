@@ -2,7 +2,6 @@
 import { Campaign } from '@/types/campaign';
 
 export const createCampaign = async (campaign: Campaign): Promise<Campaign> => {
-  // Mock implementation - replace with actual API call
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
