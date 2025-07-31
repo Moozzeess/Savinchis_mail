@@ -43,7 +43,7 @@ export default function LoginPage() {
         <CardHeader className="text-center pt-6">
           <div className="flex justify-center items-center gap-2 mb-4">
             <AppLogo className="size-8 text-primary" />
-            <CardTitle className="text-2xl font-headline">EmailCraft Lite</CardTitle>
+            <CardTitle className="text-2xl font-headline">Savinchis' Mail</CardTitle>
           </div>
           <CardDescription>
             Selecciona un rol para iniciar sesión.

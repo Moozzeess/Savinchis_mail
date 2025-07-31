@@ -31,7 +31,7 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-3xl font-headline font-bold">Panel de Control</h1>
         <p className="text-muted-foreground">
-          Bienvenido a EmailCraft Lite. Aquí tienes un resumen de tu actividad.
+          Bienvenido a Savinchis' Mail. Aquí tienes un resumen de tu actividad.
         </p>
       </div>
 

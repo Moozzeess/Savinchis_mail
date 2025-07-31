@@ -1,4 +1,4 @@
-# **App Name**: EmailCraft Lite
+# App Name: Savinchis' Mail
 
 ## Core Features:
 # Funcionalidades Principales:

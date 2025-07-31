@@ -8,7 +8,7 @@ import { AuthProvider } from '@/context/auth-context';
  * Metadatos de la aplicación para SEO y visualización en el navegador.
  */
 export const metadata: Metadata = {
-  title: 'EmailCraft Lite',
+  title: 'Savinchis Mail',
   description: 'Aplicación para envío masivo de correos.',
 };
 

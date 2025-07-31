@@ -83,7 +83,7 @@ export default function MainLayout({
           <div className="flex items-center gap-2">
             <AppLogo className="size-7 text-primary" />
             <span className="text-lg font-headline font-semibold">
-              EmailCraft Lite
+              Savinchis' Mail
             </span>
           </div>
         </SidebarHeader>
