@@ -1,5 +1,5 @@
 {
-  "name": "emailcraft-lite",
+  "name": "savinchis-mail",
   "version": "0.1.0",
   "description": "Una plataforma de marketing por correo electrónico construida con Next.js, RBAC y un editor visual.",
   "private": true,

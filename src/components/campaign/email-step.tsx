@@ -1,54 +1,42 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
-import { 
-  Bold, 
-  Italic, 
-  Underline, 
-  List, 
-  ListOrdered, 
-  Image as ImageIcon, 
-  Link as LinkIcon,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Paperclip,
-  Smile,
-  Code,
-  Quote
-} from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Plus, Search, LayoutTemplate, Mail, Award, Bold, Italic, Underline, List, ListOrdered, Image as ImageIcon, Link as LinkIcon, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { getTemplateListAction } from '@/actions/template-actions';
+import { useRouter } from 'next/navigation';
 
-type EmailTab = 'write' | 'preview' | 'html';
+interface Template {
+  id_plantilla: number;
+  nombre: string;
+  tipo?: 'template' | 'certificate';
+  asunto_predeterminado?: string;
+  contenido?: any;
+  fecha_creacion?: string;
+}
+
+type EmailTab = 'gallery' | 'new';
 
 export function EmailStep({ className = '' }: { className?: string }) {
   const { register, watch, setValue, formState: { errors } } = useFormContext();
-  const [activeTab, setActiveTab] = useState<EmailTab>('write');
-  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
-  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
-  const [imageAlt, setImageAlt] = useState('');
-  const [linkUrl, setLinkUrl] = useState('');
-  const [linkText, setLinkText] = useState('');
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<EmailTab>('gallery');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
   const subject = watch('subject') || '';
   const emailBody = watch('emailBody') || '';
-  const fromName = watch('fromName') || 'Tu Nombre';
-  const fromEmail = watch('fromEmail') || 'tu@email.com';
+  const fromName = watch('fromName') || '';
+  const fromEmail = watch('fromEmail') || '';
 
   // Insertar texto en la posición del cursor
   const insertAtCursor = (text: string) => {
@@ -77,37 +65,12 @@ export function EmailStep({ className = '' }: { className?: string }) {
     }, 0);
   };
 
-  // Insertar imagen
-  const handleInsertImage = () => {
-    if (!imageUrl) return;
-    
-    const imgTag = `<img src="${imageUrl}" alt="${imageAlt || ''}" style="max-width: 100%;" />`;
-    insertAtCursor(imgTag);
-    setImageUrl('');
-    setImageAlt('');
-    setIsImageDialogOpen(false);
-  };
-
-  // Insertar enlace
-  const handleInsertLink = () => {
-    if (!linkUrl) return;
-    
-    const linkTextToUse = linkText || linkUrl;
-    const linkTag = `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer">${linkTextToUse}</a>`;
-    insertAtCursor(linkText ? linkText : linkTag);
-    setLinkUrl('');
-    setLinkText('');
-    setIsLinkDialogOpen(false);
-  };
-
   // Formatear texto
   const formatText = (format: string) => {
     const formats: Record<string, { open: string; close: string }> = {
       bold: { open: '<strong>', close: '</strong>' },
       italic: { open: '<em>', close: '</em>' },
       underline: { open: '<u>', close: '</u>' },
-      code: { open: '<code>', close: '</code>' },
-      quote: { open: '<blockquote>', close: '</blockquote>' },
       h1: { open: '<h1>', close: '</h1>\n' },
       h2: { open: '<h2>', close: '</h2>\n' },
       ul: { open: '<ul>\n<li>', close: '</li>\n</ul>\n' },
@@ -117,7 +80,6 @@ export function EmailStep({ className = '' }: { className?: string }) {
 
     if (formats[format]) {
       insertAtCursor(`${formats[format].open}${formats[format].close}`);
-      // Mover el cursor entre las etiquetas
       const textarea = editorRef.current;
       if (textarea) {
         const cursorPos = textarea.selectionStart + formats[format].open.length;
@@ -142,329 +104,293 @@ export function EmailStep({ className = '' }: { className?: string }) {
     }
   };
 
+  // Cargar plantillas
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        setIsLoading(true);
+        const templates = await getTemplateListAction({ tipo: 'template' });
+        setTemplates(templates);
+      } catch (error) {
+        console.error('Error cargando plantillas:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadTemplates();
+  }, []);
+
+  const filteredTemplates = templates.filter(template => 
+    template.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (template.asunto_predeterminado?.toLowerCase() || '').includes(searchQuery.toLowerCase())
+  );
+
+  const handleTemplateSelect = (template: Template) => {
+    setSelectedTemplate(template.id_plantilla);
+    setValue('templateId', template.id_plantilla);
+    setValue('subject', template.asunto_predeterminado || '');
+  };
+
+  const handleCreateNewTemplate = () => {
+    setSelectedTemplate(null);
+    setValue('templateId', null);
+    setValue('emailBody', '');
+    setValue('subject', '');
+  };
+
+  const handleCreateNewTemplateRedirect = () => {
+    // Guardar el contenido actual si es necesario
+    const currentContent = watch('emailBody') || '';
+    const currentSubject = watch('subject') || '';
+    
+    // Redirigir al creador de plantillas con el contenido actual
+    router.push('/templates/new');
+  };
+
   return (
     <div className={cn('space-y-6', className)}>
-      <div>
-        <h3 className="text-base font-medium">Contenido del correo</h3>
-        <p className="text-sm text-muted-foreground">
-          Escribe y da formato al contenido de tu correo electrónico.
-        </p>
-      </div>
-
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="subject">
-            Asunto <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="subject"
-            placeholder="Ej.: ¡Oferta especial solo para ti!"
-            {...register('subject')}
-            className={errors.subject && 'border-destructive'}
-          />
-          {errors.subject && (
-            <p className="text-sm text-destructive">
-              {errors.subject.message as string}
-            </p>
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="fromName">Nombre del remitente</Label>
+            <Input
+              id="fromName"
+              placeholder="Ej: Soporte Técnico"
+              {...register('fromName')}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="fromEmail">Correo del remitente</Label>
+            <Input
+              id="fromEmail"
+              type="email"
+              placeholder="ejemplo@midominio.com"
+              {...register('fromEmail')}
+            />
+          </div>
         </div>
 
-        <Tabs 
-          value={activeTab} 
-          onValueChange={(value) => setActiveTab(value as EmailTab)}
-          className="w-full"
-        >
-          <div className="flex items-center justify-between border-b">
-            <TabsList className="h-10 rounded-none border-0 bg-transparent p-0">
-              <TabsTrigger 
-                value="write" 
-                className="relative h-10 rounded-none border-b-2 border-transparent bg-transparent px-4 font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
-              >
-                Escribir
-              </TabsTrigger>
-              <TabsTrigger 
-                value="preview" 
-                className="relative h-10 rounded-none border-b-2 border-transparent bg-transparent px-4 font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
-              >
-                Vista previa
-              </TabsTrigger>
-              <TabsTrigger 
-                value="html" 
-                className="relative h-10 rounded-none border-b-2 border-transparent bg-transparent px-4 font-medium text-muted-foreground shadow-none transition-none data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
-              >
-                HTML
-              </TabsTrigger>
-            </TabsList>
+        <div className="space-y-2">
+          <Label htmlFor="subject">Asunto del correo</Label>
+          <Input
+            id="subject"
+            placeholder="Asunto del correo"
+            {...register('subject')}
+          />
+        </div>
+      </div>
 
-            {activeTab === 'write' && (
-              <div className="flex items-center space-x-1 pr-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => formatText('bold')}
-                  title="Negrita (Ctrl+B)"
-                >
-                  <Bold className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => formatText('italic')}
-                  title="Cursiva (Ctrl+I)"
-                >
-                  <Italic className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => formatText('underline')}
-                  title="Subrayado (Ctrl+U)"
-                >
-                  <Underline className="h-4 w-4" />
-                </Button>
-                <div className="mx-1 h-6 w-px bg-border" />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => formatText('h1')}
-                  title="Título 1"
-                >
-                  <span className="text-sm font-bold">H1</span>
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => formatText('h2')}
-                  title="Título 2"
-                >
-                  <span className="text-sm font-bold">H2</span>
-                </Button>
-                <div className="mx-1 h-6 w-px bg-border" />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => formatText('ul')}
-                  title="Lista con viñetas"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => formatText('ol')}
-                  title="Lista numerada"
-                >
-                  <ListOrdered className="h-4 w-4" />
-                </Button>
-                <div className="mx-1 h-6 w-px bg-border" />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => alignText('left')}
-                  title="Alinear a la izquierda"
-                >
-                  <AlignLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => alignText('center')}
-                  title="Centrar"
-                >
-                  <AlignCenter className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => alignText('right')}
-                  title="Alinear a la derecha"
-                >
-                  <AlignRight className="h-4 w-4" />
-                </Button>
-                <div className="mx-1 h-6 w-px bg-border" />
-                <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      title="Insertar enlace"
-                    >
-                      <LinkIcon className="h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Insertar enlace</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="linkUrl">URL del enlace</Label>
-                        <Input
-                          id="linkUrl"
-                          placeholder="https://ejemplo.com"
-                          value={linkUrl}
-                          onChange={(e) => setLinkUrl(e.target.value)}
-                        />
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as EmailTab)}>
+        <TabsList>
+          <TabsTrigger value="gallery" className="flex items-center gap-2">
+            <LayoutTemplate className="h-4 w-4" />
+            Plantillas Guardadas
+          </TabsTrigger>
+          <TabsTrigger value="new" className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Redactar Nuevo
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="gallery" className="mt-6">
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar plantillas..."
+                  className="pl-9"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <Button 
+                onClick={handleCreateNewTemplateRedirect}
+                variant="outline"
+                className="whitespace-nowrap"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Nueva Plantilla
+              </Button>
+            </div>
+            
+            {isLoading ? (
+              <div className="flex items-center justify-center h-40">
+                <p>Cargando plantillas...</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredTemplates.map((template) => (
+                  <Card 
+                    key={template.id_plantilla}
+                    className={cn(
+                      'cursor-pointer transition-all hover:border-primary h-full flex flex-col',
+                      selectedTemplate === template.id_plantilla ? 'border-2 border-primary' : ''
+                    )}
+                    onClick={() => handleTemplateSelect(template)}
+                  >
+                    <CardHeader className="p-4 pb-2">
+                      <div className="flex items-center gap-2 mb-2">
+                        {template.tipo === 'certificate' ? (
+                          <Award className="h-5 w-5 text-amber-500" />
+                        ) : (
+                          <Mail className="h-5 w-5 text-blue-500" />
+                        )}
+                        <CardTitle className="text-base">{template.nombre}</CardTitle>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="linkText">Texto a mostrar (opcional)</Label>
-                        <Input
-                          id="linkText"
-                          placeholder="Texto del enlace"
-                          value={linkText}
-                          onChange={(e) => setLinkText(e.target.value)}
-                        />
+                      {template.asunto_predeterminado && (
+                        <CardDescription className="line-clamp-2 text-sm">
+                          {template.asunto_predeterminado}
+                        </CardDescription>
+                      )}
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0 mt-auto">
+                      <div className="aspect-video bg-muted rounded-md flex items-center justify-center">
+                        {template.tipo === 'certificate' ? (
+                          <Award className="h-12 w-12 text-muted-foreground/50" />
+                        ) : (
+                          <Mail className="h-12 w-12 text-muted-foreground/50" />
+                        )}
                       </div>
-                      <div className="flex justify-end space-x-2 pt-2">
-                        <Button
-                          variant="outline"
-                          onClick={() => setIsLinkDialogOpen(false)}
-                        >
-                          Cancelar
-                        </Button>
-                        <Button onClick={handleInsertLink}>Insertar</Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-                <Dialog open={isImageDialogOpen} onOpenChange={setIsImageDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      title="Insertar imagen"
-                    >
-                      <ImageIcon className="h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Insertar imagen</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="imageUrl">URL de la imagen</Label>
-                        <Input
-                          id="imageUrl"
-                          placeholder="https://ejemplo.com/imagen.jpg"
-                          value={imageUrl}
-                          onChange={(e) => setImageUrl(e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="imageAlt">Texto alternativo</Label>
-                        <Input
-                          id="imageAlt"
-                          placeholder="Descripción de la imagen"
-                          value={imageAlt}
-                          onChange={(e) => setImageAlt(e.target.value)}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Importante para accesibilidad y cuando la imagen no se puede cargar.
-                        </p>
-                      </div>
-                      <div className="flex justify-end space-x-2 pt-2">
-                        <Button
-                          variant="outline"
-                          onClick={() => setIsImageDialogOpen(false)}
-                        >
-                          Cancelar
-                        </Button>
-                        <Button onClick={handleInsertImage}>Insertar</Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  title="Insertar emoji"
-                >
-                  <Smile className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  title="Insertar archivo adjunto"
-                >
-                  <Paperclip className="h-4 w-4" />
-                </Button>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             )}
           </div>
+        </TabsContent>
 
-          <TabsContent value="write" className="mt-0">
-            <div className="mt-0">
-              <Textarea
-                id="emailBody"
-                placeholder="Escribe tu mensaje aquí..."
-                className={cn(
-                  'min-h-[400px] resize-none rounded-t-none border-t-0 focus-visible:ring-0',
-                  errors.emailBody && 'border-destructive'
-                )}
-                {...register('emailBody')}
-                ref={editorRef}
-              />
-              {errors.emailBody && (
-                <p className="mt-2 text-sm text-destructive">
-                  {errors.emailBody.message as string}
-                </p>
-              )}
-              <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-                <span>Usa las teclas de acceso rápido: Ctrl+B, Ctrl+I, Ctrl+U</span>
-                <span>{emailBody.replace(/<[^>]*>?/gm, '').length} caracteres</span>
-              </div>
+        <TabsContent value="new" className="mt-6">
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-1 p-1 border rounded-md bg-muted/50">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => formatText('bold')}
+                title="Negrita (Ctrl+B)"
+              >
+                <Bold className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => formatText('italic')}
+                title="Cursiva (Ctrl+I)"
+              >
+                <Italic className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => formatText('underline')}
+                title="Subrayado (Ctrl+U)"
+              >
+                <Underline className="h-4 w-4" />
+              </Button>
+              <div className="mx-1 h-6 w-px bg-border" />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => formatText('h1')}
+                title="Título 1"
+              >
+                <span className="text-sm font-bold">H1</span>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => formatText('h2')}
+                title="Título 2"
+              >
+                <span className="text-sm font-bold">H2</span>
+              </Button>
+              <div className="mx-1 h-6 w-px bg-border" />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => formatText('ul')}
+                title="Lista con viñetas"
+              >
+                <List className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => formatText('ol')}
+                title="Lista numerada"
+              >
+                <ListOrdered className="h-4 w-4" />
+              </Button>
+              <div className="mx-1 h-6 w-px bg-border" />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => alignText('left')}
+                title="Alinear a la izquierda"
+              >
+                <AlignLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => alignText('center')}
+                title="Centrar"
+              >
+                <AlignCenter className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => alignText('right')}
+                title="Alinear a la derecha"
+              >
+                <AlignRight className="h-4 w-4" />
+              </Button>
             </div>
-          </TabsContent>
-
-          <TabsContent value="preview" className="mt-0 p-4">
-            <div className="prose max-w-none dark:prose-invert">
-              <h1>{subject || '(Sin asunto)'}</h1>
-              <div
-                className="prose max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: emailBody || '<p>Escribe algo para ver la vista previa aquí...</p>' }}
-              />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="html" className="mt-0">
+            
             <Textarea
-              value={emailBody}
-              onChange={(e) => setValue('emailBody', e.target.value)}
-              className="min-h-[400px] font-mono text-sm"
-              placeholder="<!-- Escribe o edita el HTML aquí -->"
+              id="emailBody"
+              placeholder="Escribe tu mensaje aquí..."
+              className="min-h-[300px] resize-none"
+              {...register('emailBody')}
+              ref={editorRef}
             />
-          </TabsContent>
-        </Tabs>
-      </div>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Usa las teclas de acceso rápido: Ctrl+B, Ctrl+I, Ctrl+U</span>
+              <span>{emailBody.replace(/<[^>]*>?/gm, '').length} caracteres</span>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      {/* Hidden field to store template ID */}
+      <input type="hidden" {...register('templateId')} />
     </div>
   );
+}
+
+// Utility function to handle class names
+function cn(...classes: (string | undefined)[]) {
+  return classes.filter(Boolean).join(' ');
 }
