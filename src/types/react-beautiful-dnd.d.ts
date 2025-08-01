@@ -1,4 +1,3 @@
-
 /**
  * @fileoverview Declaración de tipo para el módulo 'react-beautiful-dnd'.
  * Este archivo proporciona una declaración de módulo para 'react-beautiful-dnd',
