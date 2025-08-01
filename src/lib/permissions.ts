@@ -1,4 +1,3 @@
-
 /**
  * @fileoverview Define los roles y permisos para el Control de Acceso Basado en Roles (RBAC).
  * Este archivo centraliza la lógica de permisos para simular un sistema RBAC.
