@@ -1,4 +1,4 @@
-
+//Diseño corresponsivo
 import * as React from "react"
 
 /**
