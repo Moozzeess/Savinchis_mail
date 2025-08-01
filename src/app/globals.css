@@ -1,4 +1,3 @@
-
 @tailwind base; /* Importa estilos base de Tailwind, como resets y variables CSS */
 @tailwind components; /* Importa las clases de componentes de Tailwind */
 @tailwind utilities; /* Importa las clases de utilidades de Tailwind */
