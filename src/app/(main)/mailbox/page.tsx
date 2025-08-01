@@ -1,4 +1,7 @@
-
+/**
+ * Página del Buzón.
+ * Muestra los correos enviados, rebotados y rechazados.
+ */
 import {
   Card,
   CardContent,
@@ -20,10 +23,7 @@ import { AlertTriangle, Info } from "lucide-react";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-/**
- * Página del Buzón.
- * Muestra los correos enviados, rebotados y rechazados.
- */
+
 export default async function MailboxPage() {
   const sentEmails = await getSentEmailsAction();
 
