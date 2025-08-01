@@ -1,4 +1,4 @@
-
+//Archivo de personallización de diseño
 import type {Config} from 'tailwindcss';
 
 export default {
