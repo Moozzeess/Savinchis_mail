@@ -1,19 +1,15 @@
-
+/**
+ * @fileoverview Acción de servidor para obtener los correos de la carpeta de Elementos Enviados.
+ */
 // Declara que este módulo es una acción de servidor, lo que significa que se ejecuta en el servidor y no en el cliente.
 'use server'; 
 
 // Importa 'isomorphic-fetch' para que `fetch` esté disponible tanto en el servidor como en el cliente.
 import 'isomorphic-fetch'; 
-// Importa la clase ClientSecretCredential de '@azure/identity' para autenticación basada en secreto de cliente.
 import { ClientSecretCredential } from '@azure/identity';
-// Importa la clase Client de '@microsoft/microsoft-graph-client' para interactuar con la API de Microsoft Graph.
 import { Client } from '@microsoft/microsoft-graph-client';
-// Importa TokenCredentialAuthenticationProvider para usar credenciales de token de Azure con el cliente Graph.
 import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials';
 
-/**
- * @fileoverview Acción de servidor para obtener los correos de la carpeta de Elementos Enviados.
- */
 
 // Define una interfaz para representar la estructura de un correo electrónico enviado.
 interface SentEmail {
