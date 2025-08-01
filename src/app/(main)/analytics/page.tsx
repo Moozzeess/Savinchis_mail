@@ -1,4 +1,8 @@
-
+/**
+ * Página de Rendimiento.
+ * Muestra métricas clave y gráficos sobre el rendimiento de las campañas
+ * y permite generar reportes en PDF, con acceso controlado por rol.
+ */
 "use client";
 
 import { useRef, useState } from "react";
@@ -26,11 +30,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/auth-context";
 import { hasPermission, APP_PERMISSIONS } from "@/lib/permissions";
 
-/**
- * Página de Rendimiento.
- * Muestra métricas clave y gráficos sobre el rendimiento de las campañas
- * y permite generar reportes en PDF, con acceso controlado por rol.
- */
 export default function PerformancePage() {
   const reportRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
