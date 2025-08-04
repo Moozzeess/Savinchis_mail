@@ -1,4 +1,6 @@
 
+"use client";
+
 import {
   Card,
   CardContent,
@@ -15,24 +17,37 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Mails, Users, TrendingUp } from "lucide-react";
+import { Mails, Users, TrendingUp, Plus } from "lucide-react";
 import { AnalyticsCharts } from "@/components/analytics-charts";
 import { campaigns } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { useRouter } from 'next/navigation';
 
-/**
- * Página del Panel de Control (Dashboard).
- * Ofrece un resumen de la actividad de la cuenta, incluyendo estadísticas clave,
- * un gráfico de rendimiento y un historial de campañas recientes.
- */
 export default function DashboardPage() {
+  const router = useRouter();
+  
+  // Función para manejar el clic en una fila de campaña
+  const handleCampaignClick = (campaignId: string) => {
+    router.push(`/campaigns/${campaignId}`);
+  };
+  
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-headline font-bold">Panel de Control</h1>
-        <p className="text-muted-foreground">
-          Bienvenido a Savinchis' Mail. Aquí tienes un resumen de tu actividad.
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-headline font-bold">Campañas</h1>
+          <p className="text-muted-foreground">
+            Gestiona y crea nuevas campañas de correo electrónico.
+          </p>
+        </div>
+        <Link href="/campaigns">
+          <Button className="gap-2">
+            <Plus className="h-4 w-4" />
+            Nueva Campaña
+          </Button>
+        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -78,64 +93,77 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <AnalyticsCharts />
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Campañas Recientes</CardTitle>
-            <CardDescription>
-              Un vistazo a tus últimas 5 campañas enviadas.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nombre</TableHead>
-                  <TableHead className="text-center">Estado</TableHead>
-                  <TableHead className="text-right">Aperturas</TableHead>
-                  <TableHead className="text-right">Clics</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {campaigns.length === 0 ? (
-                    <TableRow>
-                        <TableCell colSpan={4} className="h-24 text-center">
-                            No hay campañas recientes.
-                        </TableCell>
-                    </TableRow>
-                ) : (
-                    campaigns.slice(0, 5).map((campaign) => (
-                    <TableRow key={campaign.name}>
-                        <TableCell>
-                        <div className="font-medium">{campaign.name}</div>
-                        <div className="text-sm text-muted-foreground">{campaign.date}</div>
-                        </TableCell>
-                        <TableCell className="text-center">
+      <Card>
+        <CardHeader>
+          <CardTitle>Tus Campañas</CardTitle>
+          <CardDescription>
+            Todas tus campañas creadas hasta el momento.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {campaigns.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Mails className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium">No hay campañas creadas</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Comienza creando tu primera campaña de correo electrónico.
+              </p>
+              <Link href="/campaigns">
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear Campaña
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nombre</TableHead>
+                    <TableHead>Asunto</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead>Fecha de creación</TableHead>
+                    <TableHead className="text-right">Destinatarios</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {campaigns.map((campaign) => (
+                    <TableRow 
+                      key={campaign.id} 
+                      className="cursor-pointer hover:bg-muted/50" 
+                      onClick={() => handleCampaignClick(campaign.id)}
+                    >
+                      <TableCell className="font-medium">
+                        {campaign.name}
+                      </TableCell>
+                      <TableCell>{campaign.subject || 'Sin asunto'}</TableCell>
+                      <TableCell>
                         <Badge
-                            variant="outline"
-                            className={cn("text-xs", {
-                            "bg-green-100 text-green-800 border-green-200": campaign.status === "TERMINADA",
-                            "bg-blue-100 text-blue-800 border-blue-200": campaign.status === "INICIADA",
-                            "bg-yellow-100 text-yellow-800 border-yellow-200": campaign.status === "TIEMPO LIMITADO",
-                            "bg-gray-100 text-gray-800 border-gray-200": campaign.status === "EXPIRADA",
-                            "bg-red-100 text-red-800 border-red-200": campaign.status === "AGOTADA",
-                            })}
+                          className={cn(
+                            campaign.status === 'enviado'
+                              ? 'bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400'
+                              : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400',
+                            'text-xs font-medium'
+                          )}
                         >
-                            {campaign.status}
+                          {campaign.status === 'enviado' ? 'Enviado' : 'Programado'}
                         </Badge>
-                        </TableCell>
-                        <TableCell className="text-right font-medium">{campaign.opens}</TableCell>
-                        <TableCell className="text-right font-medium">{campaign.clicks}</TableCell>
+                      </TableCell>
+                      <TableCell>
+                        {campaign.createdAt ? new Date(campaign.createdAt).toLocaleDateString() : 'N/A'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {campaign.totalRecipients || 0}
+                      </TableCell>
                     </TableRow>
-                    ))
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
