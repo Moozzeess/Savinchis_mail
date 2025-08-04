@@ -1,4 +1,3 @@
-
 /**
  * @fileoverview Declaración de tipo para el módulo 'react-draggable'.
  * Este archivo proporciona una declaración de módulo para 'react-draggable',

@@ -1,4 +1,8 @@
-
+/**
+ * Página de Historial de Contactos.
+ * Muestra un registro de las listas de contactos (archivos o consultas)
+ * utilizadas en campañas anteriores.
+ */
 import {
   Card,
   CardContent,
@@ -19,11 +23,6 @@ import { FileText } from "lucide-react";
 // Los datos de ejemplo han sido eliminados para simular un entorno real.
 const uploadedFiles: any[] = [];
 
-/**
- * Página de Historial de Contactos.
- * Muestra un registro de las listas de contactos (archivos o consultas)
- * utilizadas en campañas anteriores.
- */
 export default function ContactsPage() {
   return (
     <div className="space-y-6">

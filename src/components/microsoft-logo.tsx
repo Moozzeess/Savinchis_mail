@@ -1,10 +1,11 @@
 
-import type { SVGProps } from "react";
-
 /**
  * Componente SVG para el logo de Microsoft.
  * @param props - Propiedades SVG estándar.
  */
+
+import type { SVGProps } from "react";
+
 export function MicrosoftLogo(props: SVGProps<SVGSVGElement>) {
   return (
     <svg

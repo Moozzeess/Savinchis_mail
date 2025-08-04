@@ -1,4 +1,3 @@
-
 /**
  * @fileoverview Componente avanzado y personalizable de "Sidebar" (Barra Lateral).
  * Proporciona una barra lateral de navegación con estados colapsables,

@@ -1,4 +1,3 @@
-
 'use client';
 /**
  * @fileoverview Contexto de autenticación para gestionar el estado del usuario.

@@ -1,4 +1,8 @@
-
+/**
+ * Convierte una clave de permiso (ej. 'VIEW_DASHBOARD') a un formato legible (ej. 'View Dashboard').
+ * @param permissionKey - La clave del permiso del objeto APP_PERMISSIONS.
+ * @returns Una cadena formateada y legible.
+ */
 'use client';
 
 import { useState } from 'react';
@@ -26,11 +30,6 @@ import {
 } from "@/components/ui/accordion";
 import { managedSenders } from '@/lib/data';
 
-/**
- * Convierte una clave de permiso (ej. 'VIEW_DASHBOARD') a un formato legible (ej. 'View Dashboard').
- * @param permissionKey - La clave del permiso del objeto APP_PERMISSIONS.
- * @returns Una cadena formateada y legible.
- */
 const getPermissionName = (permissionKey: string) => {
     return permissionKey
         .toLowerCase()

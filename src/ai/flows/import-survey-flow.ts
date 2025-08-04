@@ -1,15 +1,17 @@
 'use server';
 /**
- * @fileOverview Flujo de IA para importar una encuesta desde una URL pública.
+ * @fileOverview Flujo programático para importar una encuesta desde una URL pública.
  *
  * - importSurvey - Una función que maneja el proceso de importación de la encuesta.
  * - ImportSurveyInput - El tipo de entrada para la función importSurvey.
  * - ImportSurveyOutput - El tipo de retorno para la función importSurvey.
+ npm install cheerio
  */
 
-import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import 'isomorphic-fetch';
+// Importa la biblioteca 'cheerio' para analizar y manipular el DOM.
+import * as cheerio from 'cheerio';
 
 const QuestionSchema = z.object({
   text: z.string().describe('El texto de la pregunta de la encuesta.'),
@@ -38,67 +40,81 @@ const ImportSurveyOutputSchema = z.object({
 });
 export type ImportSurveyOutput = z.infer<typeof ImportSurveyOutputSchema>;
 
-
+/**
+ * @description Recupera el contenido HTML de una URL.
+ * @param {string} url - La URL de la página.
+ * @returns {Promise<string>} El contenido HTML de la página.
+ * @throws {Error} Si la URL no se puede obtener.
+ */
 async function getPageContent(url: string): Promise<string> {
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Error al obtener la URL: ${response.statusText}`);
-        }
-        // Extracción de texto básica para simplificar para el LLM. Este es un enfoque muy ingenuo.
-        // Un mejor enfoque sería usar una biblioteca como Cheerio para analizar y limpiar el HTML,
-        // pero para esta tarea, confiaremos en la capacidad del LLM para analizar HTML crudo.
-        const html = await response.text();
-        return html;
-    } catch (error) {
-        console.error('Error al obtener el contenido de la página:', error);
-        throw new Error('No se pudo recuperar el contenido de la URL proporcionada.');
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Error al obtener la URL: ${response.statusText}`);
     }
-}
-
-
-export async function importSurvey(input: ImportSurveyInput): Promise<ImportSurveyOutput> {
-  return importSurveyFlow(input);
-}
-
-
-const prompt = ai.definePrompt({
-    name: 'importSurveyPrompt',
-    input: { schema: z.object({ htmlContent: z.string() }) },
-    output: { schema: ImportSurveyOutputSchema },
-    prompt: `Eres un experto en analizar contenido HTML de herramientas de encuestas en línea como Google Forms o Microsoft Forms.
-Tu tarea es analizar el HTML proporcionado y extraer la estructura de la encuesta en el formato JSON especificado.
-
-Presta mucha atención a los campos de entrada (botones de radio, casillas de verificación, entradas de texto, áreas de texto) para identificar correctamente el tipo de pregunta.
-- Los botones de radio implican una pregunta de 'opción múltiple'.
-- Las casillas de verificación implican una pregunta de 'casillas de verificación'.
-- Una entrada de texto de una sola línea implica una pregunta de 'texto'.
-- Un área de texto de varias líneas implica una pregunta de 'textarea'.
-
-Extrae el título, la descripción y todas las preguntas con sus respectivos tipos y opciones si corresponde.
-
-HTML a analizar:
-\`\`\`html
-{{{htmlContent}}}
-\`\`\`
-`,
-});
-
-const importSurveyFlow = ai.defineFlow(
-  {
-    name: 'importSurveyFlow',
-    inputSchema: ImportSurveyInputSchema,
-    outputSchema: ImportSurveyOutputSchema,
-  },
-  async (input) => {
-    const htmlContent = await getPageContent(input.surveyUrl);
-    
-    const { output } = await prompt({ htmlContent });
-
-    if (!output) {
-      throw new Error('La IA no pudo extraer los datos de la encuesta de la URL.');
-    }
-
-    return output;
+    const html = await response.text();
+    return html;
+  } catch (error) {
+    console.error('Error al obtener el contenido de la página:', error);
+    throw new Error('No se pudo recuperar el contenido de la URL proporcionada.');
   }
-);
+}
+
+/**
+ * @description Analiza el HTML de la encuesta y extrae el título, la descripción y las preguntas.
+ * @param {string} htmlContent - El contenido HTML de la encuesta.
+ * @returns {ImportSurveyOutput} Los datos estructurados de la encuesta.
+ */
+function parseSurveyHtml(htmlContent: string): ImportSurveyOutput {
+  const $ = cheerio.load(htmlContent);
+
+  const title = $('h1').first().text().trim() || 'Encuesta sin título';
+  const description = $('p').first().text().trim() || undefined;
+
+  const questions: z.infer<typeof QuestionSchema>[] = [];
+  
+  // Asume que las preguntas están en contenedores con una clase específica o estructura similar.
+  // Es necesario ajustar este selector para que coincida con la estructura real de la encuesta.
+  $('div.question-container').each((_, element) => {
+    const questionElement = $(element);
+    const text = questionElement.find('label').first().text().trim();
+    if (!text) return; // Omite elementos que no son preguntas.
+
+    let type: 'text' | 'textarea' | 'multiple-choice' | 'checkboxes' = 'text';
+    let options: { value: string }[] | undefined = undefined;
+
+    // Lógica para detectar el tipo de pregunta.
+    const inputType = questionElement.find('input[type]').attr('type');
+    const textarea = questionElement.find('textarea');
+
+    if (textarea.length > 0) {
+      type = 'textarea';
+    } else if (inputType === 'radio') {
+      type = 'multiple-choice';
+      options = questionElement.find('input[type="radio"]').map((_, input) => ({
+        value: $(input).next('span').text().trim()
+      })).get();
+    } else if (inputType === 'checkbox') {
+      type = 'checkboxes';
+      options = questionElement.find('input[type="checkbox"]').map((_, input) => ({
+        value: $(input).next('span').text().trim()
+      })).get();
+    } else {
+      type = 'text';
+    }
+
+    questions.push({ text, type, options });
+  });
+
+  return { title, description, questions };
+}
+
+/**
+ * @description Maneja el proceso de importación de una encuesta.
+ * @param {ImportSurveyInput} input - La entrada que contiene la URL de la encuesta.
+ * @returns {Promise<ImportSurveyOutput>} Un objeto con el título, descripción y preguntas de la encuesta.
+ */
+export async function importSurvey(input: ImportSurveyInput): Promise<ImportSurveyOutput> {
+  const htmlContent = await getPageContent(input.surveyUrl);
+  return parseSurveyHtml(htmlContent);
+}
