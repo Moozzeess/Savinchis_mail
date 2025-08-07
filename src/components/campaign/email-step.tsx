@@ -129,6 +129,9 @@ export function EmailStep({ className = '' }: { className?: string }) {
   const handleTemplateSelect = (template: Template) => {
     setSelectedTemplate(template.id_plantilla);
     setValue('templateId', template.id_plantilla);
+    setValue('templateName', template.nombre);
+    setValue('templateContent', template.contenido || '');
+    setValue('emailBody', template.contenido || '');
     setValue('subject', template.asunto_predeterminado || '');
   };
 
@@ -225,14 +228,14 @@ export function EmailStep({ className = '' }: { className?: string }) {
                   <Card 
                     key={template.id_plantilla}
                     className={cn(
-                      'cursor-pointer transition-all hover:border-primary h-full flex flex-col',
-                      selectedTemplate === template.id_plantilla ? 'border-2 border-primary' : ''
+                      "cursor-pointer transition-all border-2",
+                      selectedTemplate === template.id_plantilla ? "border-primary ring-2 ring-primary" : "border-transparent"
                     )}
                     onClick={() => handleTemplateSelect(template)}
                   >
                     <CardHeader className="p-4 pb-2">
                       <div className="flex items-center gap-2 mb-2">
-                        {template.tipo === 'certificate' ? (
+                        {template.tipo === 'certificate' || 'template' ? (
                           <Award className="h-5 w-5 text-amber-500" />
                         ) : (
                           <Mail className="h-5 w-5 text-blue-500" />
@@ -247,13 +250,18 @@ export function EmailStep({ className = '' }: { className?: string }) {
                     </CardHeader>
                     <CardContent className="p-4 pt-0 mt-auto">
                       <div className="aspect-video bg-muted rounded-md flex items-center justify-center">
-                        {template.tipo === 'certificate' ? (
+                        {template.tipo === 'certificate' || 'template' ? (
                           <Award className="h-12 w-12 text-muted-foreground/50" />
                         ) : (
                           <Mail className="h-12 w-12 text-muted-foreground/50" />
                         )}
                       </div>
                     </CardContent>
+                  {selectedTemplate === template.id_plantilla &&(
+                    <div className="my-4 p-2 border rounded bg-muted">
+                      <strong>Plantilla seleccionada:</strong>{watch('templateName')}
+                    </div>
+                  )}
                   </Card>
                 ))}
               </div>

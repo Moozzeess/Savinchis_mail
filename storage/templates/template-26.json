@@ -1,0 +1,22 @@
+[
+  {
+    "id": "hlXKH7wIXRKJIJJBWCXLc",
+    "type": "image",
+    "content": {
+      "src": "https://placehold.co/600x300.png",
+      "alt": "Imagen descriptiva",
+      "width": 100,
+      "align": "center"
+    }
+  },
+  {
+    "id": "Bjd5yYWgBimmfzje-pd9a",
+    "type": "image",
+    "content": {
+      "src": "https://placehold.co/600x300.png",
+      "alt": "Imagen descriptiva",
+      "width": 100,
+      "align": "center"
+    }
+  }
+]

@@ -95,44 +95,128 @@ export function CertificateEditor({ certificate }: { certificate: Partial<Templa
   };
 
   const handleSave = async () => {
-    setIsSaving(true);
-    const contenido = {
-      backgroundImage,
-      texts: {
-        title,
-        issuedToText,
-        description,
-        dateText,
-        signatureText,
-      },
-      styles: elementStyles,
-      positions,
-    };
-
-    const result = await saveTemplateAction({
-      id: certificate?.id_plantilla,
-      nombre: templateName,
-      asunto_predeterminado: 'Certificado - ' + templateName,
-      contenido: contenido,
-      tipo: 'certificate',
-    });
-
-    setIsSaving(false);
-
-    if (result.success) {
+    if (!templateName.trim()) {
       toast({
-        title: result.message,
+        title: 'Error',
+        description: 'Por favor ingresa un nombre para el certificado',
+        variant: 'destructive',
       });
-      if (result.id) {
-        // Para evitar que el usuario haga cambios mientras redirige
+      return;
+    }
+
+    if (!backgroundImage) {
+      toast({
+        title: 'Error',
+        description: 'Por favor selecciona una imagen de fondo para el certificado',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSaving(true);
+
+    // Crear la estructura de bloques similar a las plantillas
+    const blocks = [
+      {
+        id: 'background',
+        type: 'image',
+        content: {
+          src: backgroundImage,
+          alt: 'Fondo del certificado',
+          width: 100,
+          align: 'center',
+        },
+      },
+      {
+        id: 'title',
+        type: 'text',
+        content: {
+          text: title,
+          fontSize: elementStyles.title.fontSize,
+          color: elementStyles.title.color,
+          textAlign: elementStyles.title.textAlign,
+          fontWeight: elementStyles.title.fontWeight,
+          lineHeight: 1.2,
+        },
+      },
+      {
+        id: 'issuedTo',
+        type: 'text',
+        content: {
+          text: issuedToText,
+          fontSize: elementStyles.issuedTo.fontSize,
+          color: elementStyles.issuedTo.color,
+          textAlign: elementStyles.issuedTo.textAlign,
+          fontWeight: elementStyles.issuedTo.fontWeight,
+          lineHeight: 1.2,
+        },
+      },
+      {
+        id: 'description',
+        type: 'text',
+        content: {
+          text: description,
+          fontSize: elementStyles.description.fontSize,
+          color: elementStyles.description.color,
+          textAlign: elementStyles.description.textAlign,
+          fontWeight: elementStyles.description.fontWeight,
+          lineHeight: 1.5,
+        },
+      },
+      {
+        id: 'date',
+        type: 'text',
+        content: {
+          text: dateText,
+          fontSize: elementStyles.date.fontSize,
+          color: elementStyles.date.color,
+          textAlign: elementStyles.date.textAlign,
+          fontWeight: elementStyles.date.fontWeight,
+          lineHeight: 1.2,
+        },
+      },
+      {
+        id: 'signature',
+        type: 'text',
+        content: {
+          text: signatureText,
+          fontSize: elementStyles.signature.fontSize,
+          color: elementStyles.signature.color,
+          textAlign: elementStyles.signature.textAlign,
+          fontWeight: elementStyles.signature.fontWeight,
+          lineHeight: 1.2,
+        },
+      },
+    ];
+
+    try {
+      const result = await saveTemplateAction({
+        id_plantilla: certificate?.id_plantilla,
+        nombre: templateName,
+        asunto_predeterminado: 'Certificado - ' + templateName,
+        contenido: blocks,
+        tipo: 'certificate' as const,
+      });
+
+      setIsSaving(false);
+
+      if (result.success) {
+        toast({
+          title: result.message,
+        });
+        
+        // Redirigir a la lista de plantillas después de guardar
         setTimeout(() => {
-          router.push(`/certificates/editor/${result.id}`);
+          router.push('/templates');
         }, 1000);
+      } else {
+        throw new Error(result.message);
       }
-    } else {
+    } catch (error) {
+      setIsSaving(false);
       toast({
         title: 'Error al guardar',
-        description: result.message,
+        description: error instanceof Error ? error.message : 'Ocurrió un error inesperado',
         variant: 'destructive',
       });
     }

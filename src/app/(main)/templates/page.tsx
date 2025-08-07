@@ -10,19 +10,23 @@ import {
 import { PlusCircle, Edit, Mail, Award } from "lucide-react";
 import Link from "next/link";
 import { getTemplatesAction, type Template } from "@/actions/template-actions";
-import { Block, generateHtmlFromBlocks } from "@/lib/template-utils";
-import { DeleteTemplateButton } from "./delete-template-button";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
 import { PaginationControls } from "@/components/ui/pagination-controls";
+import { TemplatePreview } from "@/components/templates/template-preview";
+import Image from "next/image";
+import { DeleteTemplateButton } from "./delete-template-button";
 
 /**
  * Página de Diseños.
  * Muestra una lista de las plantillas de correo y certificados existentes
  * y permite crear nuevos o editar/eliminar los actuales.
  */
-export default async function TemplatesPage({ searchParams }: { searchParams: any }) {
-  const page = Number(searchParams?.page) || 1;
+export default async function TemplatesPage({ 
+  searchParams 
+}: { 
+  searchParams: { page?: string } 
+}) {
+  const page = searchParams?.page ? Number(searchParams.page) : 1;
   const limit = 9;
 
   const { templates, total } = await getTemplatesAction({ page, limit });
@@ -57,25 +61,6 @@ export default async function TemplatesPage({ searchParams }: { searchParams: an
               ? `/certificates/editor/${template.id_plantilla}`
               : `/templates/editor/${template.id_plantilla}`;
 
-            let blocks: Block[] = [];
-            /*if (template.contenido) {
-              try {
-                const parsedContent = typeof template.contenido === 'string' 
-                  ? JSON.parse(template.contenido) 
-                  : template.contenido;
-                
-                if (Array.isArray(parsedContent)) {
-                  blocks = parsedContent;
-                }
-              } catch (error) {
-                console.error(`Error al parsear contenido de plantilla ${template.id_plantilla}:`, error);
-              }
-            }*/
-
-            const templateHtml = !isCertificate && blocks.length > 0
-              ? generateHtmlFromBlocks(blocks)
-              : '';
-
             return (
               <Card key={template.id_plantilla} className="flex flex-col">
                 <CardHeader className="p-0 relative">
@@ -86,23 +71,12 @@ export default async function TemplatesPage({ searchParams }: { searchParams: an
                     </Badge>
                   </div>
                   <div className="aspect-[3/2] w-full h-full overflow-hidden rounded-t-lg bg-muted pointer-events-none">
-                    {isCertificate ? (
-                      template.contenido?.backgroundImage ? (
-                        <Image src={template.contenido.backgroundImage} alt={template.nombre} layout="fill" objectFit="cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Award className="h-16 w-16 text-muted-foreground/50" />
-                        </div>
-                      )
-                    ) : (
-                      <iframe
-                        srcDoc={templateHtml}
-                        title={template.nombre}
-                        className="w-full h-full border-0 scale-[0.5] origin-top-left"
-                        style={{ width: "200%", height: "200%" }}
-                        scrolling="no"
-                      />
-                    )}
+                    <TemplatePreview 
+                      templatePath={!isCertificate && typeof template.contenido === 'string' ? template.contenido : null}
+                      templateName={template.nombre}
+                      isCertificate={isCertificate}
+                      templateContent={template.contenido}
+                    />
                   </div>
                 </CardHeader>
                 <CardContent className="pt-4 flex-grow">

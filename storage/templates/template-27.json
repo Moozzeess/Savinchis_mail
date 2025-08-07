@@ -1,0 +1,34 @@
+[
+  {
+    "id": "hlXKH7wIXRKJIJJBWCXLc",
+    "type": "image",
+    "content": {
+      "src": "https://placehold.co/600x300.png",
+      "alt": "Imagen descriptiva",
+      "width": 100,
+      "align": "center"
+    }
+  },
+  {
+    "id": "hqEeTHR6UXB5GDCEvwsle",
+    "type": "text",
+    "content": {
+      "text": "Escribe tu texto aquí...",
+      "color": "#000000",
+      "fontSize": 16,
+      "lineHeight": 1.5,
+      "fontWeight": "normal",
+      "textAlign": "left"
+    }
+  },
+  {
+    "id": "BvScsYoITRnkfLkbeMOCc",
+    "type": "image",
+    "content": {
+      "src": "https://placehold.co/600x300.png",
+      "alt": "Imagen descriptiva",
+      "width": 100,
+      "align": "center"
+    }
+  }
+]

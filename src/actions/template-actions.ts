@@ -231,65 +231,90 @@ export async function getTemplateAction(id: number): Promise<Template | null> {
   }
 }
 
+interface SaveTemplateParams extends Omit<Template, 'id_plantilla' | 'fecha_creacion'> {
+  id_plantilla?: number; // Opcional para actualización
+}
+
 /**
  * @function saveTemplateAction
- * @description Guarda una nueva plantilla en la base de datos y su contenido en un archivo JSON en el sistema de archivos.
+ * @description Guarda una nueva plantilla o actualiza una existente en la base de datos y su contenido en un archivo JSON.
  * Implementa una transacción para asegurar la consistencia entre la base de datos y el archivo.
- * Después de guardar, revalida la caché de la ruta '/templates'.
- * @param {Omit<Template, 'id_plantilla' | 'fecha_creacion'>} data - Los datos de la plantilla a guardar, excluyendo
- * `id_plantilla` y `fecha_creacion` (ya que se generan automáticamente).
- * @returns {Promise<{success: boolean, message: string}>} Una promesa que resuelve con un objeto indicando
- * si la operación fue exitosa y un mensaje descriptivo.
+ * @param {SaveTemplateParams} data - Los datos de la plantilla a guardar.
+ * @returns {Promise<{success: boolean, message: string, id?: number}>} Una promesa que resuelve con un objeto indicando
+ * si la operación fue exitosa, un mensaje descriptivo y el ID de la plantilla.
  * @async
  */
-export async function saveTemplateAction(data: Omit<Template, 'id_plantilla' | 'fecha_creacion'>) {
+export async function saveTemplateAction(data: SaveTemplateParams) {
   let connection;
   try {
     connection = await getDbConnection();
-    await connection.beginTransaction(); // Inicia una transacción para operaciones atómicas.
+    await connection.beginTransaction();
 
-    // 1. Insertar los metadatos de la plantilla con un contenido temporal (placeholder).
-    // Esto es necesario para obtener el `insertId` antes de guardar el archivo.
-    const { nombre, asunto_predeterminado, contenido, tipo } = data;
-    const placeholderContent = 'pending_file_path'; // Contenido temporal para la DB.
-
-    const [insertResult] = await connection.execute(
-      'INSERT INTO plantillas (nombre, asunto_predeterminado, contenido, tipo, fecha_creacion) VALUES (?, ?, ?, ?, NOW())',
-      [nombre, asunto_predeterminado, placeholderContent, tipo]
-    );
-
-    const newTemplateId = (insertResult as any).insertId; // Obtiene el ID de la plantilla recién insertada.
-    if (!newTemplateId) {
-      throw new Error('No se pudo obtener el ID de la nueva plantilla.');
+    const { id_plantilla, nombre, asunto_predeterminado, contenido, tipo } = data;
+    const isUpdate = !!id_plantilla;
+    
+    // 1. Preparar y guardar el contenido de la plantilla como un archivo JSON en el disco.
+    await ensureStorageDirectoryExists();
+    
+    // Determinar el ID a usar (nuevo o existente)
+    let templateId = id_plantilla;
+    
+    if (isUpdate) {
+      // Actualizar plantilla existente
+      const [updateResult] = await connection.execute(
+        'UPDATE plantillas SET nombre = ?, asunto_predeterminado = ?, tipo = ? WHERE id_plantilla = ?',
+        [nombre, asunto_predeterminado, tipo, id_plantilla]
+      );
+      
+      if ((updateResult as any).affectedRows === 0) {
+        throw new Error('No se encontró la plantilla para actualizar.');
+      }
+    } else {
+      // Insertar nueva plantilla
+      const [insertResult] = await connection.execute(
+        'INSERT INTO plantillas (nombre, asunto_predeterminado, contenido, tipo, fecha_creacion) VALUES (?, ?, ?, ?, NOW())',
+        [nombre, asunto_predeterminado, 'pending_file_path', tipo]
+      );
+      
+      templateId = (insertResult as any).insertId;
+      if (!templateId) {
+        throw new Error('No se pudo obtener el ID de la nueva plantilla.');
+      }
     }
 
-    // 2. Preparar y guardar el contenido de la plantilla como un archivo JSON en el disco.
-    await ensureStorageDirectoryExists(); // Asegura que el directorio de almacenamiento exista.
-    const fileName = `template-${newTemplateId}.json`; // Nombre del archivo basado en el nuevo ID.
-    const filePath = path.join(TEMPLATES_STORAGE_PATH, fileName); // Ruta completa del archivo.
-    const fileContent = JSON.stringify(contenido, null, 2); // Convierte el contenido a una cadena JSON formateada.
+    // 2. Guardar el contenido en un archivo JSON
+    const fileName = `template-${templateId}.json`;
+    const filePath = path.join(TEMPLATES_STORAGE_PATH, fileName);
+    const fileContent = JSON.stringify(contenido, null, 2);
+    await fs.writeFile(filePath, fileContent);
 
-    await fs.writeFile(filePath, fileContent); // Escribe el contenido en el archivo.
-
-    // 3. Actualizar el registro en la base de datos con la ruta real del archivo de contenido.
-    // Almacena la ruta relativa para mayor portabilidad y uso correcto con `path.join`.
-    const relativePath = path.join('storage', 'templates', fileName).replace(/\\/g, '/'); // Asegura slashes consistentes.
+    // 3. Actualizar la ruta del archivo en la base de datos
+    const relativePath = path.join('storage', 'templates', fileName).replace(/\\/g, '/');
     await connection.execute(
       'UPDATE plantillas SET contenido = ? WHERE id_plantilla = ?',
-      [relativePath, newTemplateId]
+      [relativePath, templateId]
     );
 
-    await connection.commit(); // Confirma la transacción si todo fue exitoso.
-
-    revalidatePath('/templates'); // Revalida la caché para que los cambios se reflejen en la UI.
-    return { success: true, message: 'Plantilla guardada con éxito.' };
+    await connection.commit();
+    revalidatePath('/templates');
+    revalidatePath(`/templates/editor/${templateId}`);
+    revalidatePath(`/certificates/editor/${templateId}`);
+    
+    return { 
+      success: true, 
+      message: isUpdate ? 'Plantilla actualizada con éxito.' : 'Plantilla guardada con éxito.',
+      id: templateId
+    };
 
   } catch (error) {
-    if (connection) await connection.rollback(); // En caso de error, revierte la transacción.
+    if (connection) await connection.rollback();
     console.error('Error al guardar la plantilla:', error);
-    return { success: false, message: 'Error al guardar la plantilla.' };
+    return { 
+      success: false, 
+      message: error instanceof Error ? error.message : 'Error al guardar la plantilla.'
+    };
   } finally {
-    if (connection) await connection.end(); // Asegura que la conexión a la base de datos se cierre.
+    if (connection) await connection.end();
   }
 }
 

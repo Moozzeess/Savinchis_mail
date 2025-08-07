@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import {getCampaigns} from '@/actions/new-campaign-action';
 //import { v4 as uuidv4 } from 'uuid';
 
 // Components
@@ -34,19 +35,20 @@ const campaignFormSchema = z.object({
   subject: z.string(),
   emailBody: z.string(),
 //  fromName: z.string().min(1, 'El nombre del remitente es requerido'),
-  fromEmail: z.string().email('Ingresa un correo electrónico válido'),
+//  fromEmail: z.string().email('Ingresa un correo electrónico válido'),
 //  replyTo: z.string().email('Ingresa un correo electrónico válido').optional(),
   
   // Destinatarios
-  contactList: z.string().min(1, 'Debes seleccionar una lista de contactos'),
+  contactListId: z.number().min(1, 'Debes seleccionar una lista de contactos'),
   contactListName: z.string().optional(),
   totalRecipients: z.number().min(1, 'Debes tener al menos un destinatario'),
   
   // Programación
   sendNow: z.boolean().default(true),
-  scheduledDate: z.date().optional(),
-  optimalTime: z.boolean().default(false),
-  timezone: z.string().optional(),
+  scheduledAt: z.date().optional(),
+  useOptimalTime: z.boolean().default(false),
+  timeZone: z.string().default(Intl.DateTimeFormat().resolvedOptions().timeZone),
+  status: z.enum(['draft', 'scheduled', 'sending', 'sent', 'failed']).default('draft'),
   
   // Seguimiento
   trackOpens: z.boolean().default(true),
@@ -65,24 +67,51 @@ export default function NewCampaignPage() {
     defaultValues: {
       name: '',
       objective: 'promotional',
+      status: 'draft',
       subject: '',
       emailBody: '',
 //      fromName: '',
-      fromEmail: '',
-      contactList: '',
+//      fromEmail: '',
+      contactListId: 0, // Se establecerá cuando el usuario seleccione una lista
+      contactListName: '',
+      totalRecipients: 0, // Se actualizará cuando se seleccione una lista
       sendNow: true,
       trackOpens: true,
       trackClicks: true,
       isABTest: false,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      useOptimalTime: false,
     },
   });
   
   // Avanzar al siguiente paso
   const nextStep = async () => {
-    const isValid = await methods.trigger();
+    // Validar solo los campos del paso actual
+    const fieldsToValidate = getStepFields(currentStep);
+    // En el último paso (programación), no validar nada para poder avanzar a revisión
+    if (currentStep === 3) {
+      setCurrentStep(4);
+      return;
+    }
+    const isValid = await methods.trigger(fieldsToValidate);
     if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, 3));
+      setCurrentStep((prev) => Math.min(prev + 1, 4));
+    }
+  };
+  
+  // Obtener campos a validar por paso
+  const getStepFields = (step: number): (keyof z.infer<typeof campaignFormSchema>)[] => {
+    switch (step) {
+      case 0: // Detalles
+        return ['name', 'objective'];
+      case 1: // Destinatarios
+        return ['contactListId', 'totalRecipients'];
+      case 2: // Email
+        return ['subject', 'emailBody'];
+      case 3: // Programación
+        return ['sendNow', 'scheduledAt', 'timeZone'];
+      default:
+        return [];
     }
   };
   
@@ -96,13 +125,17 @@ export default function NewCampaignPage() {
     try {
       setIsSubmitting(true);
       // Convert form data to Campaign type
-      const campaignData: Campaign = {
+      const campaignData: CampaignFormData & { fromEmail: string } = {
         ...data,
-        scheduledAt: data.sendNow ? null : data.scheduledDate?.toISOString(),
-        timeZone: data.timezone,
-        useOptimalTime: data.optimalTime,
+        scheduledAt: data.sendNow ? null : data.scheduledAt?.toISOString(),
+        fromEmail: 'default@example.com', // TODO: Obtener el email del usuario autenticado
+        status: 'draft', // Establecemos el estado inicial como 'draft'
       };
-      await createCampaign(campaignData);
+      
+      const result = await createCampaign(campaignData);
+      if (!result.success) {
+        throw new Error(result.message);
+      }
       router.push('/campaigns');
     } catch (error) {
       console.error('Error al crear la campaña:', error);

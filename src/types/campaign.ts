@@ -1,22 +1,21 @@
 export interface Campaign {
-    id?: string;
+    id: string | number;
     name: string;
     description?: string;
     objective: 'promotional' | 'newsletter' | 'announcement' | 'event' | 'welcome' | 'other';
     subject: string;
     emailBody: string;
-   // fromName: string;
     fromEmail: string;
     replyTo?: string;
-    contactList: string;
+    contactListId?: number | null;
     contactListName?: string;
     totalRecipients?: number;
     scheduledAt?: string | null;
     timeZone?: string;
     useOptimalTime?: boolean;
-    status?: 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed';
+    status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed';
     createdAt?: string;
     updatedAt?: string;
-  }
-  
-  export type CampaignFormData = Omit<Campaign, 'id' | 'createdAt' | 'updatedAt'>;
+}
+
+export type CampaignFormData = Omit<Campaign, 'id' | 'createdAt' | 'updatedAt'>;

@@ -140,7 +140,7 @@ export function TemplateEditorClient({ templateData }: { templateData?: Template
   const handleSave = async () => {
     setIsSaving(true);
     const result = await saveTemplateAction({
-      id: templateData?.id_plantilla,
+      id_plantilla: templateData?.id_plantilla,
       nombre: form.getValues('templateName'),
       asunto_predeterminado: form.getValues('emailSubject'),
       contenido: form.getValues('blocks'),
@@ -153,14 +153,10 @@ export function TemplateEditorClient({ templateData }: { templateData?: Template
       toast({
         title: result.message,
       });
-      if (result.id) {
-        // Esperar un momento para que el toast sea visible y luego redirigir
-        setTimeout(() => {
-          router.push(`/templates/editor/${result.id}`);
-        }, 1000);
-      } else {
+      // Redirigir a la lista de plantillas después de guardar
+      setTimeout(() => {
         router.push('/templates');
-      }
+      }, 1000);
     } else {
       toast({
         title: 'Error al guardar',

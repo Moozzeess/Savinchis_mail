@@ -81,12 +81,11 @@ export function ReviewStep({
   isSubmitting,
   isPreview = false,
   templates = [],
-  formData,
 }: ReviewStepProps) {
   const [previewMode, setPreviewMode] = useState<PreviewMode>('desktop');
-
-
-
+  const { getValues } = useFormContext();
+  
+  const values = getValues();
   const {
     name = '',
     objective = '',
@@ -97,10 +96,22 @@ export function ReviewStep({
     attachmentName = '',
     scheduleDate = '',
     scheduleTime = '',
-    contactList,
+    contactListName = '',
     totalRecipients = 0,
-    templateId = ''
-  } = formData || {};
+    templateId = '',
+    templateName = '',
+    templateContent = '',
+    contactListId = '',
+    status = '',
+    scheduledAt = '',
+    timeZone = '',
+    useOptimalTime = false,
+    trackOpens = false,
+    trackClicks = false,
+    isABTest = false,
+  } = values;
+
+  const previewContent = templateContent || emailBody || '';
 
   // Formatear fecha y hora
   const formattedDate = scheduleDate ? format(new Date(scheduleDate), "EEEE d 'de' MMMM 'de' yyyy", { locale: es }) : '';
@@ -144,9 +155,13 @@ export function ReviewStep({
             value={`${fromName || 'Sin nombre'} <${fromEmail || 'sin@email.com'}>`}
           />
           <DetailItem 
-            icon={<Users className="h-5 w-5 text-muted-foreground" />}
-            label="Destinatarios"
-            value={contactList?.name ? `${contactList.name} (${totalRecipients || 0} contactos)` : 'Sin lista seleccionada'}
+              icon={<Users className="h-5 w-5 text-muted-foreground" />}
+              label="Lista de contactos"
+              value={
+                    contactListName
+                    ? `${contactListName} (${totalRecipients || 0} contactos)`
+                    : 'Sin lista seleccionada'
+                    }
           />
           {scheduleDate && (
             <>
@@ -160,6 +175,16 @@ export function ReviewStep({
                 label="Hora de envío"
                 value={formattedTime || 'Inmediatamente'}
               />
+              <DetailItem
+                icon={<LayoutTemplate className="h-5 w-5 text-muted-foreground" />}
+                label="Plantilla seleccionada"
+                value={templateName || 'Sin plantilla'}
+              />
+              {templateContent && (
+                <div className="border rounded p-4 my-2">
+                  <div dangerouslySetInnerHTML={{ __html: templateContent }} />
+                </div>
+              )}
             </>
           )}
         </CardContent>
@@ -271,7 +296,7 @@ export function ReviewStep({
 
                 {/* Body */}
                 <div className="bg-white flex-1 overflow-hidden">
-                  <iframe
+                <iframe
                     srcDoc={previewContent}
                     title="Email Preview"
                     className={cn(

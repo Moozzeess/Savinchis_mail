@@ -35,8 +35,11 @@ export function RecipientStep({ className = '' }: { className?: string }) {
   const [sqlQuery, setSqlQuery] = useState('');
   const [individualEmails, setIndividualEmails] = useState('');
   const [isIT, setIsIT] = useState(false);
+  const [listName, setListName] = useState('');
+  const [listDescription, setListDescription] = useState('');
+  const [isListNameFocused, setIsListNameFocused] = useState(false);
+  const [isListDescriptionFocused, setIsListDescriptionFocused] = useState(false);
 
-  const selectedListId = watch('contactList');
   const selectedListName = watch('contactListName');
   const totalRecipients = watch('totalRecipients') || 0;
 
@@ -45,27 +48,33 @@ export function RecipientStep({ className = '' }: { className?: string }) {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedFile(file);
-      // Simular progreso de carga
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 5;
-        setUploadProgress(progress);
-        if (progress >= 100) {
-          clearInterval(interval);
-          // Actualizar el formulario con la información del archivo
-          setValue('contactList', `file_${Date.now()}`);
-          setValue('contactListName', file.name);
-          setValue('totalRecipients', Math.floor(Math.random() * 1000) + 100); // Simular conteo de contactos
-        }
-      }, 100);
+      // Establecer el nombre del archivo como nombre de lista por defecto
+      const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
+      setListName(fileNameWithoutExt);
+      
+      // Actualizar el formulario con la información del archivo
+      setValue('contactListId', Date.now()); // Usamos el timestamp como ID temporal
+      setValue('contactListName', fileNameWithoutExt);
+      setValue('totalRecipients', 0); // Se actualizará después de procesar el archivo
+      
+      // Aquí iría la lógica para subir el archivo al servidor
+      // y procesar los contactos para obtener el total
+      // Por ahora, simulamos un conteo de contactos
+      setTimeout(() => {
+        setUploadProgress(100);
+        setValue('totalRecipients', Math.floor(Math.random() * 1000) + 100);
+      }, 500);
     }
   };
 
-  const handleListSelect = (listId: string, listName: string, count: number) => {
-    setValue('contactList', listId);
-    setValue('contactListName', listName);
-    setValue('totalRecipients', count);
-  };
+  const [selectedListId, setSelectedListId] = useState<number | null>(null);
+
+const handleListSelect = (listId: number, listName: string, count: number) => {
+  setValue('contactListId', listId);
+  setValue('contactListName', listName);
+  setValue('totalRecipients', count);
+  setSelectedListId(listId);
+};
 
   return (
     <div className={cn('space-y-6', className)}>
@@ -97,31 +106,37 @@ export function RecipientStep({ className = '' }: { className?: string }) {
             <div className="space-y-2">
               <Label>Seleccionar lista de contactos</Label>
               <div className="space-y-2">
-                {CONTACT_LISTS.map((list) => (
-                  <div
-                    key={list.id}
-                    onClick={() => handleListSelect(list.id, list.name, list.count)}
-                    className={cn(
-                      'flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50',
-                      selectedListId === list.id && 'border-primary bg-accent/30'
-                    )}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                        <Users className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{list.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {list.count.toLocaleString()} contactos
-                        </p>
-                      </div>
+              {CONTACT_LISTS.map((list) => (
+                <div
+                  key={list.id}
+                  className={
+                    "flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50 " +
+                    (selectedListId === Number(list.id) ? "border-primary ring-2 ring-primary bg-accent/30" : "")
+                  }
+                  onClick={() => handleListSelect(Number(list.id), list.name, list.count)}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                      <Users className="h-5 w-5 text-primary" />
                     </div>
-                    {selectedListId === list.id && (
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    )}
+                    <div>
+                      <p className="font-medium">{list.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {list.count.toLocaleString()} contactos
+                      </p>
+                    </div>
                   </div>
-                ))}
+                  {selectedListId === Number(list.id) && (
+                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                  )}
+                </div>
+              ))}
+                {watch('contactListName') && (
+                  <div className="my-4 p-2 border rounded bg-muted">
+                    <strong>Lista seleccionada:</strong> {watch('contactListName')}
+                    <div className="text-xs text-muted-foreground">{watch('totalRecipients')} contactos</div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -148,35 +163,131 @@ export function RecipientStep({ className = '' }: { className?: string }) {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="file-upload">Sube un archivo de contactos</Label>
-                  <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 text-center">
-                    <div className="space-y-4">
-                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                        <Upload className="h-6 w-6 text-primary" />
+                  <div
+                    className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 cursor-pointer ${
+                      selectedFile
+                        ? 'border-green-300 bg-green-25 dark:bg-green-900/10'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-green-400 dark:hover:border-green-500 hover:bg-green-25 dark:hover:bg-green-900/10'
+                    }`}
+                    onClick={() => document.getElementById('file-upload')?.click()}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === 'Enter' && document.getElementById('file-upload')?.click()}
+                  >
+                    <input
+                      id="file-upload"
+                      type="file"
+                      className="hidden"
+                      accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                      onChange={handleFileChange}
+                    />
+                    
+                    {selectedFile ? (
+                      <div className="space-y-3">
+                        <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                          <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-green-700 dark:text-green-300 truncate max-w-xs mx-auto">
+                            {selectedFile.name}
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB • {selectedFile.type.split('/').pop()?.toUpperCase()}
+                          </p>
+                        </div>
                       </div>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium">Arrastra tu archivo aquí o haz clic para seleccionar</p>
-                        <p className="text-xs text-muted-foreground">
-                          Formatos soportados: .csv, .xlsx (máx. 10MB)
-                        </p>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto">
+                          <Upload className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-gray-100 mb-1">
+                            Arrastra tu archivo aquí o haz clic para seleccionar
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Formatos soportados: .csv, .xlsx (máx. 10MB)
+                          </p>
+                        </div>
                       </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="mt-2"
-                        onClick={() => document.getElementById('file-upload')?.click()}
-                      >
-                        Seleccionar archivo
-                      </Button>
-                      <input
-                        id="file-upload"
-                        type="file"
-                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                        className="hidden"
-                        onChange={handleFileChange}
-                      />
-                    </div>
+                    )}
                   </div>
-                  <p className="text-sm text-muted-foreground mt-2">El archivo debe contener una columna "email".</p>
+                  {selectedFile && (
+                    <div className="space-y-4 mt-4">
+                      <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                        <div className="flex items-start">
+                          <div className="flex-shrink-0">
+                            <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                              <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                            </div>
+                          </div>
+                          <div className="ml-3 flex-1 space-y-4">
+                            <div>
+                              <h4 className="text-sm font-medium text-green-800 dark:text-green-200">
+                                Archivo cargado correctamente
+                              </h4>
+                              <div className="mt-1 text-sm text-green-700 dark:text-green-300 space-y-1">
+                                <p className="truncate">
+                                  <span className="font-medium">Archivo:</span> {selectedFile.name}
+                                </p>
+                                <p>
+                                  <span className="font-medium">Tamaño:</span> {(selectedFile.size / 1024 / 1024).toFixed(2)} MB • {selectedFile.type.split('/').pop()?.toUpperCase()}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <div>
+                                <Label htmlFor="list-name" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Nombre de la lista
+                                </Label>
+                                <Input
+                                  id="list-name"
+                                  type="text"
+                                  value={listName}
+                                  onChange={(e) => {
+                                    setListName(e.target.value);
+                                    setValue('contactListName', e.target.value);
+                                  }}
+                                  onFocus={() => setIsListNameFocused(true)}
+                                  onBlur={() => setIsListNameFocused(false)}
+                                  placeholder="Ej: Clientes 2024"
+                                  className={`mt-1 ${isListNameFocused ? 'border-primary ring-2 ring-ring ring-offset-2' : ''}`}
+                                />
+                                <p className="mt-1 text-xs text-muted-foreground">
+                                  {listName.length}/50 caracteres
+                                </p>
+                              </div>
+                              <div>
+                                <Label htmlFor="list-description" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  Descripción (opcional)
+                                </Label>
+                                <Textarea
+                                  id="list-description"
+                                  value={listDescription}
+                                  onChange={(e) => {
+                                    setListDescription(e.target.value);
+                                    setValue('contactListDescription', e.target.value);
+                                  }}
+                                  onFocus={() => setIsListDescriptionFocused(true)}
+                                  onBlur={() => setIsListDescriptionFocused(false)}
+                                  placeholder="Ej: Lista de clientes del primer trimestre 2024"
+                                  className={`mt-1 min-h-[80px] ${isListDescriptionFocused ? 'border-primary ring-2 ring-ring ring-offset-2' : ''}`}
+                                />
+                                <p className="mt-1 text-xs text-muted-foreground">
+                                  {listDescription.length}/200 caracteres
+                                </p>
+                              </div>
+                            </div>
+
+                            <p className="mt-2 text-xs text-green-600 dark:text-green-400">
+                              El archivo será procesado en el siguiente paso para verificar los contactos.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </TabsContent>
