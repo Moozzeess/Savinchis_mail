@@ -11,15 +11,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Plus, Search, LayoutTemplate, Mail, Award, Bold, Italic, Underline, List, ListOrdered, Image as ImageIcon, Link as LinkIcon, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
 import { getTemplateListAction } from '@/actions/template-actions';
 import { useRouter } from 'next/navigation';
-
-interface Template {
-  id_plantilla: number;
-  nombre: string;
-  tipo?: 'template' | 'certificate';
-  asunto_predeterminado?: string;
-  contenido?: any;
-  fecha_creacion?: string;
-}
+import { useTemplates } from '@/hooks/use-templates';
+import { TemplateCarousel } from './template-selector';
+import { Plantillas } from "@/types/templates";
 
 type EmailTab = 'gallery' | 'new';
 
@@ -28,8 +22,6 @@ export function EmailStep({ className = '' }: { className?: string }) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<EmailTab>('gallery');
   const [searchQuery, setSearchQuery] = useState('');
-  const [templates, setTemplates] = useState<Template[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
@@ -37,6 +29,11 @@ export function EmailStep({ className = '' }: { className?: string }) {
   const emailBody = watch('emailBody') || '';
   const fromName = watch('fromName') || '';
   const fromEmail = watch('fromEmail') || '';
+
+  const { data: templates = [], isLoading } = useTemplates({ 
+    tipo: 'email', //|| 'template' || 'certificate',
+    enabled: activeTab === 'gallery' // Solo cargar cuando esté activa la pestaña
+  });;
 
   // Insertar texto en la posición del cursor
   const insertAtCursor = (text: string) => {
@@ -104,35 +101,20 @@ export function EmailStep({ className = '' }: { className?: string }) {
     }
   };
 
-  // Cargar plantillas
-  useEffect(() => {
-    const loadTemplates = async () => {
-      try {
-        setIsLoading(true);
-        const templates = await getTemplateListAction({ tipo: 'template' });
-        setTemplates(templates);
-      } catch (error) {
-        console.error('Error cargando plantillas:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadTemplates();
-  }, []);
-
   const filteredTemplates = templates.filter(template => 
     template.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (template.asunto_predeterminado?.toLowerCase() || '').includes(searchQuery.toLowerCase())
   );
 
-  const handleTemplateSelect = (template: Template) => {
-    setSelectedTemplate(template.id_plantilla);
-    setValue('templateId', template.id_plantilla);
-    setValue('templateName', template.nombre);
-    setValue('templateContent', template.contenido || '');
-    setValue('emailBody', template.contenido || '');
-    setValue('subject', template.asunto_predeterminado || '');
+  const handleTemplateSelect = (template: Plantillas) => {
+    if (activeTab === 'gallery') {
+      setSelectedTemplate(template.id_plantilla);
+      setValue('templateId', template.id_plantilla);
+      setValue('templateName', template.nombre);
+      setValue('templateContent', template.contenido || '');
+      setValue('emailBody', template.contenido || '');
+      setValue('subject', template.asunto_predeterminado || '');  
+    }
   };
 
   const handleCreateNewTemplate = () => {
@@ -196,198 +178,27 @@ export function EmailStep({ className = '' }: { className?: string }) {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="gallery" className="mt-6">
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar plantillas..."
-                  className="pl-9"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              <Button 
-                onClick={handleCreateNewTemplateRedirect}
-                variant="outline"
-                className="whitespace-nowrap"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Nueva Plantilla
-              </Button>
-            </div>
-            
-            {isLoading ? (
-              <div className="flex items-center justify-center h-40">
-                <p>Cargando plantillas...</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredTemplates.map((template) => (
-                  <Card 
-                    key={template.id_plantilla}
-                    className={cn(
-                      "cursor-pointer transition-all border-2",
-                      selectedTemplate === template.id_plantilla ? "border-primary ring-2 ring-primary" : "border-transparent"
-                    )}
-                    onClick={() => handleTemplateSelect(template)}
-                  >
-                    <CardHeader className="p-4 pb-2">
-                      <div className="flex items-center gap-2 mb-2">
-                        {template.tipo === 'certificate' || 'template' ? (
-                          <Award className="h-5 w-5 text-amber-500" />
-                        ) : (
-                          <Mail className="h-5 w-5 text-blue-500" />
-                        )}
-                        <CardTitle className="text-base">{template.nombre}</CardTitle>
-                      </div>
-                      {template.asunto_predeterminado && (
-                        <CardDescription className="line-clamp-2 text-sm">
-                          {template.asunto_predeterminado}
-                        </CardDescription>
-                      )}
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0 mt-auto">
-                      <div className="aspect-video bg-muted rounded-md flex items-center justify-center">
-                        {template.tipo === 'certificate' || 'template' ? (
-                          <Award className="h-12 w-12 text-muted-foreground/50" />
-                        ) : (
-                          <Mail className="h-12 w-12 text-muted-foreground/50" />
-                        )}
-                      </div>
-                    </CardContent>
-                  {selectedTemplate === template.id_plantilla &&(
-                    <div className="my-4 p-2 border rounded bg-muted">
-                      <strong>Plantilla seleccionada:</strong>{watch('templateName')}
-                    </div>
-                  )}
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
         <TabsContent value="new" className="mt-6">
           <div className="space-y-4">
-            <div className="flex flex-wrap gap-1 p-1 border rounded-md bg-muted/50">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => formatText('bold')}
-                title="Negrita (Ctrl+B)"
-              >
-                <Bold className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => formatText('italic')}
-                title="Cursiva (Ctrl+I)"
-              >
-                <Italic className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => formatText('underline')}
-                title="Subrayado (Ctrl+U)"
-              >
-                <Underline className="h-4 w-4" />
-              </Button>
-              <div className="mx-1 h-6 w-px bg-border" />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => formatText('h1')}
-                title="Título 1"
-              >
-                <span className="text-sm font-bold">H1</span>
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => formatText('h2')}
-                title="Título 2"
-              >
-                <span className="text-sm font-bold">H2</span>
-              </Button>
-              <div className="mx-1 h-6 w-px bg-border" />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => formatText('ul')}
-                title="Lista con viñetas"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => formatText('ol')}
-                title="Lista numerada"
-              >
-                <ListOrdered className="h-4 w-4" />
-              </Button>
-              <div className="mx-1 h-6 w-px bg-border" />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => alignText('left')}
-                title="Alinear a la izquierda"
-              >
-                <AlignLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => alignText('center')}
-                title="Centrar"
-              >
-                <AlignCenter className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => alignText('right')}
-                title="Alinear a la derecha"
-              >
-                <AlignRight className="h-4 w-4" />
-              </Button>
+            <div className="border rounded-lg overflow-hidden">
+              <Textarea
+                id="emailBody"
+                placeholder="Escribe tu mensaje aquí..."
+                className="min-h-[300px] resize-none border-0 focus-visible:ring-0"
+                {...register('emailBody')}
+                ref={editorRef}
+              />
             </div>
-            
-            <Textarea
-              id="emailBody"
-              placeholder="Escribe tu mensaje aquí..."
-              className="min-h-[300px] resize-none"
-              {...register('emailBody')}
-              ref={editorRef}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="gallery" className="mt-6">
+          <div className="space-y-4">
+            <TemplateCarousel 
+              templates={templates} 
+              onSelect={handleTemplateSelect}
+              selectedTemplateId={selectedTemplate ?? undefined}
             />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Usa las teclas de acceso rápido: Ctrl+B, Ctrl+I, Ctrl+U</span>
-              <span>{emailBody.replace(/<[^>]*>?/gm, '').length} caracteres</span>
-            </div>
           </div>
         </TabsContent>
       </Tabs>
