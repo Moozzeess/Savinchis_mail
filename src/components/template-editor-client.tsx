@@ -38,6 +38,15 @@ const PALETTE_BLOCKS: {
   { id: 'html', label: 'HTML', icon: Code },
 ];
 
+/**
+ * @function BlockRenderer
+ * @description Un componente funcional que renderiza un bloque de plantilla de correo electrónico
+ * basándose en su tipo y contenido. Utiliza estilos en línea para una compatibilidad óptima
+ * con clientes de correo.
+ * @param {object} props - Las props del componente.
+ * @param {Block} props.block - El objeto de bloque que se va a renderizar.
+ * @returns {React.ReactElement | null} Un elemento de React que representa el bloque o null si el tipo es desconocido.
+ */
 const BlockRenderer = ({ block }: { block: Block }) => {
   switch (block.type) {
     case 'text':
@@ -92,7 +101,11 @@ const BlockRenderer = ({ block }: { block: Block }) => {
 };
 
 /**
- * Componente de cliente para crear y editar plantillas de correo electrónico con un editor visual por bloques.
+ * @function TemplateEditorClient
+ * @description Componente de cliente para crear y editar plantillas de correo electrónico con un editor visual por bloques.
+ * Utiliza React Hook Form y una librería de arrastrar y soltar para una experiencia de usuario interactiva.
+ * @param {object} props - Las props del componente.
+ * @param {Template} [props.templateData] - Los datos de la plantilla existente, opcional para el modo de edición.
  */
 export function TemplateEditorClient({ templateData }: { templateData?: Template }) {
   const { toast } = useToast();
@@ -137,15 +150,22 @@ export function TemplateEditorClient({ templateData }: { templateData?: Template
     }
   }, [templateData, form]);
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    const result = await saveTemplateAction({
-      id_plantilla: templateData?.id_plantilla,
-      nombre: form.getValues('templateName'),
-      asunto_predeterminado: form.getValues('emailSubject'),
-      contenido: form.getValues('blocks'),
-      tipo: templateData?.tipo || 'template',
-    });
+/**
+ * @function handleSave
+ * @description Maneja el envío del formulario. Llama a la acción del servidor `saveTemplateAction`
+ * para guardar la plantilla, maneja el estado de carga y muestra notificaciones de éxito o error.
+ * @async
+ * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de guardado ha terminado.
+ */
+  const handleSave = async () => {
+    setIsSaving(true);
+    const result = await saveTemplateAction({
+      id_plantilla: templateData?.id_plantilla,
+      nombre: form.getValues('templateName'),
+      asunto_predeterminado: form.getValues('emailSubject'),
+      contenido: form.getValues('blocks'),
+      tipo: templateData?.tipo || 'template',
+    });
 
     setIsSaving(false);
 
@@ -166,18 +186,30 @@ export function TemplateEditorClient({ templateData }: { templateData?: Template
     }
   }
 
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) {
-      return;
-    }
-    if (result.source.droppableId === result.destination.droppableId && result.source.index !== result.destination.index) {
-      move(result.source.index, result.destination.index);
-    }
-  };
+/**
+ * @function onDragEnd
+ * @description Callback para la librería de arrastrar y soltar (`@hello-pangea/dnd`).
+ * Reordena la lista de bloques en el formulario si un bloque se suelta en una nueva posición válida.
+ * @param {DropResult} result - El objeto de resultado de la operación de arrastrar y soltar.
+ */
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+    if (result.source.droppableId === result.destination.droppableId && result.source.index !== result.destination.index) {
+      move(result.source.index, result.destination.index);
+    }
+  };
 
-  const addBlock = (blockType: Block['type']) => {
-    const contentSchema = blockSchema.options.find(o => o.shape.type.value === blockType)?.shape.content;
-    const defaultContent = contentSchema ? contentSchema.parse({}) : {};
+/**
+ * @function addBlock
+ * @description Crea un nuevo bloque del tipo especificado y lo añade al final del array de bloques del formulario.
+ * Luego, selecciona el nuevo bloque para que se puedan editar sus propiedades.
+ * @param {Block['type']} blockType - El tipo de bloque a añadir (e.g., 'text', 'image').
+ */
+const addBlock = (blockType: Block['type']) => {
+  const contentSchema = blockSchema.options.find(o => o.shape.type.value === blockType)?.shape.content;
+  const defaultContent = contentSchema ? contentSchema.parse({}) : {};
 
     const newBlock: Block = {
       id: nanoid(),

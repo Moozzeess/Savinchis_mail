@@ -10,7 +10,7 @@ import mysql from 'mysql2/promise';
  * @throws {Error} Si alguna de las variables de entorno de la base de datos (MYSQL_HOST, MYSQL_USER, MYSQL_DATABASE) no está configurada.
  * @async
  */
-async function getDbConnection() {
+export async function getDbConnection() {
   const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } = process.env;
   if (!MYSQL_HOST || !MYSQL_USER || !!MYSQL_DATABASE) {
     throw new Error('Faltan las variables de entorno de la base de datos. Por favor, configúralas.');
