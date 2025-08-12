@@ -64,6 +64,16 @@ interface CampaignFormData {
   };
   totalRecipients?: number;
   templateId?: string | number;
+  templateName?: string;
+  templateContent?: string;
+  contactListId?: string;
+  status?: string;
+  scheduledAt?: string;
+  timeZone?: string;
+  useOptimalTime?: boolean;
+  trackOpens?: boolean;
+  trackClicks?: boolean;
+  isABTest?: boolean;
 };
 
 interface ReviewStepProps {
@@ -104,22 +114,93 @@ export function ReviewStep({
     contactListId = '',
     status = '',
     scheduledAt = '',
-    timeZone = '',
+    timeZone = 'America/Mexico_City',
     useOptimalTime = false,
-    trackOpens = false,
-    trackClicks = false,
-    isABTest = false,
   } = values;
 
-  const previewContent = templateContent || emailBody || '';
+  // Validar datos faltantes
+  const getMissingData = () => {
+    const missing = [];
+    if (!name) missing.push('Nombre de campaña');
+    if (!fromEmail) missing.push('Correo del remitente');
+    if (!contactListName) missing.push('Lista de contactos');
+    if (!subject) missing.push('Asunto del correo');
+    if (!templateContent && !emailBody) missing.push('Contenido del correo');
+    if (scheduleDate && !scheduleTime && !useOptimalTime) missing.push('Hora de envío');
+    return missing;
+  };
 
-  // Formatear fecha y hora
-  const formattedDate = scheduleDate ? format(new Date(scheduleDate), "EEEE d 'de' MMMM 'de' yyyy", { locale: es }) : '';
-  const formattedTime = scheduleTime || '';
+  const missingData = getMissingData();
+  const isReadyToSend = missingData.length === 0;
 
-  // Renderizar detalles de la campaña
+  // Obtener resumen de programación
+  const getSchedulingSummary = () => {
+    if (!scheduleDate) return 'Envío inmediato';
+    
+    const date = new Date(scheduleDate);
+    const dateStr = date.toLocaleDateString('es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    if (useOptimalTime) {
+      return `${dateStr} - Hora optimizada automáticamente`;
+    } else if (scheduleTime) {
+      return `${dateStr} a las ${scheduleTime}`;
+    }
+    
+    return 'No configurado';
+  };
+
+  // Renderizar detalles de la campaña con mejoras
   const renderCampaignDetails = () => (
     <div className="space-y-6">
+      {/* Alerta de datos faltantes */}
+      {!isReadyToSend && !isPreview && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              <h4 className="font-medium text-red-800 mb-2">
+                Faltan datos por completar
+              </h4>
+              <p className="text-sm text-red-700 mb-3">
+                Para enviar tu campaña, necesitas completar la siguiente información:
+              </p>
+              <ul className="text-sm text-red-600 space-y-1">
+                {missingData.map((item, index) => (
+                  <li key={index} className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-red-400 rounded-full"></div>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmación de campaña lista */}
+      {isReadyToSend && !isPreview && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h4 className="font-medium text-green-800">
+                ¡Campaña lista para enviar!
+              </h4>
+              <p className="text-sm text-green-700 mt-1">
+                Todos los datos están completos. Puedes programar tu campaña cuando estés listo.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Revisa tu campaña</h2>
         {!isPreview && (
@@ -145,47 +226,35 @@ export function ReviewStep({
             value={name || 'Sin nombre'}
           />
           <DetailItem 
-              icon={<Zap className="h-5 w-5 text-muted-foreground" />}
-              label="Objetivo"
-              value={objective ? CAMPAIGN_OBJECTIVES[objective] || objective : 'No especificado'}
-            />
+            icon={<Zap className="h-5 w-5 text-muted-foreground" />}
+            label="Objetivo"
+            value={objective ? CAMPAIGN_OBJECTIVES[objective] || objective : 'No especificado'}
+          />
           <DetailItem 
             icon={<Mail className="h-5 w-5 text-muted-foreground" />}
             label="Remitente"
             value={`${fromName || 'Sin nombre'} <${fromEmail || 'sin@email.com'}>`}
           />
           <DetailItem 
-              icon={<Users className="h-5 w-5 text-muted-foreground" />}
-              label="Lista de contactos"
-              value={
-                    contactListName
-                    ? `${contactListName} (${totalRecipients || 0} contactos)`
-                    : 'Sin lista seleccionada'
-                    }
+            icon={<Users className="h-5 w-5 text-muted-foreground" />}
+            label="Destinatarios"
+            value={
+              contactListName
+                ? `${contactListName} (${totalRecipients || 0} contactos)`
+                : 'Sin lista seleccionada'
+            }
           />
-          {scheduleDate && (
-            <>
-              <DetailItem 
-                icon={<Calendar className="h-5 w-5 text-muted-foreground" />}
-                label="Fecha de envío"
-                value={formattedDate}
-              />
-              <DetailItem 
-                icon={<Clock className="h-5 w-5 text-muted-foreground" />}
-                label="Hora de envío"
-                value={formattedTime || 'Inmediatamente'}
-              />
-              <DetailItem
-                icon={<LayoutTemplate className="h-5 w-5 text-muted-foreground" />}
-                label="Plantilla seleccionada"
-                value={templateName || 'Sin plantilla'}
-              />
-              {templateContent && (
-                <div className="border rounded p-4 my-2">
-                  <div dangerouslySetInnerHTML={{ __html: templateContent }} />
-                </div>
-              )}
-            </>
+          <DetailItem
+            icon={<Calendar className="h-5 w-5 text-muted-foreground" />}
+            label="Programación"
+            value={getSchedulingSummary()}
+          />
+          {templateName && (
+            <DetailItem
+              icon={<LayoutTemplate className="h-5 w-5 text-muted-foreground" />}
+              label="Plantilla"
+              value={templateName}
+            />
           )}
         </CardContent>
       </Card>
@@ -194,14 +263,45 @@ export function ReviewStep({
         <CardHeader className="pb-3">
           <CardTitle className="text-lg">Resumen del contenido</CardTitle>
         </CardHeader>
-        <CardContent>
-          <h3 className="font-medium mb-2">Asunto: {subject || 'Sin asunto'}</h3>
+        <CardContent className="space-y-4">
+          <div className="flex justify-between items-start">
+            <span className="text-sm font-medium">Asunto:</span>
+            <span className="text-sm text-right max-w-xs">
+              {subject || 'Sin asunto'}
+            </span>
+          </div>
+          
           {attachmentName && (
-            <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-              <File className="h-4 w-4" />
-              <span>1 archivo adjunto</span>
+            <div className="flex justify-between items-start">
+              <span className="text-sm font-medium">Archivo adjunto:</span>
+              <div className="flex items-center gap-2 text-sm text-right max-w-xs">
+                <File className="h-4 w-4 flex-shrink-0" />
+                <span className="truncate">{attachmentName}</span>
+              </div>
             </div>
           )}
+          
+          <div className="flex justify-between items-start">
+            <span className="text-sm font-medium">Seguimiento:</span>
+            <div className="text-sm text-right space-y-1">
+              <div className="flex items-center gap-2">
+                {values.trackOpens ? (
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                ) : (
+                  <AlertCircle className="h-4 w-4 text-yellow-500" />
+                )}
+                <span>Aperturas {values.trackOpens ? 'activado' : 'desactivado'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {values.trackClicks ? (
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                ) : (
+                  <AlertCircle className="h-4 w-4 text-yellow-500" />
+                )}
+                <span>Clics {values.trackClicks ? 'activado' : 'desactivado'}</span>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -210,22 +310,20 @@ export function ReviewStep({
   // Renderizar vista previa del correo
   const renderEmailPreview = () => {
     const selectedTemplate = templates?.find(t => t.id_plantilla === templateId);
-  const previewContent = selectedTemplate?.contenido || emailBody || '';
+    const previewContent = selectedTemplate?.contenido || emailBody || '';
 
-
-  
     return (
       <div className="space-y-8">
-      {selectedTemplate && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md border border-blue-200 dark:border-blue-800">
-          <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
-            <LayoutTemplate className="h-4 w-4" />
-            <span className="text-sm font-medium">
-              Usando plantilla: {selectedTemplate.nombre}
-            </span>
+        {selectedTemplate && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-md border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+              <LayoutTemplate className="h-4 w-4" />
+              <span className="text-sm font-medium">
+                Usando plantilla: {selectedTemplate.nombre}
+              </span>
+            </div>
           </div>
-        </div>
-      )}
+        )}
         
         <Card>
           <CardHeader>
@@ -296,7 +394,7 @@ export function ReviewStep({
 
                 {/* Body */}
                 <div className="bg-white flex-1 overflow-hidden">
-                <iframe
+                  <iframe
                     srcDoc={previewContent}
                     title="Email Preview"
                     className={cn(
@@ -333,7 +431,11 @@ export function ReviewStep({
 
       {!isPreview && (
         <div className="flex justify-end pt-4 border-t">
-          <Button type="submit" disabled={isSubmitting}>
+          <Button 
+            type="submit" 
+            disabled={isSubmitting || !isReadyToSend}
+            className={!isReadyToSend ? 'opacity-50 cursor-not-allowed' : ''}
+          >
             {isSubmitting ? (
               <>
                 <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
