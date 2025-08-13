@@ -16,24 +16,114 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Mails, Users, TrendingUp, Plus, MailCheck, BarChart2, Loader2 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { 
+  Mails, 
+  Users, 
+  TrendingUp, 
+  Plus, 
+  MailCheck, 
+  BarChart2, 
+  Loader2, 
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  XCircle,
+  AlertCircle,
+  Calendar,
+  Activity,
+  ArrowRight
+} from "lucide-react";
 import { AnalyticsCharts } from "@/components/analytics-charts";
-import { campaigns } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useRouter } from 'next/navigation';
 import { getCampaigns } from '@/service/campaign.service';
 import { useEffect, useState } from 'react';
+import { Campaign } from '@/types/campaign';
+
+// Utility functions for campaign status
+const getCampaignStatusColor = (status: string) => {
+  switch (status) {
+    case 'scheduled':
+    case 'sending':
+      return 'bg-green-100 text-green-800 border-green-200';
+    case 'completed':
+      return 'bg-blue-100 text-blue-800 border-blue-200';
+    case 'paused':
+      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    case 'failed':
+      return 'bg-red-100 text-red-800 border-red-200';
+    case 'draft':
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+    default:
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+  }
+};
+
+const getStatusIcon = (status: string) => {
+  switch (status) {
+    case 'scheduled':
+    case 'sending':
+      return <CheckCircle className="w-3 h-3 mr-1" />;
+    case 'completed':
+      return <CheckCircle className="w-3 h-3 mr-1" />;
+    case 'paused':
+      return <Clock className="w-3 h-3 mr-1" />;
+    case 'failed':
+      return <XCircle className="w-3 h-3 mr-1" />;
+    case 'draft':
+      return <AlertCircle className="w-3 h-3 mr-1" />;
+    default:
+      return <AlertCircle className="w-3 h-3 mr-1" />;
+  }
+};
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+};
 
 interface CampaignStats {
   totalCampaigns: number;
   activeCampaigns: number;
   totalRecipients: number;
   openRate: number;
+  clickRate: number;
+  deliveryRate: number;
 }
 
-import { Campaign } from '@/types/campaign';
+const calculateCampaignStats = (campaigns: Campaign[]): CampaignStats => {
+  const stats: CampaignStats = {
+    totalCampaigns: campaigns.length,
+    activeCampaigns: campaigns.filter(c => c.status === 'scheduled' || c.status === 'sending').length,
+    totalRecipients: campaigns.reduce((sum, c) => sum + (c.totalRecipients || 0), 0),
+    openRate: 0,
+    clickRate: 0,
+    deliveryRate: 0
+  };
+
+  // Calculate rates safely
+  const totalSent = campaigns.reduce((sum, c) => sum + (c.stats?.sent || 0), 0);
+  const totalDelivered = campaigns.reduce((sum, c) => sum + (c.stats?.delivered || 0), 0);
+  const totalOpened = campaigns.reduce((sum, c) => sum + (c.stats?.opened || 0), 0);
+  const totalClicked = campaigns.reduce((sum, c) => sum + (c.stats?.clicked || 0), 0);
+
+  if (totalSent > 0) {
+    stats.deliveryRate = Math.round((totalDelivered / totalSent) * 100);
+    stats.openRate = Math.round((totalOpened / totalSent) * 100);
+  }
+
+  if (totalOpened > 0) {
+    stats.clickRate = Math.round((totalClicked / totalOpened) * 100);
+  }
+
+  return stats;
+};
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -43,9 +133,92 @@ export default function DashboardPage() {
     activeCampaigns: 0,
     totalRecipients: 0,
     openRate: 0,
+    clickRate: 0,
+    deliveryRate: 0
   });
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  const handleCampaignClick = (campaignId: string | number) => {
+    router.push(`/campaigns/${campaignId}`);
+  };
+
+  const renderCampaignCard = (campaign: Campaign) => {
+    const sent = campaign.stats?.sent || 0;
+    const opened = campaign.stats?.opened || 0;
+    const clicked = campaign.stats?.clicked || 0;
+    const totalRecipients = campaign.totalRecipients || 0;
+    const openRate = sent > 0 ? Math.round((opened / sent) * 100) : 0;
+    const clickRate = opened > 0 ? Math.round((clicked / opened) * 100) : 0;
+    const progress = totalRecipients > 0 ? Math.round((sent / totalRecipients) * 100) : 0;
+
+    return (
+      <div 
+        key={campaign.id}
+        onClick={() => handleCampaignClick(campaign.id)}
+        className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer relative group"
+      >
+        <div className="flex items-start justify-between mb-3">
+          <div>
+            <h3 className="font-medium text-gray-900 group-hover:text-primary">
+              {campaign.name}
+            </h3>
+            <p className="text-sm text-gray-500 mt-1">{campaign.subject}</p>
+          </div>
+          <Badge className={cn("text-xs py-1 px-2", getCampaignStatusColor(campaign.status))}>
+            <span className="flex items-center">
+              {getStatusIcon(campaign.status)}
+              {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
+            </span>
+          </Badge>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mt-4">
+          <div>
+            <p className="text-xs text-gray-500">Creada</p>
+            <p className="font-medium">{campaign.createdAt ? formatDate(campaign.createdAt) : 'N/A'}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">Destinatarios</p>
+            <p className="font-medium">{totalRecipients.toLocaleString()}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">Aperturas</p>
+            <p className="font-medium">
+              {opened.toLocaleString()} 
+              <span className="text-green-600">({openRate}%)</span>
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">Clicks</p>
+            <p className="font-medium">
+              {clicked.toLocaleString()} 
+              <span className="text-blue-600">({clickRate}%)</span>
+            </p>
+          </div>
+        </div>
+        
+        {campaign.status === 'sending' && totalRecipients > 0 && (
+          <div className="mt-3">
+            <div className="flex justify-between text-xs text-gray-500 mb-1">
+              <span>Progreso de envío</span>
+              <span>{progress}%</span>
+            </div>
+            <Progress 
+              value={progress} 
+              className="h-2" 
+            />
+          </div>
+        )}
+        
+        <div className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="text-xs text-primary bg-primary/10 px-2 py-1 rounded">
+            Ver detalles →
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -53,22 +226,8 @@ export default function DashboardPage() {
         setIsLoading(true);
         const { data: campaigns, total } = await getCampaigns(1, 5);
         
-        // Calcular estadísticas
-        const activeCampaigns = campaigns.filter(
-          (c: Campaign) => c.status === 'scheduled' || c.status === 'sending'
-        ).length;
-        
-        const totalRecipients = campaigns.reduce(
-          (sum: number, c: Campaign) => sum + (c.totalRecipients || 0), 0
-        );
-
         setCampaigns(campaigns);
-        setStats({
-          totalCampaigns: total,
-          activeCampaigns,
-          totalRecipients,
-          openRate: 0, // Esto se puede actualizar cuando se implemente el seguimiento de aperturas
-        });
+        setStats(calculateCampaignStats(campaigns));
       } catch (err) {
         console.error('Error loading dashboard data:', err);
         setError('No se pudieron cargar los datos del dashboard');
@@ -79,11 +238,6 @@ export default function DashboardPage() {
 
     loadData();
   }, []);
-  
-  // Función para manejar el clic en una fila de campaña
-  const handleCampaignClick = (campaignId: string | number) => {
-    router.push(`/campaigns/${campaignId}`);
-  };
 
   if (isLoading) {
     return (
@@ -107,104 +261,96 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-3xl font-headline font-bold">Campañas</h1>
           <p className="text-muted-foreground">
-            Gestiona y crea nuevas campañas de correo electrónico.
+            Gestiona y supervisa tus campañas de marketing por email
           </p>
         </div>
-        <Link href="/campaigns">
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            Nueva Campaña
-          </Button>
-        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total de Campañas
             </CardTitle>
-            <Mails className="h-4 w-4 text-muted-foreground" />
+            <Mails className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalCampaigns}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-green-700">
               {stats.activeCampaigns} activa{stats.activeCampaigns !== 1 ? 's' : ''}
             </p>
           </CardContent>
         </Card>
-        <Card>
+
+        <Card className="bg-gradient-to-br from-blue-50 to-sky-50 border-blue-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Destinatarios Totales
+              Destinatarios
             </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalRecipients.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              {campaigns.length} campaña{campaigns.length !== 1 ? 's' : ''}
+            <p className="text-xs text-blue-700">
+              {campaigns.length} campaña{campaigns.length !== 1 ? 's' : ''} activas
             </p>
           </CardContent>
         </Card>
-        <Card>
+
+        <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Tasa de Apertura
             </CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.openRate}%</div>
-            <p className="text-xs text-muted-foreground">
-              Promedio general
+            <p className="text-xs text-purple-700">
+              {stats.clickRate}% tasa de clicks
             </p>
           </CardContent>
         </Card>
-        <Card>
+
+        <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Estado del Servicio
+              Tasa de Entrega
             </CardTitle>
-            <div className="h-4 w-4 rounded-full bg-green-500"></div>
+            <CheckCircle className="h-4 w-4 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Activo</div>
-            <p className="text-xs text-muted-foreground">
-              Todo funciona correctamente
+            <div className="text-2xl font-bold">{stats.deliveryRate}%</div>
+            <p className="text-xs text-amber-700">
+              {stats.deliveryRate > 95 ? 'Excelente' : 'Bueno'} rendimiento
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
+      <Card className="border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Tus Campañas</CardTitle>
+            <CardTitle>Tus Campañas Recientes</CardTitle>
             <CardDescription>
               {campaigns.length === 0 
                 ? 'Aún no has creado ninguna campaña' 
-                : `Mostrando ${campaigns.length} de ${stats.totalCampaigns} campañas`}
+                : `Mostrando ${Math.min(campaigns.length, 5)} de ${stats.totalCampaigns} campañas`}
             </CardDescription>
           </div>
           <Link href="/campaigns">
             <Button variant="outline" size="sm" className="gap-2">
               Ver todas
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right">
-                <path d="M5 12h14"/>
-                <path d="m12 5 7 7-7 7"/>
-              </svg>
+              <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
         </CardHeader>
         <CardContent>
           {campaigns.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Mails className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium">No hay campañas creadas</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Comienza creando tu primera campaña de correo electrónico.
-              </p>
+            <div className="text-center py-12">
+              <Mails className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-1">No hay campañas</h3>
+              <p className="text-sm text-gray-500 mb-4">Crea tu primera campaña para comenzar</p>
               <Link href="/campaigns">
                 <Button>
                   <Plus className="h-4 w-4 mr-2" />
@@ -213,60 +359,8 @@ export default function DashboardPage() {
               </Link>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nombre</TableHead>
-                    <TableHead>Asunto</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Fecha de creación</TableHead>
-                    <TableHead className="text-right">Destinatarios</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {campaigns.map((campaign) => (
-                    <TableRow 
-                      key={campaign.id} 
-                      className="cursor-pointer hover:bg-muted/50" 
-                      onClick={() => handleCampaignClick(campaign.id)}
-                    >
-                      <TableCell className="font-medium">
-                        {campaign.name}
-                      </TableCell>
-                      <TableCell>{campaign.subject || 'Sin asunto'}</TableCell>
-                      <TableCell>
-                        <Badge
-                        variant={
-                          campaign.status === 'sent' ? 'secondary' : 
-                          campaign.status === 'scheduled' ? 'outline' :
-                          campaign.status === 'sending' ? 'default' :
-                          campaign.status === 'failed' ? 'destructive' : 'outline'
-                        }
-                        className={cn(
-                          'capitalize',
-                          campaign.status === 'sent' && 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-                          campaign.status === 'scheduled' && 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-                          campaign.status === 'sending' && 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-                          campaign.status === 'failed' && 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                        )}
-                      >
-                        {campaign.status === 'sent' ? 'Enviado' :
-                         campaign.status === 'scheduled' ? 'Programado' :
-                         campaign.status === 'sending' ? 'Enviando' :
-                         campaign.status === 'failed' ? 'Fallido' : 'Borrador'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {campaign.createdAt ? new Date(campaign.createdAt).toLocaleDateString() : 'N/A'}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {campaign.totalRecipients || 0}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <div className="space-y-4">
+              {campaigns.slice(0, 5).map(renderCampaignCard)}
             </div>
           )}
         </CardContent>
