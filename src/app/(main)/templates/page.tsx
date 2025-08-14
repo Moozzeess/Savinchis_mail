@@ -10,23 +10,21 @@ import {
 import { PlusCircle, Edit, Mail, Award } from "lucide-react";
 import Link from "next/link";
 import { getTemplatesAction, type Template } from "@/actions/template-actions";
+import { Block, generateHtmlFromBlocks } from "@/lib/template-utils";
+import { DeleteTemplateButton } from "./delete-template-button";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import { TemplatePreview } from "@/components/templates/template-preview";
-import Image from "next/image";
-import { DeleteTemplateButton } from "./delete-template-button";
 
 /**
  * Página de Diseños.
  * Muestra una lista de las plantillas de correo y certificados existentes
  * y permite crear nuevos o editar/eliminar los actuales.
  */
-export default async function TemplatesPage({ 
-  searchParams 
-}: { 
-  searchParams: { page?: string } 
-}) {
-  const page = searchParams?.page ? Number(searchParams.page) : 1;
+export default async function TemplatesPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const params = await searchParams;
+  const page = Number(params?.page) || 1;
   const limit = 9;
 
   const { templates, total } = await getTemplatesAction({ page, limit });
@@ -71,12 +69,11 @@ export default async function TemplatesPage({
                     </Badge>
                   </div>
                   <div className="aspect-[3/2] w-full h-full overflow-hidden rounded-t-lg bg-muted pointer-events-none">
-                    <TemplatePreview 
-                      templatePath={!isCertificate && typeof template.contenido === 'string' ? template.contenido : null}
-                      templateName={template.nombre}
-                      isCertificate={isCertificate}
-                      templateContent={template.contenido}
-                    />
+                  <TemplatePreview
+                    templatePath={template.contenido}
+                    templateName={template.nombre}
+                    isCertificate={isCertificate}
+                  />
                   </div>
                 </CardHeader>
                 <CardContent className="pt-4 flex-grow">

@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Award } from 'lucide-react';
 
 interface TemplatePreviewProps {
-  templatePath: string | null;
+  templatePath?: string | null;
   templateName: string;
   isCertificate: boolean;
   templateContent?: any;
