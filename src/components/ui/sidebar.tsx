@@ -205,7 +205,8 @@ const Sidebar = React.forwardRef<
       return (
         <div
           className={cn(
-            "flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground",
+            // Adaptación visual
+            "flex h-full w-[--sidebar-width] flex-col border-r border-green-200 bg-white/95 backdrop-blur-md shadow-xl transition-all duration-300 ease-in-out z-40 text-sidebar-foreground",
             className
           )}
           ref={ref}
@@ -239,7 +240,10 @@ const Sidebar = React.forwardRef<
     return (
       <div
         ref={ref}
-        className="group peer hidden md:block text-sidebar-foreground"
+        className={cn(
+          "group peer hidden md:block text-sidebar-foreground border-r border-sidebar-border bg-sidebar/95 backdrop-blur-md shadow-xl transition-all duration-300 ease-in-out z-40",
+          className
+        )}
         data-state={state}
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
@@ -257,7 +261,7 @@ const Sidebar = React.forwardRef<
         />
         <div
           className={cn(
-            "duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex",
+            "duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex border-r border-sidebar-border bg-sidebar/95 backdrop-blur-md shadow-xl",
             side === "left"
               ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
               : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
@@ -270,7 +274,7 @@ const Sidebar = React.forwardRef<
         >
           <div
             data-sidebar="sidebar"
-            className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
+            className="flex h-full w-full flex-col bg-gradient-to-b from-white/50 to-green-50/30 group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
           >
             {children}
           </div>
@@ -314,29 +318,31 @@ const SidebarRail = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button">
 >(({ className, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar()
-
+  // Botón fijo, visible, para mostrar/ocultar sidebar (no draggable)
+  const { toggleSidebar, state } = useSidebar();
+  const isExpanded = state === "expanded";
   return (
     <button
       ref={ref}
-      data-sidebar="rail"
-      aria-label="Toggle Sidebar"
-      tabIndex={-1}
+      data-sidebar="toggle-btn"
+      aria-label={isExpanded ? "Cerrar menú" : "Abrir menú"}
       onClick={toggleSidebar}
-      title="Toggle Sidebar"
       className={cn(
-        "absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex",
-        "[[data-side=left]_&]:cursor-w-resize [[data-side=right]_&]:cursor-e-resize",
-        "[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize",
-        "group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full group-data-[collapsible=offcanvas]:hover:bg-sidebar",
-        "[[data-side=left][data-collapsible=offcanvas]_&]:-right-2",
-        "[[data-side=right][data-collapsible=offcanvas]_&]:-left-2",
+        "fixed top-5 left-3 z-50 flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 ease-out group overflow-hidden transform-gpu cursor-pointer select-none bg-sidebar text-sidebar-foreground border border-sidebar-border shadow hover:scale-105 hover:border-sidebar-accent hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
         className
       )}
       {...props}
-    />
-  )
-})
+    >
+      <span className="relative z-10 transition-all duration-300 group-hover:drop-shadow-sm">
+        {isExpanded ? (
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+        )}
+      </span>
+    </button>
+  );
+});
 SidebarRail.displayName = "SidebarRail"
 
 /**
@@ -390,7 +396,10 @@ const SidebarHeader = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="header"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn(
+        "flex flex-col gap-2 p-5 border-b border-sidebar-border bg-gradient-to-r from-sidebar/80 to-sidebar-accent/80",
+        className
+      )}
       {...props}
     />
   )
@@ -445,7 +454,7 @@ const SidebarContent = React.forwardRef<
       ref={ref}
       data-sidebar="content"
       className={cn(
-        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
+        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden p-3 bg-gradient-to-b from-white/50 to-green-50/30",
         className
       )}
       {...props}
@@ -536,7 +545,7 @@ const SidebarMenu = React.forwardRef<
   <ul
     ref={ref}
     data-sidebar="menu"
-    className={cn("flex w-full min-w-0 flex-col gap-1", className)}
+    className={cn("space-y-1 flex w-full min-w-0 flex-col gap-1", className)}
     {...props}
   />
 ))
@@ -612,7 +621,15 @@ const SidebarMenuButton = React.forwardRef<
         data-sidebar="menu-button"
         data-size={size}
         data-active={isActive}
-        className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+        className={cn(
+          // Adaptación visual de AppSidebar
+          "w-full justify-start gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 cursor-pointer group relative overflow-hidden",
+          isActive
+            ? "bg-gradient-to-r from-green-100 to-green-50 text-green-700 shadow-md border border-green-200/50"
+            : "text-gray-600 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 hover:text-green-600 hover:shadow-sm",
+          sidebarMenuButtonVariants({ variant, size }),
+          className
+        )}
         {...props}
       />
     )
