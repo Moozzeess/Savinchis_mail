@@ -125,6 +125,8 @@ export function CertificateEditor({ certificate }: { certificate: Partial<Templa
           alt: 'Fondo del certificado',
           width: 100,
           align: 'center',
+          isBackground: true,
+          ...(backgroundImage.startsWith('data:') && { isDataUrl: true })
         },
       },
       {
