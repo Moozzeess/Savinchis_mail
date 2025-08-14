@@ -1,0 +1,74 @@
+[
+  {
+    "id": "background",
+    "type": "image",
+    "content": {
+      "src": "data:image/png;base64,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",
+      "alt": "Fondo del certificado",
+      "width": 100,
+      "align": "center",
+      "isBackground": true,
+      "isDataUrl": true
+    }
+  },
+  {
+    "id": "title",
+    "type": "text",
+    "content": {
+      "text": "Certificado de Asistencia",
+      "fontSize": 48,
+      "color": "#000000",
+      "textAlign": "center",
+      "fontWeight": "bold",
+      "lineHeight": 1.2
+    }
+  },
+  {
+    "id": "issuedTo",
+    "type": "text",
+    "content": {
+      "text": "Otorgado a:",
+      "fontSize": 18,
+      "color": "#000000",
+      "textAlign": "center",
+      "fontWeight": "normal",
+      "lineHeight": 1.2
+    }
+  },
+  {
+    "id": "description",
+    "type": "text",
+    "content": {
+      "text": "Por completar exitosamente el taller de Email Marketing Avanzado.",
+      "fontSize": 16,
+      "color": "#000000",
+      "textAlign": "center",
+      "fontWeight": "normal",
+      "lineHeight": 1.5
+    }
+  },
+  {
+    "id": "date",
+    "type": "text",
+    "content": {
+      "text": "Fecha:",
+      "fontSize": 16,
+      "color": "#000000",
+      "textAlign": "center",
+      "fontWeight": "600",
+      "lineHeight": 1.2
+    }
+  },
+  {
+    "id": "signature",
+    "type": "text",
+    "content": {
+      "text": "Firma del Organizador",
+      "fontSize": 16,
+      "color": "#000000",
+      "textAlign": "center",
+      "fontWeight": "600",
+      "lineHeight": 1.2
+    }
+  }
+]
