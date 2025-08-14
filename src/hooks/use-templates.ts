@@ -16,10 +16,12 @@ export function useTemplates({ tipo, limit = 10 }: UseTemplatesOptions = {}) {
     const fetchTemplates = async () => {
       try {
         setIsLoading(true);
-    const response = await fetch(`/api/templates/load?tipo=${tipo}&limit=${limit}`);
+        const response = await fetch(`/api/templates/load?tipo=${tipo}&limit=${limit}`);
         if (!response.ok) throw new Error('Error al cargar plantillas');
         const { templates: data } = await response.json();
-        setTemplates(data || []);
+        const templatesWithContent = data || [];
+        console.log('Plantillas con contenido cargado:', templatesWithContent);
+        setTemplates(templatesWithContent);
       } catch (err) {
         setError(err as Error);
       } finally {

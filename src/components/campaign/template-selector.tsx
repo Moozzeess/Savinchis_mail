@@ -8,6 +8,7 @@ import { useFormContext } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Template } from "@/actions/template-actions";
 import { Plantillas } from "@/types/templates";
+import { TemplatePreview } from "@/components/templates/template-preview";
 
 interface TemplateCarouselProps {
     templates: Plantillas[];
@@ -20,77 +21,109 @@ export function TemplateCarousel({
   onSelect,
   selectedTemplateId 
 }: TemplateCarouselProps) {
-  const [startIndex, setStartIndex] = useState(0);
-  const visibleTemplates = 5; // Número de plantillas visibles
 
-  const visibleItems = templates.slice(startIndex, startIndex + visibleTemplates);
-
-  const next = () => {
-    if (startIndex + visibleTemplates < templates.length) {
-      setStartIndex(startIndex + 1);
-    }
-  };
-
-  const prev = () => {
-    if (startIndex > 0) {
-      setStartIndex(startIndex - 1);
-    }
-  };
+  // Modal de vista previa ampliada
+  const [previewTemplate, setPreviewTemplate] = useState<Plantillas | null>(null);
 
   return (
-    <div className="relative">
-      <div className="flex items-center space-x-2 overflow-hidden">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={prev} 
-          disabled={startIndex === 0}
-          className="h-8 w-8"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        
+    <div className="relative w-full">
+      <h2 className="text-lg font-bold mb-1">Selecciona una plantilla</h2>
+      <p className="text-sm text-muted-foreground mb-4">Haz clic en una plantilla para seleccionarla o ampliar su vista previa.</p>
+
+      {templates.length === 0 ? (
+        <div className="text-center text-muted-foreground py-10">
+          No hay plantillas disponibles. Crea una nueva para comenzar.
+        </div>
+      ) : (
         <div className="flex-1 flex space-x-4 overflow-x-auto pb-4 px-1">
-          {visibleItems.map((template) => (
-            <div 
-              key={template.id_plantilla} 
+          {templates.map((template) => (
+            <div
+              key={template.id_plantilla}
               className={cn(
-                "flex-none w-40 transition-all duration-200",
+                "flex-none w-40 transition-all duration-200 relative group",
                 "cursor-pointer hover:scale-105",
-                selectedTemplateId === template.id_plantilla && "ring-2 ring-primary rounded-lg"
+                selectedTemplateId === template.id_plantilla && "ring-4 ring-primary/70 bg-primary/10 rounded-lg shadow-lg"
               )}
               onClick={() => onSelect(template)}
             >
               <Card className="h-48 overflow-hidden">
-                <div 
-                  className="h-32 bg-cover bg-center" 
-                  style={{ 
-                    backgroundImage: `url(${getTemplateThumbnail(template)})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
-                  }} 
-                />
+                <div
+                  className="h-32 w-full flex items-center justify-center bg-muted/40 rounded-t-md overflow-hidden relative"
+                  onClick={e => {
+                    e.stopPropagation();
+                    setPreviewTemplate(template);
+                  }}
+                  title="Ver vista previa ampliada"
+                >
+                  <TemplatePreview
+                    templateName={template.nombre}
+                    isCertificate={template.tipo === 'certificate'}
+                    templateContent={typeof template.contenido === 'string' ? undefined : template.contenido}
+                    className="w-full h-full scale-90"
+                  />
+                  <span className="absolute bottom-1 right-1 text-xs bg-white/80 rounded px-1 py-0.5 shadow">Ver</span>
+                </div>
                 <CardContent className="p-2">
-                  <div className="text-sm font-medium truncate">{template.nombre}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {template.tipo === 'template' || 'certificate' || 'email'}
+                  <div className="text-sm font-medium truncate flex items-center gap-1">
+                    {template.nombre}
+                    {selectedTemplateId === template.id_plantilla && (
+                      <span className="ml-1 text-green-600" title="Plantilla seleccionada">✓</span>
+                    )}
                   </div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Tipo: {template.tipo}
+                  </div>
+                  <Button
+                    variant={selectedTemplateId === template.id_plantilla ? "default" : "outline"}
+                    size="sm"
+                    className="w-full mt-1"
+                    onClick={e => {
+                      e.stopPropagation();
+                      onSelect(template);
+                    }}
+                    title={selectedTemplateId === template.id_plantilla ? "Esta plantilla está seleccionada" : "Seleccionar plantilla"}
+                  >
+                    {selectedTemplateId === template.id_plantilla ? "Seleccionada" : "Seleccionar"}
+                  </Button>
                 </CardContent>
               </Card>
             </div>
           ))}
         </div>
+      )}
 
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={next}
-          disabled={startIndex + visibleTemplates >= templates.length}
-          className="h-8 w-8"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
+      {/* Modal de vista previa */}
+      {previewTemplate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setPreviewTemplate(null)}>
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-lg w-full relative" onClick={e => e.stopPropagation()}>
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl"
+              onClick={() => setPreviewTemplate(null)}
+              title="Cerrar vista previa"
+            >
+              ×
+            </button>
+            <h3 className="text-lg font-bold mb-2">Vista previa de plantilla</h3>
+            <TemplatePreview
+              templateName={previewTemplate.nombre}
+              isCertificate={previewTemplate.tipo === 'certificate'}
+              templateContent={typeof previewTemplate.contenido === 'string' ? undefined : previewTemplate.contenido}
+              className="w-full h-56"
+            />
+            <div className="mt-4 flex justify-end">
+              <Button
+                onClick={() => {
+                  onSelect(previewTemplate);
+                  setPreviewTemplate(null);
+                }}
+                variant={selectedTemplateId === previewTemplate.id_plantilla ? "default" : "outline"}
+              >
+                {selectedTemplateId === previewTemplate.id_plantilla ? "Seleccionada" : "Seleccionar esta plantilla"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
