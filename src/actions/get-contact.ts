@@ -6,6 +6,14 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+interface ContactSummary {
+  total: number;
+  validEmails: number;
+  invalidEmails: number;
+  duplicates: number;
+  sampleEmails: string[];
+}
+
 /**
  * Procesa un archivo Excel para extraer contactos validados.
  * @param fileBuffer Buffer del archivo Excel.
@@ -17,7 +25,7 @@ export async function getContactsFromExcel(
   fileBuffer: Buffer,
   nameCol: string,
   emailCol: string
-): Promise<{ success: boolean; message: string; contacts?: { nombre: string; email: string }[] }> {
+): Promise<{ success: boolean; message: string; contacts?: { nombre: string; email: string }[]; summary?: ContactSummary }> {
   try {
     // Leer el archivo Excel
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
@@ -35,24 +43,59 @@ export async function getContactsFromExcel(
     }
 
     // Extraer y validar contactos
-    const contacts = [];
-    for (const row of rows) {
-      const nombre = String(row[nameCol] || '').trim();
-      const email = String(row[emailCol] || '').trim();
+    const contacts: { nombre_completo: string; email: string }[] = [];
+    const allEmails: string[] = [];
+    const invalidEmailsSet: Set<string> = new Set();
+    const seenEmails: Set<string> = new Set();
+    let duplicatesCount = 0;
 
-      if (nombre && email && isValidEmail(email)) {
-        contacts.push({ nombre, email });
+    for (const row of rows) {
+      const nombre_completo = String(row[nameCol] || '').trim();
+      const email = String(row[emailCol] || '').trim();
+      allEmails.push(email); // Para contar duplicados y totales
+
+      if (!email || !isValidEmail(email)) {
+        invalidEmailsSet.add(email); // Recopilar correos inválidos
+        continue;
+      }
+
+      if (seenEmails.has(email)) {
+        duplicatesCount++;
+      } else {
+        seenEmails.add(email);
+        // Solo añadir contactos válidos y únicos a la lista final
+        if (nombre_completo) {
+          contacts.push({ nombre_completo, email });
+        } else {
+          contacts.push({ nombre_completo: email, email }); // Usar email como nombre si no hay nombre
+        }
       }
     }
 
-    if (contacts.length === 0) {
+    const totalValidEmails = contacts.length;
+    const totalInvalidEmails = invalidEmailsSet.size;
+    const totalContacts = allEmails.length;
+
+    const summary = {
+      total: totalContacts,
+      validEmails: totalValidEmails,
+      invalidEmails: totalInvalidEmails,
+      duplicates: duplicatesCount,
+      sampleEmails: contacts.slice(0, 5).map(c => c.email)
+    };
+
+    if (contacts.length === 0 && totalValidEmails === 0 && totalInvalidEmails === 0) {
       return { success: false, message: 'No se encontraron contactos válidos en el archivo.' };
     }
 
     return {
       success: true,
-      message: 'Se ha validado correctamente la lista cargada.',
-      contacts,
+      message: 'Se ha validado y resumido correctamente la lista cargada.',
+      contacts: contacts.map(c => ({
+        nombre: c.nombre_completo,
+        email: c.email
+      })),
+      summary,
     };
   } catch (error) {
     return { success: false, message: 'Error procesando el archivo: ' + (error as Error).message };

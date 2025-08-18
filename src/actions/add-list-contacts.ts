@@ -9,7 +9,7 @@ import { getDbConnection } from './event-actions';
  */
 export async function addListContacts(
   listaNombre: string,
-  contactos: { nombre: string; email: string }[]
+  contactos: { nombre_completo: string; email: string }[]
 ): Promise<{ success: boolean; message: string }> {
   const conn = await getDbConnection();
   try {
@@ -43,8 +43,8 @@ export async function addListContacts(
         id_contacto = (contactRows as any[])[0].id_contacto;
       } else {
         const [insertResult] = await conn.execute(
-          'INSERT INTO contactos (nombre, email) VALUES (?, ?)',
-          [contacto.nombre, contacto.email]
+          'INSERT INTO contactos (nombre_completo, email) VALUES (?, ?)',
+          [contacto.nombre_completo, contacto.email]
         );
         id_contacto = (insertResult as any).insertId;
       }

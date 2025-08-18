@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,14 +17,18 @@ import { es } from 'date-fns/locale';
 import { Calendar } from '@/components/ui/calendar';
 import { Textarea } from '@/components/ui/textarea';
 import { Database } from 'lucide-react';
+import { getContactsFromExcel } from '@/actions/get-contact';
+import { addListContacts } from '@/actions/add-list-contacts';
+import { getDbContacts } from '@/actions/get-db-contacts';
+import { getContactLists } from '@/actions/get-contact-lists';
 
 // Mock data - Reemplazar con llamadas a la API real
-const CONTACT_LISTS = [
-  { id: '1', name: 'Clientes frecuentes', count: 1245 },
-  { id: '2', name: 'Clientes inactivos', count: 342 },
-  { id: '3', name: 'Suscriptores blog', count: 2456 },
-  { id: '4', name: 'Clientes VIP', count: 89 },
-];
+// const CONTACT_LISTS = [
+//   { id: '1', name: 'Clientes frecuentes', count: 1245 },
+//   { id: '2', name: 'Clientes inactivos', count: 342 },
+//   { id: '3', name: 'Suscriptores blog', count: 2456 },
+//   { id: '4', name: 'Clientes VIP', count: 89 },
+// ];
 
 interface FileUploadState {
   file: File | null;
@@ -71,24 +75,6 @@ const NEW_CONTACTS_OPTIONS = [
 export function RecipientStep({ className = '' }: { className?: string }) {
   const { register, watch, setValue, formState: { errors } } = useFormContext();
   
-  // Analyze contacts
-  const analyzeContacts = useCallback((emails: string[]) => {
-    // This is a simulation - replace with real logic
-    const uniqueEmails = Array.from(new Set(emails));
-    const validEmails = uniqueEmails.filter(email => 
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-    );
-    
-    const contactSummary = {
-      total: emails.length,
-      validEmails: validEmails.length,
-      invalidEmails: emails.length - validEmails.length,
-      duplicates: emails.length - uniqueEmails.length,
-      sampleEmails: validEmails.slice(0, 5)
-    };
-    return contactSummary;
-  }, []);
-
   // Check if database connection is complete
   const isDbConnectionComplete = useCallback((conn: DatabaseConnection): boolean => {
     return !!(conn.serverType && conn.host && conn.port && conn.username && conn.database && conn.query);
@@ -113,6 +99,19 @@ export function RecipientStep({ className = '' }: { className?: string }) {
   const [individualEmails, setIndividualEmails] = useState('');
   const [date, setDate] = useState<Date | undefined>(undefined);
   
+  // File processing state
+  const [fileBufferState, setFileBufferState] = useState<ArrayBuffer | null>(null);
+  const [isMappingValidated, setIsMappingValidated] = useState(false);
+  
+  // Listas de contactos y paginación
+  const [contactLists, setContactLists] = useState<{ id: string; name: string; count: number }[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalLists, setTotalLists] = useState(0);
+  const pageSize = 5; // Mostrar 5 listas por página
+  const [listsLoading, setListsLoading] = useState(true);
+  const [listsError, setListsError] = useState<string | null>(null);
+
   // Database connection state
   const [dbConnection, setDbConnection] = useState<DatabaseConnection>({
     serverType: '',
@@ -129,8 +128,79 @@ export function RecipientStep({ className = '' }: { className?: string }) {
     nameColumn: 'nombre',
   });
 
+  // Handle mapping validation
+  const handleValidateMapping = useCallback(async () => {
+    if (!fileBufferState || !fileUpload.file) {
+      setFileUpload(prev => ({ ...prev, error: 'Por favor, primero sube un archivo.' }));
+      return;
+    }
+    if (!columnMapping.emailColumn) {
+      setFileUpload(prev => ({ ...prev, error: 'La columna de correo electrónico es obligatoria para la validación.' }));
+      return;
+    }
+
+    setFileUpload(prev => ({ ...prev, isUploading: true, error: null })); // Reutilizar isUploading para el estado de validación
+    setIsMappingValidated(false);
+    setContactSummary(null);
+    setValue('totalRecipients', 0);
+    setValue('fileContacts', []);
+
+    try {
+      const result = await getContactsFromExcel(Buffer.from(fileBufferState), columnMapping.nameColumn, columnMapping.emailColumn);
+      
+      if (result.success && result.summary) {
+        setContactSummary(result.summary);
+        setValue('totalRecipients', result.summary.validEmails);
+        setValue('fileContacts', result.contacts); // Guardar contactos para el paso de guardar lista
+        setIsMappingValidated(true);
+        setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
+      } else {
+        setFileUpload(prev => ({ ...prev, isUploading: false, error: result.message }));
+        setContactSummary(null);
+        setValue('totalRecipients', 0);
+        setValue('fileContacts', []);
+        setIsMappingValidated(false);
+      }
+    } catch (actionError) {
+      console.error('Error al validar mapeo:', actionError);
+      setFileUpload(prev => ({ 
+        ...prev, 
+        isUploading: false, 
+        error: 'Error al validar el mapeo: ' + (actionError as Error).message 
+      }));
+      setContactSummary(null);
+      setValue('totalRecipients', 0);
+      setValue('fileContacts', []);
+      setIsMappingValidated(false);
+    }
+  }, [fileBufferState, columnMapping, setValue, fileUpload.file]);
+
   // Contact summary state
   const [contactSummary, setContactSummary] = useState<ContactSummary | null>(null);
+
+  // Cargar listas de contactos existentes
+  useEffect(() => {
+    const fetchContactLists = async () => {
+      setListsLoading(true);
+      setListsError(null);
+      try {
+        const result = await getContactLists(currentPage, pageSize);
+        if (result.success && result.data) {
+          setContactLists(result.data.lists);
+          setTotalLists(result.data.totalLists);
+          setTotalPages(result.data.totalPages);
+        } else {
+          setListsError(result.message || 'Error desconocido al cargar las listas.');
+        }
+      } catch (err) {
+        console.error('Error fetching contact lists:', err);
+        setListsError('No se pudieron cargar las listas de contactos.');
+      } finally {
+        setListsLoading(false);
+      }
+    };
+    fetchContactLists();
+  }, [currentPage, pageSize]);
 
   // Watched values
   const selectedListName = watch('contactListName');
@@ -164,39 +234,31 @@ export function RecipientStep({ className = '' }: { className?: string }) {
 
     // Set file and update form
     const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
-    setFileUpload(prev => ({ ...prev, file, error: null }));
+    setFileUpload(prev => ({ ...prev, file, error: null, isUploading: true }));
     setListName(fileNameWithoutExt);
     
-    // Update form context
-    setValue('contactListId', `file_${Date.now()}`);
-    setValue('contactListName', fileNameWithoutExt);
+    // Reset validation state and summary on new file upload
+    setIsMappingValidated(false);
+    setContactSummary(null);
     setValue('totalRecipients', 0);
-    
-    // Simulate file upload progress
-    setFileUpload(prev => ({ ...prev, isUploading: true }));
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.floor(Math.random() * 20) + 10;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(interval);
-        setFileUpload(prev => ({ ...prev, isUploading: false }));
-        setValue('totalRecipients', Math.floor(Math.random() * 1000) + 100);
+    setValue('fileContacts', []);
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      if (e.target?.result) {
+        const buffer = e.target.result as ArrayBuffer;
+        setFileBufferState(buffer); // Store the buffer
+        setFileUpload(prev => ({ ...prev, isUploading: false, progress: 100 }));
       }
-      setFileUpload(prev => ({ ...prev, progress }));
-    }, 200);
-    
-    // Simulate contact analysis
-    setTimeout(() => {
-      const mockEmails = Array.from({ length: 1500 }, (_, i) => 
-        `usuario${i + 1}@ejemplo.com`
-      );
-      // Add some duplicates and invalid emails
-      mockEmails.push('usuario1@ejemplo.com', 'usuario2@ejemplo.com', 'correo-invalido');
-      const summary = analyzeContacts(mockEmails);
-      setContactSummary(summary);
-    }, 1000);
-  }, [setValue, analyzeContacts]);
+    };
+    reader.onerror = () => {
+      setFileUpload(prev => ({ ...prev, isUploading: false, error: 'Error al leer el archivo.' }));
+      setContactSummary(null);
+      setValue('totalRecipients', 0);
+      setIsMappingValidated(false);
+    };
+    reader.readAsArrayBuffer(file);
+  }, [setValue]);
 
   // Handle drag and drop
   const handleDrag = useCallback((e: React.DragEvent) => {
@@ -248,30 +310,29 @@ export function RecipientStep({ className = '' }: { className?: string }) {
     try {
       setDbConnectionTested('testing');
       
-      // Simulate connection test
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const result = await getDbContacts(dbConnection, columnMapping.emailColumn, columnMapping.nameColumn);
       
-      setDbConnectionTested(true);
-      setFileUpload(prev => ({
-        ...prev,
-        error: null
-      }));
-      
-      // Update form with connection info
-      setValue('contactListId', `db_${Date.now()}`);
-      setValue('contactListName', `Conexión DB: ${dbConnection.database}`);
-      setValue('totalRecipients', 0); // Will be updated after query execution
-      
-      // Simulate contact analysis
-      setTimeout(() => {
-        const mockEmails = Array.from({ length: 2000 }, (_, i) => 
-          `cliente${i + 1}@empresa.com`
-        );
-        // Add some duplicates and invalid emails
-        mockEmails.push('cliente1@empresa.com', 'correo-invalido');
-        const summary = analyzeContacts(mockEmails);
-        setContactSummary(summary);
-      }, 1000);
+      if (result.success) {
+        setDbConnectionTested(true);
+        setFileUpload(prev => ({
+          ...prev,
+          error: null
+        }));
+        if (result.summary) {
+          setContactSummary(result.summary);
+          setValue('totalRecipients', result.summary.validEmails);
+        } else {
+          setContactSummary(null);
+          setValue('totalRecipients', 0);
+        }
+        setValue('dbContacts', result.contacts); // Guardar contactos para el paso de guardar lista
+      } else {
+        setDbConnectionTested(false);
+        setFileUpload(prev => ({
+          ...prev,
+          error: 'Error al conectar con la base de datos. Verifica los datos de conexión.'
+        }));
+      }
     } catch (error) {
       setDbConnectionTested(false);
       setFileUpload(prev => ({
@@ -279,8 +340,8 @@ export function RecipientStep({ className = '' }: { className?: string }) {
         error: 'Error al conectar con la base de datos. Verifica los datos de conexión.'
       }));
     }
-  }, [dbConnection, setValue, isDbConnectionComplete, analyzeContacts]);
-
+  }, [dbConnection, setValue, isDbConnectionComplete, columnMapping]);
+    
   // Update database connection and reset test status when fields change
   const updateDbConnection = useCallback((field: keyof DatabaseConnection, value: string) => {
     setDbConnection(prev => {
@@ -318,7 +379,8 @@ export function RecipientStep({ className = '' }: { className?: string }) {
     if (emailList.length > 0) {
       setValue('contactListId', `emails_${Date.now()}`);
       setValue('contactListName', 'Correos individuales');
-      setValue('contactList', emailList.join(','));
+      const formattedContacts = emailList.map(email => ({ nombre_completo: email, email }));
+      setValue('individualContacts', formattedContacts); // Guardar contactos para el paso de guardar lista
       setValue('totalRecipients', emailList.length);
     } else {
       setValue('contactList', '');
@@ -368,34 +430,63 @@ export function RecipientStep({ className = '' }: { className?: string }) {
           <div className="space-y-2">
             <Label>Seleccionar lista de contactos</Label>
             <div className="space-y-2">
-              {CONTACT_LISTS.map((list) => (
-                <div
-                  key={list.id}
-                  className={cn(
-                    "flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50",
-                    selectedListId === list.id 
-                      ? "border-primary ring-2 ring-primary bg-accent/30" 
-                      : "hover:border-primary/50"
-                  )}
-                  onClick={() => handleListSelect(list.id, list.name, list.count)}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                      <Users className="h-5 w-5 text-primary" />
+              {listsLoading ? (
+                <div className="text-center text-muted-foreground">Cargando listas...</div>
+              ) : listsError ? (
+                <div className="text-center text-destructive">{listsError}</div>
+              ) : contactLists.length === 0 ? (
+                <div className="text-center text-muted-foreground">No hay listas de contactos guardadas aún. Por favor, agrega una nueva lista en la pestaña 'Nuevos contactos'.</div>
+              ) : (
+                contactLists.map((list) => (
+                  <div
+                    key={list.id}
+                    className={cn(
+                      "flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50",
+                      selectedListId === list.id 
+                        ? "border-primary ring-2 ring-primary bg-accent/30" 
+                        : "hover:border-primary/50"
+                    )}
+                    onClick={() => handleListSelect(list.id, list.name, list.count)}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                        <Users className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">{list.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {list.count.toLocaleString()} contactos
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-foreground">{list.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {list.count.toLocaleString()} contactos
-                      </p>
-                    </div>
+                    {selectedListId === list.id && (
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    )}
                   </div>
-                  {selectedListId === list.id && (
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  )}
-                </div>
-              ))}
+                ))
+              )}
             </div>
+            {contactLists.length > 0 && totalPages > 1 && (
+              <div className="flex items-center justify-between pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1 || listsLoading}
+                >
+                  Anterior
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  Página {currentPage} de {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages || listsLoading}
+                >
+                  Siguiente
+                </Button>
+              </div>
+            )}
           </div>
         </TabsContent>
 
@@ -506,8 +597,52 @@ export function RecipientStep({ className = '' }: { className?: string }) {
                   </div>
                 </div>
 
-                {/* File Details Form */}
+                {/* Column Mapping for File Upload */}
                 {fileUpload.file && !fileUpload.isUploading && (
+                  <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <h4 className="text-sm font-medium">Mapeo de columnas</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email-column">Columna de correo electrónico</Label>
+                        <Input
+                          id="email-column"
+                          placeholder="Ej: email, correo"
+                          value={columnMapping.emailColumn}
+                          onChange={(e) => setColumnMapping(prev => ({
+                            ...prev,
+                            emailColumn: e.target.value
+                          }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="name-column">Columna de nombre (opcional)</Label>
+                        <Input
+                          id="name-column"
+                          placeholder="Ej: nombre, name"
+                          value={columnMapping.nameColumn}
+                          onChange={(e) => setColumnMapping(prev => ({
+                            ...prev,
+                            nameColumn: e.target.value
+                          }))}
+                        />
+                      </div>
+                    </div>
+                    <div className="pt-2 flex gap-2">
+                      <Button 
+                        type="button" 
+                        variant="outline"
+                        onClick={handleValidateMapping}
+                        disabled={fileUpload.isUploading}
+                      >
+                        <CheckCircle2 className="mr-2 h-4 w-4" />
+                        Validar mapeo
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* File Details Form (Green Card) */}
+                {fileUpload.file && !fileUpload.isUploading && isMappingValidated && (
                   <div className="space-y-4">
                     <div className="p-4 bg-green-50 dark:bg-green-900/10 rounded-lg border border-green-200 dark:border-green-800">
                       <div className="flex items-start gap-4">
@@ -519,7 +654,7 @@ export function RecipientStep({ className = '' }: { className?: string }) {
                         <div className="flex-1 space-y-4">
                           <div>
                             <h4 className="text-sm font-medium text-green-800 dark:text-green-200">
-                              Archivo cargado correctamente
+                              Archivo cargado y validado correctamente
                             </h4>
                             <div className="mt-1 text-sm text-green-700 dark:text-green-300 space-y-1">
                               <p className="truncate">
@@ -530,7 +665,6 @@ export function RecipientStep({ className = '' }: { className?: string }) {
                               </p>
                             </div>
                           </div>
-
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                               <Label htmlFor="list-name">
@@ -572,76 +706,45 @@ export function RecipientStep({ className = '' }: { className?: string }) {
                               </p>
                             </div>
                           </div>
+                          <div className="pt-4 flex justify-end">
+                            <Button 
+                              type="button"
+                              variant="secondary"
+                              onClick={async () => {
+                                if (!listName || !contactSummary || !watch('fileContacts')) {
+                                  setFileUpload(prev => ({ ...prev, error: 'Por favor, completa el nombre de la lista y valida el mapeo antes de guardar.' }));
+                                  return;
+                                }
 
-                          <div className="pt-2">
-                            <p className="text-xs text-green-600 dark:text-green-400">
-                              El archivo será procesado en el siguiente paso para verificar los contactos.
-                            </p>
+                                setFileUpload(prev => ({ ...prev, isUploading: true, error: null }));
+                                try {
+                                  const contactsToSave = watch('fileContacts'); 
+                                  const result = await addListContacts(listName, contactsToSave);
+                                  
+                                  if (result.success) {
+                                    setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
+                                    alert(result.message);
+                                    // Opcional: Actualizar las listas existentes o mostrar un mensaje de éxito
+                                  } else {
+                                    setFileUpload(prev => ({ ...prev, isUploading: false, error: result.message }));
+                                  }
+                                } catch (actionError) {
+                                  console.error('Error saving contact list:', actionError);
+                                  setFileUpload(prev => ({ 
+                                    ...prev, 
+                                    isUploading: false, 
+                                    error: 'Error al guardar la lista de contactos: ' + (actionError as Error).message 
+                                  }));
+                                }
+                              }}
+                              disabled={!isMappingValidated || fileUpload.isUploading || !listName}
+                            >
+                              <Save className="mr-2 h-4 w-4" />
+                              Guardar lista
+                            </Button>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Column Mapping for File Upload */}
-                {fileUpload.file && !fileUpload.isUploading && (
-                  <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <h4 className="text-sm font-medium">Mapeo de columnas</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="email-column">Columna de correo electrónico</Label>
-                        <Input
-                          id="email-column"
-                          placeholder="Ej: email, correo"
-                          value={columnMapping.emailColumn}
-                          onChange={(e) => setColumnMapping(prev => ({
-                            ...prev,
-                            emailColumn: e.target.value
-                          }))}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="name-column">Columna de nombre (opcional)</Label>
-                        <Input
-                          id="name-column"
-                          placeholder="Ej: nombre, name"
-                          value={columnMapping.nameColumn}
-                          onChange={(e) => setColumnMapping(prev => ({
-                            ...prev,
-                            nameColumn: e.target.value
-                          }))}
-                        />
-                      </div>
-                    </div>
-                    <div className="pt-2 flex gap-2">
-                      <Button 
-                        type="button" 
-                        variant="outline"
-                        onClick={() => {
-                          // Add validation logic here
-                          console.log('Validating file mapping:', columnMapping);
-                        }}
-                      >
-                        <CheckCircle2 className="mr-2 h-4 w-4" />
-                        Validar mapeo
-                      </Button>
-                      <Button 
-                        type="button"
-                        variant="secondary"
-                        onClick={() => {
-                          // Add save list logic here
-                          console.log('Saving contact list:', {
-                            name: listName,
-                            description: listDescription,
-                            columnMapping,
-                            file: fileUpload.file?.name
-                          });
-                        }}
-                      >
-                        <Save className="mr-2 h-4 w-4" />
-                        Guardar lista
-                      </Button>
                     </div>
                   </div>
                 )}
@@ -688,6 +791,77 @@ export function RecipientStep({ className = '' }: { className?: string }) {
                           Se detectaron {individualEmails.split(/[,\n\s]+/).filter(Boolean).length} correos electrónicos.
                         </p>
                       </div>
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="individual-list-name">
+                          Nombre de la lista <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                          id="individual-list-name"
+                          type="text"
+                          value={listName}
+                          onChange={(e) => setListName(e.target.value)}
+                          placeholder="Ej: Contactos Manuales"
+                          className="w-full"
+                          maxLength={50}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          {listName.length}/50 caracteres
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="individual-list-description">
+                          Descripción <span className="text-muted-foreground">(opcional)</span>
+                        </Label>
+                        <Textarea
+                          id="individual-list-description"
+                          value={listDescription}
+                          onChange={(e) => setListDescription(e.target.value)}
+                          placeholder="Ej: Correos agregados manualmente para campaña X"
+                          className="min-h-[80px]"
+                          maxLength={200}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          {listDescription.length}/200 caracteres
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 flex justify-end">
+                      <Button 
+                        type="button"
+                        variant="secondary"
+                        onClick={async () => {
+                          if (!listName || !watch('individualContacts')) {
+                            alert('Por favor, proporciona un nombre para la lista y agrega contactos antes de guardar.');
+                            return;
+                          }
+                          setFileUpload(prev => ({ ...prev, isUploading: true, error: null })); // Reutilizar isUploading para el estado
+                          try {
+                            const contactsToSave = watch('individualContacts');
+                            const result = await addListContacts(listName, contactsToSave);
+                            
+                            if (result.success) {
+                              setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
+                              alert(result.message);
+                            } else {
+                              setFileUpload(prev => ({ ...prev, isUploading: false, error: result.message }));
+                            }
+                          } catch (actionError) {
+                            console.error('Error saving individual contacts list:', actionError);
+                            setFileUpload(prev => ({ 
+                              ...prev, 
+                              isUploading: false, 
+                              error: 'Error al guardar la lista de contactos: ' + (actionError as Error).message 
+                            }));
+                          }
+                        }}
+                      >
+                        <Save className="mr-2 h-4 w-4" />
+                        Guardar lista
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -839,18 +1013,31 @@ export function RecipientStep({ className = '' }: { className?: string }) {
                     <Button 
                       type="button"
                       variant="secondary"
-                      onClick={() => {
-                        // Add save database list logic here
-                        console.log('Saving database contact list:', {
-                          name: `DB: ${dbConnection.database}`,
-                          description: `Conexión a ${dbConnection.serverType}`,
-                          columnMapping,
-                          connection: {
-                            serverType: dbConnection.serverType,
-                            host: dbConnection.host,
-                            database: dbConnection.database
+                      onClick={async () => {
+                        if (!listName || !watch('dbContacts')) {
+                          setFileUpload(prev => ({ ...prev, error: 'Por favor, proporciona un nombre para la lista y realiza una prueba de conexión exitosa antes de guardar.' }));
+                          return;
+                        }
+
+                        setFileUpload(prev => ({ ...prev, isUploading: true, error: null })); // Reutilizar isUploading
+                        try {
+                          const contactsToSave = watch('dbContacts');
+                          const result = await addListContacts(listName, contactsToSave);
+                          
+                          if (result.success) {
+                            setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
+                            alert(result.message);
+                          } else {
+                            setFileUpload(prev => ({ ...prev, isUploading: false, error: result.message }));
                           }
-                        });
+                        } catch (actionError) {
+                          console.error('Error saving database contacts list:', actionError);
+                          setFileUpload(prev => ({ 
+                            ...prev, 
+                            isUploading: false, 
+                            error: 'Error al guardar la lista de contactos: ' + (actionError as Error).message 
+                          }));
+                        }
                       }}
                     >
                       <Save className="mr-2 h-4 w-4" />

@@ -21,6 +21,13 @@ interface CampaignData {
  scheduleTime?: string | null;
  contactListId?: number | null;
  status?: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled';
+ isRecurring?: boolean;
+ recurrenceType?: 'diaria' | 'semanal' | 'mensual' | 'anual' | null;
+ recurrenceInterval?: number | null;
+ recurrenceDaysOfWeek?: string | null;
+ recurrenceDayOfMonth?: number | null;
+ recurrenceStartDate?: string | null;
+ recurrenceEndDate?: string | null;
 }
 
 /**
@@ -108,10 +115,36 @@ export async function createCampaign(campaignData: CampaignData) {
   );
 
   const campaignId = (result as any).insertId;
-  
+
+  // Inserta datos de recurrencia si la campaña es recurrente
+  if (campaignData.isRecurring) {
+   await connection.execute(
+    `INSERT INTO recurrencias_campana (
+     id_campaign,
+     tipo_recurrencia,
+     intervalo,
+     dias_semana,
+     dia_mes,
+     fecha_inicio,
+     fecha_fin,
+     estado
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+     campaignId,
+     campaignData.recurrenceType || null,
+     campaignData.recurrenceInterval || null,
+     campaignData.recurrenceDaysOfWeek || null,
+     campaignData.recurrenceDayOfMonth || null,
+     campaignData.recurrenceStartDate ? new Date(campaignData.recurrenceStartDate) : null,
+     campaignData.recurrenceEndDate ? new Date(campaignData.recurrenceEndDate) : null,
+     'activa' // Estado inicial de la recurrencia
+    ]
+   );
+  }
+   
   // Commit transacción
   await connection.commit();
-  
+   
   // Revalida la página de campañas para mostrar la nueva campaña
   revalidatePath('/campaigns');
   

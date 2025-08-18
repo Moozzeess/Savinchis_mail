@@ -1,11 +1,11 @@
 
 -- Eliminar tablas existentes para una instalación limpia
+DROP TABLE IF EXISTS `resumen_envios_campana`;
 DROP TABLE IF EXISTS `envios_campana`;
-DROP TABLE IF EXISTS `campaigns`;
+DROP TABLE IF EXISTS `recurrencias_campana`;
 DROP TABLE IF EXISTS `contactos_lista`;
+DROP TABLE IF EXISTS `campaigns`;
 DROP TABLE IF EXISTS `listas_contactos`;
-DROP TABLE IF EXISTS `envios_campana`;
-DROP TABLE IF EXISTS `campanas`;
 DROP TABLE IF EXISTS `contactos`;
 DROP TABLE IF EXISTS `plantillas`;
 
@@ -25,10 +25,6 @@ CREATE TABLE `plantillas` (
   PRIMARY KEY (`id_plantilla`),
   KEY `idx_fecha_creacion` (`fecha_creacion` DESC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Almacena las plantillas de correo con un editor de bloques.';
-  `fecha_actualizacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id_plantilla`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 -- -----------------------------------------------------
 -- Tabla `contactos`
@@ -36,8 +32,7 @@ CREATE TABLE `plantillas` (
 -- -----------------------------------------------------
 CREATE TABLE `contactos` (
   `id_contacto` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `apellido` varchar(100) DEFAULT NULL,
+  `nombre_completo` varchar(100) NOT NULL,
   `email` varchar(255) NOT NULL,
   `telefono` varchar(20) DEFAULT NULL,
   `empresa` varchar(100) DEFAULT NULL,
@@ -75,7 +70,7 @@ CREATE TABLE `listas_contactos` (
 CREATE TABLE `contactos_lista` (
   `id_contacto` int NOT NULL,
   `id_lista` int NOT NULL,
-  `fecha_insercion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `fech-insercion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `estado` enum('activo','inactivo','baja') NOT NULL DEFAULT 'activo',
   `datos_adicionales` json DEFAULT NULL,
   PRIMARY KEY (`id_contacto`,`id_lista`),
@@ -85,7 +80,7 @@ CREATE TABLE `contactos_lista` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Relación entre contactos y listas';
 
 -- -----------------------------------------------------
--- Tabla `campañas`
+-- Tabla `campaigns`
 -- Almacena la información de las campañas de correo electrónico.
 -- -----------------------------------------------------
 CREATE TABLE `campaigns` (
@@ -100,18 +95,39 @@ CREATE TABLE `campaigns` (
   `fecha_envio` datetime DEFAULT NULL,
   `estado` enum('borrador','programada','en_progreso','completada','pausada','cancelada') NOT NULL DEFAULT 'borrador',
   `id_lista_contactos` int DEFAULT NULL,
-  `nombre_lista_contactos` varchar(255) DEFAULT NULL,
-  `descripcion_lista_contactos` text,
-  `total_contactos` int NOT NULL DEFAULT '0',
   `datos_adicionales` json DEFAULT NULL,
   PRIMARY KEY (`id_campaign`),
   KEY `idx_estado` (`estado`),
   KEY `idx_fecha_envio` (`fecha_envio`),
-  KEY `fk_campaign_plantilla_idx` (`id_plantilla`),
-  KEY `fk_campaign_lista_idx` (`id_lista_contactos`),
+  KEY `fk_campaign_plantill-idx` (`id_plantilla`),
+  KEY `fk_campaign_list-idx` (`id_lista_contactos`),
   CONSTRAINT `fk_campaign_plantilla` FOREIGN KEY (`id_plantilla`) REFERENCES `plantillas` (`id_plantilla`) ON DELETE SET NULL,
   CONSTRAINT `fk_campaign_lista` FOREIGN KEY (`id_lista_contactos`) REFERENCES `listas_contactos` (`id_lista`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Almacena la información de las campañas de correo electrónico';
+
+-- -----------------------------------------------------
+-- Tabla `recurrencias_campana`
+-- Configuración de recurrencia para campañas.
+-- -----------------------------------------------------
+CREATE TABLE `recurrencias_campana` (
+  `id_recurrencia` INT NOT NULL AUTO_INCREMENT,
+  `id_campaign` INT NOT NULL,
+  `tipo_recurrencia` ENUM('diaria', 'semanal', 'mensual', 'anual') NOT NULL,
+  `intervalo` INT DEFAULT 1, -- Por ejemplo, cada 2 días, cada 3 semanas
+  `dias_semana` VARCHAR(15) DEFAULT NULL, -- Ejemplo: "LU,MA,MI" para semanal
+  `dia_mes` INT DEFAULT NULL, -- Para recurrencia mensual (ej. día 15)
+  `fech-inicio` DATE NOT NULL,
+  `fecha_fin` DATE DEFAULT NULL,
+  `veces_enviadas` INT DEFAULT 0,
+  `ultima_ejecucion` DATETIME DEFAULT NULL,
+  `proxima_ejecucion` DATETIME DEFAULT NULL,
+  `estado` ENUM('activa','inactiva','finalizada') NOT NULL DEFAULT 'activa',
+  `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `fecha_actualizacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_recurrencia`),
+  KEY `fk_rc_campaign_idx` (`id_campaign`),
+  CONSTRAINT `fk_rc_campaign` FOREIGN KEY (`id_campaign`) REFERENCES `campaigns` (`id_campaign`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Configuración de recurrencia para campañas';
 
 -- -----------------------------------------------------
 -- Tabla `envios_campana`
@@ -146,9 +162,33 @@ CREATE TABLE `envios_campana` (
   CONSTRAINT `fk_ec_contacto` FOREIGN KEY (`id_contacto`) REFERENCES `contactos` (`id_contacto`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Registro de envíos individuales de una campaña';
 
+-- -----------------------------------------------------
+-- Tabla `resumen_envios_campana`
+-- Almacena el resumen de los envíos de campañas.
+-- -----------------------------------------------------
+CREATE TABLE `resumen_envios_campana` (
+  `id_resumen` INT NOT NULL AUTO_INCREMENT,
+  `id_campaign` INT NOT NULL,
+  `id_lista_contactos` INT DEFAULT NULL,
+  `fecha_resumen` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `total_enviados` INT NOT NULL DEFAULT 0,
+  `total_entregados` INT NOT NULL DEFAULT 0,
+  `total_abiertos` INT NOT NULL DEFAULT 0,
+  `total_clicks` INT NOT NULL DEFAULT 0,
+  `total_rebotados` INT NOT NULL DEFAULT 0,
+  `total_fallidos` INT NOT NULL DEFAULT 0,
+  `total_quejas` INT NOT NULL DEFAULT 0,
+  `datos_adicionales` JSON DEFAULT NULL,
+  PRIMARY KEY (`id_resumen`),
+  KEY `idx_resumen_campaign` (`id_campaign`),
+  KEY `idx_resumen_lista` (`id_lista_contactos`),
+  CONSTRAINT `fk_resumen_campaign` FOREIGN KEY (`id_campaign`) REFERENCES `campaigns` (`id_campaign`) ON DELETE CASCADE,
+  CONSTRAINT `fk_resumen_lista` FOREIGN KEY (`id_lista_contactos`) REFERENCES `listas_contactos` (`id_lista`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Resumen de los envíos de campañas';
+
 -- Trigger para actualizar el contador de contactos en listas
 DELIMITER //
-CREATE TRIGGER after_contacto_lista_insert
+CREATE TRIGGER after_contacto_list-insert
 AFTER INSERT ON contactos_lista
 FOR EACH ROW
 BEGIN
