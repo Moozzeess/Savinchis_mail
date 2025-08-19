@@ -2,6 +2,21 @@
 @tailwind components; /* Importa las clases de componentes de Tailwind */
 @tailwind utilities; /* Importa las clases de utilidades de Tailwind */
 
+@layer components {
+  .card-base {
+    @apply rounded-xl border bg-card text-card-foreground shadow-sm transition-all duration-300;
+  }
+  .card-hover {
+    @apply hover:shadow-lg hover:border-primary/20 hover:bg-card/95;
+  }
+  .btn-icon {
+    @apply h-7 w-7 p-0 rounded-md;
+  }
+  .btn-icon-hover {
+    @apply hover:bg-primary/10 hover:text-primary;
+  }
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif; /* Define la familia de fuente para el cuerpo del documento */
 }
@@ -43,40 +58,40 @@ body {
     --sidebar-border: 159 30% 80%; /* Color del borde de la barra lateral */
     --sidebar-ring: 159 29% 58%; /* Color del anillo de enfoque de la barra lateral */
   }
-  .dark { /* Define variables CSS para el tema oscuro */
-    --background: 224 71% 4%; /* Color de fondo en modo oscuro */
-    --foreground: 210 40% 98%; /* Color del texto en modo oscuro */
-    --card: 224 71% 4%; /* Color de fondo de las tarjetas en modo oscuro */
-    --card-foreground: 210 40% 98%; /* Color del texto de las tarjetas en modo oscuro */
-    --popover: 224 71% 4%; /* Color de fondo de los popovers en modo oscuro */
-    --popover-foreground: 210 40% 98%; /* Color del texto de los popovers en modo oscuro */
-    --primary: 159 35% 72%; /* Color primario en modo oscuro */
-    --primary-foreground: 160 10% 10%; /* Color del texto primario en modo oscuro */
-    --secondary: 215 28% 17%; /* Color secundario en modo oscuro */
-    --secondary-foreground: 210 40% 98%; /* Color del texto secundario en modo oscuro */
-    --muted: 215 28% 17%; /* Color de texto atenuado en modo oscuro */
-    --muted-foreground: 215 20% 65%; /* Color del texto atenuado de primer plano en modo oscuro */
-    --accent: 159 29% 58%; /* Color de acento en modo oscuro */
-    --accent-foreground: 160 10% 10%; /* Color del texto de acento en modo oscuro */
-    --destructive: 0 63% 31%; /* Color para elementos destructivos en modo oscuro */
-    --destructive-foreground: 210 40% 98%; /* Color del texto destructivo en modo oscuro */
-    --border: 215 28% 17%; /* Color de los bordes en modo oscuro */
-    --input: 215 28% 17%; /* Color de los campos de entrada en modo oscuro */
-    --ring: 159 29% 58%; /* Color del anillo de enfoque en modo oscuro */
+  .dark { /* Tema oscuro mejorado */
+    --background: 220 15% 13%; /* Fondo oscuro suave */
+    --foreground: 0 0% 98%; /* Texto principal casi blanco */
+    --card: 220 15% 16%; /* Tarjetas ligeramente más claras */
+    --card-foreground: 0 0% 98%;
+    --popover: 220 15% 16%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 158 64% 52%; /* Verde esmeralda vibrante */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 25% 27%; /* Azul grisáceo para elementos secundarios */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 220 15% 20%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 158 64% 45%; /* Versión más oscura del primario */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 27% 20%;
+    --input: 215 25% 20%;
+    --ring: 158 64% 52%;
     --chart-1: 220 70% 50%; /* Color 1 para gráficos en modo oscuro */
     --chart-2: 160 60% 45%; /* Color 2 para gráficos en modo oscuro */
     --chart-3: 30 80% 55%; /* Color 3 para gráficos en modo oscuro */
     --chart-4: 280 65% 60%; /* Color 4 para gráficos en modo oscuro */
     --chart-5: 340 75% 55%; /* Color 5 para gráficos en modo oscuro */
 
-    --sidebar-background: 224 71% 4%; /* Color de fondo de la barra lateral en modo oscuro */
-    --sidebar-foreground: 210 40% 98%; /* Color del texto de la barra lateral en modo oscuro */
-    --sidebar-primary: 159 35% 72%; /* Color primario de la barra lateral en modo oscuro */
-    --sidebar-primary-foreground: 160 10% 10%; /* Color del texto primario de la barra lateral en modo oscuro */
-    --sidebar-accent: 159 29% 58%; /* Color de acento de la barra lateral en modo oscuro */
-    --sidebar-accent-foreground: 160 10% 10%; /* Color del texto de acento de la barra lateral en modo oscuro */
-    --sidebar-border: 215 28% 17%; /* Color del borde de la barra lateral en modo oscuro */
-    --sidebar-ring: 159 29% 58%; /* Color del anillo de enfoque de la barra lateral en modo oscuro */
+    --sidebar-background: 220 15% 16%; /* Igual que las tarjetas */
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 158 64% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 158 64% 45%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 215 27% 20%;
+    --sidebar-ring: 158 64% 52%;
   }
 }
 

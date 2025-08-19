@@ -205,8 +205,8 @@ const Sidebar = React.forwardRef<
       return (
         <div
           className={cn(
-            // Adaptación visual
-            "flex h-full w-[--sidebar-width] flex-col border-r border-green-200 bg-white/95 backdrop-blur-md shadow-xl transition-all duration-300 ease-in-out z-40 text-sidebar-foreground",
+            // Adaptación visual (tema)
+            "flex h-full w-[--sidebar-width] flex-col border-r border-sidebar-border bg-sidebar/95 backdrop-blur-md shadow-xl transition-all duration-300 ease-in-out z-40 text-sidebar-foreground",
             className
           )}
           ref={ref}
@@ -274,7 +274,7 @@ const Sidebar = React.forwardRef<
         >
           <div
             data-sidebar="sidebar"
-            className="flex h-full w-full flex-col bg-gradient-to-b from-white/50 to-green-50/30 group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
+            className="flex h-full w-full flex-col bg-gradient-to-b from-background/60 to-muted/30 dark:from-background/40 dark:to-muted/20 group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
           >
             {children}
           </div>
@@ -454,7 +454,7 @@ const SidebarContent = React.forwardRef<
       ref={ref}
       data-sidebar="content"
       className={cn(
-        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden p-3 bg-gradient-to-b from-white/50 to-green-50/30",
+        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden p-3 bg-gradient-to-b from-background/60 to-muted/30 dark:from-background/40 dark:to-muted/15",
         className
       )}
       {...props}
@@ -625,8 +625,8 @@ const SidebarMenuButton = React.forwardRef<
           // Adaptación visual de AppSidebar
           "w-full justify-start gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 cursor-pointer group relative overflow-hidden",
           isActive
-            ? "bg-gradient-to-r from-green-100 to-green-50 text-green-700 shadow-md border border-green-200/50"
-            : "text-gray-600 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 hover:text-green-600 hover:shadow-sm",
+            ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-md border border-sidebar-border/60"
+            : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-sm",
           sidebarMenuButtonVariants({ variant, size }),
           className
         )}

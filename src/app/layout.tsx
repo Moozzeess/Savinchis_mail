@@ -25,11 +25,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Belleza&display=swap" rel="stylesheet" />
+        {/* Script para inicializar el tema antes del pintado y evitar FOUC */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var s=localStorage.getItem('theme');var d=s? s==='dark' : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;var c=document.documentElement.classList; d?c.add('dark'):c.remove('dark');}catch(e){}})();",
+          }}
+        />
       </head>
       <body className="font-body antialiased">
         <AuthProvider>

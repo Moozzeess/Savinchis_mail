@@ -30,6 +30,7 @@ import { useAuth } from "@/context/auth-context";
 import { hasPermission, APP_PERMISSIONS } from "@/lib/permissions";
 import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 /**
  * Layout principal para las secciones autenticadas de la aplicación.
@@ -91,6 +92,9 @@ export default function MainLayout({
           <NavLinks />
         </SidebarContent>
         <SidebarFooter>
+          <div className="px-2 pb-1">
+            <ThemeToggle />
+          </div>
            <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="justify-start gap-2 w-full p-2 h-auto">

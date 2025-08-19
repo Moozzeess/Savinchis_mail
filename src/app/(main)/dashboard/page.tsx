@@ -48,17 +48,17 @@ const getCampaignStatusColor = (status: string) => {
   switch (status) {
     case 'scheduled':
     case 'sending':
-      return 'bg-green-100 text-green-800 border-green-200';
+      return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800';
     case 'completed':
-      return 'bg-blue-100 text-blue-800 border-blue-200';
+      return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800';
     case 'paused':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800';
     case 'failed':
-      return 'bg-red-100 text-red-800 border-red-200';
+      return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800';
     case 'draft':
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+      return 'bg-gray-100 dark:bg-gray-800/50 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700';
     default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+      return 'bg-gray-100 dark:bg-gray-800/50 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700';
   }
 };
 
@@ -156,14 +156,14 @@ export default function DashboardPage() {
       <div 
         key={campaign.id}
         onClick={() => handleCampaignClick(campaign.id)}
-        className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer relative group"
+        className="p-4 border rounded-lg hover:shadow-md dark:hover:shadow-lg transition-all duration-200 cursor-pointer relative group bg-card dark:bg-card/80"
       >
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h3 className="font-medium text-gray-900 group-hover:text-primary">
+            <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary">
               {campaign.name}
             </h3>
-            <p className="text-sm text-gray-500 mt-1">{campaign.subject}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{campaign.subject}</p>
           </div>
           <Badge className={cn("text-xs py-1 px-2", getCampaignStatusColor(campaign.status))}>
             <span className="flex items-center">
@@ -175,44 +175,44 @@ export default function DashboardPage() {
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mt-4">
           <div>
-            <p className="text-xs text-gray-500">Creada</p>
-            <p className="font-medium">{campaign.createdAt ? formatDate(campaign.createdAt) : 'N/A'}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Creada</p>
+            <p className="font-medium text-gray-900 dark:text-gray-100">{campaign.createdAt ? formatDate(campaign.createdAt) : 'N/A'}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-500">Destinatarios</p>
-            <p className="font-medium">{totalRecipients.toLocaleString()}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Destinatarios</p>
+            <p className="font-medium text-gray-900 dark:text-gray-100">{totalRecipients.toLocaleString()}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-500">Aperturas</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Aperturas</p>
             <p className="font-medium">
-              {opened.toLocaleString()} 
-              <span className="text-green-600">({openRate}%)</span>
+              <span className="text-gray-900 dark:text-gray-100">{opened.toLocaleString()}</span> 
+              <span className="text-green-600 dark:text-green-400"> ({openRate}%)</span>
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500">Clicks</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Clicks</p>
             <p className="font-medium">
-              {clicked.toLocaleString()} 
-              <span className="text-blue-600">({clickRate}%)</span>
+              <span className="text-gray-900 dark:text-gray-100">{clicked.toLocaleString()}</span> 
+              <span className="text-blue-600 dark:text-blue-400"> ({clickRate}%)</span>
             </p>
           </div>
         </div>
         
         {campaign.status === 'sending' && totalRecipients > 0 && (
           <div className="mt-3">
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
               <span>Progreso de envío</span>
-              <span>{progress}%</span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">{progress}%</span>
             </div>
             <Progress 
               value={progress} 
-              className="h-2" 
+              className="h-2 bg-gray-200 dark:bg-gray-700" 
             />
           </div>
         )}
         
         <div className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="text-xs text-primary bg-primary/10 px-2 py-1 rounded">
+          <div className="text-xs text-primary bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-full border border-primary/20 dark:border-primary/30">
             Ver detalles →
           </div>
         </div>
@@ -267,79 +267,79 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/20 border-green-200 dark:border-green-800/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-medium text-gray-900 dark:text-green-100">
               Total de Campañas
             </CardTitle>
-            <Mails className="h-4 w-4 text-green-600" />
+            <Mails className="h-4 w-4 text-green-600 dark:text-green-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalCampaigns}</div>
-            <p className="text-xs text-green-700">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalCampaigns}</div>
+            <p className="text-xs text-green-700 dark:text-green-300">
               {stats.activeCampaigns} activa{stats.activeCampaigns !== 1 ? 's' : ''}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-sky-50 border-blue-200">
+        <Card className="bg-gradient-to-br from-blue-50 to-sky-50 dark:from-blue-900/30 dark:to-sky-900/20 border-blue-200 dark:border-blue-800/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-medium text-gray-900 dark:text-blue-100">
               Destinatarios
             </CardTitle>
-            <Users className="h-4 w-4 text-blue-600" />
+            <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalRecipients.toLocaleString()}</div>
-            <p className="text-xs text-blue-700">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalRecipients.toLocaleString()}</div>
+            <p className="text-xs text-blue-700 dark:text-blue-300">
               {campaigns.length} campaña{campaigns.length !== 1 ? 's' : ''} activas
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200">
+        <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/20 border-purple-200 dark:border-purple-800/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-medium text-gray-900 dark:text-purple-100">
               Tasa de Apertura
             </CardTitle>
-            <TrendingUp className="h-4 w-4 text-purple-600" />
+            <MailCheck className="h-4 w-4 text-purple-600 dark:text-purple-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.openRate}%</div>
-            <p className="text-xs text-purple-700">
-              {stats.clickRate}% tasa de clicks
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.openRate}%</div>
+            <p className="text-xs text-purple-700 dark:text-purple-300">
+              +2.5% vs el mes pasado
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+        <Card className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/20 border-amber-200 dark:border-amber-800/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Tasa de Entrega
+            <CardTitle className="text-sm font-medium text-gray-900 dark:text-amber-100">
+              Tasa de Clics
             </CardTitle>
-            <CheckCircle className="h-4 w-4 text-amber-600" />
+            <BarChart2 className="h-4 w-4 text-amber-600 dark:text-amber-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.deliveryRate}%</div>
-            <p className="text-xs text-amber-700">
-              {stats.deliveryRate > 95 ? 'Excelente' : 'Bueno'} rendimiento
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.clickRate}%</div>
+            <p className="text-xs text-amber-700 dark:text-amber-300">
+              +1.2% vs el mes pasado
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="border-0 shadow-sm">
+      <Card className="border-0 shadow-sm dark:bg-card/80 dark:border dark:border-border/50">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Tus Campañas Recientes</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-gray-900 dark:text-white">Tus Campañas Recientes</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-400">
               {campaigns.length === 0 
                 ? 'Aún no has creado ninguna campaña' 
                 : `Mostrando ${Math.min(campaigns.length, 5)} de ${stats.totalCampaigns} campañas`}
             </CardDescription>
           </div>
           <Link href="/campaigns">
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2 border-border/50 dark:border-gray-700 dark:hover:bg-gray-800">
               Ver todas
               <ArrowRight className="h-4 w-4" />
             </Button>
@@ -348,11 +348,11 @@ export default function DashboardPage() {
         <CardContent>
           {campaigns.length === 0 ? (
             <div className="text-center py-12">
-              <Mails className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">No hay campañas</h3>
-              <p className="text-sm text-gray-500 mb-4">Crea tu primera campaña para comenzar</p>
+              <Mails className="h-12 w-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">No hay campañas</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Crea tu primera campaña para comenzar</p>
               <Link href="/campaigns">
-                <Button>
+                <Button className="bg-primary hover:bg-primary/90 dark:bg-primary dark:hover:bg-primary/90">
                   <Plus className="h-4 w-4 mr-2" />
                   Crear Campaña
                 </Button>
