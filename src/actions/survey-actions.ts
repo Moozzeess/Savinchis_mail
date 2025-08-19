@@ -1,6 +1,7 @@
 'use server';
 
 import { importSurvey, type ImportSurveyOutput } from '@/ai/flows/import-survey-flow';
+import { getDbConnection } from './DBConnection';
 
 /**
  * @function importSurveyAction

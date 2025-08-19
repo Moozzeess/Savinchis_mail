@@ -1,4 +1,4 @@
-import { getDbConnection } from './event-actions';
+import { getDbConnection } from './DBConnection';
 //import mysql from 'mysql2/promise';
 
 /**

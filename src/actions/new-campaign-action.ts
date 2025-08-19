@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import mysql from 'mysql2/promise';
+import { getDbConnection } from './DBConnection';
 
 /**
  * @interface CampaignData
@@ -30,28 +31,6 @@ interface CampaignData {
  recurrenceEndDate?: string | null;
 }
 
-/**
- * @function getDbConnection
- * @description Establece y retorna una conexión a la base de datos MySQL
- */
-async function getDbConnection() {
- const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } = process.env;
- 
- if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
-  throw new Error('Faltan las variables de entorno de la base de datos');
- }
-
- const port = MYSQL_PORT ? parseInt(MYSQL_PORT, 10) : 3306;
-
- return await mysql.createConnection({
-  host: MYSQL_HOST,
-  user: MYSQL_USER,
-  password: MYSQL_PASSWORD,
-  database: MYSQL_DATABASE,
-  port: port,
-  namedPlaceholders: true
- });
-}
 
 /**
  * @function createCampaign

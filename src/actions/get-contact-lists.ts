@@ -1,6 +1,7 @@
 'use server';
 
 import mysql from 'mysql2/promise';
+import { getDbConnection } from './DBConnection';
 
 interface ContactList {
   id: string;
@@ -16,22 +17,6 @@ interface PaginatedContactLists {
   pageSize: number;
 }
 
-/**
- * Establece y retorna una conexión a la base de datos MySQL.
- * Se reutiliza la función de conexión de new-campaign-action y get-db-contacts.
- */
-async function getDbConnection() {
-  // Se asume que las credenciales de la DB están configuradas en las variables de entorno
-  const connection = await mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
-    port: parseInt(process.env.MYSQL_PORT || '3306', 10),
-    namedPlaceholders: true
-  });
-  return connection;
-}
 
 /**
  * Obtiene las listas de contactos existentes con paginación.

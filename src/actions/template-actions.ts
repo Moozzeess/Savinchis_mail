@@ -5,28 +5,8 @@ import type { Block } from '@/lib/template-utils';
 import { revalidatePath } from 'next/cache';
 import fs from 'fs/promises';
 import path from 'path';
+import { getDbConnection } from './DBConnection';
 
-/**
- * @function getDbConnection
- * @description Establece y retorna una conexión a la base de datos MySQL.
- * Configura la conexión usando variables de entorno para host, usuario, contraseña, base de datos y puerto.
- * @returns {Promise<mysql.Connection>} Una promesa que resuelve con un objeto de conexión a la base de datos.
- * @throws {Error} Si las variables de entorno esenciales de la base de datos (MYSQL_HOST, MYSQL_USER, MYSQL_DATABASE) no están definidas.
- * @async
- */
-async function getDbConnection() {
-  const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, MYSQL_PORT } = process.env;
-  if (!MYSQL_HOST || !MYSQL_USER || !MYSQL_DATABASE) {
-    throw new Error('Faltan las variables de entorno de la base de datos. Por favor, configúralas.');
-  }
-  return mysql.createConnection({
-    host: MYSQL_HOST,
-    port: MYSQL_PORT ? parseInt(MYSQL_PORT, 10) : 3306, // Convierte el puerto a entero, por defecto 3306.
-    user: MYSQL_USER,
-    password: MYSQL_PASSWORD,
-    database: MYSQL_DATABASE,
-  });
-}
 
 /**
  * @interface Template
