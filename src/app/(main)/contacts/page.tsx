@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Users, Download, Edit, Calendar as CalendarIcon, Tag } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getContactLists } from '@/actions/get-contact-lists';
-import { getDbContacts } from '@/actions/get-db-contacts';
+import { getContactLists } from '@/actions/Contactos/get-contact-lists';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 

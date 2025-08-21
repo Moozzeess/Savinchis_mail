@@ -27,12 +27,12 @@ import { hasPermission, APP_PERMISSIONS } from "@/lib/permissions";
 const links = [
   { href: "/dashboard", label: "Panel", icon: Home, permission: APP_PERMISSIONS.VIEW_DASHBOARD },
   //{ href: "/send", label: "Nuevo Correo", icon: MailPlus, permission: APP_PERMISSIONS.SEND_CAMPAIGN },
-  { href: "/campaigns", label: "Campañas", icon: Monitor, permission: APP_PERMISSIONS.VIEW_CAMPAIGN_MONITOR },
+  { href: "/campaign", label: "Campañas", icon: Monitor, permission: APP_PERMISSIONS.VIEW_CAMPAIGN_MONITOR },
   { href: "/mailbox", label: "Buzón", icon: Inbox, permission: APP_PERMISSIONS.VIEW_MAILBOX },
   { href: "/contacts", label: "Contactos", icon: Users, permission: APP_PERMISSIONS.VIEW_CONTACTS },
   { href: "/templates", label: "Plantillas", icon: FileText, permission: APP_PERMISSIONS.VIEW_TEMPLATES },
-  { href: "/analytics", label: "Rendimiento", icon: BarChart3, permission: APP_PERMISSIONS.VIEW_PERFORMANCE },
-  { href: "/events", label: "Eventos", icon: Award, permission: APP_PERMISSIONS.VIEW_EVENTS },
+  //{ href: "/analytics", label: "Rendimiento", icon: BarChart3, permission: APP_PERMISSIONS.VIEW_PERFORMANCE },
+  { href: "/eventos", label: "Eventos", icon: Award, permission: APP_PERMISSIONS.VIEW_EVENTS },
   { href: "/surveys", label: "Encuestas", icon: ClipboardList, permission: APP_PERMISSIONS.VIEW_SURVEYS },
   { href: "/settings", label: "Ajustes", icon: Settings, permission: APP_PERMISSIONS.VIEW_SETTINGS },
 ];

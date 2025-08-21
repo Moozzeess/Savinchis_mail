@@ -1,4 +1,4 @@
-import { SurveyEditor } from "@/components/survey-editor";
+import { SurveyEditor } from "@/components/encuestas/survey-editor";
 
 /**
  * Página del Editor de Encuestas.

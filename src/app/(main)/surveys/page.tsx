@@ -11,173 +11,159 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { importSurveyAction } from "@/actions/survey-actions";
-import { PlusCircle, Edit, Trash2, BarChart2, Loader2, Link as LinkIcon, Download } from "lucide-react";
+import { PlusCircle, Edit, Trash2, BarChart2, ListChecks } from "lucide-react";
 import Link from "next/link";
-import { surveys } from "@/lib/data";
-import { MicrosoftLogo } from "@/components/microsoft-logo";
 
-function GoogleLogo() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
-        <path fill="#4285F4" d="M21.35 11.1h-9.35v2.8h5.21c-.24 1.63-1.7 2.79-3.48 2.79-2.09 0-3.79-1.7-3.79-3.79s1.7-3.79 3.79-3.79c1.18 0 2.22.48 2.97 1.25l2.25-2.25C17.2 5.15 15.05 4 12.33 4c-3.87 0-7 3.13-7 7s3.13 7 7 7c4.17 0 6.64-2.88 6.64-6.75 0-.52-.05-1.03-.12-1.54z"/>
-    </svg>
-  );
-}
+type Survey = {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  responses: number;
+  questions: number;
+};
 
 /**
  * Página de Encuestas.
- * Muestra una lista de encuestas existentes, permite crear nuevas,
- * y ofrece opciones para importar desde otras plataformas.
+ * Muestra una lista de encuestas existentes y permite crear nuevas.
  */
 export default function SurveysPage() {
-  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
-  const [importUrl, setImportUrl] = useState("");
-  const [importing, setImporting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const [surveys, setSurveys] = useState<Survey[]>([
+    {
+      id: '1',
+      title: 'Satisfacción del Cliente',
+      description: 'Encuesta para medir la satisfacción de nuestros clientes',
+      createdAt: '2023-10-15',
+      updatedAt: '2023-10-20',
+      responses: 42,
+      questions: 10
+    },
+    {
+      id: '2',
+      title: 'Evento de Lanzamiento',
+      description: 'Retroalimentación sobre nuestro último evento',
+      createdAt: '2023-11-01',
+      updatedAt: '2023-11-01',
+      responses: 28,
+      questions: 8
+    }
+  ]);
 
-  const handleImport = async () => {
-    if (!importUrl) {
-      toast({ title: "URL requerida", description: "Por favor, introduce la URL de la encuesta.", variant: "destructive" });
-      return;
-    }
-    setImporting(true);
-    try {
-      const result = await importSurveyAction(importUrl);
-      if (result.success && result.data) {
-        // Store data in sessionStorage to be picked up by the editor
-        sessionStorage.setItem('importedSurveyData', JSON.stringify(result.data));
-        toast({ title: "Encuesta Importada", description: "Tu encuesta ha sido importada. Ahora puedes editarla." });
-        setIsImportDialogOpen(false);
-        setImportUrl("");
-        router.push('/surveys/editor');
-      } else {
-        throw new Error(result.error || "No se pudieron extraer los datos de la encuesta de la URL proporcionada.");
-      }
-    } catch (error) {
-      toast({ title: "Error de Importación", description: (error as Error).message, variant: "destructive" });
-    } finally {
-      setImporting(false);
-    }
+  const handleCreateNew = () => {
+    router.push('/surveys/editor');
+  };
+
+  const handleDeleteSurvey = (id: string) => {
+    setSurveys(surveys.filter(survey => survey.id !== id));
+    toast({ title: "Encuesta eliminada", description: "La encuesta ha sido eliminada correctamente." });
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-headline font-bold">Encuestas</h1>
           <p className="text-muted-foreground">
             Crea y gestiona encuestas para tu audiencia.
           </p>
         </div>
-        <Button asChild>
-          <Link href="/surveys/editor">
-            <PlusCircle className="mr-2" />
-            Crear Encuesta
-          </Link>
+        <Button onClick={handleCreateNew} className="w-full sm:w-auto">
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Crear Nueva Encuesta
         </Button>
       </div>
 
-      <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+      {/* Stats Overview */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Download /> Importar Encuesta con IA</CardTitle>
-            <CardDescription>
-              Pega la URL pública de una encuesta de Google Forms o Microsoft Forms para importarla automáticamente.
-            </CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total de Encuestas</CardTitle>
+            <ListChecks className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="flex flex-wrap gap-4">
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <GoogleLogo />
-                <span className="ml-2">Importar de Google Forms</span>
-              </Button>
-            </DialogTrigger>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <MicrosoftLogo />
-                 <span className="ml-2">Importar de Microsoft Forms</span>
-              </Button>
-            </DialogTrigger>
+          <CardContent>
+            <div className="text-2xl font-bold">{surveys.length}</div>
+            <p className="text-xs text-muted-foreground">+2 desde el mes pasado</p>
           </CardContent>
         </Card>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Importar Encuesta desde URL</DialogTitle>
-            <DialogDescription>
-              Pega la URL pública de tu encuesta. Nuestra IA analizará su contenido y lo importará.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-2">
-            <Label htmlFor="import-url" className="sr-only">URL de la Encuesta</Label>
-            <div className="relative">
-              <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="import-url"
-                placeholder="https://forms.gle/..."
-                value={importUrl}
-                onChange={(e) => setImportUrl(e.target.value)}
-                className="pl-9"
-              />
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Respuestas Totales</CardTitle>
+            <BarChart2 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {surveys.reduce((sum, survey) => sum + survey.responses, 0)}
             </div>
-          </div>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setIsImportDialogOpen(false)}>Cancelar</Button>
-            <Button onClick={handleImport} disabled={importing}>
-              {importing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {importing ? "Importando..." : "Importar"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <p className="text-xs text-muted-foreground">+12% desde el mes pasado</p>
+          </CardContent>
+        </Card>
+      </div>
       
       {surveys.length === 0 ? (
-        <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-lg">
-          <p>No se encontraron encuestas.</p>
-          <p>¡Crea tu primera encuesta para empezar!</p>
+        <div className="text-center p-12 border-2 border-dashed rounded-lg">
+          <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+            <ListChecks className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-medium">No hay encuestas</h3>
+          <p className="text-sm text-muted-foreground mb-4">Comienza creando tu primera encuesta.</p>
+          <Button onClick={handleCreateNew}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Crear Encuesta
+          </Button>
         </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {surveys.map((survey) => (
-            <Card key={survey.id}>
-              <CardHeader>
-                <CardTitle className="text-xl font-headline">
-                  {survey.name}
+            <Card key={survey.id} className="flex flex-col h-full hover:shadow-md transition-shadow">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg font-headline line-clamp-1">
+                  {survey.title}
                 </CardTitle>
-                <CardDescription>{survey.description}</CardDescription>
+                <CardDescription className="line-clamp-2 text-sm">
+                  {survey.description}
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  <span className="font-bold text-foreground">{survey.responses}</span> respuestas
-                </p>
+              <CardContent className="flex-1">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Preguntas</p>
+                    <p className="font-medium">{survey.questions}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Respuestas</p>
+                    <p className="font-medium">{survey.responses}</p>
+                  </div>
+                </div>
               </CardContent>
-              <CardFooter className="flex justify-end gap-2">
-                <Button variant="ghost" size="icon" asChild>
-                  <Link href="#">
-                    <BarChart2 className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button variant="ghost" size="icon" asChild>
-                  <Link href="/surveys/editor">
-                    <Edit className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+              <CardFooter className="flex justify-between border-t pt-4">
+                <div className="text-xs text-muted-foreground">
+                  Actualizada el {new Date(survey.updatedAt).toLocaleDateString()}
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="icon" asChild>
+                    <Link href={`/surveys/${survey.id}/results`}>
+                      <BarChart2 className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" asChild>
+                    <Link href={`/surveys/editor?surveyId=${survey.id}`}>
+                      <Edit className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleDeleteSurvey(survey.id)}
+                    className="text-destructive hover:text-destructive/90"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </CardFooter>
             </Card>
           ))}

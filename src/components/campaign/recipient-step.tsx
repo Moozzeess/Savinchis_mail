@@ -17,10 +17,10 @@ import { es } from 'date-fns/locale';
 import { Calendar } from '@/components/ui/calendar';
 import { Textarea } from '@/components/ui/textarea';
 import { Database } from 'lucide-react';
-import { getContactsFromExcel } from '@/actions/get-contact';
-import { addListContacts } from '@/actions/add-list-contacts';
-import { getDbContacts } from '@/actions/get-db-contacts';
-import { getContactLists } from '@/actions/get-contact-lists';
+import { getContactsFromExcel } from '@/actions/Contactos/get-contact';
+import { addListContacts } from '@/actions/Contactos/add-list-contacts';
+import { getDbContacts } from '@/actions/Contactos/get-db-contacts';
+import { getContactLists } from '@/actions/Contactos/get-contact-lists';
 
 // Mock data - Reemplazar con llamadas a la API real
 // const CONTACT_LISTS = [

@@ -1,4 +1,4 @@
-import { getDbConnection } from './DBConnection';
+import { getDbConnection } from '../DBConnection';
 //import mysql from 'mysql2/promise';
 
 /**

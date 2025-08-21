@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import { toPng } from 'html-to-image';
 import { Download, Loader2, Save } from 'lucide-react';
 import { jsPDF } from 'jspdf';
-import { saveTemplateAction, type Template } from '@/actions/template-actions';
+import { saveTemplateAction, type Template } from '@/actions/Plantillas/template-actions';
 import { useRouter } from 'next/navigation';
 
 type TextAlign = 'left' | 'center' | 'right';

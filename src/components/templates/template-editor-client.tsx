@@ -20,7 +20,7 @@ import type { DropResult, DraggableProvided, DraggableStateSnapshot, DroppablePr
 import { nanoid } from 'nanoid';
 import { cn } from '@/lib/utils';
 import { type Block, formSchema, type FormValues, blockSchema } from '@/lib/template-utils';
-import { saveTemplateAction, type Template } from '@/actions/template-actions';
+import { saveTemplateAction, type Template } from '@/actions/Plantillas/template-actions';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';

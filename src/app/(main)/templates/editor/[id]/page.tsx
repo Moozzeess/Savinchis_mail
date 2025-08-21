@@ -1,5 +1,5 @@
-import { TemplateEditorClient } from "@/components/template-editor-client";
-import { getTemplateAction, Template } from "@/actions/template-actions";
+import { TemplateEditorClient } from "@/components/templates/template-editor-client";
+import { getTemplateAction, Template } from "@/actions/Plantillas/template-actions";
 
 /**
  * Página del Editor de Plantillas.

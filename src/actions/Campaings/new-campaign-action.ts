@@ -1,8 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import mysql from 'mysql2/promise';
-import { getDbConnection } from './DBConnection';
+import { getDbConnection } from '../DBConnection';
 
 /**
  * @interface CampaignData

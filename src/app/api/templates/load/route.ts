@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getTemplateListAction } from '@/actions/template-actions';
+import { getTemplateListAction } from '@/actions/Plantillas/template-actions';
 import fs from 'fs/promises';
 import path from 'path';
 

@@ -16,7 +16,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Settings, LogOut } from "lucide-react";
-import { AppLogo } from "@/components/app-logo";
 import { NavLinks } from "@/components/nav-links";
 import {
   DropdownMenu,
@@ -82,7 +81,6 @@ export default function MainLayout({
         <SidebarRail />
         <SidebarHeader>
           <div className="flex items-center gap-2">
-            <AppLogo className="size-7 text-primary" />
             <span className="text-lg font-headline font-semibold">
               Savinchis' Mail
             </span>

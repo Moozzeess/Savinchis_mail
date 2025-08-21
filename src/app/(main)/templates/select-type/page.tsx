@@ -22,7 +22,7 @@ export default function SelectTemplateTypePage() {
               </p>
             </div>
           </Link>
-          <Link href="/certificates/editor/new" passHref>
+          <Link href="/templates/certificates/editor/new" passHref>
             <div className="p-6 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer flex flex-col items-center text-center h-full">
               <Award className="h-12 w-12 mb-4 text-primary" />
               <h3 className="text-xl font-semibold mb-2">Certificado</h3>

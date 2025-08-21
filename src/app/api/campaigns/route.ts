@@ -1,6 +1,6 @@
 // src/app/api/campaigns/route.ts
 import { NextResponse } from 'next/server';
-import { getCampaigns } from '@/actions/new-campaign-action';
+import { getCampaigns } from '@/actions/Campaings/new-campaign-action';
 
 export async function GET(request: Request) {
   try {

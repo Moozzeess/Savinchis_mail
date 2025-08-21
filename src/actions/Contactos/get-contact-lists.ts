@@ -1,7 +1,7 @@
 'use server';
 
 import mysql from 'mysql2/promise';
-import { getDbConnection } from './DBConnection';
+import { getDbConnection } from '../DBConnection';
 
 interface ContactList {
   id: string;

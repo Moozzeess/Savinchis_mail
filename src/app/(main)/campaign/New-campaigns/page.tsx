@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import {getCampaigns} from '@/actions/new-campaign-action';
+import {getCampaigns} from '@/actions/Campaings/new-campaign-action';
 //import { v4 as uuidv4 } from 'uuid';
 
 // Components

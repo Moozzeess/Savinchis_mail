@@ -10,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useRouter } from 'next/navigation';
-import { AppLogo } from "@/components/app-logo";
 import Image from "next/image";
 import { useAuth } from '@/context/auth-context';
 import { ROLES, type Role } from '@/lib/permissions';
@@ -42,7 +41,6 @@ export default function LoginPage() {
         />
         <CardHeader className="text-center pt-6">
           <div className="flex justify-center items-center gap-2 mb-4">
-            <AppLogo className="size-8 text-primary" />
             <CardTitle className="text-2xl font-headline">Savinchis' Mail</CardTitle>
           </div>
           <CardDescription>

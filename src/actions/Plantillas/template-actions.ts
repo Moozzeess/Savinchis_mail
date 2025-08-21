@@ -5,7 +5,7 @@ import type { Block } from '@/lib/template-utils';
 import { revalidatePath } from 'next/cache';
 import fs from 'fs/promises';
 import path from 'path';
-import { getDbConnection } from './DBConnection';
+import { getDbConnection } from '../DBConnection';
 
 
 /**

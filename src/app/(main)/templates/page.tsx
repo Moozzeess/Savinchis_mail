@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { PlusCircle, Edit, Mail, Award, FileText } from "lucide-react";
 import Link from "next/link";
-import { getTemplatesAction, type Template } from "@/actions/template-actions";
+import { getTemplatesAction, type Template } from "@/actions/Plantillas/template-actions";
 import { Block, generateHtmlFromBlocks } from "@/lib/template-utils";
 import { DeleteTemplateButton } from "./delete-template-button";
 import { Badge } from "@/components/ui/badge";

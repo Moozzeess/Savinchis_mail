@@ -1,5 +1,5 @@
-import { getTemplateAction } from '@/actions/template-actions';
-import { CertificateEditor } from '@/components/certificate-editor';
+import { getTemplateAction } from '@/actions/Plantillas/template-actions';
+import { CertificateEditor } from '@/components/templates/certificate-editor';
 import { notFound } from 'next/navigation';
 
 export default async function EditCertificatePage({ params }: { params: { id: string } }) {

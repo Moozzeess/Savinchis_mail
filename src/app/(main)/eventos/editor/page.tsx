@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle, Edit, Trash2, Users } from "lucide-react";
 import Link from "next/link";
-import { getEventsAction } from "@/actions/event-actions";
+import { getEventsAction } from "@/actions/Eventos/event-actions";
 import { useEffect, useState } from "react";
 
 // Event type matching the database structure

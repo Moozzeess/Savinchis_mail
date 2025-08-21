@@ -1,5 +1,5 @@
-import { EventEditor } from "@/components/event-editor";
-import { getTemplatesAction } from "@/actions/template-actions";
+import { EventEditor } from "@/components/eventos/event-editor";
+import { getTemplatesAction } from "@/actions/Plantillas/template-actions";
 
 /**
  * Página del Editor de Eventos.

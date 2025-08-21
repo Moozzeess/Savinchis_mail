@@ -16,7 +16,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { deleteTemplateAction } from '@/actions/template-actions';
+import { deleteTemplateAction } from '@/actions/Plantillas/template-actions';
 
 export function DeleteTemplateButton({ templateId }: { templateId: number }) {
   const [isDeleting, setIsDeleting] = useState(false);
