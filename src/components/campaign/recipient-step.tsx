@@ -711,32 +711,39 @@ export function RecipientStep({ className = '' }: { className?: string }) {
                               type="button"
                               variant="secondary"
                               onClick={async () => {
-                                if (!listName || !contactSummary || !watch('fileContacts')) {
-                                  setFileUpload(prev => ({ ...prev, error: 'Por favor, completa el nombre de la lista y valida el mapeo antes de guardar.' }));
-                                  return;
-                                }
+                                    if (!listName || !contactSummary || !watch('fileContacts')) {
+                                      setFileUpload(prev => ({ ...prev, error: 'Por favor, completa el nombre de la lista y valida el mapeo antes de guardar.' }));
+                                      return;
+                                    }
 
-                                setFileUpload(prev => ({ ...prev, isUploading: true, error: null }));
-                                try {
-                                  const contactsToSave = watch('fileContacts'); 
-                                  const result = await addListContacts(listName, contactsToSave);
-                                  
-                                  if (result.success) {
-                                    setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
-                                    alert(result.message);
-                                    // Opcional: Actualizar las listas existentes o mostrar un mensaje de éxito
-                                  } else {
-                                    setFileUpload(prev => ({ ...prev, isUploading: false, error: result.message }));
-                                  }
-                                } catch (actionError) {
-                                  console.error('Error saving contact list:', actionError);
-                                  setFileUpload(prev => ({ 
-                                    ...prev, 
-                                    isUploading: false, 
-                                    error: 'Error al guardar la lista de contactos: ' + (actionError as Error).message 
-                                  }));
-                                }
-                              }}
+                                    setFileUpload(prev => ({ ...prev, isUploading: true, error: null }));
+                                    try {
+                                      const contactsToSave = watch('fileContacts').map((contact: { nombre_completo: any; email: any; }) => ({
+                                        nombre_completo: contact.nombre_completo || '',
+                                        email: contact.email
+                                      }));
+
+                                      const result = await addListContacts(listName, contactsToSave);
+                                      
+                                      if (result.success) {
+                                        setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
+                                        // Actualizar la lista de contactos
+                                        const listsResult = await getContactLists(currentPage, pageSize);
+                                        if (listsResult.success && listsResult.data) {
+                                          setContactLists(listsResult.data.lists);
+                                        }
+                                      } else {
+                                        setFileUpload(prev => ({ ...prev, isUploading: false, error: result.message }));
+                                      }
+                                    } catch (actionError) {
+                                      console.error('Error saving contact list:', actionError);
+                                      setFileUpload(prev => ({ 
+                                        ...prev, 
+                                        isUploading: false, 
+                                        error: 'Error al guardar la lista de contactos: ' + (actionError as Error).message 
+                                      }));
+                                    }
+                                  }}
                               disabled={!isMappingValidated || fileUpload.isUploading || !listName}
                             >
                               <Save className="mr-2 h-4 w-4" />

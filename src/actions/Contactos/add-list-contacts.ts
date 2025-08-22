@@ -1,3 +1,4 @@
+'use server'
 import { getDbConnection } from '../DBConnection';
 //import mysql from 'mysql2/promise';
 
@@ -20,6 +21,7 @@ export async function addListContacts(
       'SELECT id_lista FROM listas_contactos WHERE nombre = ?',
       [listaNombre]
     );
+
     let id_lista;
     if ((rows as any[]).length > 0) {
       id_lista = (rows as any[])[0].id_lista;
@@ -57,10 +59,16 @@ export async function addListContacts(
     }
 
     await conn.commit();
-    return { success: true, message: 'Contactos guardados y asociados correctamente a la lista.' };
+    return {
+      success: true,
+      message: 'Contactos guardados y asociados correctamente a la lista.'
+    };
   } catch (error) {
     await conn.rollback();
-    return { success: false, message: 'Error al guardar contactos: ' + (error as Error).message };
+    return {
+      success: false,
+      message: 'Error al guardar contactos: ' + (error as Error).message
+    };
   } finally {
     await conn.end();
   }
