@@ -30,6 +30,12 @@ import { getContactLists } from '@/actions/Contactos/get-contact-lists';
 //   { id: '4', name: 'Clientes VIP', count: 89 },
 // ];
 
+interface RecipientStepProps {
+  className?: string;
+  onContactListChange?: (selectedListId: string) => void;
+  initialSelectedList?: string | null;
+}
+
 interface FileUploadState {
   file: File | null;
   progress: number;
@@ -72,7 +78,11 @@ const NEW_CONTACTS_OPTIONS = [
   { id: 'database', name: 'Base de datos', icon: Database },
 ];
 
-export function RecipientStep({ className = '' }: { className?: string }) {
+export function RecipientStep({ 
+  className = '',
+  onContactListChange,
+  initialSelectedList = null 
+}: RecipientStepProps) {
   const { register, watch, setValue, formState: { errors } } = useFormContext();
   
   // Check if database connection is complete
