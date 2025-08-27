@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useRouter } from 'next/navigation';
-import { getCampaigns } from '@/service/campaign.service';
+import { getCampaigns } from '@/actions/Campaings/new-campaign-action';
 import { useEffect, useState } from 'react';
 import { Campaign } from '@/types/campaign';
 
@@ -203,10 +203,14 @@ export default function DashboardPage() {
     const loadData = async () => {
       try {
         setIsLoading(true);
-        const { data: campaigns, total } = await getCampaigns(1, 5);
+        const result = await getCampaigns(1, 5);
         
-        setCampaigns(campaigns);
-        setStats(calculateCampaignStats(campaigns));
+        if (result.success) {
+          setCampaigns(result.data);
+          setStats(calculateCampaignStats(result.data));
+        } else {
+          setError(result.message || 'Error al cargar las campañas');
+        }
       } catch (err) {
         console.error('Error loading dashboard data:', err);
         setError('No se pudieron cargar los datos del dashboard');

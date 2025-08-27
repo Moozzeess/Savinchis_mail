@@ -26,9 +26,11 @@ import {
   AlertTriangle,
   Clock as ClockIcon,
   TrendingUp,
-  LayoutTemplate
+  LayoutTemplate,
+  AlertCircle as AlertCircleIcon
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -36,7 +38,9 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { Template } from '@/actions/template-actions';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Template } from '@/actions/Plantillas/template-actions';
+import { generateHtmlFromBlocks } from '@/lib/template-utils';
 
 const CAMPAIGN_OBJECTIVES: Record<string, string> = {
   promotional: 'Promocional',
@@ -85,13 +89,49 @@ interface ReviewStepProps {
   formData?: CampaignFormData;
 }
 
-export function ReviewStep({ 
+export default function ReviewStep({ 
   className = '',
   onEditStep,
   isSubmitting,
   isPreview = false,
   templates = [],
+  formData,
 }: ReviewStepProps) {
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [hasConfirmedDetails, setHasConfirmedDetails] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const { handleSubmit, formState: { isSubmitting: isFormSubmitting } } = useFormContext();
+  
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      setError(null);
+      const form = document.querySelector('form');
+      if (form) {
+        const formData = new FormData(form);
+        const response = await fetch('/api/campaigns', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Error al guardar la campaña');
+        }
+        
+        // Show success message or redirect
+        window.location.href = '/campaigns';
+      }
+    } catch (err) {
+      console.error('Error saving campaign:', err);
+      setError(err instanceof Error ? err.message : 'Error desconocido al guardar la campaña');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const [previewMode, setPreviewMode] = useState<PreviewMode>('desktop');
   const { getValues } = useFormContext();
   
@@ -131,7 +171,7 @@ export function ReviewStep({
   };
 
   const missingData = getMissingData();
-  const isReadyToSend = missingData.length === 0;
+  const isFormValid = missingData.length === 0 && hasConfirmedDetails;
 
   // Obtener resumen de programación
   const getSchedulingSummary = () => {
@@ -158,7 +198,7 @@ export function ReviewStep({
   const renderCampaignDetails = () => (
     <div className="space-y-6">
       {/* Alerta de datos faltantes */}
-      {!isReadyToSend && !isPreview && (
+      {!isFormValid && !isPreview && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
@@ -183,7 +223,7 @@ export function ReviewStep({
       )}
 
       {/* Confirmación de campaña lista */}
-      {isReadyToSend && !isPreview && (
+      {isFormValid && !isPreview && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <div className="flex items-center gap-3">
             <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
@@ -310,7 +350,19 @@ export function ReviewStep({
   // Renderizar vista previa del correo
   const renderEmailPreview = () => {
     const selectedTemplate = templates?.find(t => t.id_plantilla === templateId);
-    const previewContent = selectedTemplate?.contenido || emailBody || '';
+    const raw = (selectedTemplate?.contenido ?? emailBody) as unknown;
+    let previewContent: string = '';
+    if (Array.isArray(raw)) {
+      try {
+        previewContent = generateHtmlFromBlocks(raw as any);
+      } catch {
+        previewContent = '';
+      }
+    } else if (typeof raw === 'string') {
+      previewContent = raw;
+    } else {
+      previewContent = '';
+    }
 
     return (
       <div className="space-y-8">
@@ -430,27 +482,53 @@ export function ReviewStep({
       </div>
 
       {!isPreview && (
-        <div className="flex justify-end pt-4 border-t">
-          <Button 
-            type="submit" 
-            disabled={isSubmitting || !isReadyToSend}
-            className={!isReadyToSend ? 'opacity-50 cursor-not-allowed' : ''}
-          >
-            {isSubmitting ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Procesando...
-              </>
-            ) : (
-              <>
-                Programar campaña
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </>
-            )}
-          </Button>
+        <div className="space-y-4">
+          {error && (
+            <div className="p-4 bg-red-50 text-red-700 rounded-md flex items-start">
+              <AlertCircleIcon className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium">Error al guardar la campaña</p>
+                <p className="text-sm">{error}</p>
+              </div>
+            </div>
+          )}
+          
+          <div className="flex justify-end items-center pt-4 border-t">
+            <Button 
+              type="button"
+              onClick={() => setShowConfirmation(true)}
+              disabled={!isFormValid || isSubmitting}
+              className={!isFormValid ? 'opacity-50 cursor-not-allowed' : ''}
+            >
+              {isSubmitting || isSaving ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {isSaving ? 'Guardando...' : 'Procesando...'}
+                </>
+              ) : (
+                <>
+                  Guardar campaña
+                  <CheckCircle2 className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </div>
+          
+          <ConfirmationDialog
+            open={showConfirmation}
+            onOpenChange={setShowConfirmation}
+            onConfirm={handleSave}
+            title="Confirmar guardado"
+            description="¿Estás seguro de que deseas guardar esta campaña? Podrás editarla más tarde desde el panel de control."
+            confirmText="Sí, guardar campaña"
+            cancelText="No, volver"
+            confirmVariant="default"
+            showCheckbox={true}
+            checkboxLabel="He revisado y confirmo que toda la información es correcta"
+          />
         </div>
       )}
     </div>

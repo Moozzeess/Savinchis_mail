@@ -8,25 +8,28 @@ interface CreateCampaignResponse {
 }
 
 export const createCampaign = async (
-  campaignData: CampaignFormData & { fromEmail: string }
+  campaignData: CampaignFormData
 ): Promise<CreateCampaignResponse> => {
   try {
-    // Aquí iría la llamada real a la API
-    const newCampaign: Campaign = {
-      ...campaignData,
-      id: Date.now().toString(),
-      status: 'draft',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    const response = await fetch('/api/campaigns', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(campaignData),
+    });
 
-    // Simulamos un retraso de red
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Error al crear la campaña');
+    }
+
+    const result = await response.json();
     
     return {
       success: true,
       message: 'Campaña creada exitosamente',
-      campaign: newCampaign
+      campaign: result.data
     };
   } catch (error) {
     console.error('Error creating campaign:', error);

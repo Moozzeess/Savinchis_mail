@@ -14,7 +14,7 @@ import { DetailsStep } from '@/components/campaign/details-step';
 import { RecipientStep } from '@/components/campaign/recipient-step';
 import { EmailStep } from '@/components/campaign/email-step';
 import { SchedulingStep } from '@/components/campaign/scheduling-step';
-import { ReviewStep } from '@/components/campaign/review-step';
+import ReviewStep from '@/components/campaign/review-step';
 import { Button } from '@/components/ui/button';
 
 // Types
@@ -39,7 +39,7 @@ const campaignFormSchema = z.object({
 //  replyTo: z.string().email('Ingresa un correo electrónico válido').optional(),
   
   // Destinatarios
-  contactListId: z.number().min(1, 'Debes seleccionar una lista de contactos'),
+  contactListId: z.string().min(1, 'Debes seleccionar una lista de contactos'),
   contactListName: z.string().optional(),
   totalRecipients: z.number().min(1, 'Debes tener al menos un destinatario'),
   
@@ -72,7 +72,7 @@ export default function NewCampaignPage() {
       emailBody: '',
 //      fromName: '',
 //      fromEmail: '',
-      contactListId: 0, // Se establecerá cuando el usuario seleccione una lista
+      contactListId: '', // Se establecerá cuando el usuario seleccione una lista
       contactListName: '',
       totalRecipients: 0, // Se actualizará cuando se seleccione una lista
       sendNow: true,
@@ -124,21 +124,48 @@ export default function NewCampaignPage() {
   const onSubmit = async (data: z.infer<typeof campaignFormSchema>) => {
     try {
       setIsSubmitting(true);
+      console.log('Datos del formulario a enviar:', data);
+      
       // Convert form data to Campaign type
-      const campaignData: CampaignFormData & { fromEmail: string } = {
-        ...data,
-        scheduledAt: data.sendNow ? null : data.scheduledAt?.toISOString(),
+      const campaignData: CampaignFormData = {
+        name: data.name,
+        description: data.description || '',
+        objective: data.objective,
+        subject: data.subject,
+        emailBody: data.emailBody,
         fromEmail: 'default@example.com', // TODO: Obtener el email del usuario autenticado
-        status: 'draft', // Establecemos el estado inicial como 'draft'
+        replyTo: 'default@example.com',
+        contactListId: data.contactListId ? parseInt(data.contactListId) : null,
+        scheduledAt: data.sendNow ? null : data.scheduledAt?.toISOString(),
+        totalRecipients: data.totalRecipients || 0,
+        status: 'draft',
+        timeZone: data.timeZone,
+        useOptimalTime: data.useOptimalTime
       };
       
+      // Eliminar propiedades undefined
+      Object.keys(campaignData).forEach(key => {
+        if (campaignData[key as keyof CampaignFormData] === undefined) {
+          delete campaignData[key as keyof CampaignFormData];
+        }
+      });
+      
+      console.log('Datos de la campaña a guardar:', campaignData);
+      
       const result = await createCampaign(campaignData);
+      console.log('Resultado de createCampaign:', result);
+      
       if (!result.success) {
-        throw new Error(result.message);
+        throw new Error(result.message || 'Error al guardar la campaña');
       }
+      
+      // Forzar recarga de la lista de campañas
+      router.refresh();
       router.push('/campaigns');
     } catch (error) {
       console.error('Error al crear la campaña:', error);
+      // Mostrar mensaje de error al usuario
+      alert(`Error al guardar la campaña: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setIsSubmitting(false);
     }

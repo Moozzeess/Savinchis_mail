@@ -17,7 +17,7 @@ export interface Campaign {
   emailBody: string;
   fromEmail: string;
   replyTo?: string;
-  contactListId?: number | null;
+  contactListId?: string | number | null;
   contactListName?: string;
   totalRecipients: number;
   scheduledAt?: string | null;

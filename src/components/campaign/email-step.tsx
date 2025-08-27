@@ -9,11 +9,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Plus, Search, LayoutTemplate, Mail, Award, Bold, Italic, Underline, List, ListOrdered, Image as ImageIcon, Link as LinkIcon, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
-import { getTemplateListAction } from '@/actions/template-actions';
 import { useRouter } from 'next/navigation';
 import { useTemplates } from '@/hooks/use-templates';
 import { TemplateCarousel } from './template-selector';
 import { Plantillas } from "@/types/templates";
+import { generateHtmlFromBlocks } from '@/lib/template-utils';
 
 type EmailTab = 'gallery' | 'new';
 
@@ -111,8 +111,23 @@ export function EmailStep({ className = '' }: { className?: string }) {
       setSelectedTemplate(template.id_plantilla);
       setValue('templateId', template.id_plantilla);
       setValue('templateName', template.nombre);
-      setValue('templateContent', template.contenido || '');
-      setValue('emailBody', template.contenido || '');
+      // Si el contenido viene como arreglo de bloques, convertirlo a HTML
+      let htmlContent: string = '';
+      const rawContent = (template as any)?.contenido;
+      if (Array.isArray(rawContent)) {
+        try {
+          htmlContent = generateHtmlFromBlocks(rawContent as any);
+        } catch {
+          htmlContent = '';
+        }
+      } else if (typeof rawContent === 'string') {
+        htmlContent = rawContent;
+      } else {
+        htmlContent = '';
+      }
+
+      setValue('templateContent', htmlContent);
+      setValue('emailBody', htmlContent);
       setValue('subject', template.asunto_predeterminado || '');  
     }
   };

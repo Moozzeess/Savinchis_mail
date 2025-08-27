@@ -20,7 +20,7 @@ interface CampaignData {
  scheduleDate?: string | null;
  scheduleTime?: string | null;
  contactListId?: number | null;
- status?: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled';
+ status?: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled' | 'failed' | 'paused' | 'completed';
  isRecurring?: boolean;
  recurrenceType?: 'diaria' | 'semanal' | 'mensual' | 'anual' | null;
  recurrenceInterval?: number | null;
@@ -28,6 +28,30 @@ interface CampaignData {
  recurrenceDayOfMonth?: number | null;
  recurrenceStartDate?: string | null;
  recurrenceEndDate?: string | null;
+}
+
+interface DBCampaign extends Record<string, any> {
+ id_campaign: number;
+ nombre_campaign: string;
+ descripcion?: string;
+ asunto: string;
+ contenido?: string;
+ from_email?: string;
+ reply_to?: string;
+ id_lista_contactos?: number;
+ nombre_lista?: string;
+ total_recipients?: number;
+ fecha_envio?: string | null;
+ estado: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled' | 'failed' | 'paused' | 'completed';
+ fecha_creacion: string;
+ fecha_actualizacion: string;
+ total_enviados?: number;
+ total_entregados?: number;
+ total_aperturas?: number;
+ total_clics?: number;
+ total_rebotados?: number;
+ total_quejas?: number;
+ total_fallidos?: number;
 }
 
 
@@ -55,13 +79,45 @@ interface CampaignData {
  * @async
  */
 export async function createCampaign(campaignData: CampaignData) {
- let connection;
- 
- try {
-  connection = await getDbConnection();
+  let connection;
   
-  // Inicia transacción
-  await connection.beginTransaction();
+  try {
+    connection = await getDbConnection();
+    
+    // Validate required fields
+    if (!campaignData.name || !campaignData.subject || !campaignData.emailBody || 
+        !campaignData.fromName || !campaignData.fromEmail) {
+      throw new Error('Faltan campos requeridos para crear la campaña');
+    }
+    
+    // Log the incoming data for debugging
+    console.log('Creating campaign with data:', {
+      ...campaignData,
+      emailBody: campaignData.emailBody ? '[CONTENT]' : 'EMPTY'
+    });
+    
+    // Start transaction
+    await connection.beginTransaction();
+
+  // Prepare the data for the database
+  const dbData = {
+    nombre_campaign: campaignData.name,
+    descripcion: campaignData.description || null,
+    id_plantilla: campaignData.templateId ? Number(campaignData.templateId) : null,
+    asunto: campaignData.subject,
+    contenido: campaignData.emailBody,
+    remitente_nombre: campaignData.fromName,
+    remitente_email: campaignData.fromEmail,
+    responder_a: campaignData.replyTo || campaignData.fromEmail,
+    fecha_programada: campaignData.scheduleDate 
+      ? new Date(`${campaignData.scheduleDate} ${campaignData.scheduleTime || '00:00'}`)
+      : null,
+    id_lista_contactos: campaignData.contactListId ? Number(campaignData.contactListId) : null,
+    estado: campaignData.status || 'draft'
+  };
+
+  // Convert undefined to null to avoid SQL errors
+  const values = Object.values(dbData).map(value => value === undefined ? null : value);
 
   const [result] = await connection.execute(
    `INSERT INTO campaigns (
@@ -77,19 +133,7 @@ export async function createCampaign(campaignData: CampaignData) {
     id_lista_contactos,
     estado
    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-   [
-    campaignData.name,
-    campaignData.description || null,
-    campaignData.templateId || null,
-    campaignData.subject,
-    campaignData.emailBody,
-    campaignData.fromName,
-    campaignData.fromEmail,
-    campaignData.replyTo || campaignData.fromEmail,
-    campaignData.scheduleDate ? new Date(`${campaignData.scheduleDate} ${campaignData.scheduleTime || '00:00'}`) : null,
-    campaignData.contactListId || null,
-    campaignData.status || 'draft'
-   ]
+   values
   );
 
   const campaignId = (result as any).insertId;
@@ -159,7 +203,12 @@ export async function createCampaign(campaignData: CampaignData) {
  * y un mensaje descriptivo en caso de error.
  * @async
  */
-export async function getCampaigns(page: number = 1, limit: number = 10) {
+export async function getCampaigns(page: number = 1, limit: number = 10): Promise<{
+  success: boolean;
+  data: any[];
+  total: number;
+  message?: string;
+}> {
  let connection;
  
  try {
@@ -167,12 +216,12 @@ export async function getCampaigns(page: number = 1, limit: number = 10) {
   
   const offset = (page - 1) * limit;
   
-  // Obtine el total de campañas
+  // Obtiene el total de campañas
   const [countResult] = await connection.query(
    'SELECT COUNT(*) as total FROM campaigns'
-  );
+  ) as unknown as [{ total: number }[]];
   
-  const total = (countResult as any)[0].total;
+  const total = countResult[0].total;
   
   // Obtiene las campañas paginadas
   const [campaigns] = await connection.query(
@@ -186,11 +235,39 @@ export async function getCampaigns(page: number = 1, limit: number = 10) {
    ORDER BY c.fecha_creacion DESC
    LIMIT ? OFFSET ?`,
    [limit, offset]
-  );
+  ) as unknown as [DBCampaign[]];
+  
+  // Mapear los resultados al tipo Campaign
+  const formattedCampaigns = campaigns.map((campaign: DBCampaign) => ({
+    id: campaign.id_campaign,
+    name: campaign.nombre_campaign,
+    description: campaign.descripcion,
+    objective: 'promotional', // Valor por defecto
+    subject: campaign.asunto,
+    emailBody: campaign.contenido || '',
+    fromEmail: campaign.from_email || 'no-reply@example.com',
+    replyTo: campaign.reply_to,
+    contactListId: campaign.id_lista_contactos,
+    contactListName: campaign.nombre_lista,
+    totalRecipients: campaign.total_recipients || 0,
+    scheduledAt: campaign.fecha_envio,
+    status: campaign.estado,
+    createdAt: campaign.fecha_creacion,
+    updatedAt: campaign.fecha_actualizacion,
+    stats: {
+      sent: campaign.total_enviados || 0,
+      delivered: campaign.total_entregados || 0,
+      opened: campaign.total_aperturas || 0,
+      clicked: campaign.total_clics || 0,
+      bounced: campaign.total_rebotados || 0,
+      complained: campaign.total_quejas || 0,
+      failed: campaign.total_fallidos || 0
+    }
+  }));
   
   return {
    success: true,
-   data: campaigns,
+   data: formattedCampaigns,
    total
   };
  } catch (error) {

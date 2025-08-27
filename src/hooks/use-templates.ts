@@ -3,16 +3,21 @@ import { useState, useEffect } from 'react';
 import { Plantillas } from '@/types/templates';
 
 interface UseTemplatesOptions {
-  tipo?: 'template' | 'certificate';
+  tipo?: 'template' | 'certificate' | 'email';
   limit?: number;
+  enabled?: boolean;
 }
 
-export function useTemplates({ tipo, limit = 10 }: UseTemplatesOptions = {}) {
+export function useTemplates({ tipo, limit = 10, enabled = true }: UseTemplatesOptions = {}) {
   const [templates, setTemplates] = useState<Plantillas[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    if (!enabled) {
+      setIsLoading(false);
+      return;
+    }
     const fetchTemplates = async () => {
       try {
         setIsLoading(true);
@@ -30,7 +35,7 @@ export function useTemplates({ tipo, limit = 10 }: UseTemplatesOptions = {}) {
     };
 
     fetchTemplates();
-  }, [tipo, limit]);
+  }, [tipo, limit, enabled]);
 
   return { data: templates, isLoading, error };
 }
