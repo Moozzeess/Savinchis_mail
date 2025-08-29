@@ -1,14 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Users, Download, Edit, Calendar as CalendarIcon, Tag } from 'lucide-react';
+import { Plus, Users, Download, Edit, Calendar as CalendarIcon, Tag, Pencil } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getContactLists } from '@/actions/Contactos/get-contact-lists';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { FileUploadModal } from '@/components/contacts/FileUploadModal';
+import { EditListDialog } from '@/components/contacts/EditListDialog';
+import { updateContactList } from '@/actions/Contactos/update-contact-list';
 
 interface ContactList {
   id: string;
@@ -21,10 +25,14 @@ interface ContactList {
 }
 
 export default function ContactsPage() {
+  const router = useRouter();
   const [contactLists, setContactLists] = useState<ContactList[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('all');
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [editingList, setEditingList] = useState<ContactList | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   
   // Calculate statistics
   const totalContacts = contactLists
@@ -38,48 +46,73 @@ export default function ContactsPage() {
     return format(new Date(dateString), 'dd MMM yyyy', { locale: es });
   };
 
-  // Fetch contact lists
-  useEffect(() => {
-    const loadContactLists = async () => {
-      try {
-        setIsLoading(true);
-        const result = await getContactLists(1, 100); // Adjust pagination as needed
+  // Function to load contact lists
+  const loadContactLists = async () => {
+    try {
+      setIsLoading(true);
+      const result = await getContactLists(1, 100); 
+      
+      if (result.success && result.data) {
+        // Transform the API response to match our ContactList interface
+        const formattedLists = result.data.lists.map((list: any) => ({
+          id: list.id_lista || list.id,
+          name: list.nombre || list.name || 'Sin nombre',
+          description: list.descripcion || list.description || 'Sin descripción',
+          isActive: list.estado === 'activa',
+          contactCount: list.total_contactos || 0,
+          lastUpdated: list.fecha_actualizacion || list.updatedAt || new Date().toISOString(),
+          tags: []
+        }));
         
-        if (result.success && result.data) {
-          // Transform the API response to match our ContactList interface
-          const formattedLists = result.data.lists.map((list: any) => ({
-            id: list.id,
-            name: list.name,
-            description: list.description || 'Sin descripción',
-            isActive: list.isActive || true,
-            contactCount: list.contactCount || 0,
-            lastUpdated: list.updatedAt || new Date().toISOString(),
-            tags: list.tags || []
-          }));
-          
-          setContactLists(formattedLists);
-        } else {
-          setError(result.message || 'Error al cargar las listas de contactos');
-        }
-      } catch (err) {
-        console.error('Error loading contact lists:', err);
-        setError('Error al conectar con el servidor');
-      } finally {
-        setIsLoading(false);
+        setContactLists(formattedLists);
+      } else {
+        setError(result.message || 'Error al cargar las listas de contactos');
       }
-    };
+    } catch (err) {
+      console.error('Error loading contact lists:', err);
+      setError('Error al conectar con el servidor');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  // Fetch contact lists on component mount
+  useEffect(() => {
     loadContactLists();
   }, []);
 
   const handleNewList = () => {
-    // Implement new list creation logic
-    console.log('Create new list');
+    setIsUploadModalOpen(true);
   };
 
-  const handleEditList = (listId: string) => {
-    // Implement list editing logic
-    console.log('Edit list:', listId);
+  const handleUploadSuccess = async () => {
+    // Refresh the contact lists after successful upload
+    await loadContactLists();
+  };
+
+  const handleEditList = (list: ContactList) => {
+    setEditingList(list);
+    setIsEditing(true);
+  };
+
+  const handleSaveList = async (data: { name: string; description: string; isActive: boolean }) => {
+    if (!editingList) return;
+    
+    try {
+      await updateContactList(editingList.id, {
+        nombre: data.name,
+        descripcion: data.description,
+        estado: data.isActive ? 'activa' : 'inactiva'
+      });
+      
+      // Refresh the list
+      await loadContactLists();
+      setIsEditing(false);
+      setEditingList(null);
+    } catch (error) {
+      console.error('Error updating list:', error);
+      setError('Error al actualizar la lista');
+    }
   };
 
   const handleDownloadList = (listId: string) => {
@@ -209,7 +242,11 @@ export default function ContactsPage() {
           ) : (
             <div className="grid gap-4">
               {filteredLists.map((list) => (
-                <Card key={list.id} className="p-6 hover:shadow-md dark:hover:shadow-primary/10 transition-shadow group">
+                <Card 
+                  key={list.id} 
+                  className="p-6 hover:shadow-md dark:hover:shadow-primary/10 transition-shadow group cursor-pointer"
+                  onClick={() => router.push(`/contacts/${list.id}`)}
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
@@ -255,12 +292,13 @@ export default function ContactsPage() {
                     
                     <div className="flex gap-2 ml-4">
                       <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => handleEditList(list.id)}
-                        className="text-muted-foreground hover:text-foreground"
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8"
+                        onClick={() => handleEditList(list)}
+                        type="button"
                       >
-                        <Edit className="w-4 h-4" />
+                        <Pencil className="h-4 w-4" />
                       </Button>
                       <Button 
                         variant="outline" 
@@ -278,6 +316,19 @@ export default function ContactsPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      <FileUploadModal 
+        isOpen={isUploadModalOpen} 
+        onClose={() => setIsUploadModalOpen(false)}
+        onSuccess={handleUploadSuccess} 
+      />
+      
+      <EditListDialog
+        open={isEditing}
+        onOpenChange={setIsEditing}
+        list={editingList}
+        onSave={handleSaveList}
+      />
     </div>
   );
 }

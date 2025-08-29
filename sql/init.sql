@@ -70,7 +70,7 @@ CREATE TABLE `listas_contactos` (
 CREATE TABLE `contactos_lista` (
   `id_contacto` int NOT NULL,
   `id_lista` int NOT NULL,
-  `fech-insercion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `fecha_insercion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `estado` enum('activo','inactivo','baja') NOT NULL DEFAULT 'activo',
   `datos_adicionales` json DEFAULT NULL,
   PRIMARY KEY (`id_contacto`,`id_lista`),
@@ -188,62 +188,105 @@ CREATE TABLE `resumen_envios_campana` (
 
 -- Trigger para actualizar el contador de contactos en listas
 DELIMITER //
-CREATE TRIGGER after_contacto_list-insert
+
+-- Eliminar triggers existentes si existen
+DROP TRIGGER IF EXISTS after_contacto_list_insert//
+DROP TRIGGER IF EXISTS after_contacto_lista_update//
+DROP TRIGGER IF EXISTS after_contacto_lista_delete//
+
+-- Trigger para inserciones
+CREATE TRIGGER after_contacto_list_insert
 AFTER INSERT ON contactos_lista
 FOR EACH ROW
 BEGIN
+    -- Actualizar la lista con el nuevo conteo de contactos únicos activos
     UPDATE listas_contactos 
-    SET total_contactos = (
-        SELECT COUNT(*) 
-        FROM contactos_lista 
-        WHERE id_lista = NEW.id_lista 
-        AND estado = 'activo'
-    )
+    SET 
+        total_contactos = (
+            SELECT COUNT(DISTINCT id_contacto)
+            FROM contactos_lista 
+            WHERE id_lista = NEW.id_lista 
+            AND estado = 'activo'
+        ),
+        fecha_actualizacion = CURRENT_TIMESTAMP
     WHERE id_lista = NEW.id_lista;
 END//
 
+-- Trigger para actualizaciones
 CREATE TRIGGER after_contacto_lista_update
 AFTER UPDATE ON contactos_lista
 FOR EACH ROW
 BEGIN
-    IF OLD.estado != NEW.estado OR OLD.id_lista != NEW.id_lista THEN
-        -- Actualizar la lista anterior si cambió de lista
-        IF OLD.id_lista != NEW.id_lista OR (OLD.estado = 'activo' AND NEW.estado != 'activo') THEN
+    DECLARE old_list_id INT;
+    DECLARE new_list_id INT;
+    
+    SET old_list_id = OLD.id_lista;
+    SET new_list_id = NEW.id_lista;
+    
+    -- Si cambió la lista o el estado, actualizar ambas listas si son diferentes
+    IF OLD.estado != NEW.estado OR old_list_id != new_list_id THEN
+        -- Actualizar la lista anterior si es diferente de la nueva
+        IF old_list_id != new_list_id OR (OLD.estado = 'activo' AND NEW.estado != 'activo') THEN
             UPDATE listas_contactos 
-            SET total_contactos = (
-                SELECT COUNT(*) 
-                FROM contactos_lista 
-                WHERE id_lista = OLD.id_lista 
-                AND estado = 'activo'
-            )
-            WHERE id_lista = OLD.id_lista;
+            SET 
+                total_contactos = (
+                    SELECT COUNT(DISTINCT id_contacto)
+                    FROM contactos_lista 
+                    WHERE id_lista = old_list_id 
+                    AND estado = 'activo'
+                ),
+                fecha_actualizacion = CURRENT_TIMESTAMP
+            WHERE id_lista = old_list_id;
         END IF;
         
-        -- Actualizar la nueva lista
-        IF NEW.estado = 'activo' THEN
+        -- Actualizar la nueva lista si el nuevo estado es activo
+        IF new_list_id != old_list_id OR NEW.estado = 'activo' THEN
             UPDATE listas_contactos 
-            SET total_contactos = (
-                SELECT COUNT(*) 
-                FROM contactos_lista 
-                WHERE id_lista = NEW.id_lista 
-                AND estado = 'activo'
-            )
-            WHERE id_lista = NEW.id_lista;
+            SET 
+                total_contactos = (
+                    SELECT COUNT(DISTINCT id_contacto)
+                    FROM contactos_lista 
+                    WHERE id_lista = new_list_id 
+                    AND estado = 'activo'
+                ),
+                fecha_actualizacion = CURRENT_TIMESTAMP
+            WHERE id_lista = new_list_id;
         END IF;
     END IF;
 END//
 
+-- Trigger para eliminaciones
 CREATE TRIGGER after_contacto_lista_delete
 AFTER DELETE ON contactos_lista
 FOR EACH ROW
 BEGIN
     UPDATE listas_contactos 
-    SET total_contactos = (
-        SELECT COUNT(*) 
-        FROM contactos_lista 
-        WHERE id_lista = OLD.id_lista 
-        AND estado = 'activo'
-    )
+    SET 
+        total_contactos = (
+            SELECT COUNT(DISTINCT id_contacto)
+            FROM contactos_lista 
+            WHERE id_lista = OLD.id_lista 
+            AND estado = 'activo'
+        ),
+        fecha_actualizacion = CURRENT_TIMESTAMP
     WHERE id_lista = OLD.id_lista;
 END//
+
+-- Actualizar contadores para listas existentes
+UPDATE listas_contactos lc
+SET 
+    total_contactos = (
+        SELECT COUNT(DISTINCT id_contacto)
+        FROM contactos_lista cl 
+        WHERE cl.id_lista = lc.id_lista
+        AND cl.estado = 'activo'
+    ),
+    fecha_actualizacion = CURRENT_TIMESTAMP
+WHERE total_contactos != (
+    SELECT COUNT(DISTINCT id_contacto)
+    FROM contactos_lista cl 
+    WHERE cl.id_lista = lc.id_lista
+    AND cl.estado = 'activo'
+) OR total_contactos IS NULL//
+
 DELIMITER ;
