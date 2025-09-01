@@ -23,7 +23,7 @@ import { Campaign, CampaignFormData } from '@/types/campaign';
 // Services
 import { createCampaign } from '@/service/campaign.service';
 
-// Schema de validación
+// Esquema de validación
 const campaignFormSchema = z.object({
   // Detalles básicos
   id: z.string().optional(),

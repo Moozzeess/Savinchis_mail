@@ -41,7 +41,6 @@ export async function getDbConnection(): Promise<mysql.Connection> {
        bigNumberStrings: true
      });
      
-     console.log('Conexión a la base de datos establecida correctamente');
      return connection;
    } catch (error) {
      console.error('Error al conectar a la base de datos:', error);

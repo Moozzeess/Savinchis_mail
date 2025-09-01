@@ -9,15 +9,13 @@ interface PageProps {
 }
 
 export default async function ContactListPage({ params }: PageProps) {
-  // Ensure params is properly awaited and typed
-  const { listId: listIdStr } = params;
+  const { listId: listIdStr } = await params;
   const listId = parseInt(listIdStr);
   
   if (isNaN(listId)) {
     notFound();
   }
 
-  // Fetch the list details
   const listResult = await getContactListById(listId);
   
   if (!listResult.success || !listResult.data) {

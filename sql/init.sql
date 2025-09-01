@@ -34,9 +34,8 @@ CREATE TABLE `contactos` (
   `id_contacto` int NOT NULL AUTO_INCREMENT,
   `nombre_completo` varchar(100) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `telefono` varchar(20) DEFAULT NULL,
+  `telefono` int DEFAULT NULL,
   `empresa` varchar(100) DEFAULT NULL,
-  `puesto` varchar(100) DEFAULT NULL,
   `fecha_creacion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fecha_actualizacion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `estado` enum('activo','inactivo','baja') NOT NULL DEFAULT 'activo',
@@ -72,7 +71,7 @@ CREATE TABLE `contactos_lista` (
   `id_lista` int NOT NULL,
   `fecha_insercion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `estado` enum('activo','inactivo','baja') NOT NULL DEFAULT 'activo',
-  `datos_adicionales` json DEFAULT NULL,
+  `datos_adicionales` TEXT DEFAULT NULL,
   PRIMARY KEY (`id_contacto`,`id_lista`),
   KEY `idx_lista` (`id_lista`),
   CONSTRAINT `fk_cl_contacto` FOREIGN KEY (`id_contacto`) REFERENCES `contactos` (`id_contacto`) ON DELETE CASCADE,
@@ -116,7 +115,7 @@ CREATE TABLE `recurrencias_campana` (
   `intervalo` INT DEFAULT 1, -- Por ejemplo, cada 2 días, cada 3 semanas
   `dias_semana` VARCHAR(15) DEFAULT NULL, -- Ejemplo: "LU,MA,MI" para semanal
   `dia_mes` INT DEFAULT NULL, -- Para recurrencia mensual (ej. día 15)
-  `fech-inicio` DATE NOT NULL,
+  `fecha_inicio` DATE NOT NULL,
   `fecha_fin` DATE DEFAULT NULL,
   `veces_enviadas` INT DEFAULT 0,
   `ultima_ejecucion` DATETIME DEFAULT NULL,

@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface FormData {
   nombre_completo: string;
@@ -19,7 +19,7 @@ interface FormData {
 
 export default function AddContactPage({ params }: { params: { listId: string } }) {
   const router = useRouter();
-  const listId = parseInt(params.listId);
+  const [listId, setListId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
   const {
@@ -27,6 +27,31 @@ export default function AddContactPage({ params }: { params: { listId: string } 
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
+
+  // Handle async params
+  useEffect(() => {
+    const loadParams = async () => {
+      try {
+        const resolvedParams = await Promise.resolve(params);
+        const id = parseInt(resolvedParams.listId);
+        if (!isNaN(id)) {
+          setListId(id);
+        } else {
+          throw new Error('Invalid list ID');
+        }
+      } catch (error) {
+        console.error('Error loading params:', error);
+        router.push('/contacts');
+      }
+    };
+    
+    loadParams();
+  }, [params, router]);
+
+  // Show loading state while params are being resolved
+  if (listId === null) {
+    return <div>Loading...</div>;
+  }
 
   const onSubmit = async (data: FormData) => {
     if (isNaN(listId)) {
@@ -135,15 +160,6 @@ export default function AddContactPage({ params }: { params: { listId: string } 
                 id="empresa"
                 placeholder="Nombre de la empresa"
                 {...register('empresa')}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="puesto">Puesto</Label>
-              <Input
-                id="puesto"
-                placeholder="Puesto o cargo"
-                {...register('puesto')}
               />
             </div>
           </div>

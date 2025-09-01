@@ -57,10 +57,10 @@ export async function POST(request: Request) {
 
       // Check if the contact is already in the list
       const [existingListContacts] = await connection.query(
-        `SELECT id FROM contactos_lista 
+        `SELECT id_contacto, id_lista FROM contactos_lista 
          WHERE id_contacto = ? AND id_lista = ?`,
         [contactId, listId]
-      );
+      ); 
 
       if ((existingListContacts as any[]).length === 0) {
         // Add contact to the list

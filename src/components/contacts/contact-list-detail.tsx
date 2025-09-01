@@ -62,7 +62,7 @@ export function ContactListDetail({ list }: ContactListDetailProps) {
     return (
       (contact.nombre_completo?.toLowerCase() || '').includes(searchLower) ||
       (contact.email?.toLowerCase() || '').includes(searchLower) ||
-      (contact.telefono?.toLowerCase() || '').includes(searchLower) ||
+      (contact.telefono?.toString().toLowerCase() || '').includes(searchLower) ||
       (contact.empresa?.toLowerCase() || '').includes(searchLower)
     );
   });
@@ -174,7 +174,8 @@ export function ContactListDetail({ list }: ContactListDetailProps) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[300px]">Nombre</TableHead>
-              <TableHead>Información de contacto</TableHead>
+              <TableHead>Emial de contacto</TableHead>
+              <TableHead>Telefono</TableHead>
               <TableHead>Empresa</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
@@ -211,7 +212,6 @@ export function ContactListDetail({ list }: ContactListDetailProps) {
                       </div>
                       <div>
                         <div className="font-medium">{contact.nombre_completo}</div>
-                        <div className="text-sm text-muted-foreground">{contact.puesto || 'Sin cargo'}</div>
                       </div>
                     </div>
                   </TableCell>
@@ -221,13 +221,15 @@ export function ContactListDetail({ list }: ContactListDetailProps) {
                         <Mail className="h-4 w-4 text-muted-foreground" />
                         <span>{contact.email}</span>
                       </div>
-                      {contact.telefono && (
-                        <div className="flex items-center gap-2 text-sm">
-                          <Phone className="h-4 w-4 text-muted-foreground" />
-                          <span>{contact.telefono}</span>
-                        </div>
-                      )}
                     </div>
+                  </TableCell>
+                  <TableCell>
+                  {contact.telefono && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Phone className="h-4 w-4 text-muted-foreground" />
+                        <span>{contact.telefono}</span>
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell>
                     {contact.empresa ? (
