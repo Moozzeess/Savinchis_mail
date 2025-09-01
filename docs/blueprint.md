@@ -1,32 +1,196 @@
-# App Name: Savinchis' Mail
+# Savinchis' Mail - Documentación del Sistema
 
-## Core Features:
-# Funcionalidades Principales:
 
-- Importación de Contactos: Importa contactos desde archivos CSV.
-- Template Editor: Create and edit email templates using a simple text editor with HTML support.
-- Editor de Plantillas: Crea y edita plantillas de correo electrónico usando un editor de texto simple con soporte HTML.
-- Campaign Scheduling: Schedule email campaigns for future delivery.
-- Programación de Campañas: Programa campañas de correo electrónico para su entrega futura.
-- AI Email Optimizer: AI tool suggests improvements for email content based on best practices, checking for spam triggers and optimizing for engagement.
-- Optimizador de Correo Electrónico con IA: Herramienta de IA sugiere mejoras para el contenido del correo electrónico basándose en las mejores prácticas, verificando activadores de spam y optimizando para la participación.
-- Basic Analytics: View basic analytics: number of emails sent and delivery status.
-- Análisis Básico: Visualiza análisis básicos: número de correos electrónicos enviados y estado de entrega.
-- SPF Authentication: Authenticate email sending via SPF records to improve deliverability.
-- Autenticación SPF: Autentica el envío de correos electrónicos a través de registros SPF para mejorar la entregabilidad.
+## Guía de Estilo
 
-## Style Guidelines:
-# Pautas de Estilo:
+### Colores
+```
+Primario:    #9ED2BE (hsl(159 35% 72%))
+Fondo:       #E2F9F0 (hsl(161 67% 93%))
+Acento:      #74B49B (hsl(159 29% 58%))
+Texto:       #2C3534 (hsl(160 10% 20%))
+```
 
-- Primary color: Light teal (#9ED2BE) to evoke a sense of trust and communication.
-- Color Primario: Verde azulado claro (#9ED2BE) para evocar una sensación de confianza y comunicación.
-- Background color: Very light cyan (#E2F9F0).
-- Color de Fondo: Cian muy claro (#E2F9F0).
-- Accent color: Pale seafoam green (#74B49B) for highlighting key actions and elements.
-- Color de Acento: Verde espuma de mar pálido (#74B49B) para resaltar acciones y elementos clave.
-- Headline font: 'Belleza' sans-serif, which projects personality aligned to design. Body text: 'Alegreya' serif, to match it.
-- Fuente para Titulares: 'Belleza' sans-serif, que proyecta una personalidad alineada al diseño. Texto del cuerpo: 'Alegreya' serif, para complementarla.
-- Clean, simple layout with clear visual hierarchy to guide the user through each step of creating and sending email campaigns.
-- Diseño limpio y sencillo con una jerarquía visual clara para guiar al usuario a través de cada paso de la creación y envío de campañas de correo electrónico.
-- Use clear, professional icons for navigation and actions.
-- Usa iconos claros y profesionales para la navegación y las acciones.
+### Tipografía
+- **Títulos**: 'Belleza' sans-serif
+- **Cuerpo de texto**: 'Alegreya' serif
+
+
+## Estructura del Proyecto
+
+```
+src/
+├── actions/                                                            # Acciones del servidor
+│   ├── Campaings/                                                      # Acciones de campañas
+│   │   ├── get-sent-emails-action.ts
+│   │   ├── new-campaign-action.ts
+│   │   ├── send-campaign-action.ts
+│   │   └── send-test-email-action.ts
+│   ├── Contactos/                                                      # Acciones de contactos
+│   │   ├── add-list-contacts.ts
+│   │   ├── contact-service.ts
+│   │   ├── get-contact-lists.ts
+│   │   ├── get-contact.ts
+│   │   ├── get-db-contacts.ts
+│   │   └── update-contact-list.ts
+│   ├── Eventos/                                                        # Acciones de eventos
+│   │   └── event-actions.ts
+│   └── Plantillas/                                                     # Acciones de plantillas
+│       └── template-actions.ts
+├── app/                                                                # Rutas y páginas de la aplicación
+│   ├── (main)/                                                         # Rutas principales
+│   │   ├── campaign/        # Gestión de campañas
+│   │   ├── contacts/        # Gestión de contactos
+│   │   ├── dashboard/       # Panel principal
+│   │   ├── eventos/         # Gestión de eventos
+│   │   ├── send/            # Envío de correos
+│   │   ├── settings/        # Configuración
+│   │   ├── surveys/         # Encuestas
+│   │   └── templates/       # Plantillas
+│   └── api/                 # Endpoints de la API
+│       ├── campaigns/       # API de campañas
+│       ├── contacts/        # API de contactos
+│       └── templates/       # API de plantillas
+├── components/              # Componentes de UI
+│   ├── Analisis/            # Componentes de análisis
+│   ├── campaign/            # Componentes de campañas
+│   ├── contacts/            # Componentes de contactos
+│   ├── encuestas/           # Componentes de encuestas
+│   ├── eventos/             # Componentes de eventos
+│   ├── templates/           # Componentes de plantillas
+│   └── ui/                  # Componentes UI reutilizables
+├── context/                 # Contextos de React
+├── hooks/                   # Custom hooks
+│   └── useContactManagement/
+├── lib/                     # Utilidades y configuraciones
+└── types/                   # Definiciones de tipos TypeScript
+```
+
+## Módulos Principales
+
+### Campañas
+```
+src/
+├── actions/Campaings/
+│   ├── get-sent-emails-action.ts
+│   ├── new-campaign-action.ts
+│   ├── send-campaign-action.ts
+│   └── send-test-email-action.ts
+├── app/(main)/campaign/
+│   ├── New-campaigns/
+│   └── [id]/
+├── components/campaign/
+│   └── ...
+└── app/api/campaigns/
+```
+
+### Contactos
+```
+src/
+├── actions/Contactos/
+│   ├── add-list-contacts.ts
+│   ├── contact-service.ts
+│   ├── get-contact-lists.ts
+│   ├── get-contact.ts
+│   ├── get-db-contacts.ts
+│   └── update-contact-list.ts
+├── app/(main)/contacts/
+│   ├── [listId]/
+│   │   ├── edit/
+│   │   │   └── [contactId]/
+│   │   └── new/
+│   └── ...
+├── components/contacts/
+├── components/ui/contacts/
+│   ├── Contact-card.tsx
+│   ├── ContactSummary.tsx
+│   ├── FileUploader.tsx
+│   └── StatCard.tsx
+└── hooks/useContactManagement/
+```
+
+### Eventos
+```
+src/
+├── actions/Eventos/
+│   └── event-actions.ts
+├── app/(main)/eventos/
+│   └── editor/
+├── components/eventos/
+│   ├── steps/
+│   ├── EventCalendar.tsx
+│   ├── EventForm.tsx
+│   └── ...
+```
+
+### Plantillas
+```
+src/
+├── actions/Plantillas/
+│   └── template-actions.ts
+├── app/(main)/templates/
+│   ├── certificates/
+│   │   └── editor/
+│   │       └── [id]/
+│   ├── editor/
+│   │   └── [id]/
+│   ├── new/
+│   └── select-type/
+├── components/templates/
+│   ├── Template-editor-client.tsx
+│   ├── Template-preview.tsx
+│   └── certificate-editor.tsx
+└── app/api/templates/
+    └── load/
+```
+
+### Encuestas
+```
+src/
+├── app/(main)/surveys/
+│   └── editor/
+└── components/encuestas/
+    ├── SurveyBuilder/
+    └── SurveyResults.tsx
+```
+
+## Características Principales
+
+- **Gestión de Contactos**
+  - Importación desde CSV
+  - Importación desde SQL
+  - Importación individual
+  - Gestión y administración de contactos
+
+- **Plantillas de Correo**
+  - Editor HTML integrado
+  - Vista previa en tiempo real
+  - Plantillas personalizables
+  - Plantillas de certificados
+
+- **Campañas**
+  - Programación de envíos
+  - Envío de pruebas
+  - Seguimiento de correos enviados
+
+- **Eventos**
+  - Calendario de eventos
+  - Formularios personalizados
+  - Pasos de configuración
+
+- **Encuestas**
+  - Constructor de encuestas
+  - Visualización de resultados
+
+## Configuración Requerida
+
+- Node.js 16+
+- Base de datos configurada (ver `src/DBConnection.ts`)
+- Variables de entorno (`.env`)
+
+## Despliegue
+
+1. Instalar dependencias: `npm install`
+2. Configurar variables de entorno
+3. Ejecutar migraciones
+4. Iniciar servidor: `npm run dev`
