@@ -119,7 +119,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   const handleCampaignClick = (campaignId: string | number) => {
-    router.push(`/campaigns/${campaignId}`);
+    router.push(`/campaign/${campaignId}`);
   };
 
   const renderCampaignCard = (campaign: Campaign) => {
@@ -321,7 +321,7 @@ export default function DashboardPage() {
                 : `Mostrando ${Math.min(campaigns.length, 5)} de ${stats.totalCampaigns} campañas`}
             </CardDescription>
           </div>
-          <Link href="/campaigns">
+          <Link href="/campaign">
             <Button variant="outline" size="sm" className="gap-2 border-border/50 dark:border-gray-700 dark:hover:bg-gray-800">
               Ver todas
               <ArrowRight className="h-4 w-4" />

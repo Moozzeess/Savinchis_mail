@@ -17,6 +17,7 @@ type ConfirmationDialogProps = {
   confirmDisabled?: boolean;
   showCheckbox?: boolean;
   checkboxLabel?: string;
+  onCheckChange?: (checked: boolean) => void;
 };
 
 export function ConfirmationDialog({
@@ -31,6 +32,7 @@ export function ConfirmationDialog({
   confirmDisabled = false,
   showCheckbox = false,
   checkboxLabel = '',
+  onCheckChange,
 }: ConfirmationDialogProps) {
   const [isChecked, setIsChecked] = useState(false);
 
@@ -53,7 +55,11 @@ export function ConfirmationDialog({
               <Checkbox 
                 id="confirmation-checkbox"
                 checked={isChecked}
-                onCheckedChange={(checked) => setIsChecked(checked === true)}
+                onCheckedChange={(checked) => {
+                  const value = checked === true;
+                  setIsChecked(value);
+                  onCheckChange?.(value);
+                }}
               />
               <label
                 htmlFor="confirmation-checkbox"

@@ -129,12 +129,10 @@ export default function NewCampaignPage() {
       // Convert form data to Campaign type
       const campaignData: CampaignFormData = {
         name: data.name,
-        description: data.description || '',
+        description: data.description,
         objective: data.objective,
         subject: data.subject,
         emailBody: data.emailBody,
-        fromEmail: 'default@example.com', // TODO: Obtener el email del usuario autenticado
-        replyTo: 'default@example.com',
         contactListId: data.contactListId ? parseInt(data.contactListId) : null,
         scheduledAt: data.sendNow ? null : data.scheduledAt?.toISOString(),
         totalRecipients: data.totalRecipients || 0,
@@ -161,7 +159,7 @@ export default function NewCampaignPage() {
       
       // Forzar recarga de la lista de campañas
       router.refresh();
-      router.push('/campaigns');
+      router.push('/campaign');
     } catch (error) {
       console.error('Error al crear la campaña:', error);
       // Mostrar mensaje de error al usuario

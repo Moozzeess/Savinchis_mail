@@ -15,7 +15,7 @@ export interface Campaign {
   objective: 'promotional' | 'newsletter' | 'announcement' | 'event' | 'welcome' | 'other';
   subject: string;
   emailBody: string;
-  fromEmail: string;
+  fromEmail?: string; // illustrative only, may be derived from authenticated user at send time
   replyTo?: string;
   contactListId?: string | number | null;
   contactListName?: string;

@@ -108,22 +108,35 @@ export default function ReviewStep({
     try {
       setIsSaving(true);
       setError(null);
-      const form = document.querySelector('form');
-      if (form) {
-        const formData = new FormData(form);
-        const response = await fetch('/api/campaigns', {
-          method: 'POST',
-          body: formData,
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Error al guardar la campaña');
-        }
-        
-        // Show success message or redirect
-        window.location.href = '/campaigns';
+      // Construir payload JSON desde los valores del formulario
+      const values = getValues();
+      const payload = {
+        name: values.name,
+        description: (values as any).description ?? undefined,
+        objective: values.objective || 'promotional',
+        subject: values.subject,
+        // Priorizar contenido de plantilla si existe; si no, usar emailBody
+        emailBody: values.templateContent || values.emailBody || '',
+        contactListId: values.contactListId ? Number(values.contactListId) : null,
+        // El servidor espera scheduleDate/scheduleTime
+        scheduleDate: values.scheduleDate || null,
+        scheduleTime: values.scheduleTime || null,
+        status: values.status || 'draft',
+      };
+
+      const response = await fetch('/api/campaigns', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Error al guardar la campaña');
       }
+
+      // Redirigir al listado de campañas (ruta existente)
+      window.location.href = '/campaign';
     } catch (err) {
       console.error('Error saving campaign:', err);
       setError(err instanceof Error ? err.message : 'Error desconocido al guardar la campaña');
@@ -162,7 +175,6 @@ export default function ReviewStep({
   const getMissingData = () => {
     const missing = [];
     if (!name) missing.push('Nombre de campaña');
-    if (!fromEmail) missing.push('Correo del remitente');
     if (!contactListName) missing.push('Lista de contactos');
     if (!subject) missing.push('Asunto del correo');
     if (!templateContent && !emailBody) missing.push('Contenido del correo');
@@ -171,7 +183,7 @@ export default function ReviewStep({
   };
 
   const missingData = getMissingData();
-  const isFormValid = missingData.length === 0 && hasConfirmedDetails;
+  const isFormValid = missingData.length === 0;
 
   // Obtener resumen de programación
   const getSchedulingSummary = () => {
@@ -528,6 +540,7 @@ export default function ReviewStep({
             confirmVariant="default"
             showCheckbox={true}
             checkboxLabel="He revisado y confirmo que toda la información es correcta"
+            onCheckChange={setHasConfirmedDetails}
           />
         </div>
       )}

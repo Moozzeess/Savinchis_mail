@@ -14,8 +14,8 @@ interface CampaignData {
  templateId?: number | null;
  subject: string;
  emailBody: string;
- fromName: string;
- fromEmail: string;
+ fromName?: string; // illustrative only, not persisted
+ fromEmail?: string; // illustrative only, not persisted
  replyTo?: string;
  scheduleDate?: string | null;
  scheduleTime?: string | null;
@@ -84,9 +84,8 @@ export async function createCampaign(campaignData: CampaignData) {
   try {
     connection = await getDbConnection();
     
-    // Validate required fields
-    if (!campaignData.name || !campaignData.subject || !campaignData.emailBody || 
-        !campaignData.fromName || !campaignData.fromEmail) {
+    // Validate required fields (do not require sender fields)
+    if (!campaignData.name || !campaignData.subject || !campaignData.emailBody) {
       throw new Error('Faltan campos requeridos para crear la campaña');
     }
     
@@ -99,41 +98,48 @@ export async function createCampaign(campaignData: CampaignData) {
     // Start transaction
     await connection.beginTransaction();
 
-  // Prepare the data for the database
+  // Map app status to DB enum (Spanish)
+  const mapStatusToDb = (status?: string) => {
+    switch (status) {
+      case 'scheduled': return 'programada';
+      case 'sending': return 'en_progreso';
+      case 'sent': return 'completada';
+      case 'paused': return 'pausada';
+      case 'cancelled': return 'cancelada';
+      // 'draft' or unknown
+      default: return 'borrador';
+    }
+  };
+
+  // Prepare the data for the database (columns must exist in schema)
   const dbData = {
     nombre_campaign: campaignData.name,
     descripcion: campaignData.description || null,
     id_plantilla: campaignData.templateId ? Number(campaignData.templateId) : null,
     asunto: campaignData.subject,
     contenido: campaignData.emailBody,
-    remitente_nombre: campaignData.fromName,
-    remitente_email: campaignData.fromEmail,
-    responder_a: campaignData.replyTo || campaignData.fromEmail,
-    fecha_programada: campaignData.scheduleDate 
+    fecha_envio: campaignData.scheduleDate
       ? new Date(`${campaignData.scheduleDate} ${campaignData.scheduleTime || '00:00'}`)
       : null,
     id_lista_contactos: campaignData.contactListId ? Number(campaignData.contactListId) : null,
-    estado: campaignData.status || 'draft'
-  };
+    estado: mapStatusToDb(campaignData.status)
+  } as const;
 
   // Convert undefined to null to avoid SQL errors
   const values = Object.values(dbData).map(value => value === undefined ? null : value);
 
   const [result] = await connection.execute(
-   `INSERT INTO campaigns (
-    nombre_campaign, 
-    descripcion, 
-    id_plantilla, 
-    asunto, 
-    contenido, 
-    remitente_nombre, 
-    remitente_email, 
-    responder_a, 
-    fecha_programada, 
-    id_lista_contactos,
-    estado
-   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-   values
+    `INSERT INTO campaigns (
+      nombre_campaign,
+      descripcion,
+      id_plantilla,
+      asunto,
+      contenido,
+      fecha_envio,
+      id_lista_contactos,
+      estado
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    values
   );
 
   const campaignId = (result as any).insertId;
@@ -168,7 +174,7 @@ export async function createCampaign(campaignData: CampaignData) {
   await connection.commit();
    
   // Revalida la página de campañas para mostrar la nueva campaña
-  revalidatePath('/campaigns');
+  revalidatePath('/campaign');
   
   return {
    success: true,
@@ -237,6 +243,19 @@ export async function getCampaigns(page: number = 1, limit: number = 10): Promis
    [limit, offset]
   ) as unknown as [DBCampaign[]];
   
+  // Mapear estado de BD (es) a estado UI (en)
+  const mapStatusToUi = (estado: string) => {
+    switch (estado) {
+      case 'programada': return 'scheduled';
+      case 'en_progreso': return 'sending';
+      case 'completada': return 'completed';
+      case 'pausada': return 'paused';
+      case 'cancelada': return 'cancelled';
+      case 'borrador':
+      default: return 'draft';
+    }
+  };
+
   // Mapear los resultados al tipo Campaign
   const formattedCampaigns = campaigns.map((campaign: DBCampaign) => ({
     id: campaign.id_campaign,
@@ -251,7 +270,7 @@ export async function getCampaigns(page: number = 1, limit: number = 10): Promis
     contactListName: campaign.nombre_lista,
     totalRecipients: campaign.total_recipients || 0,
     scheduledAt: campaign.fecha_envio,
-    status: campaign.estado,
+    status: mapStatusToUi(campaign.estado as string),
     createdAt: campaign.fecha_creacion,
     updatedAt: campaign.fecha_actualizacion,
     stats: {
@@ -351,13 +370,24 @@ export async function updateCampaignStatus(campaignId: number, status: 'draft' |
  try {
   connection = await getDbConnection();
   
+  // Map English status to Spanish DB enum (same mapping used on create)
+  const mapStatusToDb = (s: string) => {
+    switch (s) {
+      case 'scheduled': return 'programada';
+      case 'sending': return 'en_progreso';
+      case 'sent': return 'completada';
+      case 'paused': return 'pausada';
+      case 'cancelled': return 'cancelada';
+      default: return 'borrador';
+    }
+  };
+
   await connection.execute(
-   'UPDATE campaigns SET estado = ? WHERE id_campaign = ?',
-   [status, campaignId]
+    'UPDATE campaigns SET estado = ? WHERE id_campaign = ?',
+    [mapStatusToDb(status), campaignId]
   );
   
-  revalidatePath('/campaigns');
-  revalidatePath(`/campaigns/${campaignId}`);
+  revalidatePath('/campaign');
   
   return {
    success: true,
