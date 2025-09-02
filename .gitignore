@@ -44,6 +44,9 @@ next-env.d.ts # Ignora el archivo next-env.d.ts generado por Next.js para tipos 
 # Entorno: Archivos de variables de entorno que contienen información sensible.
 .env* # Ignora cualquier archivo que comience con .env (como .env, .env.local, .env.production, etc.).
 
+#Plantillas
+./storage/templates
+
 # Firebase: Archivos de log generados por Firebase.
 firebase-debug.log # Ignora el archivo de log de depuración de Firebase.
 firestore-debug.log # Ignora el archivo de log de depuración de Firestore.

@@ -1,10 +1,14 @@
 
 -- Eliminar tablas existentes para una instalación limpia
+-- Se eliminan en orden inverso de dependencias para evitar errores de clave foránea
+DROP TABLE IF EXISTS `evento_asistentes`;
+DROP TABLE IF EXISTS `evento_plantillas`;
+DROP TABLE IF EXISTS `eventos`;
 DROP TABLE IF EXISTS `resumen_envios_campana`;
 DROP TABLE IF EXISTS `envios_campana`;
 DROP TABLE IF EXISTS `recurrencias_campana`;
-DROP TABLE IF EXISTS `contactos_lista`;
 DROP TABLE IF EXISTS `campaigns`;
+DROP TABLE IF EXISTS `contactos_lista`;
 DROP TABLE IF EXISTS `listas_contactos`;
 DROP TABLE IF EXISTS `contactos`;
 DROP TABLE IF EXISTS `plantillas`;
@@ -24,7 +28,7 @@ CREATE TABLE `plantillas` (
   `tipo` VARCHAR(50) NOT NULL DEFAULT 'template',
   PRIMARY KEY (`id_plantilla`),
   KEY `idx_fecha_creacion` (`fecha_creacion` DESC)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Almacena las plantillas de correo con un editor de bloques.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Almacena las plantillas de correo con un editor de bloques.';
 
 -- -----------------------------------------------------
 -- Tabla `contactos`
@@ -43,7 +47,7 @@ CREATE TABLE `contactos` (
   PRIMARY KEY (`id_contacto`),
   UNIQUE KEY `uk_email` (`email`),
   KEY `idx_estado` (`estado`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Almacena la información de contacto de los destinatarios';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Almacena la información de contacto de los destinatarios';
 
 -- -----------------------------------------------------
 -- Tabla `listas_contactos`
@@ -60,7 +64,7 @@ CREATE TABLE `listas_contactos` (
   `datos_adicionales` json DEFAULT NULL,
   PRIMARY KEY (`id_lista`),
   KEY `idx_estado` (`estado`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Almacena las listas de contactos creadas por los usuarios';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Almacena las listas de contactos creadas por los usuarios';
 
 -- -----------------------------------------------------
 -- Tabla `contactos_lista`
@@ -76,7 +80,7 @@ CREATE TABLE `contactos_lista` (
   KEY `idx_lista` (`id_lista`),
   CONSTRAINT `fk_cl_contacto` FOREIGN KEY (`id_contacto`) REFERENCES `contactos` (`id_contacto`) ON DELETE CASCADE,
   CONSTRAINT `fk_cl_lista` FOREIGN KEY (`id_lista`) REFERENCES `listas_contactos` (`id_lista`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Relación entre contactos y listas';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Relación entre contactos y listas';
 
 -- -----------------------------------------------------
 -- Tabla `campaigns`
@@ -102,7 +106,7 @@ CREATE TABLE `campaigns` (
   KEY `fk_campaign_list-idx` (`id_lista_contactos`),
   CONSTRAINT `fk_campaign_plantilla` FOREIGN KEY (`id_plantilla`) REFERENCES `plantillas` (`id_plantilla`) ON DELETE SET NULL,
   CONSTRAINT `fk_campaign_lista` FOREIGN KEY (`id_lista_contactos`) REFERENCES `listas_contactos` (`id_lista`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Almacena la información de las campañas de correo electrónico';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Almacena la información de las campañas de correo electrónico';
 
 -- -----------------------------------------------------
 -- Tabla `recurrencias_campana`
@@ -112,9 +116,9 @@ CREATE TABLE `recurrencias_campana` (
   `id_recurrencia` INT NOT NULL AUTO_INCREMENT,
   `id_campaign` INT NOT NULL,
   `tipo_recurrencia` ENUM('diaria', 'semanal', 'mensual', 'anual') NOT NULL,
-  `intervalo` INT DEFAULT 1, -- Por ejemplo, cada 2 días, cada 3 semanas
-  `dias_semana` VARCHAR(15) DEFAULT NULL, -- Ejemplo: "LU,MA,MI" para semanal
-  `dia_mes` INT DEFAULT NULL, -- Para recurrencia mensual (ej. día 15)
+  `intervalo` INT DEFAULT 1,
+  `dias_semana` VARCHAR(15) DEFAULT NULL,
+  `dia_mes` INT DEFAULT NULL,
   `fecha_inicio` DATE NOT NULL,
   `fecha_fin` DATE DEFAULT NULL,
   `veces_enviadas` INT DEFAULT 0,
@@ -126,7 +130,7 @@ CREATE TABLE `recurrencias_campana` (
   PRIMARY KEY (`id_recurrencia`),
   KEY `fk_rc_campaign_idx` (`id_campaign`),
   CONSTRAINT `fk_rc_campaign` FOREIGN KEY (`id_campaign`) REFERENCES `campaigns` (`id_campaign`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Configuración de recurrencia para campañas';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Configuración de recurrencia para campañas';
 
 -- -----------------------------------------------------
 -- Tabla `envios_campana`
@@ -159,7 +163,7 @@ CREATE TABLE `envios_campana` (
   KEY `idx_token` (`token_seguimiento`),
   CONSTRAINT `fk_ec_campana` FOREIGN KEY (`id_campana`) REFERENCES `campaigns` (`id_campaign`) ON DELETE CASCADE,
   CONSTRAINT `fk_ec_contacto` FOREIGN KEY (`id_contacto`) REFERENCES `contactos` (`id_contacto`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Registro de envíos individuales de una campaña';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Registro de envíos individuales de una campaña';
 
 -- -----------------------------------------------------
 -- Tabla `resumen_envios_campana`
@@ -183,109 +187,169 @@ CREATE TABLE `resumen_envios_campana` (
   KEY `idx_resumen_lista` (`id_lista_contactos`),
   CONSTRAINT `fk_resumen_campaign` FOREIGN KEY (`id_campaign`) REFERENCES `campaigns` (`id_campaign`) ON DELETE CASCADE,
   CONSTRAINT `fk_resumen_lista` FOREIGN KEY (`id_lista_contactos`) REFERENCES `listas_contactos` (`id_lista`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Resumen de los envíos de campañas';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Resumen de los envíos de campañas';
 
--- Trigger para actualizar el contador de contactos en listas
-DELIMITER //
+-- -----------------------------------------------------
+-- Tabla `eventos`
+-- Almacena información sobre los eventos programados.
+-- -----------------------------------------------------
+CREATE TABLE `eventos` (
+    `id_evento` INT AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(255) NOT NULL,
+    `descripcion` TEXT,
+    `tipo_evento` VARCHAR(100),
+    `ubicacion` VARCHAR(255),
+    `fecha_hora_inicio` DATETIME NOT NULL,
+    `fecha_hora_fin` DATETIME,
+    `capacidad` INT,
+    `estado` ENUM('borrador', 'programado', 'en_curso', 'completado', 'cancelado') DEFAULT 'borrador',
+    `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `fecha_actualizacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Información sobre eventos programados';
+
+-- -----------------------------------------------------
+-- Tabla `evento_plantillas`
+-- Almacena las plantillas asociadas a los eventos.
+-- -----------------------------------------------------
+CREATE TABLE `evento_plantillas` (
+    `id_plantilla_evento` INT AUTO_INCREMENT PRIMARY KEY,
+    `id_evento` INT NOT NULL,
+    `tipo_plantilla` ENUM('invitacion', 'recordatorio', 'confirmacion', 'certificado') NOT NULL,
+    `id_plantilla` INT NOT NULL,
+    `fecha_envio_programado` DATETIME,
+    `estado` ENUM('pendiente', 'programado', 'enviado', 'fallido') DEFAULT 'pendiente',
+    `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`id_evento`) REFERENCES `eventos`(`id_evento`) ON DELETE CASCADE,
+    FOREIGN KEY (`id_plantilla`) REFERENCES `plantillas`(`id_plantilla`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Plantillas asociadas a eventos';
+
+-- -----------------------------------------------------
+-- Tabla `evento_asistentes`
+-- Registro de asistentes a eventos.
+-- -----------------------------------------------------
+CREATE TABLE `evento_asistentes` (
+    `id_asistente_evento` INT AUTO_INCREMENT PRIMARY KEY,
+    `id_evento` INT NOT NULL,
+    `id_contacto` INT NOT NULL,
+    `confirmado` BOOLEAN DEFAULT FALSE,
+    `asistio` BOOLEAN DEFAULT FALSE,
+    `fecha_confirmacion` TIMESTAMP NULL,
+    `certificado_enviado` BOOLEAN DEFAULT FALSE,
+    `fecha_envio_certificado` TIMESTAMP NULL,
+    `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `fecha_actualizacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY `unique_evento_contacto` (`id_evento`, `id_contacto`),
+    FOREIGN KEY (`id_evento`) REFERENCES `eventos`(`id_evento`) ON DELETE CASCADE,
+    FOREIGN KEY (`id_contacto`) REFERENCES `contactos`(`id_contacto`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Registro de asistentes a eventos';
+
+-- Índices para mejorar el rendimiento
+CREATE INDEX `idx_evento_plantilla_tipo` ON `evento_plantillas`(`id_evento`, `tipo_plantilla`);
+CREATE INDEX `idx_evento_asistente_estado` ON `evento_asistentes`(`id_evento`, `confirmado`, `asistio`);
+
+-- =============================================
+-- TRIGGERS
+-- =============================================
 
 -- Eliminar triggers existentes si existen
-DROP TRIGGER IF EXISTS after_contacto_list_insert//
-DROP TRIGGER IF EXISTS after_contacto_lista_update//
-DROP TRIGGER IF EXISTS after_contacto_lista_delete//
+DELIMITER //
+DROP TRIGGER IF EXISTS `after_contacto_list_insert`//
+DROP TRIGGER IF EXISTS `after_contacto_lista_update`//
+DROP TRIGGER IF EXISTS `after_contacto_lista_delete`//
 
 -- Trigger para inserciones
-CREATE TRIGGER after_contacto_list_insert
-AFTER INSERT ON contactos_lista
+CREATE TRIGGER `after_contacto_list_insert`
+AFTER INSERT ON `contactos_lista`
 FOR EACH ROW
 BEGIN
     -- Actualizar la lista con el nuevo conteo de contactos únicos activos
-    UPDATE listas_contactos 
+    UPDATE `listas_contactos` 
     SET 
-        total_contactos = (
-            SELECT COUNT(DISTINCT id_contacto)
-            FROM contactos_lista 
-            WHERE id_lista = NEW.id_lista 
-            AND estado = 'activo'
+        `total_contactos` = (
+            SELECT COUNT(DISTINCT `id_contacto`)
+            FROM `contactos_lista` 
+            WHERE `id_lista` = NEW.`id_lista` 
+            AND `estado` = 'activo'
         ),
-        fecha_actualizacion = CURRENT_TIMESTAMP
-    WHERE id_lista = NEW.id_lista;
+        `fecha_actualizacion` = CURRENT_TIMESTAMP
+    WHERE `id_lista` = NEW.`id_lista`;
 END//
 
 -- Trigger para actualizaciones
-CREATE TRIGGER after_contacto_lista_update
-AFTER UPDATE ON contactos_lista
+CREATE TRIGGER `after_contacto_lista_update`
+AFTER UPDATE ON `contactos_lista`
 FOR EACH ROW
 BEGIN
-    DECLARE old_list_id INT;
-    DECLARE new_list_id INT;
+    DECLARE `old_list_id` INT;
+    DECLARE `new_list_id` INT;
     
-    SET old_list_id = OLD.id_lista;
-    SET new_list_id = NEW.id_lista;
+    SET `old_list_id` = OLD.`id_lista`;
+    SET `new_list_id` = NEW.`id_lista`;
     
     -- Si cambió la lista o el estado, actualizar ambas listas si son diferentes
-    IF OLD.estado != NEW.estado OR old_list_id != new_list_id THEN
+    IF OLD.`estado` != NEW.`estado` OR `old_list_id` != `new_list_id` THEN
         -- Actualizar la lista anterior si es diferente de la nueva
-        IF old_list_id != new_list_id OR (OLD.estado = 'activo' AND NEW.estado != 'activo') THEN
-            UPDATE listas_contactos 
+        IF `old_list_id` != `new_list_id` OR (OLD.`estado` = 'activo' AND NEW.`estado` != 'activo') THEN
+            UPDATE `listas_contactos` 
             SET 
-                total_contactos = (
-                    SELECT COUNT(DISTINCT id_contacto)
-                    FROM contactos_lista 
-                    WHERE id_lista = old_list_id 
-                    AND estado = 'activo'
+                `total_contactos` = (
+                    SELECT COUNT(DISTINCT `id_contacto`)
+                    FROM `contactos_lista` 
+                    WHERE `id_lista` = `old_list_id` 
+                    AND `estado` = 'activo'
                 ),
-                fecha_actualizacion = CURRENT_TIMESTAMP
-            WHERE id_lista = old_list_id;
+                `fecha_actualizacion` = CURRENT_TIMESTAMP
+            WHERE `id_lista` = `old_list_id`;
         END IF;
         
         -- Actualizar la nueva lista si el nuevo estado es activo
-        IF new_list_id != old_list_id OR NEW.estado = 'activo' THEN
-            UPDATE listas_contactos 
+        IF `new_list_id` != `old_list_id` OR NEW.`estado` = 'activo' THEN
+            UPDATE `listas_contactos` 
             SET 
-                total_contactos = (
-                    SELECT COUNT(DISTINCT id_contacto)
-                    FROM contactos_lista 
-                    WHERE id_lista = new_list_id 
-                    AND estado = 'activo'
+                `total_contactos` = (
+                    SELECT COUNT(DISTINCT `id_contacto`)
+                    FROM `contactos_lista` 
+                    WHERE `id_lista` = `new_list_id` 
+                    AND `estado` = 'activo'
                 ),
-                fecha_actualizacion = CURRENT_TIMESTAMP
-            WHERE id_lista = new_list_id;
+                `fecha_actualizacion` = CURRENT_TIMESTAMP
+            WHERE `id_lista` = `new_list_id`;
         END IF;
     END IF;
 END//
 
 -- Trigger para eliminaciones
-CREATE TRIGGER after_contacto_lista_delete
-AFTER DELETE ON contactos_lista
+CREATE TRIGGER `after_contacto_lista_delete`
+AFTER DELETE ON `contactos_lista`
 FOR EACH ROW
 BEGIN
-    UPDATE listas_contactos 
+    UPDATE `listas_contactos` 
     SET 
-        total_contactos = (
-            SELECT COUNT(DISTINCT id_contacto)
-            FROM contactos_lista 
-            WHERE id_lista = OLD.id_lista 
-            AND estado = 'activo'
+        `total_contactos` = (
+            SELECT COUNT(DISTINCT `id_contacto`)
+            FROM `contactos_lista` 
+            WHERE `id_lista` = OLD.`id_lista` 
+            AND `estado` = 'activo'
         ),
-        fecha_actualizacion = CURRENT_TIMESTAMP
-    WHERE id_lista = OLD.id_lista;
+        `fecha_actualizacion` = CURRENT_TIMESTAMP
+    WHERE `id_lista` = OLD.`id_lista`;
 END//
 
 -- Actualizar contadores para listas existentes
-UPDATE listas_contactos lc
+UPDATE `listas_contactos` lc
 SET 
-    total_contactos = (
-        SELECT COUNT(DISTINCT id_contacto)
-        FROM contactos_lista cl 
-        WHERE cl.id_lista = lc.id_lista
-        AND cl.estado = 'activo'
+    `total_contactos` = (
+        SELECT COUNT(DISTINCT `id_contacto`)
+        FROM `contactos_lista` cl 
+        WHERE cl.`id_lista` = lc.`id_lista`
+        AND cl.`estado` = 'activo'
     ),
-    fecha_actualizacion = CURRENT_TIMESTAMP
-WHERE total_contactos != (
-    SELECT COUNT(DISTINCT id_contacto)
-    FROM contactos_lista cl 
-    WHERE cl.id_lista = lc.id_lista
-    AND cl.estado = 'activo'
-) OR total_contactos IS NULL//
+    `fecha_actualizacion` = CURRENT_TIMESTAMP
+WHERE `total_contactos` != (
+    SELECT COUNT(DISTINCT `id_contacto`)
+    FROM `contactos_lista` cl 
+    WHERE cl.`id_lista` = lc.`id_lista`
+    AND cl.`estado` = 'activo'
+) OR `total_contactos` IS NULL//
 
 DELIMITER ;
