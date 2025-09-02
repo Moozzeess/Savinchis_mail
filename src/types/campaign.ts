@@ -15,7 +15,7 @@ export interface Campaign {
   objective: 'promotional' | 'newsletter' | 'announcement' | 'event' | 'welcome' | 'other';
   subject: string;
   emailBody: string;
-  fromEmail?: string; // illustrative only, may be derived from authenticated user at send time
+  fromEmail?: string;
   replyTo?: string;
   contactListId?: string | number | null;
   contactListName?: string;
@@ -29,4 +29,12 @@ export interface Campaign {
   updatedAt?: string;
 }
 
-export type CampaignFormData = Omit<Campaign, 'id' | 'createdAt' | 'updatedAt'>;
+export type CampaignFormData = Omit<Campaign, 'id' | 'createdAt' | 'updatedAt'> & {
+  isRecurring?: boolean;
+  recurrenceType?: 'diaria' | 'semanal' | 'mensual' | 'anual' | null;
+  recurrenceInterval?: number | null;
+  recurrenceDaysOfWeek?: string | null;
+  recurrenceDayOfMonth?: number | null;
+  recurrenceStartDate?: string | null;
+  recurrenceEndDate?: string | null;
+};

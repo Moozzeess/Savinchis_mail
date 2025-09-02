@@ -162,6 +162,10 @@ export function RecipientStep({
         setContactSummary(result.summary);
         setValue('totalRecipients', result.summary.validEmails);
         setValue('fileContacts', result.contacts); // Guardar contactos para el paso de guardar lista
+        // Asegurar que el paso de destinatarios sea válido para "Siguiente"
+        const tempListId = `file_${Date.now()}`;
+        setValue('contactListId', tempListId);
+        setValue('contactListName', listName || (fileUpload.file?.name?.replace(/\.[^/.]+$/, '') || 'Archivo de contactos'));
         setIsMappingValidated(true);
         setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
       } else {
@@ -180,7 +184,6 @@ export function RecipientStep({
       }));
       setContactSummary(null);
       setValue('totalRecipients', 0);
-      setValue('fileContacts', []);
       setIsMappingValidated(false);
     }
   }, [fileBufferState, columnMapping, setValue, fileUpload.file]);
@@ -336,6 +339,10 @@ export function RecipientStep({
           setValue('totalRecipients', 0);
         }
         setValue('dbContacts', result.contacts); // Guardar contactos para el paso de guardar lista
+        // Asegurar que el paso de destinatarios sea válido para "Siguiente"
+        const tempListId = `db_${Date.now()}`;
+        setValue('contactListId', tempListId);
+        setValue('contactListName', 'Base de datos');
       } else {
         setDbConnectionTested(false);
         setFileUpload(prev => ({

@@ -23,25 +23,25 @@ body {
 
 @layer base { /* Define una capa base para estilos personalizados */
   :root { /* Define variables CSS para el tema claro */
-    --background: 161 67% 93%; /* Color de fondo */
+    --background: 160 60% 95%; /* Fondo ligeramente más claro y limpio */
     --foreground: 160 10% 20%; /* Color del texto */
-    --card: 161 67% 93%; /* Color de fondo de las tarjetas */
+    --card: 160 55% 96%; /* Tarjeta un punto más clara que el fondo */
     --card-foreground: 160 10% 20%; /* Color del texto de las tarjetas */
-    --popover: 161 67% 93%; /* Color de fondo de los popovers */
+    --popover: 160 55% 96%; /* Popover acorde a las tarjetas */
     --popover-foreground: 160 10% 20%; /* Color del texto de los popovers */
-    --primary: 159 35% 72%; /* Color primario */
-    --primary-foreground: 160 10% 10%; /* Color del texto primario */
-    --secondary: 159 30% 85%; /* Color secundario */
+    --primary: 158 65% 45%; /* Verde esmeralda más vibrante (mejor contraste) */
+    --primary-foreground: 0 0% 100%; /* Texto blanco sobre primario */
+    --secondary: 160 35% 88%; /* Suave verde-gris para superficies secundarias */
     --secondary-foreground: 160 10% 10%; /* Color del texto secundario */
-    --muted: 159 30% 85%; /* Color de texto atenuado */
-    --muted-foreground: 160 10% 40%; /* Color del texto atenuado de primer plano */
-    --accent: 159 29% 58%; /* Color de acento */
-    --accent-foreground: 160 10% 10%; /* Color del texto de acento */
+    --muted: 160 30% 90%; /* Superficies atenuadas más claras */
+    --muted-foreground: 160 12% 32%; /* Texto atenuado con mejor legibilidad */
+    --accent: 158 70% 50%; /* Acento consistente con el primario */
+    --accent-foreground: 0 0% 100%; /* Texto blanco sobre acento */
     --destructive: 0 84.2% 60.2%; /* Color para elementos destructivos (ej: errores) */
     --destructive-foreground: 0 0% 98%; /* Color del texto destructivo */
-    --border: 159 30% 80%; /* Color de los bordes */
-    --input: 159 40% 88%; /* Color de los campos de entrada */
-    --ring: 159 29% 58%; /* Color del anillo de enfoque */
+    --border: 160 25% 82%; /* Bordes con mejor definición */
+    --input: 160 40% 92%; /* Inputs ligeramente más claros */
+    --ring: 158 70% 46%; /* Ring alineado con primario para foco visible */
     --radius: 0.75rem; /* Radio por defecto para bordes redondeados */
     --chart-1: 12 76% 61%; /* Color 1 para gráficos */
     --chart-2: 173 58% 39%; /* Color 2 para gráficos */
@@ -49,49 +49,49 @@ body {
     --chart-4: 43 74% 66%; /* Color 4 para gráficos */
     --chart-5: 27 87% 67%; /* Color 5 para gráficos */
 
-    --sidebar-background: 159 40% 88%; /* Color de fondo de la barra lateral */
-    --sidebar-foreground: 160 10% 20%; /* Color del texto de la barra lateral */
-    --sidebar-primary: 159 35% 72%; /* Color primario de la barra lateral */
-    --sidebar-primary-foreground: 160 10% 10%; /* Color del texto primario de la barra lateral */
-    --sidebar-accent: 159 29% 58%; /* Color de acento de la barra lateral */
-    --sidebar-accent-foreground: 160 10% 10%; /* Color del texto de acento de la barra lateral */
-    --sidebar-border: 159 30% 80%; /* Color del borde de la barra lateral */
-    --sidebar-ring: 159 29% 58%; /* Color del anillo de enfoque de la barra lateral */
+    --sidebar-background: 160 42% 94%; /* Sidebar más limpio y luminoso */
+    --sidebar-foreground: 160 12% 18%; /* Texto sidebar */
+    --sidebar-primary: 158 65% 45%; /* Igual al primario */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 158 70% 50%; /* Hover/activo vibrante */
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 160 25% 86%;
+    --sidebar-ring: 158 70% 46%;
   }
   .dark { /* Tema oscuro mejorado */
-    --background: 220 15% 13%; /* Fondo oscuro suave */
+    --background: 210 15% 12%; /* Un poco más profundo para contraste */
     --foreground: 0 0% 98%; /* Texto principal casi blanco */
-    --card: 220 15% 16%; /* Tarjetas ligeramente más claras */
+    --card: 210 18% 16%; /* Tarjetas */
     --card-foreground: 0 0% 98%;
-    --popover: 220 15% 16%;
+    --popover: 210 18% 16%;
     --popover-foreground: 0 0% 98%;
-    --primary: 158 64% 52%; /* Verde esmeralda vibrante */
+    --primary: 158 70% 52%; /* Verde más vivo en oscuro */
     --primary-foreground: 0 0% 100%;
-    --secondary: 215 25% 27%; /* Azul grisáceo para elementos secundarios */
+    --secondary: 210 20% 24%; /* Neutro para superficies secundarias */
     --secondary-foreground: 0 0% 98%;
-    --muted: 220 15% 20%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 158 64% 45%; /* Versión más oscura del primario */
+    --muted: 210 16% 18%;
+    --muted-foreground: 210 20% 70%;
+    --accent: 158 70% 45%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 215 27% 20%;
-    --input: 215 25% 20%;
-    --ring: 158 64% 52%;
+    --border: 210 22% 22%;
+    --input: 210 22% 22%;
+    --ring: 158 70% 52%;
     --chart-1: 220 70% 50%; /* Color 1 para gráficos en modo oscuro */
     --chart-2: 160 60% 45%; /* Color 2 para gráficos en modo oscuro */
     --chart-3: 30 80% 55%; /* Color 3 para gráficos en modo oscuro */
     --chart-4: 280 65% 60%; /* Color 4 para gráficos en modo oscuro */
     --chart-5: 340 75% 55%; /* Color 5 para gráficos en modo oscuro */
 
-    --sidebar-background: 220 15% 16%; /* Igual que las tarjetas */
+    --sidebar-background: 210 18% 16%; /* Igual que las tarjetas */
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 158 64% 52%;
+    --sidebar-primary: 158 70% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 158 64% 45%;
+    --sidebar-accent: 158 70% 48%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 215 27% 20%;
-    --sidebar-ring: 158 64% 52%;
+    --sidebar-border: 210 22% 22%;
+    --sidebar-ring: 158 70% 52%;
   }
 }
 

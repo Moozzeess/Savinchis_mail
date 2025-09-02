@@ -115,13 +115,25 @@ export default function ReviewStep({
         description: (values as any).description ?? undefined,
         objective: values.objective || 'promotional',
         subject: values.subject,
-        // Priorizar contenido de plantilla si existe; si no, usar emailBody
+        // Solo para compatibilidad, el backend ahora acepta templateBlocks y/o emailBody
         emailBody: values.templateContent || values.emailBody || '',
+        // Enviar bloques crudos si existen para que el backend guarde JSON
+        templateBlocks: (values as any).templateBlocks ?? null,
+        // Asegurar envío del id de plantilla
+        templateId: values.templateId ? Number(values.templateId) : null,
         contactListId: values.contactListId ? Number(values.contactListId) : null,
         // El servidor espera scheduleDate/scheduleTime
         scheduleDate: values.scheduleDate || null,
         scheduleTime: values.scheduleTime || null,
         status: values.status || 'draft',
+        // Campos de recurrencia si la UI los estableció
+        isRecurring: (values as any).isRecurring ?? false,
+        recurrenceType: (values as any).recurrenceType ?? null,
+        recurrenceInterval: (values as any).recurrenceInterval ?? null,
+        recurrenceDaysOfWeek: (values as any).recurrenceDaysOfWeek ?? null,
+        recurrenceDayOfMonth: (values as any).recurrenceDayOfMonth ?? null,
+        recurrenceStartDate: (values as any).recurrenceStartDate ?? null,
+        recurrenceEndDate: (values as any).recurrenceEndDate ?? null,
       };
 
       const response = await fetch('/api/campaigns', {

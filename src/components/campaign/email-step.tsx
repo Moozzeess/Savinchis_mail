@@ -120,10 +120,14 @@ export function EmailStep({ className = '' }: { className?: string }) {
         } catch {
           htmlContent = '';
         }
+        // Guardar también los bloques crudos para ser enviados al backend
+        setValue('templateBlocks', rawContent);
       } else if (typeof rawContent === 'string') {
         htmlContent = rawContent;
+        setValue('templateBlocks', null);
       } else {
         htmlContent = '';
+        setValue('templateBlocks', null);
       }
 
       setValue('templateContent', htmlContent);

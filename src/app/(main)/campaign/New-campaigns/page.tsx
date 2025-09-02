@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,6 +18,7 @@ import { EmailStep } from '@/components/campaign/email-step';
 import { SchedulingStep } from '@/components/campaign/scheduling-step';
 import ReviewStep from '@/components/campaign/review-step';
 import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 // Types
 import { Campaign, CampaignFormData } from '@/types/campaign';
@@ -39,9 +42,9 @@ const campaignFormSchema = z.object({
 //  replyTo: z.string().email('Ingresa un correo electrónico válido').optional(),
   
   // Destinatarios
-  contactListId: z.string().min(1, 'Debes seleccionar una lista de contactos'),
+  contactListId: z.coerce.string().min(1, 'Debes seleccionar una lista de contactos'),
   contactListName: z.string().optional(),
-  totalRecipients: z.number().min(1, 'Debes tener al menos un destinatario'),
+  totalRecipients: z.coerce.number().min(1, 'Debes tener al menos un destinatario'),
   
   // Programación
   sendNow: z.boolean().default(true),
@@ -49,6 +52,15 @@ const campaignFormSchema = z.object({
   useOptimalTime: z.boolean().default(false),
   timeZone: z.string().default(Intl.DateTimeFormat().resolvedOptions().timeZone),
   status: z.enum(['draft', 'scheduled', 'sending', 'sent', 'failed']).default('draft'),
+
+  // Recurrencia
+  isRecurring: z.boolean().default(false),
+  recurrenceType: z.enum(['diaria', 'semanal', 'mensual', 'anual']).optional(),
+  recurrenceInterval: z.coerce.number().optional(),
+  recurrenceDaysOfWeek: z.string().optional(),
+  recurrenceDayOfMonth: z.coerce.number().optional(),
+  recurrenceStartDate: z.date().optional(),
+  recurrenceEndDate: z.date().optional(),
   
   // Seguimiento
   trackOpens: z.boolean().default(true),
@@ -81,6 +93,13 @@ export default function NewCampaignPage() {
       isABTest: false,
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       useOptimalTime: false,
+      isRecurring: false,
+      recurrenceType: undefined,
+      recurrenceInterval: undefined,
+      recurrenceDaysOfWeek: '',
+      recurrenceDayOfMonth: undefined,
+      recurrenceStartDate: undefined,
+      recurrenceEndDate: undefined,
     },
   });
   
@@ -109,7 +128,13 @@ export default function NewCampaignPage() {
       case 2: // Email
         return ['subject', 'emailBody'];
       case 3: // Programación
-        return ['sendNow', 'scheduledAt', 'timeZone'];
+        // Validar recurrencia solo si está activa
+        const base: (keyof z.infer<typeof campaignFormSchema>)[] = ['sendNow', 'scheduledAt', 'timeZone'];
+        const vals = methods.getValues();
+        if (vals.isRecurring) {
+          base.push('recurrenceType', 'recurrenceInterval');
+        }
+        return base;
       default:
         return [];
     }
@@ -138,7 +163,15 @@ export default function NewCampaignPage() {
         totalRecipients: data.totalRecipients || 0,
         status: 'draft',
         timeZone: data.timeZone,
-        useOptimalTime: data.useOptimalTime
+        useOptimalTime: data.useOptimalTime,
+        // Recurrence mapping expected by server action
+        isRecurring: data.isRecurring,
+        recurrenceType: data.isRecurring ? (data.recurrenceType as any) : null,
+        recurrenceInterval: data.isRecurring ? (data.recurrenceInterval ?? null) : null,
+        recurrenceDaysOfWeek: data.isRecurring ? (data.recurrenceDaysOfWeek || null) : null,
+        recurrenceDayOfMonth: data.isRecurring ? (data.recurrenceDayOfMonth ?? null) : null,
+        recurrenceStartDate: data.isRecurring ? (data.recurrenceStartDate ? data.recurrenceStartDate.toISOString() : null) : null,
+        recurrenceEndDate: data.isRecurring ? (data.recurrenceEndDate ? data.recurrenceEndDate.toISOString() : null) : null,
       };
       
       // Eliminar propiedades undefined
@@ -191,11 +224,19 @@ export default function NewCampaignPage() {
     <div className="container mx-auto py-8">
       <div className="space-y-8">
         <FormProvider {...methods}>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Crear nueva campaña</h1>
-            <p className="text-muted-foreground">
-              Completa los siguientes pasos para crear y programar tu campaña de correo electrónico.
-            </p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Crear nueva campaña</h1>
+              <p className="text-muted-foreground">
+                Completa los siguientes pasos para crear y programar tu campaña de correo electrónico.
+              </p>
+            </div>
+            <Link href="/campaign">
+              <Button variant="outline" className="gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Volver a campañas
+              </Button>
+            </Link>
           </div>
           
           <CampaignSteps currentStep={currentStep} onStepClick={setCurrentStep} />

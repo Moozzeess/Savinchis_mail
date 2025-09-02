@@ -3,12 +3,13 @@
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Mails, Users, Plus, MailCheck, BarChart2, Loader2, CheckCircle, Clock, XCircle, AlertCircle, ArrowRight } from "lucide-react";
+import { Mails, Users, Plus, MailCheck, BarChart2, Loader2, CheckCircle, Clock, XCircle, AlertCircle, ArrowRight, Pencil, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useRouter } from 'next/navigation';
 import { getCampaigns } from '@/actions/Campaings/new-campaign-action';
+import { deleteCampaign } from '@/actions/Campaings/delete-campaign-action';
 import { useEffect, useState } from 'react';
 import { Campaign } from '@/types/campaign';
 
@@ -122,6 +123,32 @@ export default function DashboardPage() {
     router.push(`/campaign/${campaignId}`);
   };
 
+  const handleEditClick = (e: React.MouseEvent, campaignId: string | number) => {
+    e.stopPropagation();
+    router.push(`/campaign/${campaignId}/edit`);
+  };
+
+  const handleDeleteClick = async (e: React.MouseEvent, campaignId: string | number) => {
+    e.stopPropagation();
+    if (confirm('¿Estás seguro de que deseas eliminar esta campaña? Esta acción no se puede deshacer.')) {
+      try {
+        const result = await deleteCampaign(Number(campaignId));
+        if (result.success) {
+          // Actualizar la lista de campañas
+          const updatedCampaigns = campaigns.filter(c => c.id !== campaignId);
+          setCampaigns(updatedCampaigns);
+          // Actualizar estadísticas
+          setStats(calculateCampaignStats(updatedCampaigns));
+        } else {
+          alert(result.message || 'Error al eliminar la campaña');
+        }
+      } catch (error) {
+        console.error('Error al eliminar la campaña:', error);
+        alert('Ocurrió un error al intentar eliminar la campaña');
+      }
+    }
+  };
+
   const renderCampaignCard = (campaign: Campaign) => {
     const sent = campaign.stats?.sent || 0;
     const opened = campaign.stats?.opened || 0;
@@ -190,10 +217,21 @@ export default function DashboardPage() {
           </div>
         )}
         
-        <div className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
-          <div className="text-xs text-primary bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-full border border-primary/20 dark:border-primary/30">
-            Ver detalles →
-          </div>
+        <div className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+          <button 
+            onClick={(e) => handleEditClick(e, campaign.id)}
+            className="p-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 transition-colors"
+            title="Editar campaña"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button 
+            onClick={(e) => handleDeleteClick(e, campaign.id)}
+            className="p-1.5 rounded-full bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-800/50 transition-colors"
+            title="Eliminar campaña"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     );
@@ -247,6 +285,12 @@ export default function DashboardPage() {
             Gestiona y supervisa tus campañas de marketing por email
           </p>
         </div>
+        <Link href="/campaign/New-campaigns">
+          <Button className="gap-2 bg-primary hover:bg-primary/90 dark:bg-primary dark:hover:bg-primary/90">
+            <Plus className="h-4 w-4" />
+            Nueva campaña
+          </Button>
+        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -321,12 +365,20 @@ export default function DashboardPage() {
                 : `Mostrando ${Math.min(campaigns.length, 5)} de ${stats.totalCampaigns} campañas`}
             </CardDescription>
           </div>
-          <Link href="/campaign">
-            <Button variant="outline" size="sm" className="gap-2 border-border/50 dark:border-gray-700 dark:hover:bg-gray-800">
-              Ver todas
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/campaign">
+              <Button variant="outline" size="sm" className="gap-2 border-border/50 dark:border-gray-700 dark:hover:bg-gray-800">
+                Ver todas
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/campaign/New-campaigns">
+              <Button size="sm" className="gap-2 bg-primary hover:bg-primary/90 dark:bg-primary dark:hover:bg-primary/90">
+                <Plus className="h-4 w-4" />
+                Nueva campaña
+              </Button>
+            </Link>
+          </div>
         </CardHeader>
         <CardContent>
           {campaigns.length === 0 ? (

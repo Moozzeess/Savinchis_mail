@@ -2,58 +2,60 @@
 
 import { revalidatePath } from 'next/cache';
 import { getDbConnection } from '../DBConnection';
+import { RowDataPacket } from 'mysql2';
 
 /**
  * @interface CampaignData
  * @description Interfaz para la estructura de datos de la campaña
  */
 interface CampaignData {
- name: string;
- description?: string;
- objective: string;
- templateId?: number | null;
- subject: string;
- emailBody: string;
- fromName?: string; // illustrative only, not persisted
- fromEmail?: string; // illustrative only, not persisted
- replyTo?: string;
- scheduleDate?: string | null;
- scheduleTime?: string | null;
- contactListId?: number | null;
- status?: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled' | 'failed' | 'paused' | 'completed';
- isRecurring?: boolean;
- recurrenceType?: 'diaria' | 'semanal' | 'mensual' | 'anual' | null;
- recurrenceInterval?: number | null;
- recurrenceDaysOfWeek?: string | null;
- recurrenceDayOfMonth?: number | null;
- recurrenceStartDate?: string | null;
- recurrenceEndDate?: string | null;
+  name: string;
+  description?: string;
+  objective: string;
+  templateId?: number | null;
+  subject: string;
+  emailBody?: string;
+  // When a template is used, this should contain the raw blocks JSON
+  templateBlocks?: unknown;
+  fromName?: string; // illustrative only, not persisted
+  fromEmail?: string; // illustrative only, not persisted
+  replyTo?: string;
+  scheduleDate?: string | null;
+  scheduleTime?: string | null;
+  contactListId?: number | null;
+  status?: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled' | 'failed' | 'paused' | 'completed';
+  isRecurring?: boolean;
+  recurrenceType?: 'diaria' | 'semanal' | 'mensual' | 'anual' | null;
+  recurrenceInterval?: number | null;
+  recurrenceDaysOfWeek?: string | null;
+  recurrenceDayOfMonth?: number | null;
+  recurrenceStartDate?: string | null;
+  recurrenceEndDate?: string | null;
 }
 
 interface DBCampaign extends Record<string, any> {
- id_campaign: number;
- nombre_campaign: string;
- descripcion?: string;
- asunto: string;
- contenido?: string;
- from_email?: string;
- reply_to?: string;
- id_lista_contactos?: number;
- nombre_lista?: string;
- total_recipients?: number;
- fecha_envio?: string | null;
- estado: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled' | 'failed' | 'paused' | 'completed';
- fecha_creacion: string;
- fecha_actualizacion: string;
- total_enviados?: number;
- total_entregados?: number;
- total_aperturas?: number;
- total_clics?: number;
- total_rebotados?: number;
- total_quejas?: number;
- total_fallidos?: number;
+  id_campaign: number;
+  nombre_campaign: string;
+  descripcion?: string;
+  asunto: string;
+  contenido?: string;
+  from_email?: string;
+  reply_to?: string;
+  id_lista_contactos?: number;
+  nombre_lista?: string;
+  total_recipients?: number;
+  fecha_envio?: string | null;
+  estado: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled' | 'failed' | 'paused' | 'completed';
+  fecha_creacion: string;
+  fecha_actualizacion: string;
+  total_enviados?: number;
+  total_entregados?: number;
+  total_aperturas?: number;
+  total_clics?: number;
+  total_rebotados?: number;
+  total_quejas?: number;
+  total_fallidos?: number;
 }
-
 
 /**
  * @function createCampaign
@@ -66,7 +68,8 @@ interface DBCampaign extends Record<string, any> {
  * @param {string} campaignData.objective - El objetivo de la campaña (campo `objective` en la interfaz, pero no se usa en el SQL).
  * @param {number} [campaignData.templateId] - El ID de la plantilla de correo electrónico asociada.
  * @param {string} campaignData.subject - El asunto del correo electrónico.
- * @param {string} campaignData.emailBody - El cuerpo HTML del correo electrónico.
+ * @param {string} [campaignData.emailBody] - El cuerpo HTML del correo electrónico.
+ * @param {unknown} [campaignData.templateBlocks] - Los bloques de plantilla en formato JSON.
  * @param {string} campaignData.fromName - El nombre del remitente.
  * @param {string} campaignData.fromEmail - La dirección de correo electrónico del remitente.
  * @param {string} [campaignData.replyTo] - La dirección de correo electrónico para las respuestas. Por defecto, es `fromEmail`.
@@ -85,14 +88,16 @@ export async function createCampaign(campaignData: CampaignData) {
     connection = await getDbConnection();
     
     // Validate required fields (do not require sender fields)
-    if (!campaignData.name || !campaignData.subject || !campaignData.emailBody) {
+    // Allow either emailBody (HTML) or templateBlocks (raw JSON blocks)
+    if (!campaignData.name || !campaignData.subject || (!campaignData.emailBody && !campaignData.templateBlocks)) {
       throw new Error('Faltan campos requeridos para crear la campaña');
     }
     
     // Log the incoming data for debugging
     console.log('Creating campaign with data:', {
       ...campaignData,
-      emailBody: campaignData.emailBody ? '[CONTENT]' : 'EMPTY'
+      emailBody: campaignData.emailBody ? '[CONTENT]' : 'EMPTY',
+      templateBlocks: campaignData.templateBlocks ? '[BLOCKS]' : 'EMPTY'
     });
     
     // Start transaction
@@ -117,7 +122,10 @@ export async function createCampaign(campaignData: CampaignData) {
     descripcion: campaignData.description || null,
     id_plantilla: campaignData.templateId ? Number(campaignData.templateId) : null,
     asunto: campaignData.subject,
-    contenido: campaignData.emailBody,
+    // Prefer raw template blocks JSON if provided, else fallback to HTML body
+    contenido: campaignData.templateBlocks
+      ? JSON.stringify(campaignData.templateBlocks)
+      : (campaignData.emailBody || null),
     fecha_envio: campaignData.scheduleDate
       ? new Date(`${campaignData.scheduleDate} ${campaignData.scheduleTime || '00:00'}`)
       : null,
@@ -320,12 +328,32 @@ export async function getCampaignById(campaignId: number) {
   
   const [campaigns] = await connection.query(
    `SELECT 
-    c.*,
-    l.nombre as nombre_lista,
-    p.nombre as nombre_plantilla
-   FROM campaigns c
-   LEFT JOIN listas_contactos l ON c.id_lista_contactos = l.id_lista
-   LEFT JOIN plantillas p ON c.id_plantilla = p.id_plantilla
+     c.id_campaign,
+     c.nombre_campaign,
+     c.descripcion,
+     c.objetivo,
+     c.asunto,
+     c.contenido,
+     c.id_lista_contactos,
+     c.fecha_envio,
+     c.estado,
+     c.fecha_creacion,
+     c.fecha_actualizacion,
+     l.nombre as nombre_lista,
+     l.total_contactos,
+     p.nombre as nombre_plantilla,
+     rc.tipo_recurrencia,
+     rc.intervalo,
+     rc.dias_semana,
+     rc.dia_mes,
+     rc.fecha_fin,
+     rc.proxima_ejecucion,
+     rc.ultima_ejecucion,
+     rc.estado as estado_recurrencia
+    FROM campaigns c
+    LEFT JOIN listas_contactos l ON c.id_lista_contactos = l.id_lista
+    LEFT JOIN plantillas p ON c.id_plantilla = p.id_plantilla
+    LEFT JOIN recurrencias_campana rc ON rc.id_campaign = c.id_campaign
    WHERE c.id_campaign = ?`,
    [campaignId]
   );
@@ -364,6 +392,144 @@ export async function getCampaignById(campaignId: number) {
  * si la operación fue exitosa y un mensaje descriptivo.
  * @async
  */
+/**
+ * @function updateCampaign
+ * @description Actualiza una campaña existente en la base de datos.
+ * @param {number} campaignId - El ID de la campaña a actualizar
+ * @param {object} campaignData - Datos de la campaña a actualizar
+ * @returns {Promise<{success: boolean, message: string}>} - Resultado de la operación
+ */
+export async function updateCampaign(
+  campaignId: number, 
+  campaignData: Partial<CampaignData> & { 
+    id_campaign?: number;
+    nombre_campaign: string;
+    descripcion?: string | null;
+    objetivo: string;
+    asunto: string;
+    contenido: string;
+    id_lista_contactos: number;
+    nombre_lista?: string;
+    total_contactos: number;
+    fecha_envio?: string | null;
+    estado: string;
+    es_recurrente?: boolean;
+    tipo_recurrencia?: 'diaria' | 'semanal' | 'mensual' | 'anual' | null;
+    intervalo?: number | null;
+    dias_semana?: string | null;
+    dia_mes?: number | null;
+    fecha_fin?: string | null;
+  }
+) {
+  let connection;
+  try {
+    connection = await getDbConnection();
+    await connection.beginTransaction();
+
+    // 1. Actualizar la campaña principal
+    const [campaignResult] = await connection.execute(
+      `UPDATE campaigns 
+       SET nombre_campaign = ?, 
+           descripcion = ?, 
+           objetivo = ?, 
+           asunto = ?, 
+           contenido = ?, 
+           id_lista_contactos = ?, 
+           fecha_envio = ?, 
+           estado = ?,
+           fecha_actualizacion = NOW()
+       WHERE id_campaign = ?`,
+      [
+        campaignData.nombre_campaign,
+        campaignData.descripcion || null,
+        campaignData.objetivo,
+        campaignData.asunto,
+        campaignData.contenido,
+        campaignData.id_lista_contactos,
+        campaignData.fecha_envio || null,
+        campaignData.estado,
+        campaignId
+      ]
+    );
+
+    // 2. Manejar la recurrencia
+    if (campaignData.es_recurrente && campaignData.tipo_recurrencia) {
+      // Verificar si ya existe una entrada de recurrencia
+      const [existingRecurrence] = await connection.execute<RowDataPacket[]>(
+        'SELECT id_recurrencia FROM recurrencias_campana WHERE id_campaign = ?',
+        [campaignId]
+      ) as [RowDataPacket[], any];
+
+      if (existingRecurrence.length > 0) {
+        // Actualizar recurrencia existente
+        await connection.execute(
+          `UPDATE recurrencias_campana 
+           SET tipo_recurrencia = ?, 
+               intervalo = ?, 
+               dias_semana = ?, 
+               dia_mes = ?, 
+               fecha_fin = ?,
+               fecha_actualizacion = NOW()
+           WHERE id_campaign = ?`,
+          [
+            campaignData.tipo_recurrencia,
+            campaignData.intervalo || 1,
+            campaignData.dias_semana || null,
+            campaignData.dia_mes || null,
+            campaignData.fecha_fin || null,
+            campaignId
+          ]
+        );
+      } else {
+        // Crear nueva entrada de recurrencia
+        await connection.execute(
+          `INSERT INTO recurrencias_campana 
+           (id_campaign, tipo_recurrencia, intervalo, dias_semana, dia_mes, fecha_fin, fecha_creacion, fecha_actualizacion)
+           VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+          [
+            campaignId,
+            campaignData.tipo_recurrencia,
+            campaignData.intervalo || 1,
+            campaignData.dias_semana || null,
+            campaignData.dia_mes || null,
+            campaignData.fecha_fin || null
+          ]
+        );
+      }
+    } else {
+      // Eliminar recurrencia si existe
+      await connection.execute(
+        'DELETE FROM recurrencias_campana WHERE id_campaign = ?',
+        [campaignId]
+      );
+    }
+
+    await connection.commit();
+    
+    // Revalidar las rutas relevantes
+    revalidatePath('/campaign');
+    revalidatePath(`/campaign/${campaignId}`);
+    
+    return {
+      success: true,
+      message: 'Campaña actualizada exitosamente'
+    };
+  } catch (error) {
+    if (connection) {
+      await connection.rollback();
+    }
+    console.error('Error al actualizar la campaña:', error);
+    return {
+      success: false,
+      message: 'Error al actualizar la campaña: ' + (error as Error).message
+    };
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+
 export async function updateCampaignStatus(campaignId: number, status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled') {
  let connection;
  
