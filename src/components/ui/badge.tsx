@@ -25,10 +25,21 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
+        success:
+          "border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200",
+        warning:
+          "border-transparent bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200",
+        info:
+          "border-transparent bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-200",
+      },
+      pulse: {
+        true: "animate-pulse",
+        false: "",
       },
     },
     defaultVariants: {
       variant: "default",
+      pulse: false,
     },
   }
 )
@@ -38,15 +49,17 @@ const badgeVariants = cva(
  */
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+    VariantProps<typeof badgeVariants> {
+  pulse?: boolean
+}
 
 /**
  * Componente Badge para mostrar etiquetas o estados.
  * @param {BadgeProps} props - Propiedades del componente.
  */
-function Badge({ className, variant, ...props }: BadgeProps) {
+function Badge({ className, variant, pulse = false, ...props }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <div className={cn(badgeVariants({ variant, pulse }), className)} {...props} />
   )
 }
 

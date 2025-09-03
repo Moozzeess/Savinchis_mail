@@ -7,6 +7,7 @@ import { RowDataPacket } from 'mysql2';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { toast } from 'sonner';
 
 // Types
 import type { DBCampaign } from '@/types/campaign-db';
@@ -121,13 +122,23 @@ export default function EditCampaignPage() {
             return date.toISOString().slice(0, 16);
           };
 
+          // Obtener el objetivo de datos_adicionales o usar un valor por defecto
+          const datosAdicionales = typeof campaign.datos_adicionales === 'string' 
+            ? JSON.parse(campaign.datos_adicionales) 
+            : campaign.datos_adicionales || {};
+          
           // Definir el tipo para los valores permitidos de objetivo
           type ObjetivoTipo = 'promocional' | 'boletin' | 'anuncio' | 'evento' | 'bienvenida' | 'otro';
           
+          // Obtener el objetivo de los datos adicionales o usar un valor por defecto
+          const objetivo = typeof datosAdicionales === 'object' && datosAdicionales !== null 
+            ? datosAdicionales.objetivo || 'promocional'
+            : 'promocional';
+            
           // Asegurar que el objetivo sea uno de los permitidos
           const objetivoValido: ObjetivoTipo = 
-            ['promocional', 'boletin', 'anuncio', 'evento', 'bienvenida', 'otro'].includes(campaign.objetivo as string)
-              ? (campaign.objetivo as ObjetivoTipo)
+            ['promocional', 'boletin', 'anuncio', 'evento', 'bienvenida', 'otro'].includes(objetivo)
+              ? (objetivo as ObjetivoTipo)
               : 'promocional';
           
           // Definir el tipo para los valores permitidos de estado
@@ -148,6 +159,7 @@ export default function EditCampaignPage() {
             asunto: campaign.asunto || '',
             contenido: campaign.contenido || '',
             id_lista: campaign.id_lista_contactos || 0,
+            id_plantilla: campaign.id_plantilla || undefined,
             nombre_lista: campaign.nombre_lista || '',
             total_contactos: campaign.total_contactos || 0,
             enviar_ahora: !campaign.fecha_envio,
@@ -159,7 +171,67 @@ export default function EditCampaignPage() {
             intervalo: campaign.intervalo || 1,
             dias_semana: campaign.dias_semana || undefined,
             dia_mes: campaign.dia_mes || undefined,
-            fecha_fin: formatDateForInput(campaign.fecha_fin) || undefined
+            fecha_fin: formatDateForInput(campaign.fecha_fin) || undefined,
+
+            // Campos esperados por los step components (inglés)
+            // DetailsStep
+            name: campaign.nombre_campaign || '',
+            description: campaign.descripcion || '',
+            objective: (() => {
+              const map: Record<string, string> = {
+                promocional: 'promotional',
+                boletin: 'newsletter',
+                anuncio: 'announcement',
+                evento: 'event',
+                bienvenida: 'welcome',
+                otro: 'other',
+              };
+              return map[objetivoValido] || 'promotional';
+            })(),
+
+            // EmailStep
+            fromName: '',
+            fromEmail: '',
+            subject: campaign.asunto || '',
+            emailBody: campaign.contenido || '',
+            templateId: campaign.id_plantilla ?? null,
+            templateName: '',
+            templateContent: campaign.contenido || '',
+            templateBlocks: null as any,
+
+            // RecipientStep
+            contactListId: campaign.id_lista_contactos ? String(campaign.id_lista_contactos) : '',
+            contactListName: campaign.nombre_lista || '',
+            totalRecipients: campaign.total_contactos || 0,
+
+            // SchedulingStep
+            scheduledSends: [
+              {
+                id: '1',
+                name: 'Envío Principal',
+                sendNow: !campaign.fecha_envio,
+                optimalTime: false,
+                date: campaign.fecha_envio ? new Date(campaign.fecha_envio) : new Date(),
+                hour: campaign.fecha_envio ? new Date(campaign.fecha_envio).getHours().toString().padStart(2, '0') : '12',
+                minute: campaign.fecha_envio ? new Date(campaign.fecha_envio).getMinutes().toString().padStart(2, '0') : '00',
+                timezone: 'America/Mexico_City',
+                isEditing: false,
+                isRecurring: !!campaign.tipo_recurrencia,
+                recurrenceType: campaign.tipo_recurrencia || undefined,
+                recurrenceInterval: campaign.intervalo || undefined,
+                recurrenceDaysOfWeek: campaign.dias_semana || undefined,
+                recurrenceDayOfMonth: campaign.dia_mes || undefined,
+                recurrenceStartDate: campaign.fecha_envio ? new Date(campaign.fecha_envio) : undefined,
+                recurrenceEndDate: campaign.fecha_fin ? new Date(campaign.fecha_fin) : undefined,
+              },
+            ],
+            isRecurring: !!campaign.tipo_recurrencia,
+            recurrenceType: campaign.tipo_recurrencia || undefined,
+            recurrenceInterval: campaign.intervalo || undefined,
+            recurrenceDaysOfWeek: campaign.dias_semana || undefined,
+            recurrenceDayOfMonth: campaign.dia_mes || undefined,
+            recurrenceStartDate: campaign.fecha_envio ? new Date(campaign.fecha_envio) : undefined,
+            recurrenceEndDate: campaign.fecha_fin ? new Date(campaign.fecha_fin) : undefined,
           };
           
           console.log('Cargando datos de la campaña:', formData);
@@ -178,6 +250,45 @@ export default function EditCampaignPage() {
     loadCampaign();
   }, [campaignId, methods]);
 
+  // Sincronizar campos en inglés (usados por los steps) con los del esquema en español (para validación y envío)
+  useEffect(() => {
+    const anyMethods = methods as any;
+    const subscription = anyMethods.watch((value: any) => {
+      // DetailsStep -> Spanish
+      methods.setValue('nombre_campaign', value?.name || '');
+      methods.setValue('descripcion', value?.description || '');
+      const obj = value?.objective as string | undefined;
+      const mapReverse: Record<string, 'promocional' | 'boletin' | 'anuncio' | 'evento' | 'bienvenida' | 'otro'> = {
+        promotional: 'promocional',
+        newsletter: 'boletin',
+        announcement: 'anuncio',
+        event: 'evento',
+        welcome: 'bienvenida',
+        other: 'otro',
+      };
+      if (obj && mapReverse[obj]) {
+        methods.setValue('objetivo', mapReverse[obj]);
+      }
+
+      // EmailStep -> Spanish
+      methods.setValue('asunto', value?.subject || '');
+      methods.setValue('contenido', value?.emailBody || '');
+
+      // RecipientStep -> Spanish
+      const idStr = value?.contactListId as string | undefined;
+      methods.setValue('id_lista', idStr ? Number(idStr) : 0);
+      methods.setValue('nombre_lista', value?.contactListName || '');
+      const total = value?.totalRecipients as number | undefined;
+      methods.setValue('total_contactos', total ?? 0);
+    });
+
+    return () => {
+      if (subscription && typeof subscription.unsubscribe === 'function') {
+        subscription.unsubscribe();
+      }
+    };
+  }, [methods]);
+
   const onSubmit = async (formData: CampaignFormValues) => {
     if (isSubmitting) return;
     
@@ -186,15 +297,37 @@ export default function EditCampaignPage() {
       setError(null);
       
       // Mapear los datos del formulario a la interfaz UpdateCampaignData
+      // Preferir campos de los steps (inglés) si están presentes
+      const anyMethods = methods as any;
+      const nombre_campaign = (methods.getValues('nombre_campaign') || anyMethods.getValues('name')) as string;
+      const descripcion = (methods.getValues('descripcion') || anyMethods.getValues('description')) as string | null;
+      const objetivo = (methods.getValues('objetivo') || (() => {
+        const obj = anyMethods.getValues('objective') as string | undefined;
+        const mapReverse: Record<string, 'promocional' | 'boletin' | 'anuncio' | 'evento' | 'bienvenida' | 'otro'> = {
+          promotional: 'promocional',
+          newsletter: 'boletin',
+          announcement: 'anuncio',
+          event: 'evento',
+          welcome: 'bienvenida',
+          other: 'otro',
+        };
+        return obj ? mapReverse[obj] : undefined;
+      })()) as any;
+      const asunto = (methods.getValues('asunto') || anyMethods.getValues('subject')) as string;
+      const contenido = (methods.getValues('contenido') || anyMethods.getValues('emailBody') || '') as string;
+      const id_lista_contactos = (methods.getValues('id_lista') || Number(anyMethods.getValues('contactListId') || 0)) as number;
+      const nombre_lista = (methods.getValues('nombre_lista') || anyMethods.getValues('contactListName') || '') as string;
+      const total_contactos = (methods.getValues('total_contactos') || Number(anyMethods.getValues('totalRecipients') || 0)) as number;
+
       const campaignData: UpdateCampaignData = {
-        nombre_campaign: formData.nombre_campaign,
-        descripcion: formData.descripcion || null,
-        objetivo: formData.objetivo,
-        asunto: formData.asunto,
-        contenido: formData.contenido || '',
-        id_lista_contactos: formData.id_lista,
-        nombre_lista: formData.nombre_lista,
-        total_contactos: formData.total_contactos,
+        nombre_campaign,
+        descripcion: descripcion || null,
+        objetivo,
+        asunto,
+        contenido,
+        id_lista_contactos,
+        nombre_lista,
+        total_contactos,
         fecha_envio: formData.enviar_ahora ? null : formData.fecha_envio || null,
         estado: formData.estado,
         es_recurrente: formData.es_recurrente,
@@ -222,8 +355,9 @@ export default function EditCampaignPage() {
         router.push(`/campaign/${campaignId}`);
         router.refresh();
       } else {
-        setError(result.message || 'Error al actualizar la campaña');
-        toast.error(result.message || 'Error al actualizar la campaña');
+        const errorMessage = result.message || 'Error al actualizar la campaña';
+        setError(errorMessage);
+        toast.error(errorMessage);
       }
     } catch (err) {
       console.error('Error al actualizar la campaña:', err);

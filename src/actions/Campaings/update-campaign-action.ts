@@ -42,27 +42,33 @@ export async function updateCampaign(
     await connection.beginTransaction();
 
     // 1. Actualizar la campaña principal
+    // Preparar datos adicionales
+    const datosAdicionales = {
+      objetivo: campaignData.objetivo || 'promocional',
+      // Agregar aquí otros campos adicionales si es necesario
+    };
+
     await connection.execute(
       `UPDATE campaigns 
        SET nombre_campaign = ?, 
            descripcion = ?, 
-           objetivo = ?, 
            asunto = ?, 
            contenido = ?, 
            id_lista_contactos = ?, 
            fecha_envio = ?, 
            estado = ?,
+           datos_adicionales = ?,
            fecha_actualizacion = NOW()
        WHERE id_campaign = ?`,
       [
         campaignData.nombre_campaign,
         campaignData.descripcion || null,
-        campaignData.objetivo,
         campaignData.asunto,
         campaignData.contenido,
         campaignData.id_lista_contactos,
         campaignData.fecha_envio || null,
         campaignData.estado,
+        JSON.stringify(datosAdicionales),
         campaignId
       ]
     );

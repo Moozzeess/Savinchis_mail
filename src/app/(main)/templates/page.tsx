@@ -23,9 +23,9 @@ import { TemplatePreview } from "@/components/templates/template-preview";
  * y permite crear nuevos o editar/eliminar los actuales.
  */
 export default async function TemplatesPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
-  const params = await searchParams;
-  const page = Number(params?.page) || 1;
-  const limit = 9;
+  const sp = await searchParams;
+  const page = Number(sp?.page) || 1;
+  const limit = Number(sp?.limit) || 10;
 
   const { templates, total } = await getTemplatesAction({ page, limit });
 
@@ -40,15 +40,15 @@ export default async function TemplatesPage({ searchParams }: { searchParams: Pr
             Crea y gestiona tus plantillas de correo y certificados personalizados.
           </p>
         </div>
-        <Button asChild className="group relative overflow-hidden">
-          <Link href="/templates/select-type" className="flex items-center">
+        <Link href="/templates/select-type" className="inline-block">
+          <Button className="group relative overflow-hidden flex items-center">
             <span className="relative z-10 flex items-center">
               <PlusCircle className="mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
               <span>Nuevo Diseño</span>
             </span>
             <span className="absolute inset-0 bg-gradient-to-r from-primary/90 to-blue-600/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
 
       {templates.length === 0 ? (
@@ -61,13 +61,13 @@ export default async function TemplatesPage({ searchParams }: { searchParams: Pr
           <p className="mb-6 mt-2 text-muted-foreground max-w-md mx-auto">
             Aún no has creado ningún diseño. Comienza creando uno nuevo para personalizar tus certificados y correos.
           </p>
-          <Button asChild variant="outline" className="relative overflow-hidden group">
-            <Link href="/templates/select-type">
+          <Link href="/templates/select-type" className="inline-block">
+            <Button variant="outline" className="relative overflow-hidden group">
               <PlusCircle className="mr-2 h-4 w-4" />
               <span className="relative z-10">Crear mi primer diseño</span>
               <span className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors duration-300"></span>
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

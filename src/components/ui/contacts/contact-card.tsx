@@ -24,7 +24,6 @@ export function ContactCard({ contact, onUpdate, onDelete, onStatusChange }: Con
     email: contact.email,
     telefono: contact.telefono || '',
     empresa: contact.empresa || '',
-    puesto: contact.puesto || '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -211,15 +210,6 @@ export function ContactCard({ contact, onUpdate, onDelete, onStatusChange }: Con
                 />
               </div>
             </div>
-            <div>
-              <label className="text-sm text-muted-foreground">Puesto</label>
-              <Input
-                name="puesto"
-                value={formData.puesto}
-                onChange={handleInputChange}
-                disabled={isLoading}
-              />
-            </div>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4">
@@ -233,12 +223,6 @@ export function ContactCard({ contact, onUpdate, onDelete, onStatusChange }: Con
               <div>
                 <p className="text-sm text-muted-foreground">Empresa</p>
                 <p className="font-medium">{contact.empresa}</p>
-              </div>
-            )}
-            {contact.puesto && (
-              <div>
-                <p className="text-sm text-muted-foreground">Puesto</p>
-                <p className="font-medium">{contact.puesto}</p>
               </div>
             )}
             <div>

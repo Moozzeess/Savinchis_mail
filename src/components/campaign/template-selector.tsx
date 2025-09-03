@@ -6,7 +6,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { cn } from "@/lib/utils";
-import { Template } from "@/actions/template-actions";
 import { Plantillas } from "@/types/templates";
 import { TemplatePreview } from "@/components/templates/template-preview";
 

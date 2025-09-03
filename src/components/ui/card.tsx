@@ -13,19 +13,27 @@ import { cn } from "@/lib/utils"
 /**
  * Componente principal de la tarjeta, actúa como contenedor.
  */
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
-      className
-    )}
-    {...props}
-  />
-))
+type CardProps = React.HTMLAttributes<HTMLDivElement> & {
+  /** Eleva la tarjeta con sombra notable */
+  elevated?: boolean
+  /** Agrega microinteracción de elevación al hacer hover */
+  hoverable?: boolean
+}
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, elevated, hoverable, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        "rounded-lg border bg-card text-card-foreground shadow-sm",
+        elevated && "shadow-md",
+        hoverable && "transition-all hover:-translate-y-0.5 hover:shadow-md",
+        className
+      )}
+      {...props}
+    />
+  )
+)
 Card.displayName = "Card"
 
 /**

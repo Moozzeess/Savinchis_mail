@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,8 +17,9 @@ interface FormData {
   puesto: string;
 }
 
-export default function AddContactPage({ params }: { params: { listId: string } }) {
+export default function AddContactPage() {
   const router = useRouter();
+  const params = useParams<{ listId: string }>();
   const [listId, setListId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -28,24 +29,15 @@ export default function AddContactPage({ params }: { params: { listId: string } 
     formState: { errors },
   } = useForm<FormData>();
 
-  // Handle async params
+  // Read listId from route params
   useEffect(() => {
-    const loadParams = async () => {
-      try {
-        const resolvedParams = await Promise.resolve(params);
-        const id = parseInt(resolvedParams.listId);
-        if (!isNaN(id)) {
-          setListId(id);
-        } else {
-          throw new Error('Invalid list ID');
-        }
-      } catch (error) {
-        console.error('Error loading params:', error);
-        router.push('/contacts');
-      }
-    };
-    
-    loadParams();
+    const id = parseInt(params?.listId as string, 10);
+    if (!Number.isNaN(id)) {
+      setListId(id);
+    } else {
+      console.error('Invalid list ID in URL');
+      router.push('/contacts');
+    }
   }, [params, router]);
 
   // Show loading state while params are being resolved
