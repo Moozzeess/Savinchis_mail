@@ -168,7 +168,8 @@ export default function EditContactPage() {
         updateData.estado_lista = data.estado || 'activo';
       }
 
-      const result = await updateContactInList(contactIdNum, listIdNum, updateData);
+      // Fix parameter order: listId should be first, then contactId
+      const result = await updateContactInList(listIdNum, contactIdNum, updateData);
 
       if (result.success) {
         toast.success('Contacto actualizado correctamente');
@@ -267,6 +268,20 @@ export default function EditContactPage() {
             placeholder="Nombre de la empresa"
             {...register('empresa')}
           />
+        </div>
+
+        <div>
+          <Label htmlFor="estado">Estado del contacto</Label>
+          <select
+            id="estado"
+            {...register('estado')}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={isLoading}
+          >
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+            <option value="baja">Baja</option>
+          </select>
         </div>
 
         <div className="flex justify-end space-x-4 pt-4">

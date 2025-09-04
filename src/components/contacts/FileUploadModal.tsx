@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 // Notificaciones temporales con window.alert
 // TODO: Implementar sistema de notificaciones toast
@@ -35,6 +36,7 @@ export function FileUploadModal({ isOpen, onClose, onSuccess }: FileUploadModalP
     sampleEmails: string[];
   } | null>(null);
   const [listName, setListName] = useState('');
+  const [listDescription, setListDescription] = useState('');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -96,7 +98,8 @@ export function FileUploadModal({ isOpen, onClose, onSuccess }: FileUploadModalP
           result.contacts.map(c => ({
             nombre_completo: c.nombre,
             email: c.email,
-          }))
+          })),
+          listDescription
         );
 
         if (saveResult.success) {
@@ -192,6 +195,18 @@ export function FileUploadModal({ isOpen, onClose, onSuccess }: FileUploadModalP
                 value={listName}
                 onChange={(e) => setListName(e.target.value)}
                 placeholder="Ej: Clientes 2023"
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="listDescription">Descripción</Label>
+              <Textarea
+                id="listDescription"
+                value={listDescription}
+                onChange={(e) => setListDescription(e.target.value)}
+                placeholder="Descripción opcional de la lista"
+                rows={3}
                 disabled={isLoading}
               />
             </div>

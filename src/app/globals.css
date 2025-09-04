@@ -23,7 +23,7 @@ body {
 
 @layer base { /* Define una capa base para estilos personalizados */
   :root { /* Define variables CSS para el tema claro */
-    --background: 160 60% 95%; /* Fondo ligeramente más claro y limpio */
+    --background: 170d 60% 95%; /* Fondo ligeramente más claro y limpio */
     --foreground: 160 10% 20%; /* Color del texto */
     --card: 160 55% 96%; /* Tarjeta un punto más clara que el fondo */
     --card-foreground: 160 10% 20%; /* Color del texto de las tarjetas */

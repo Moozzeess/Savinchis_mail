@@ -6,7 +6,12 @@ import { getDbConnection } from '../DBConnection';
 interface ContactList {
   id: string;
   name: string;
-  count: number;
+  count: number; // compatibilidad existente
+  // Campos adicionales para enriquecer las tarjetas
+  descripcion?: string | null;
+  estado?: string; // 'activa' | 'inactiva'
+  fecha_actualizacion?: string;
+  total_contactos?: number; // alias para compatibilidad con otros consumidores
 }
 
 interface PaginatedContactLists {
@@ -97,6 +102,9 @@ export async function getContactLists(
       SELECT 
         lc.id_lista, 
         lc.nombre, 
+        lc.descripcion,
+        lc.estado,
+        lc.fecha_actualizacion,
         COALESCE(
           (SELECT COUNT(DISTINCT cl.id_contacto) 
            FROM contactos_lista cl 
@@ -121,6 +129,10 @@ export async function getContactLists(
       id: String(row.id_lista),
       name: row.nombre,
       count: row.total_contactos,
+      total_contactos: row.total_contactos,
+      descripcion: row.descripcion ?? null,
+      estado: row.estado,
+      fecha_actualizacion: row.fecha_actualizacion,
     }));
 
     return {

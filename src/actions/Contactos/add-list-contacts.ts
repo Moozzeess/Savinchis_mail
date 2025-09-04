@@ -26,9 +26,17 @@ export async function addListContacts(
     let id_lista;
     if ((rows as any[]).length > 0) {
       id_lista = (rows as any[])[0].id_lista;
+      // Actualizar descripción si viene y es diferente
+      if (typeof listDescription !== 'undefined') {
+        await conn.execute(
+          'UPDATE listas_contactos SET descripcion = ?, fecha_actualizacion = CURRENT_TIMESTAMP WHERE id_lista = ?',
+          [listDescription || null, id_lista]
+        );
+      }
     } else {
       const [result] = await conn.execute(
-        'INSERT INTO listas_contactos (nombre, datos_adicionales) VALUES (?, ?)',
+        `INSERT INTO listas_contactos (nombre, descripcion, estado, fecha_creacion, fecha_actualizacion) 
+         VALUES (?, ?, 'activa', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
         [listaNombre, listDescription || null]
       );
       id_lista = (result as any).insertId;

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Users, Download, Edit, Calendar as CalendarIcon, Tag, Pencil } from 'lucide-react';
+import { Plus, Users, Calendar as CalendarIcon, Tag, Pencil, Search, ArrowUpDown, LayoutGrid, List, Trash2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getContactLists } from '@/actions/Contactos/get-contact-lists';
 import { format } from 'date-fns';
@@ -13,6 +13,7 @@ import { es } from 'date-fns/locale';
 import { FileUploadModal } from '@/components/contacts/FileUploadModal';
 import { EditListDialog } from '@/components/contacts/EditListDialog';
 import { updateContactList } from '@/actions/Contactos/update-contact-list';
+import { deleteContactList } from '@/actions/Contactos/delete-contact-list';
 
 interface ContactList {
   id: string;
@@ -33,6 +34,10 @@ export default function ContactsPage() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [editingList, setEditingList] = useState<ContactList | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [query, setQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'contacts' | 'updated'>('updated');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const [view, setView] = useState<'grid' | 'list'>('grid');
   
   // Calculate statistics
   const totalContacts = contactLists
@@ -43,7 +48,9 @@ export default function ContactsPage() {
   const inactiveLists = contactLists.filter(list => !list.isActive).length;
 
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), 'dd MMM yyyy', { locale: es });
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return '—';
+    return format(d, 'dd MMM yyyy', { locale: es });
   };
 
   // Function to load contact lists
@@ -53,16 +60,26 @@ export default function ContactsPage() {
       const result = await getContactLists(1, 100); 
       
       if (result.success && result.data) {
-        // Transform the API response to match our ContactList interface
-        const formattedLists = result.data.lists.map((list: any) => ({
-          id: list.id_lista || list.id,
-          name: list.nombre || list.name || 'Sin nombre',
-          description: list.descripcion || list.description || 'Sin descripción',
-          isActive: list.estado === 'activa',
-          contactCount: list.total_contactos || 0,
-          lastUpdated: list.fecha_actualizacion || list.updatedAt || new Date().toISOString(),
-          tags: []
-        }));
+        // Transform the API response to match our ContactList interface con mayor robustez
+        const formattedLists = (result.data.lists || []).map((list: any) => {
+          const id = list.id_lista ?? list.id ?? String(list.uuid ?? '');
+          const name = list.nombre ?? list.name ?? list.titulo ?? 'Sin nombre';
+          const description = list.descripcion ?? list.description ?? list.detalle ?? 'Sin descripción';
+          const estado = list.estado ?? list.isActive ?? list.activa;
+          const isActive = typeof estado === 'string' ? estado.toLowerCase() === 'activa' : Boolean(estado);
+          const contactCount = Number(
+            list.total_contactos ?? list.contactCount ?? list.total ?? list.count ?? 0
+          ) || 0;
+          const lastUpdated = (
+            list.fecha_actualizacion ?? list.updatedAt ?? list.fecha_modificacion ?? list.modifiedAt ?? list.createdAt ?? new Date().toISOString()
+          );
+          const tagsRaw = list.tags ?? list.etiquetas ?? [];
+          const tags = Array.isArray(tagsRaw)
+            ? tagsRaw.map((t: any) => (typeof t === 'string' ? t : (t?.name ?? t?.nombre ?? ''))).filter(Boolean)
+            : [];
+
+          return { id, name, description, isActive, contactCount, lastUpdated, tags } as ContactList;
+        });
         
         setContactLists(formattedLists);
       } else {
@@ -120,12 +137,54 @@ export default function ContactsPage() {
     console.log('Download list:', listId);
   };
 
+  const handleDeleteList = async (listId: string) => {
+    const confirmed = window.confirm('¿Seguro que deseas eliminar esta lista? Esta acción no se puede deshacer.');
+    if (!confirmed) return;
+    try {
+      const res = await deleteContactList(listId);
+      if (!res?.success) {
+        setError(res?.message || 'No se pudo eliminar la lista');
+        return;
+      }
+      await loadContactLists();
+    } catch (e) {
+      console.error('Error deleting list:', e);
+      setError('Error al eliminar la lista');
+    }
+  };
+
   // Filter lists based on active tab
   const filteredLists = activeTab === 'all' 
     ? contactLists 
     : activeTab === 'active' 
       ? contactLists.filter(list => list.isActive)
       : contactLists.filter(list => !list.isActive);
+
+  // Búsqueda y ordenamiento
+  const visibleLists = filteredLists
+    .filter((l) => {
+      if (!query.trim()) return true;
+      const q = query.toLowerCase();
+      return (
+        l.name.toLowerCase().includes(q) ||
+        l.description.toLowerCase().includes(q) ||
+        (l.tags || []).some(t => t.toLowerCase().includes(q))
+      );
+    })
+    .sort((a, b) => {
+      let cmp = 0;
+      if (sortBy === 'name') {
+        cmp = a.name.localeCompare(b.name);
+      } else if (sortBy === 'contacts') {
+        cmp = a.contactCount - b.contactCount;
+      } else {
+        // updated
+        const ad = new Date(a.lastUpdated).getTime();
+        const bd = new Date(b.lastUpdated).getTime();
+        cmp = ad - bd;
+      }
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
 
   if (isLoading) {
     return (
@@ -153,10 +212,21 @@ export default function ContactsPage() {
             Gestiona tus listas de contactos y suscripciones
           </p>
         </div>
-        <Button onClick={handleNewList} className="flex items-center gap-2">
-          <Plus className="w-4 h-4" />
-          Nueva Lista
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="hidden md:flex items-center rounded-md border bg-background px-2">
+            <Search className="w-4 h-4 text-muted-foreground" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar listas..."
+              className="bg-transparent outline-none px-2 py-1 text-sm w-48"
+            />
+          </div>
+          <Button onClick={handleNewList} className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Nueva Lista
+          </Button>
+        </div>
       </div>
 
       {/* Statistics Cards */}
@@ -212,6 +282,60 @@ export default function ContactsPage() {
         </Card>
       </div>
 
+      {/* Controls */}
+      <div className="flex flex-col md:flex-row md:items-center gap-3 md:justify-between">
+        <div className="flex md:hidden items-center rounded-md border bg-background px-2">
+          <Search className="w-4 h-4 text-muted-foreground" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar listas..."
+            className="bg-transparent outline-none px-2 py-1 text-sm w-full"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-muted-foreground">Ordenar por</label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="text-sm border rounded-md bg-background px-2 py-1"
+          >
+            <option value="updated">Actualización</option>
+            <option value="name">Nombre</option>
+            <option value="contacts">Contactos</option>
+          </select>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
+            className="h-8"
+          >
+            <ArrowUpDown className="w-4 h-4" />
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant={view === 'grid' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setView('grid')}
+            className="h-8"
+          >
+            <LayoutGrid className="w-4 h-4" />
+          </Button>
+          <Button
+            type="button"
+            variant={view === 'list' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setView('list')}
+            className="h-8"
+          >
+            <List className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+
       {/* Tabs for filtering */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 max-w-md bg-muted/50">
@@ -221,16 +345,18 @@ export default function ContactsPage() {
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6">
-          {filteredLists.length === 0 ? (
+          {visibleLists.length === 0 ? (
             <div className="text-center py-12 border-2 border-dashed rounded-lg border-border">
               <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
               <h3 className="mt-2 text-sm font-medium text-foreground">No hay listas de contactos</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                {activeTab === 'all' 
-                  ? 'Comienza creando tu primera lista de contactos.'
-                  : activeTab === 'active'
-                    ? 'No hay listas activas en este momento.'
-                    : 'No hay listas inactivas.'}
+                {query
+                  ? 'No se encontraron resultados para tu búsqueda.'
+                  : activeTab === 'all' 
+                    ? 'Comienza creando tu primera lista de contactos.'
+                    : activeTab === 'active'
+                      ? 'No hay listas activas en este momento.'
+                      : 'No hay listas inactivas.'}
               </p>
               <div className="mt-6">
                 <Button onClick={handleNewList} variant="outline">
@@ -240,8 +366,8 @@ export default function ContactsPage() {
               </div>
             </div>
           ) : (
-            <div className="grid gap-4">
-              {filteredLists.map((list) => (
+            <div className={view === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4' : 'grid gap-4'}>
+              {visibleLists.map((list) => (
                 <Card 
                   key={list.id} 
                   className="p-6 hover:shadow-md dark:hover:shadow-primary/10 transition-shadow group cursor-pointer"
@@ -295,7 +421,7 @@ export default function ContactsPage() {
                         variant="ghost" 
                         size="icon" 
                         className="h-8 w-8"
-                        onClick={() => handleEditList(list)}
+                        onClick={(e) => { e.stopPropagation(); handleEditList(list); }}
                         type="button"
                       >
                         <Pencil className="h-4 w-4" />
@@ -303,10 +429,11 @@ export default function ContactsPage() {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => handleDownloadList(list.id)}
-                        className="text-muted-foreground hover:text-foreground"
+                        onClick={(e) => { e.stopPropagation(); handleDeleteList(list.id); }}
+                        className="text-red-600 border-red-200 hover:text-red-700 hover:border-red-300 dark:text-red-400 dark:border-red-800"
+                        aria-label="Eliminar lista"
                       >
-                        <Download className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
