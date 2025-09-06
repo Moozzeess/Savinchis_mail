@@ -1,9 +1,9 @@
 export interface DBCampaign {
-  id_campaign: number;
+  id_campaign: number|string;
   nombre_campaign: string;
   descripcion: string | null;
   asunto: string;
-  contenido: string;
+  ruta_contenido: string | null;
   id_plantilla: number | null;
   id_lista_contactos: number | null;
   fecha_envio: string | null;

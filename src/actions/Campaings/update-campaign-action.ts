@@ -3,28 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { RowDataPacket } from 'mysql2';
 import { getDbConnection } from '../DBConnection';
-
-export interface UpdateCampaignData {
-  id_campaign?: number;
-  nombre_campaign: string;
-  descripcion?: string | null;
-  objetivo: string;
-  asunto: string;
-  contenido: string;
-  id_lista_contactos: number;
-  nombre_lista?: string;
-  total_contactos: number;
-  fecha_envio?: string | null;
-  estado: string;
-  es_recurrente?: boolean;
-  // Hacer que los campos de recurrencia sean opcionales
-  tipo_recurrencia?: 'diaria' | 'semanal' | 'mensual' | 'anual';
-  intervalo?: number;
-  dias_semana?: string;
-  dia_mes?: number;
-  fecha_fin?: string;
-}
-
+import { campaignContentService } from '@/service/campaignContentService';
+import { CampaignData } from './new-campaign-action';
 /**
  * @function updateCampaign
  * @description Actualiza una campaña existente en la base de datos.
@@ -34,117 +14,170 @@ export interface UpdateCampaignData {
  */
 export async function updateCampaign(
   campaignId: number, 
-  campaignData: UpdateCampaignData
+  campaignData: Partial<CampaignData> & { 
+    id_campaign?: number;
+    nombre_campaign: string;
+    descripcion?: string | null;
+    objetivo: string;
+    asunto: string;
+    contenido: string;
+    id_lista_contactos: number;
+    nombre_lista?: string;
+    total_contactos: number;
+    fecha_envio?: string | null;
+    estado: string;
+    es_recurrente?: boolean;
+    tipo_recurrencia?: 'diaria' | 'semanal' | 'mensual' | 'anual' | null;
+    intervalo?: number | null;
+    dias_semana?: string | null;
+    dia_mes?: number | null;
+    fecha_fin?: string | null;
+  }
 ) {
   let connection;
+  
   try {
     connection = await getDbConnection();
     await connection.beginTransaction();
-
-    // 1. Actualizar la campaña principal
-    // Preparar datos adicionales
-    const datosAdicionales = {
-      objetivo: campaignData.objetivo || 'promocional',
-      // Agregar aquí otros campos adicionales si es necesario
-    };
-
+    
+    // Obtener la campaña actual para verificar si hay contenido existente
+    const [currentCampaign] = await connection.execute(
+      'SELECT ruta_contenido FROM campaigns WHERE id_campaign = ?',
+      [campaignId]
+    ) as unknown as [RowDataPacket[]];
+    
+    if (!currentCampaign || currentCampaign.length === 0) {
+      throw new Error('Campaña no encontrada');
+    }
+    
+    const currentCampaignData = currentCampaign[0];
+    let rutaContenido = currentCampaignData.ruta_contenido;
+    
+    // Si hay contenido nuevo, guardarlo en el sistema de archivos
+    if (campaignData.contenido) {
+      // Si ya existe una ruta, actualizamos el archivo existente
+      if (rutaContenido) {
+        await campaignContentService.saveCampaignContent(campaignId, campaignData.contenido);
+      } else {
+        // Si no existe una ruta, creamos un nuevo archivo
+        rutaContenido = await campaignContentService.saveCampaignContent(campaignId, campaignData.contenido);
+      }
+    }
+    
+    // Actualizar los datos de la campaña en la base de datos
     await connection.execute(
-      `UPDATE campaigns 
-       SET nombre_campaign = ?, 
-           descripcion = ?, 
-           asunto = ?, 
-           contenido = ?, 
-           id_lista_contactos = ?, 
-           fecha_envio = ?, 
-           estado = ?,
-           datos_adicionales = ?,
-           fecha_actualizacion = NOW()
-       WHERE id_campaign = ?`,
+      `UPDATE campaigns SET
+        nombre_campaign = ?,
+        descripcion = ?,
+        asunto = ?,
+        ruta_contenido = ?,
+        id_plantilla = ?,
+        id_lista_contactos = ?,
+        estado = ?,
+        fecha_envio = ?,
+        fecha_actualizacion = NOW()
+      WHERE id_campaign = ?`,
       [
         campaignData.nombre_campaign,
         campaignData.descripcion || null,
         campaignData.asunto,
-        campaignData.contenido,
-        campaignData.id_lista_contactos,
+        rutaContenido, // Usamos la ruta existente o la nueva
+        campaignData.templateId || null,
+        campaignData.id_lista_contactos || null,
+        campaignData.estado || 'draft',
         campaignData.fecha_envio || null,
-        campaignData.estado,
-        JSON.stringify(datosAdicionales),
         campaignId
       ]
     );
-
-    // 2. Manejar la recurrencia
-    // Verificar si ya existe una entrada de recurrencia
-    const [existingRecurrence] = await connection.execute<RowDataPacket[]>(
-      'SELECT id_recurrencia FROM recurrencias_campana WHERE id_campaign = ?',
-      [campaignId]
-    ) as [RowDataPacket[], any];
-
-    if (campaignData.es_recurrente && campaignData.tipo_recurrencia) {
-      if (existingRecurrence.length > 0) {
+    
+    // Manejar la actualización de la recurrencia si es necesario
+    if (campaignData.tipo_recurrencia) {
+      // Verificar si ya existe una entrada de recurrencia
+      const [recurrence] = await connection.execute(
+        'SELECT id_recurrencia FROM recurrencias_campana WHERE id_campaign = ?',
+        [campaignId]
+      ) as unknown as [RowDataPacket[]];
+      
+      if (recurrence && recurrence.length > 0) {
         // Actualizar recurrencia existente
         await connection.execute(
-          `UPDATE recurrencias_campana 
-           SET tipo_recurrencia = ?, 
-               intervalo = ?, 
-               dias_semana = ?, 
-               dia_mes = ?, 
-               fecha_fin = ?,
-               fecha_actualizacion = NOW()
-           WHERE id_campaign = ?`,
+          `UPDATE recurrencias_campana SET
+            tipo_recurrencia = ?,
+            intervalo = ?,
+            dias_semana = ?,
+            dia_mes = ?,
+            fecha_fin = ?,
+            estado = ?,
+            fecha_actualizacion = NOW()
+          WHERE id_campaign = ?`,
           [
             campaignData.tipo_recurrencia,
             campaignData.intervalo || 1,
             campaignData.dias_semana || null,
             campaignData.dia_mes || null,
             campaignData.fecha_fin || null,
+            'activa',
             campaignId
           ]
         );
       } else {
         // Crear nueva entrada de recurrencia
         await connection.execute(
-          `INSERT INTO recurrencias_campana 
-           (id_campaign, tipo_recurrencia, intervalo, dias_semana, dia_mes, fecha_fin, fecha_creacion, fecha_actualizacion)
-           VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+          `INSERT INTO recurrencias_campana (
+            id_campaign, 
+            tipo_recurrencia, 
+            intervalo, 
+            dias_semana, 
+            dia_mes, 
+            fecha_inicio, 
+            fecha_fin,
+            estado
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             campaignId,
             campaignData.tipo_recurrencia,
             campaignData.intervalo || 1,
             campaignData.dias_semana || null,
             campaignData.dia_mes || null,
-            campaignData.fecha_fin || null
+            new Date().toISOString().split('T')[0], // Fecha actual como fecha de inicio
+            campaignData.fecha_fin || null,
+            'activa'
           ]
         );
       }
-    } else if (existingRecurrence.length > 0) {
-      // Eliminar la recurrencia existente si la campaña ya no es recurrente
+    } else {
+      // Si no hay tipo de recurrencia, eliminar la entrada si existe
       await connection.execute(
         'DELETE FROM recurrencias_campana WHERE id_campaign = ?',
         [campaignId]
       );
     }
-
+    
     await connection.commit();
     
     // Revalidar las rutas relevantes
-    revalidatePath('/campaign');
-    revalidatePath(`/campaign/${campaignId}`);
+    revalidatePath('/campaigns');
+    revalidatePath(`/campaigns/${campaignId}`);
+    revalidatePath(`/campaigns/${campaignId}/edit`);
     
     return {
       success: true,
       message: 'Campaña actualizada exitosamente'
     };
+    
   } catch (error) {
     if (connection) {
       await connection.rollback();
     }
-    console.error('Error al actualizar la campaña:', error);
+    
+    console.error('Error updating campaign:', error);
+    
     return {
       success: false,
       message: 'Error al actualizar la campaña: ' + (error as Error).message
     };
-  } finally {
+    
+  }finally {
     if (connection) {
       await connection.end();
     }

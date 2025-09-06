@@ -11,7 +11,6 @@ import { generateHtmlFromBlocks } from '@/lib/template-utils';
 import { DeleteCampaignButton } from '@/components/campaign/delete-campaign-button';
 import EmailPreview from '@/components/campaign/email-preview';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AnalyticsCharts } from '@/components/Analisis/analytics-charts';
 import { ProgressCard } from '@/components/Analisis/progress-card';
 import { StatsGrid } from '@/components/Analisis/stats-grid';
 
@@ -46,7 +45,7 @@ function mapStatusToBadge(status: string): { variant: 'success' | 'warning' | 'i
 }
 
 export default async function CampaignDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+  const { id } = await params;
   const idNum = Number(id);
   if (Number.isNaN(idNum)) {
     return notFound();
@@ -291,7 +290,11 @@ export default async function CampaignDetailPage({ params }: { params: { id: str
             <CardContent>
               <Tabs defaultValue="vista" className="w-full">
                 <TabsContent value="vista" className="mt-4">
-                  <EmailPreview html={contenidoHtml} maxWidth={640} />
+                <EmailPreview 
+                  content={c.ruta_contenido || ''} 
+                  isPath={!!c.ruta_contenido} 
+                  maxWidth={640} 
+                />
                 </TabsContent>
                 <TabsContent value="html" className="mt-4">
                   <div className="max-h-[60vh] overflow-auto rounded-md border bg-muted/40 p-3">

@@ -3,22 +3,23 @@
 import { revalidatePath } from 'next/cache';
 import { getDbConnection } from '../DBConnection';
 import { RowDataPacket } from 'mysql2';
+import { campaignContentService } from '@/service/campaignContentService';
 
 /**
  * @interface CampaignData
  * @description Interfaz para la estructura de datos de la campaña
  */
-interface CampaignData {
+export interface CampaignData {
+  id_campaign?: number | string;
   name: string;
   description?: string;
   objective: string;
   templateId?: number | null;
   subject: string;
   emailBody?: string;
-  // When a template is used, this should contain the raw blocks JSON
   templateBlocks?: unknown;
-  fromName?: string; // illustrative only, not persisted
-  fromEmail?: string; // illustrative only, not persisted
+  fromName?: string;
+  fromEmail?: string;
   replyTo?: string;
   scheduleDate?: string | null;
   scheduleTime?: string | null;
@@ -38,7 +39,7 @@ interface DBCampaign extends Record<string, any> {
   nombre_campaign: string;
   descripcion?: string;
   asunto: string;
-  contenido?: string;
+  ruta_contenido?: string;
   from_email?: string;
   reply_to?: string;
   id_lista_contactos?: number;
@@ -55,6 +56,20 @@ interface DBCampaign extends Record<string, any> {
   total_rebotados?: number;
   total_quejas?: number;
   total_fallidos?: number;
+}
+function mapToDbStatus(status: string): 'borrador' | 'programada' | 'en_progreso' | 'completada' | 'pausada' | 'cancelada' {
+  const statusMap: Record<string, 'borrador' | 'programada' | 'en_progreso' | 'completada' | 'pausada' | 'cancelada'> = {
+    'draft': 'borrador',
+    'scheduled': 'programada',
+    'sending': 'en_progreso',
+    'sent': 'completada',
+    'paused': 'pausada',
+    'cancelled': 'cancelada',
+    'completed': 'completada',
+    'failed': 'cancelada' // O el estado que prefieras para errores
+  };
+  
+  return statusMap[status] || 'borrador';
 }
 
 /**
@@ -87,124 +102,136 @@ export async function createCampaign(campaignData: CampaignData) {
   try {
     connection = await getDbConnection();
     
-    // Validate required fields (do not require sender fields)
-    // Allow either emailBody (HTML) or templateBlocks (raw JSON blocks)
+    // Validar campos requeridos (no requerir campos de remitente)
+    // Permitir emailBody (HTML) o templateBlocks (bloques JSON)
     if (!campaignData.name || !campaignData.subject || (!campaignData.emailBody && !campaignData.templateBlocks)) {
       throw new Error('Faltan campos requeridos para crear la campaña');
     }
     
-    // Log the incoming data for debugging
-    console.log('Creating campaign with data:', {
-      ...campaignData,
-      emailBody: campaignData.emailBody ? '[CONTENT]' : 'EMPTY',
-      templateBlocks: campaignData.templateBlocks ? '[BLOCKS]' : 'EMPTY'
-    });
-    
-    // Start transaction
+    // Iniciar transacción
     await connection.beginTransaction();
-
-  // Map app status to DB enum (Spanish)
-  const mapStatusToDb = (status?: string) => {
-    switch (status) {
-      case 'scheduled': return 'programada';
-      case 'sending': return 'en_progreso';
-      case 'sent': return 'completada';
-      case 'paused': return 'pausada';
-      case 'cancelled': return 'cancelada';
-      // 'draft' or unknown
-      default: return 'borrador';
+    
+    // Determinar el contenido a guardar (HTML o bloques como JSON)
+    let contenido = '';
+    if (campaignData.emailBody) {
+      contenido = campaignData.emailBody;
+    } else if (campaignData.templateBlocks) {
+      // Si hay bloques de plantilla, los convertimos a JSON
+      contenido = typeof campaignData.templateBlocks === 'string' 
+        ? campaignData.templateBlocks 
+        : JSON.stringify(campaignData.templateBlocks);
     }
-  };
-
-  // Prepare the data for the database (columns must exist in schema)
-  const dbData = {
-    nombre_campaign: campaignData.name,
-    descripcion: campaignData.description || null,
-    id_plantilla: campaignData.templateId ? Number(campaignData.templateId) : null,
-    asunto: campaignData.subject,
-    // Prefer raw template blocks JSON if provided, else fallback to HTML body
-    contenido: campaignData.templateBlocks
-      ? JSON.stringify(campaignData.templateBlocks)
-      : (campaignData.emailBody || null),
-    fecha_envio: campaignData.scheduleDate
-      ? new Date(`${campaignData.scheduleDate} ${campaignData.scheduleTime || '00:00'}`)
-      : null,
-    id_lista_contactos: campaignData.contactListId ? Number(campaignData.contactListId) : null,
-    estado: mapStatusToDb(campaignData.status)
-  } as const;
-
-  // Convert undefined to null to avoid SQL errors
-  const values = Object.values(dbData).map(value => value === undefined ? null : value);
-
-  const [result] = await connection.execute(
-    `INSERT INTO campaigns (
-      nombre_campaign,
-      descripcion,
-      id_plantilla,
-      asunto,
-      contenido,
-      fecha_envio,
-      id_lista_contactos,
-      estado
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    values
-  );
-
-  const campaignId = (result as any).insertId;
-
-  // Inserta datos de recurrencia si la campaña es recurrente
-  if (campaignData.isRecurring) {
-   await connection.execute(
-    `INSERT INTO recurrencias_campana (
-     id_campaign,
-     tipo_recurrencia,
-     intervalo,
-     dias_semana,
-     dia_mes,
-     fecha_inicio,
-     fecha_fin,
-     estado
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-     campaignId,
-     campaignData.recurrenceType || null,
-     campaignData.recurrenceInterval || null,
-     campaignData.recurrenceDaysOfWeek || null,
-     campaignData.recurrenceDayOfMonth || null,
-     campaignData.recurrenceStartDate ? new Date(campaignData.recurrenceStartDate) : null,
-     campaignData.recurrenceEndDate ? new Date(campaignData.recurrenceEndDate) : null,
-     'activa' // Estado inicial de la recurrencia
-    ]
-   );
-  }
-   
-  // Commit transacción
-  await connection.commit();
-   
-  // Revalida la página de campañas para mostrar la nueva campaña
-  revalidatePath('/campaign');
-  
-  return {
-   success: true,
-   message: 'Campaña creada exitosamente',
-   campaignId
-  };
- } catch (error) {
-  // Rollback en caso de error
-  if (connection) {
-   await connection.rollback();
-  }
-  
-  console.error('Error creating campaign:', error);
-  return {
-   success: false,
+    
+    // Insertar la campaña sin contenido (lo guardaremos en un archivo)
+    const [result] = await connection.execute(
+      `INSERT INTO campaigns (
+        nombre_campaign, 
+        descripcion, 
+        asunto, 
+        id_plantilla, 
+        id_lista_contactos, 
+        estado,
+        fecha_envio,
+        datos_adicionales
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        campaignData.name,
+        campaignData.description || null,
+        campaignData.subject,
+        campaignData.templateId || null,
+        campaignData.contactListId || null,
+        mapToDbStatus(campaignData.status || 'draft'),
+        campaignData.scheduleDate && campaignData.scheduleTime 
+          ? `${campaignData.scheduleDate} ${campaignData.scheduleTime}:00` 
+          : null,
+        campaignData.fromEmail || campaignData.replyTo 
+          ? JSON.stringify({
+              fromEmail: campaignData.fromEmail,
+              replyTo: campaignData.replyTo || campaignData.fromEmail,
+              fromName: campaignData.fromName
+            }) 
+          : null
+      ]
+    ) as any;
+    
+    const campaignId = result.insertId;
+    
+    // Guardar el contenido en el sistema de archivos
+    if (contenido) {
+      const rutaContenido = await campaignContentService.saveCampaignContent(campaignId, contenido);
+      
+      // Actualizar la campaña con la ruta del contenido
+      await connection.execute(
+        'UPDATE campaigns SET ruta_contenido = ? WHERE id_campaign = ?',
+        [rutaContenido, campaignId]
+      );
+    }
+    
+    // Si es una campaña recurrente, insertar en la tabla de recurrencias
+    if (campaignData.isRecurring && campaignData.recurrenceType) {
+      await connection.execute(
+        `INSERT INTO recurrencias_campana (
+          id_campaign, 
+          tipo_recurrencia, 
+          intervalo, 
+          dias_semana, 
+          dia_mes, 
+          fecha_inicio, 
+          fecha_fin,
+          estado
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          campaignId,
+          campaignData.recurrenceType,
+          campaignData.recurrenceInterval || 1,
+          campaignData.recurrenceDaysOfWeek || null,
+          campaignData.recurrenceDayOfMonth || null,
+          campaignData.recurrenceStartDate || new Date().toISOString().split('T')[0],
+          campaignData.recurrenceEndDate || null,
+          'activa'
+        ]
+      );
+    }
+    
+    // Confirmar la transacción
+    await connection.commit();
+    
+    // Revalidar la ruta para actualizar la caché
+    revalidatePath('/campaigns');
+    
+    return {
+      success: true,
+      message: 'Campaña creada exitosamente',
+      campaignId
+    };
+    
+  } catch (error) {
+    // Revertir la transacción en caso de error
+    if (connection) {
+      await connection.rollback();
+    }
+    
+    console.error('Error creating campaign:', error);
+    
+    // Si hay un error, intentar eliminar el archivo de contenido si se creó
+    if (campaignData.id_campaign) {
+      try {
+        await campaignContentService.deleteCampaignContent(campaignData.id_campaign);
+      } catch (deleteError) {
+        console.error('Error al limpiar archivo de contenido:', deleteError);
+      }
+    }
+    
+    return {
+      success: false,
    message: 'Error al crear la campaña: ' + (error as Error).message
-  };
- } finally {
-  if (connection) {
-   await connection.end();
+    };
+    
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
- }
 }
 
 /**
@@ -327,36 +354,36 @@ export async function getCampaignById(campaignId: number) {
   connection = await getDbConnection();
   
   const [campaigns] = await connection.query(
-   `SELECT 
-     c.id_campaign,
-     c.nombre_campaign,
-     c.descripcion,
-     c.asunto,
-     c.contenido,
-     c.id_lista_contactos,
-     c.fecha_envio,
-     c.estado,
-     c.fecha_creacion,
-     c.fecha_actualizacion,
-     c.datos_adicionales,
-     l.nombre as nombre_lista,
-     l.total_contactos,
-     p.nombre as nombre_plantilla,
-     p.id_plantilla,
-     rc.tipo_recurrencia,
-     rc.intervalo,
-     rc.dias_semana,
-     rc.dia_mes,
-     rc.fecha_fin,
-     rc.proxima_ejecucion,
-     rc.ultima_ejecucion,
-     rc.estado as estado_recurrencia
-    FROM campaigns c
-    LEFT JOIN listas_contactos l ON c.id_lista_contactos = l.id_lista
-    LEFT JOIN plantillas p ON c.id_plantilla = p.id_plantilla
-    LEFT JOIN recurrencias_campana rc ON rc.id_campaign = c.id_campaign
-   WHERE c.id_campaign = ?`,
-   [campaignId]
+    `SELECT 
+       c.id_campaign,
+       c.nombre_campaign,
+       c.descripcion,
+       c.asunto,
+       c.ruta_contenido,
+       c.id_lista_contactos,
+       c.fecha_envio,
+       c.estado,
+       c.fecha_creacion,
+       c.fecha_actualizacion,
+       c.datos_adicionales,
+       l.nombre as nombre_lista,
+       l.total_contactos,
+       p.nombre as nombre_plantilla,
+       p.id_plantilla,
+       rc.tipo_recurrencia,
+       rc.intervalo,
+       rc.dias_semana,
+       rc.dia_mes,
+       rc.fecha_fin,
+       rc.proxima_ejecucion,
+       rc.ultima_ejecucion,
+       rc.estado as estado_recurrencia
+      FROM campaigns c
+      LEFT JOIN listas_contactos l ON c.id_lista_contactos = l.id_lista
+      LEFT JOIN plantillas p ON c.id_plantilla = p.id_plantilla
+      LEFT JOIN recurrencias_campana rc ON rc.id_campaign = c.id_campaign
+     WHERE c.id_campaign = ?`,
+    [campaignId]
   );
   
   if (!Array.isArray(campaigns) || campaigns.length === 0) {
@@ -408,7 +435,7 @@ export async function updateCampaign(
     descripcion?: string | null;
     objetivo: string;
     asunto: string;
-    contenido: string;
+    ruta_contenido?: string;
     id_lista_contactos: number;
     nombre_lista?: string;
     total_contactos: number;
@@ -434,7 +461,7 @@ export async function updateCampaign(
            descripcion = ?, 
            objetivo = ?, 
            asunto = ?, 
-           contenido = ?, 
+           ruta_contenido = ?, 
            id_lista_contactos = ?, 
            fecha_envio = ?, 
            estado = ?,
@@ -445,7 +472,7 @@ export async function updateCampaign(
         campaignData.descripcion || null,
         campaignData.objetivo,
         campaignData.asunto,
-        campaignData.contenido,
+        campaignData.ruta_contenido,
         campaignData.id_lista_contactos,
         campaignData.fecha_envio || null,
         campaignData.estado,

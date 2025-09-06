@@ -1,25 +1,58 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { campaignContentService } from '@/service/campaignContentService';
 
 interface EmailPreviewProps {
-  html: string;
-  /**
-   * Altura fija del iframe. Si no se provee, el iframe se auto-redimensiona a la altura del contenido.
-   */
-  height?: number | string; // e.g. '75vh'
-  /**
-   * Ancho máximo del contenido (típicamente 600px para emails)
-   */
+  content: string;
+  isPath?: boolean;
+  height?: number | string;
   maxWidth?: number;
 }
 
-export default function EmailPreview({ html, height, maxWidth = 600 }: EmailPreviewProps) {
+export default function EmailPreview({ 
+  content, 
+  isPath = false, 
+  height, 
+  maxWidth = 600 
+}: EmailPreviewProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [htmlContent, setHtmlContent] = useState('');
 
+  // Cargar el contenido si es una ruta
+  useEffect(() => {
+    const loadContent = async () => {
+      if (!isPath) {
+        setHtmlContent(content);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/campaigns?path=${encodeURIComponent(content)}`);
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Error al cargar el contenido');
+        }
+        const htmlContent = await response.text();
+        setHtmlContent(htmlContent);
+      } catch (error) {
+        console.error('Error al cargar el contenido:', error);
+        setError(error instanceof Error ? error.message : 'Error desconocido');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadContent();
+  }, [content, isPath]);
+
+  // Actualizar el iframe cuando cambie el contenido
   useEffect(() => {
     const iframe = iframeRef.current;
-    if (!iframe) return;
+    if (!iframe || !htmlContent) return;
 
     const doc = iframe.contentDocument;
     if (!doc) return;
@@ -39,7 +72,7 @@ export default function EmailPreview({ html, height, maxWidth = 600 }: EmailPrev
   </style>
 </head>
 <body>
-  <div class="email-container">${html}</div>
+  <div class="email-container">${htmlContent}</div>
 </body>
 </html>`;
 
@@ -59,37 +92,64 @@ export default function EmailPreview({ html, height, maxWidth = 600 }: EmailPrev
           htmlEl?.scrollHeight || 0,
           htmlEl?.offsetHeight || 0
         );
-        iframe.style.height = Math.max(newHeight, 200) + 'px';
+        if (iframe) {
+          iframe.style.height = Math.max(newHeight, 200) + 'px';
+        }
       };
 
-      // Primer ajuste tras pintar
-      setTimeout(resize, 0);
-      setTimeout(resize, 50);
-      setTimeout(resize, 200);
+      // Programar reajustes
+      const timeouts = [
+        setTimeout(resize, 0),
+        setTimeout(resize, 50),
+        setTimeout(resize, 200)
+      ];
 
       // Observar cambios para reajustar
-      const observer = new MutationObserver(() => resize());
-      observer.observe(doc.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
+      const observer = new MutationObserver(resize);
+      observer.observe(doc.documentElement, { 
+        childList: true, 
+        subtree: true, 
+        attributes: true, 
+        characterData: true 
+      });
 
       // Reajustar al cargar recursos (imágenes)
       const onLoad = () => resize();
-      Array.from(doc.images || []).forEach(img => {
+      const images = doc.images || [];
+      Array.from(images).forEach(img => {
         if (!img.complete) img.addEventListener('load', onLoad);
       });
 
       return () => {
+        timeouts.forEach(clearTimeout);
         observer.disconnect();
-        Array.from(doc.images || []).forEach(img => img.removeEventListener('load', onLoad));
+        Array.from(images).forEach(img => img.removeEventListener('load', onLoad));
       };
     }
-  }, [html, maxWidth, height]);
+  }, [htmlContent, maxWidth, height]);
+
+  if (loading) {
+    return <div className="p-4 text-center text-gray-500">Cargando vista previa...</div>;
+  }
+
+  if (error) {
+    return <div className="p-4 text-center text-red-500">{error}</div>;
+  }
 
   return (
     <iframe
-      ref={iframeRef}
-      sandbox="allow-same-origin"
-      className="w-full border rounded-md bg-white"
-      style={{ height: height ?? '200px' }}
-    />
+  ref={iframeRef}
+  srcDoc={htmlContent}
+  title="Email Preview"
+  style={{
+    width: '100%',
+    minHeight: height || '500px',
+    border: '1px solid #e2e8f0',
+    borderRadius: '0.5rem',
+    backgroundColor: '#ffffff'
+  }}
+  sandbox="allow-same-origin allow-scripts" // Add this line
+  onLoad={() => setLoading(false)}
+/>
   );
 }

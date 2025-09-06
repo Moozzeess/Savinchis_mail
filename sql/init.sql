@@ -92,7 +92,7 @@ CREATE TABLE `campaigns` (
   `descripcion` text,
   `id_plantilla` int DEFAULT NULL,
   `asunto` varchar(255) NOT NULL,
-  `contenido` text,
+  `ruta_contenido` varchar(512) DEFAULT NULL COMMENT 'Ruta al archivo que contiene el contenido de la campaña',
   `fecha_creacion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fecha_actualizacion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `fecha_envio` datetime DEFAULT NULL,
@@ -102,8 +102,8 @@ CREATE TABLE `campaigns` (
   PRIMARY KEY (`id_campaign`),
   KEY `idx_estado` (`estado`),
   KEY `idx_fecha_envio` (`fecha_envio`),
-  KEY `fk_campaign_plantill-idx` (`id_plantilla`),
-  KEY `fk_campaign_list-idx` (`id_lista_contactos`),
+  KEY `fk_campaign_plantilla-idx` (`id_plantilla`),
+  KEY `fk_campaign_lista-idx` (`id_lista_contactos`),
   CONSTRAINT `fk_campaign_plantilla` FOREIGN KEY (`id_plantilla`) REFERENCES `plantillas` (`id_plantilla`) ON DELETE SET NULL,
   CONSTRAINT `fk_campaign_lista` FOREIGN KEY (`id_lista_contactos`) REFERENCES `listas_contactos` (`id_lista`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Almacena la información de las campañas de correo electrónico';

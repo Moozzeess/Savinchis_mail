@@ -46,15 +46,5 @@ next-env.d.ts # Ignora el archivo next-env.d.ts generado por Next.js para tipos 
 
 #Plantillas
 ./storage/templates
-
-# Firebase: Archivos de log generados por Firebase.
-firebase-debug.log # Ignora el archivo de log de depuración de Firebase.
-firestore-debug.log # Ignora el archivo de log de depuración de Firestore.
+./storage/campaigns
 node_modules
-.env
-.next/app-build-manifest.json
-.next/app-build-manifest.json
-.next/build-manifest.json
-.next/app-build-manifest.json
-.next/app-build-manifest.json
-.next/trace
