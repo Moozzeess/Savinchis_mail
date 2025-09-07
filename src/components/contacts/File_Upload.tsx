@@ -252,5 +252,6 @@ export function useFileUpload() {
     handleFileChange,
     handleValidateMapping,
     handleSaveList,
+    setFileUpload, // Exportar setFileUpload para permitir su uso en componentes que usan este hook
   };
 }

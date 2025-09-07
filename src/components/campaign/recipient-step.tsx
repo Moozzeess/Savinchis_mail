@@ -1,34 +1,28 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { useState, useCallback, useEffect, useMemo, memo } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { Upload, Users, FileText, CheckCircle2, XCircle, Search, List, Zap, Save } from 'lucide-react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar as CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { Calendar } from '@/components/ui/calendar';
+import { List, Users, Upload, Database } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Database } from 'lucide-react';
-import { getContactsFromExcel } from '@/actions/Contactos/get-contact';
-import { addListContacts } from '@/actions/Contactos/add-list-contacts';
-import { getDbContacts } from '@/actions/Contactos/get-db-contacts';
-import { getContactLists } from '@/actions/Contactos/get-contact-lists';
 
-// Mock data - Reemplazar con llamadas a la API real
-// const CONTACT_LISTS = [
-//   { id: '1', name: 'Clientes frecuentes', count: 1245 },
-//   { id: '2', name: 'Clientes inactivos', count: 342 },
-//   { id: '3', name: 'Suscriptores blog', count: 2456 },
-//   { id: '4', name: 'Clientes VIP', count: 89 },
-// ];
+// Importar componentes reutilizables
+import { getContactLists } from '@/actions/Contactos/get-contact-lists';
+import { ListasExistentes } from '../contacts/listas_existentes';
+import { FileUploadModal } from '../contacts/FileUploadModal';
+import { IndividualEmails } from '../contacts/IndividualEmails';
+import { DatabaseConnection } from '../contacts/extracción_Database';
+
+// Tipos
+interface RecipientTab {
+  id: string;
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+  className?: string;
+}
 
 interface RecipientStepProps {
   className?: string;
@@ -36,41 +30,31 @@ interface RecipientStepProps {
   initialSelectedList?: string | null;
 }
 
-interface FileUploadState {
-  file: File | null;
-  progress: number;
-  isUploading: boolean;
-  error: string | null;
-}
+// Componente memoizado para los tabs
+const TabItem = memo(({ 
+  tab, 
+  isActive, 
+  onSelect 
+}: { 
+  tab: RecipientTab; 
+  isActive: boolean; 
+  onSelect: (id: string) => void 
+}) => {
+  const Icon = tab.icon;
+  return (
+    <TabsTrigger 
+      value={tab.id}
+      onClick={() => onSelect(tab.id)}
+      className="flex items-center gap-2"
+      data-active={isActive}
+    >
+      <Icon className="h-4 w-4" />
+      <span className="hidden sm:inline">{tab.name}</span>
+    </TabsTrigger>
+  );
+});
 
-interface DatabaseConnection {
-  serverType: string;
-  host: string;
-  port: string;
-  username: string;
-  password: string;
-  database: string;
-  query: string;
-}
-
-interface ColumnMapping {
-  emailColumn: string;
-  nameColumn: string;
-}
-
-interface ContactSummary {
-  total: number;
-  validEmails: number;
-  invalidEmails: number;
-  duplicates: number;
-  sampleEmails: string[];
-}
-
-const DATABASE_SERVERS = [
-  { value: 'mysql', label: 'MySQL', defaultPort: '3306' },
-  { value: 'postgres', label: 'PostgreSQL', defaultPort: '5432' },
-  { value: 'sqlite', label: 'SQLite', defaultPort: '' },
-];
+TabItem.displayName = 'TabItem';
 
 const NEW_CONTACTS_OPTIONS = [
   { id: 'file', name: 'Subir archivo', icon: Upload },
@@ -78,1113 +62,233 @@ const NEW_CONTACTS_OPTIONS = [
   { id: 'database', name: 'Base de datos', icon: Database },
 ];
 
+const RECIPIENT_TABS = [
+  { id: 'existing', name: 'Listas existentes', icon: List },
+  { id: 'new', name: 'Nuevos contactos', icon: Users },
+];
+
 export function RecipientStep({ 
   className = '',
   onContactListChange,
   initialSelectedList = null 
 }: RecipientStepProps) {
-  const { register, watch, setValue, formState: { errors } } = useFormContext();
+  const methods = useForm();
+  const { setValue, watch } = methods;
   
-  // Check if database connection is complete
-  const isDbConnectionComplete = useCallback((conn: DatabaseConnection): boolean => {
-    return !!(conn.serverType && conn.host && conn.port && conn.username && conn.database && conn.query);
-  }, []);
-
-  // State for tabs and selections
+  // State para las pestañas
   const [activeTab, setActiveTab] = useState('existing');
-  const [activeSubTab, setActiveSubTab] = useState('file');
-  const [selectedListId, setSelectedListId] = useState<string | null>(null);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   
-  // File upload state
-  const [fileUpload, setFileUpload] = useState<FileUploadState>({
-    file: null,
-    progress: 0,
-    isUploading: false,
-    error: null,
-  });
-  
-  // Form fields state
-  const [listName, setListName] = useState('');
-  const [listDescription, setListDescription] = useState('');
-  const [individualEmails, setIndividualEmails] = useState('');
-  const [date, setDate] = useState<Date | undefined>(undefined);
-  
-  // File processing state
-  const [fileBufferState, setFileBufferState] = useState<ArrayBuffer | null>(null);
-  const [isMappingValidated, setIsMappingValidated] = useState(false);
-  
-  // Listas de contactos y paginación
-  const [contactLists, setContactLists] = useState<{ id: string; name: string; count: number }[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalLists, setTotalLists] = useState(0);
-  const pageSize = 5; // Mostrar 5 listas por página
-  const [listsLoading, setListsLoading] = useState(true);
-  const [listsError, setListsError] = useState<string | null>(null);
-
-  // Database connection state
-  const [dbConnection, setDbConnection] = useState<DatabaseConnection>({
-    serverType: '',
-    host: '',
-    port: '',
-    username: '',
-    password: '',
-    database: '',
-    query: '',
-  });
-  const [dbConnectionTested, setDbConnectionTested] = useState<boolean | 'testing'>(false);
-  const [columnMapping, setColumnMapping] = useState<ColumnMapping>({
-    emailColumn: 'email',
-    nameColumn: 'nombre',
-  });
-
-  // Handle mapping validation
-  const handleValidateMapping = useCallback(async () => {
-    if (!fileBufferState || !fileUpload.file) {
-      setFileUpload(prev => ({ ...prev, error: 'Por favor, primero sube un archivo.' }));
-      return;
-    }
-    if (!columnMapping.emailColumn) {
-      setFileUpload(prev => ({ ...prev, error: 'La columna de correo electrónico es obligatoria para la validación.' }));
-      return;
-    }
-
-    setFileUpload(prev => ({ ...prev, isUploading: true, error: null })); // Reutilizar isUploading para el estado de validación
-    setIsMappingValidated(false);
-    setContactSummary(null);
-    setValue('totalRecipients', 0);
-    setValue('fileContacts', []);
-
-    try {
-      const result = await getContactsFromExcel(Buffer.from(fileBufferState), columnMapping.nameColumn, columnMapping.emailColumn);
-      
-      if (result.success && result.summary) {
-        setContactSummary(result.summary);
-        setValue('totalRecipients', result.summary.validEmails);
-        setValue('fileContacts', result.contacts); // Guardar contactos para el paso de guardar lista
-        // Asegurar que el paso de destinatarios sea válido para "Siguiente"
-        const tempListId = `file_${Date.now()}`;
-        setValue('contactListId', tempListId);
-        setValue('contactListName', listName || (fileUpload.file?.name?.replace(/\.[^/.]+$/, '') || 'Archivo de contactos'));
-        setIsMappingValidated(true);
-        setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
-      } else {
-        setFileUpload(prev => ({ ...prev, isUploading: false, error: result.message }));
-        setContactSummary(null);
-        setValue('totalRecipients', 0);
-        setValue('fileContacts', []);
-        setIsMappingValidated(false);
-      }
-    } catch (actionError) {
-      console.error('Error al validar mapeo:', actionError);
-      setFileUpload(prev => ({ 
-        ...prev, 
-        isUploading: false, 
-        error: 'Error al validar el mapeo: ' + (actionError as Error).message 
-      }));
-      setContactSummary(null);
-      setValue('totalRecipients', 0);
-      setIsMappingValidated(false);
-    }
-  }, [fileBufferState, columnMapping, setValue, fileUpload.file]);
-
-  // Contact summary state
-  const [contactSummary, setContactSummary] = useState<ContactSummary | null>(null);
-
-  // Cargar listas de contactos existentes
-  useEffect(() => {
-    const fetchContactLists = async () => {
-      setListsLoading(true);
-      setListsError(null);
-      try {
-        const result = await getContactLists(currentPage, pageSize);
-        if (result.success && result.data) {
-          setContactLists(result.data.lists);
-          setTotalLists(result.data.totalLists);
-          setTotalPages(result.data.totalPages);
-        } else {
-          setListsError(result.message || 'Error desconocido al cargar las listas.');
-        }
-      } catch (err) {
-        console.error('Error fetching contact lists:', err);
-        setListsError('No se pudieron cargar las listas de contactos.');
-      } finally {
-        setListsLoading(false);
-      }
-    };
-    fetchContactLists();
-  }, [currentPage, pageSize]);
-
-  // Watched values
+  // Valores del formulario que necesitamos observar
   const selectedListName = watch('contactListName');
   const totalRecipients = watch('totalRecipients') || 0;
-
-  // Handle file selection
-  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement> | { target: { files: FileList | null } }) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    const file = files[0];
-    // Validate file
-    const validTypes = ['text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    
-    if (!validTypes.includes(file.type) && !file.name.match(/\.(csv|xlsx)$/i)) {
-      setFileUpload(prev => ({
-        ...prev,
-        error: 'Formato de archivo no soportado. Por favor usa .csv o .xlsx'
-      }));
-      return;
-    }
-    
-    if (file.size > maxSize) {
-      setFileUpload(prev => ({
-        ...prev,
-        error: 'El archivo es demasiado grande. Máximo 10MB.'
-      }));
-      return;
-    }
-
-    // Set file and update form
-    const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
-    setFileUpload(prev => ({ ...prev, file, error: null, isUploading: true }));
-    setListName(fileNameWithoutExt);
-    
-    // Reset validation state and summary on new file upload
-    setIsMappingValidated(false);
-    setContactSummary(null);
-    setValue('totalRecipients', 0);
-    setValue('fileContacts', []);
-
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      if (e.target?.result) {
-        const buffer = e.target.result as ArrayBuffer;
-        setFileBufferState(buffer); // Store the buffer
-        setFileUpload(prev => ({ ...prev, isUploading: false, progress: 100 }));
-      }
-    };
-    reader.onerror = () => {
-      setFileUpload(prev => ({ ...prev, isUploading: false, error: 'Error al leer el archivo.' }));
-      setContactSummary(null);
-      setValue('totalRecipients', 0);
-      setIsMappingValidated(false);
-    };
-    reader.readAsArrayBuffer(file);
-  }, [setValue]);
-
-  // Handle drag and drop
-  const handleDrag = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      // Add visual feedback for drag over
-    } else if (e.type === "dragleave") {
-      // Remove visual feedback
-    }
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const file = e.dataTransfer.files[0];
-      const event = {
-      target: {
-        files: [file]
-      }
-    } as unknown as React.ChangeEvent<HTMLInputElement>;
-    handleFileChange(event);
-  }
-}, [handleFileChange]);
-
-  // Handle list selection
+  
+  // Manejador para la selección de listas
   const handleListSelect = useCallback((listId: string, listName: string, count: number) => {
-    setSelectedListId(listId);
-    setValue('contactListId', listId);
-    setValue('contactListName', listName);
-    setValue('totalRecipients', count);
+    const updates = {
+      contactListId: listId,
+      contactListName: listName,
+      totalRecipients: count
+    };
     
-    // Switch to existing tab if not already
-    setActiveTab('existing');
-  }, [setValue]);
-
-  // Handle database connection test
-  const handleTestConnection = useCallback(async () => {
-    if (!isDbConnectionComplete(dbConnection)) {
-      setFileUpload(prev => ({
-        ...prev,
-        error: 'Por favor completa todos los campos de conexión requeridos.'
-      }));
-      return;
-    }
-
-    try {
-      setDbConnectionTested('testing');
-      
-      const result = await getDbContacts(dbConnection, columnMapping.emailColumn, columnMapping.nameColumn);
-      
-      if (result.success) {
-        setDbConnectionTested(true);
-        setFileUpload(prev => ({
-          ...prev,
-          error: null
-        }));
-        if (result.summary) {
-          setContactSummary(result.summary);
-          setValue('totalRecipients', result.summary.validEmails);
-        } else {
-          setContactSummary(null);
-          setValue('totalRecipients', 0);
-        }
-        setValue('dbContacts', result.contacts); // Guardar contactos para el paso de guardar lista
-        // Asegurar que el paso de destinatarios sea válido para "Siguiente"
-        const tempListId = `db_${Date.now()}`;
-        setValue('contactListId', tempListId);
-        setValue('contactListName', 'Base de datos');
-      } else {
-        setDbConnectionTested(false);
-        setFileUpload(prev => ({
-          ...prev,
-          error: 'Error al conectar con la base de datos. Verifica los datos de conexión.'
-        }));
-      }
-    } catch (error) {
-      setDbConnectionTested(false);
-      setFileUpload(prev => ({
-        ...prev,
-        error: 'Error al conectar con la base de datos. Verifica los datos de conexión.'
-      }));
-    }
-  }, [dbConnection, setValue, isDbConnectionComplete, columnMapping]);
-    
-  // Update database connection and reset test status when fields change
-  const updateDbConnection = useCallback((field: keyof DatabaseConnection, value: string) => {
-    setDbConnection(prev => {
-      const newConnection = { ...prev, [field]: value };
-      
-      // Auto-fill port when server type changes
-      if (field === 'serverType' && value) {
-        const selectedServer = DATABASE_SERVERS.find(server => server.value === value);
-        if (selectedServer?.defaultPort) {
-          newConnection.port = selectedServer.defaultPort;
-        } else {
-          newConnection.port = '';
-        }
-      }
-      
-      return newConnection;
+    // Actualizar múltiples valores a la vez para reducir renders
+    Object.entries(updates).forEach(([key, value]) => {
+      setValue(key, value, { shouldValidate: true, shouldDirty: true });
     });
     
-    // Reset test status when connection details change
-    if (dbConnectionTested) {
-      setDbConnectionTested(false);
-    }
-  }, [dbConnectionTested]);
+    // Notificar al componente padre si es necesario
+    onContactListChange?.(listId);
+  }, [setValue, onContactListChange]);
 
-  // Handle individual emails change
-  const handleIndividualEmailsChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const emails = e.target.value;
-    setIndividualEmails(emails);
+  // Manejador para cuando se completa la carga de un archivo
+  const handleUploadComplete = useCallback((file: File) => {
+    // Este manejador se llamará cuando el usuario seleccione un archivo en el modal
+    // No necesitamos hacer nada aquí ya que el modal manejará la lógica de carga
+  }, []);
+
+  // Manejador para cuando se guarda exitosamente una lista desde el modal
+  const handleListSaved = useCallback((listId: string, listName: string, count: number) => {
+    const updates = {
+      contactListId: listId,
+      contactListName: listName,
+      totalRecipients: count
+    };
     
-    // Extract valid emails
-    const emailList = emails
-      .split(/[,\n\s]+/)
-      .filter(email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+    // Actualizar múltiples valores a la vez
+    Object.entries(updates).forEach(([key, value]) => {
+      setValue(key, value, { shouldValidate: true, shouldDirty: true });
+    });
     
-    if (emailList.length > 0) {
-      setValue('contactListId', `emails_${Date.now()}`);
-      setValue('contactListName', 'Correos individuales');
-      const formattedContacts = emailList.map(email => ({ nombre_completo: email, email }));
-      setValue('individualContacts', formattedContacts); // Guardar contactos para el paso de guardar lista
-      setValue('totalRecipients', emailList.length);
-    } else {
-      setValue('contactList', '');
+    // Notificar al componente padre
+    onContactListChange?.(listId);
+    
+    // Cerrar el modal de carga
+    setIsUploadModalOpen(false);
+    
+    // Cambiar a la pestaña de listas existentes
+    setActiveTab('existing');
+  }, [setValue, onContactListChange]);
+
+  // State for the inner tabs (file, individuals, database)
+  const [activeSubTab, setActiveSubTab] = useState('file');
+  
+  // Manejador para cuando se cambia de pestaña principal
+  const handleTabChange = useCallback((tabId: string) => {
+    setActiveTab(tabId);
+    // Reset contact list selection when changing tabs
+    if (tabId !== 'existing') {
+      setValue('contactListId', '');
+      setValue('contactListName', '');
+      setValue('individualContacts', []);
       setValue('totalRecipients', 0);
+      onContactListChange?.('');
     }
-  }, [setValue]);
+  }, [setValue, onContactListChange]);
+  
+  // Manejador para las pestañas internas
+  const handleSubTabChange = useCallback((tabId: string) => {
+    setActiveSubTab(tabId);
+  }, []);
 
-  // Handle date selection
-  const handleDateSelect = useCallback((selectedDate: Date | undefined) => {
-    setDate(selectedDate);
-    if (selectedDate) {
-      setValue('scheduledDate', selectedDate.toISOString());
-    } else {
-      setValue('scheduledDate', '');
+  // Efecto para manejar la lista inicial seleccionada
+  useEffect(() => {
+    if (initialSelectedList) {
+      setActiveTab('existing');
     }
-  }, [setValue]);
+    
+    // Inicializar valores por defecto si es necesario
+    const contactListId = watch('contactListId');
+    if (!contactListId) {
+      const initialValues = [
+        { key: 'contactListId', value: '' },
+        { key: 'contactListName', value: '' },
+        { key: 'totalRecipients', value: 0 }
+      ] as const;
+      
+      initialValues.forEach(({ key, value }) => {
+        setValue(key, value, { shouldValidate: true });
+      });
+    }
+  }, [initialSelectedList, setValue, watch]);
+
+  // Memoizar la lista de pestañas para evitar re-renders innecesarios
+  const renderTabs = useMemo(() => {
+    return RECIPIENT_TABS.map((tab) => (
+      <TabItem 
+        key={tab.id}
+        tab={tab}
+        isActive={activeTab === tab.id}
+        onSelect={handleTabChange}
+      />
+    ));
+  }, [activeTab, handleTabChange]);
+  
+  // Contenido de las pestañas
+  const tabContent = useMemo(() => ({
+    existing: (
+      <TabsContent value="existing" className="mt-6">
+        <ListasExistentes 
+          selectedListId={initialSelectedList} 
+          onListSelect={handleListSelect}
+        />
+      </TabsContent>
+    ),
+    new: (
+      <TabsContent value="new" className="mt-6">
+        <Tabs 
+          value={activeSubTab}
+          onValueChange={handleSubTabChange}
+          className="w-full"
+        >
+          <TabsList className="grid w-full grid-cols-3">
+            {NEW_CONTACTS_OPTIONS.map((option) => (
+              <TabsTrigger 
+                key={option.id} 
+                value={option.id}
+                className="flex items-center gap-2"
+              >
+                <option.icon className="h-4 w-4" />
+                {option.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          <TabsContent value="file" className="mt-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div 
+                  className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-8 text-center dark:border-gray-600 cursor-pointer hover:border-primary/50 hover:bg-accent/50 transition-colors"
+                  onClick={() => setIsUploadModalOpen(true)}
+                >
+                  <Upload className="h-10 w-10 text-muted-foreground mb-3" />
+                  <h4 className="font-medium">Arrastra tu archivo aquí o haz clic para seleccionar</h4>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Formatos soportados: .csv, .xlsx (máx. 10MB)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="individuals" className="mt-6">
+            <IndividualEmails 
+              onListSelect={(listId, listName, count) => {
+                setValue('contactListId', listId);
+                setValue('contactListName', listName);
+                setValue('totalRecipients', count);
+                onContactListChange?.(listId);
+              }}
+            />
+          </TabsContent>
+
+          <TabsContent value="database" className="mt-6">
+            <div className="space-y-4">
+              <DatabaseConnection onListSelect={handleListSelect} />
+            </div>
+          </TabsContent>
+        </Tabs>
+      </TabsContent>
+    )
+  }), [
+    initialSelectedList, 
+    handleListSelect, 
+    isUploadModalOpen, 
+    activeSubTab, 
+    handleTabChange, 
+    handleSubTabChange
+  ]);
 
   return (
-    <div className={cn('space-y-6', className)}>
-      {/* Header */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Destinatarios</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Selecciona o carga la lista de contactos que recibirán esta campaña.
-        </p>
-      </div>
-
-      {/* Main Tabs */}
+    <FormProvider {...methods}>
+      <div className={cn('space-y-6', className)}>
       <Tabs 
         value={activeTab} 
         onValueChange={setActiveTab}
-        className="w-full space-y-6"
+        className="w-full"
       >
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="existing">
-            <Users className="mr-2 h-4 w-4" />
-            Listas existentes
-          </TabsTrigger>
-          <TabsTrigger value="upload">
-            <Upload className="mr-2 h-4 w-4" />
-            Nuevos contactos
-          </TabsTrigger>
+          {RECIPIENT_TABS.map((tab) => (
+            <TabItem 
+              key={tab.id} 
+              tab={tab} 
+              isActive={activeTab === tab.id}
+              onSelect={setActiveTab}
+            />
+          ))}
         </TabsList>
 
-        {/* Existing Lists Tab */}
-        <TabsContent value="existing" className="space-y-4">
-          <div className="space-y-2">
-            <Label>Seleccionar lista de contactos</Label>
-            <div className="space-y-2">
-              {listsLoading ? (
-                <div className="text-center text-muted-foreground">Cargando listas...</div>
-              ) : listsError ? (
-                <div className="text-center text-destructive">{listsError}</div>
-              ) : contactLists.length === 0 ? (
-                <div className="text-center text-muted-foreground">No hay listas de contactos guardadas aún. Por favor, agrega una nueva lista en la pestaña 'Nuevos contactos'.</div>
-              ) : (
-                contactLists.map((list) => (
-                  <div
-                    key={list.id}
-                    className={cn(
-                      "flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors hover:bg-accent/50",
-                      selectedListId === list.id 
-                        ? "border-primary ring-2 ring-primary bg-accent/30" 
-                        : "hover:border-primary/50"
-                    )}
-                    onClick={() => handleListSelect(list.id, list.name, list.count)}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                        <Users className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground">{list.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {list.count.toLocaleString()} contactos
-                        </p>
-                      </div>
-                    </div>
-                    {selectedListId === list.id && (
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-            {contactLists.length > 0 && totalPages > 1 && (
-              <div className="flex items-center justify-between pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={currentPage === 1 || listsLoading}
-                >
-                  Anterior
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  Página {currentPage} de {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                  disabled={currentPage === totalPages || listsLoading}
-                >
-                  Siguiente
-                </Button>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
-        {/* New Contacts Tab */}
-        <TabsContent value="upload" className="space-y-6">
-          <Tabs 
-            defaultValue="file" 
-            value={activeSubTab}
-            onValueChange={setActiveSubTab}
-            className="w-full"
-          >
-            <TabsList className="grid w-full grid-cols-3">
-              {NEW_CONTACTS_OPTIONS.map((option) => (
-                <TabsTrigger 
-                  key={option.id} 
-                  value={option.id}
-                  className="flex items-center gap-2"
-                >
-                  <option.icon className="h-4 w-4" />
-                  {option.name}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {/* File Upload Tab */}
-            <TabsContent value="file" className="mt-6 space-y-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="file-upload">Sube un archivo de contactos</Label>
-                  <div
-                    className={cn(
-                      "relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 cursor-pointer",
-                      fileUpload.file
-                        ? 'border-green-300 bg-green-50 dark:bg-green-900/10'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-primary/50 hover:bg-accent/50',
-                      fileUpload.isUploading && 'opacity-70 cursor-wait',
-                      fileUpload.error && 'border-destructive/50 bg-destructive/5'
-                    )}
-                    onDragOver={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDrop={handleDrop}
-                    onClick={() => !fileUpload.isUploading && document.getElementById('file-upload')?.click()}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => e.key === 'Enter' && document.getElementById('file-upload')?.click()}
-                  >
-                    <input
-                      id="file-upload"
-                      type="file"
-                      className="hidden"
-                      accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                      onChange={handleFileChange}
-                      disabled={fileUpload.isUploading}
-                    />
-                    
-                    {fileUpload.isUploading ? (
-                      <div className="space-y-3">
-                        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                          <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />
-                        </div>
-                        <div>
-                          <p className="font-medium">Subiendo archivo...</p>
-                          <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                            <div 
-                              className="bg-primary h-2.5 rounded-full transition-all duration-300"
-                              style={{ width: `${fileUpload.progress}%` }}
-                            />
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {fileUpload.progress}% completado
-                          </p>
-                        </div>
-                      </div>
-                    ) : fileUpload.file ? (
-                      <div className="space-y-3">
-                        <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
-                          <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-green-700 dark:text-green-300 truncate max-w-xs mx-auto">
-                            {fileUpload.file.name}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {(fileUpload.file.size / 1024 / 1024).toFixed(2)} MB • {fileUpload.file.type.split('/').pop()?.toUpperCase()}
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center mx-auto">
-                          <Upload className="w-5 h-5 text-muted-foreground" />
-                        </div>
-                        <div>
-                          <p className="font-medium">Arrastra tu archivo aquí o haz clic para seleccionar</p>
-                          <p className="text-sm text-muted-foreground">
-                            Formatos soportados: .csv, .xlsx (máx. 10MB)
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {fileUpload.error && (
-                      <div className="mt-3 text-sm text-destructive flex items-center justify-center gap-2">
-                        <XCircle className="h-4 w-4" />
-                        {fileUpload.error}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Column Mapping for File Upload */}
-                {fileUpload.file && !fileUpload.isUploading && (
-                  <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <h4 className="text-sm font-medium">Mapeo de columnas</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="email-column">Columna de correo electrónico</Label>
-                        <Input
-                          id="email-column"
-                          placeholder="Ej: email, correo"
-                          value={columnMapping.emailColumn}
-                          onChange={(e) => setColumnMapping(prev => ({
-                            ...prev,
-                            emailColumn: e.target.value
-                          }))}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="name-column">Columna de nombre (opcional)</Label>
-                        <Input
-                          id="name-column"
-                          placeholder="Ej: nombre, name"
-                          value={columnMapping.nameColumn}
-                          onChange={(e) => setColumnMapping(prev => ({
-                            ...prev,
-                            nameColumn: e.target.value
-                          }))}
-                        />
-                      </div>
-                    </div>
-                    <div className="pt-2 flex gap-2">
-                      <Button 
-                        type="button" 
-                        variant="outline"
-                        onClick={handleValidateMapping}
-                        disabled={fileUpload.isUploading}
-                      >
-                        <CheckCircle2 className="mr-2 h-4 w-4" />
-                        Validar mapeo
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {/* File Details Form (Green Card) */}
-                {fileUpload.file && !fileUpload.isUploading && isMappingValidated && (
-                  <div className="space-y-4">
-                    <div className="p-4 bg-green-50 dark:bg-green-900/10 rounded-lg border border-green-200 dark:border-green-800">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0">
-                          <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                            <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
-                          </div>
-                        </div>
-                        <div className="flex-1 space-y-4">
-                          <div>
-                            <h4 className="text-sm font-medium text-green-800 dark:text-green-200">
-                              Archivo cargado y validado correctamente
-                            </h4>
-                            <div className="mt-1 text-sm text-green-700 dark:text-green-300 space-y-1">
-                              <p className="truncate">
-                                <span className="font-medium">Archivo:</span> {fileUpload.file.name}
-                              </p>
-                              <p>
-                                <span className="font-medium">Tamaño:</span> {(fileUpload.file.size / 1024 / 1024).toFixed(2)} MB • {fileUpload.file.type.split('/').pop()?.toUpperCase()}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="list-name">
-                                Nombre de la lista <span className="text-destructive">*</span>
-                              </Label>
-                              <Input
-                                id="list-name"
-                                type="text"
-                                value={listName}
-                                onChange={(e) => {
-                                  setListName(e.target.value);
-                                  setValue('contactListName', e.target.value);
-                                }}
-                                placeholder="Ej: Clientes 2024"
-                                className="w-full"
-                                maxLength={50}
-                              />
-                              <p className="text-xs text-muted-foreground">
-                                {listName.length}/50 caracteres
-                              </p>
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="list-description">
-                                Descripción <span className="text-muted-foreground">(opcional)</span>
-                              </Label>
-                              <Textarea
-                                id="list-description"
-                                value={listDescription}
-                                onChange={(e) => {
-                                  setListDescription(e.target.value);
-                                  setValue('contactListDescription', e.target.value);
-                                }}
-                                placeholder="Ej: Lista de clientes del primer trimestre 2024"
-                                className="min-h-[80px]"
-                                maxLength={200}
-                              />
-                              <p className="text-xs text-muted-foreground">
-                                {listDescription.length}/200 caracteres
-                              </p>
-                            </div>
-                          </div>
-                          <div className="pt-4 flex justify-end">
-                            <Button 
-                              type="button"
-                              variant="secondary"
-                              onClick={async () => {
-                                    if (!listName || !contactSummary || !watch('fileContacts')) {
-                                      setFileUpload(prev => ({ ...prev, error: 'Por favor, completa el nombre de la lista y valida el mapeo antes de guardar.' }));
-                                      return;
-                                    }
-
-                                    setFileUpload(prev => ({ ...prev, isUploading: true, error: null }));
-                                    try {
-                                      const contactsToSave = watch('fileContacts').map((contact: { nombre_completo: any; email: any; }) => ({
-                                        nombre_completo: contact.nombre_completo || '',
-                                        email: contact.email
-                                      }));
-
-                                      const result = await addListContacts(listName, contactsToSave);
-                                      
-                                      if (result.success) {
-                                        setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
-                                        // Actualizar la lista de contactos
-                                        const listsResult = await getContactLists(currentPage, pageSize);
-                                        if (listsResult.success && listsResult.data) {
-                                          setContactLists(listsResult.data.lists);
-                                        }
-                                      } else {
-                                        setFileUpload(prev => ({ ...prev, isUploading: false, error: result.message }));
-                                      }
-                                    } catch (actionError) {
-                                      console.error('Error saving contact list:', actionError);
-                                      setFileUpload(prev => ({ 
-                                        ...prev, 
-                                        isUploading: false, 
-                                        error: 'Error al guardar la lista de contactos: ' + (actionError as Error).message 
-                                      }));
-                                    }
-                                  }}
-                              disabled={!isMappingValidated || fileUpload.isUploading || !listName}
-                            >
-                              <Save className="mr-2 h-4 w-4" />
-                              Guardar lista
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-
-            {/* Individual Emails Tab */}
-            <TabsContent value="individuals" className="mt-6">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="individual-emails">Agregar correos electrónicos</Label>
-                  <Textarea
-                    id="individual-emails"
-                    placeholder="ejemplo1@dominio.com, ejemplo2@dominio.com, ejemplo3@dominio.com"
-                    className="min-h-[200px] font-mono text-sm"
-                    value={individualEmails}
-                    onChange={handleIndividualEmailsChange}
-                  />
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm text-muted-foreground">
-                      Separa los correos con comas, espacios o saltos de línea.
-                    </p>
-                    {individualEmails && (
-                      <p className="text-sm text-muted-foreground">
-                        {individualEmails.split(/[,\n\s]+/).filter(Boolean).length} correos detectados
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {individualEmails && (
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0">
-                        <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                          <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                        </div>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-blue-800 dark:text-blue-200">
-                          Correos individuales
-                        </h4>
-                        <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                          Se detectaron {individualEmails.split(/[,\n\s]+/).filter(Boolean).length} correos electrónicos.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="individual-list-name">
-                          Nombre de la lista <span className="text-destructive">*</span>
-                        </Label>
-                        <Input
-                          id="individual-list-name"
-                          type="text"
-                          value={listName}
-                          onChange={(e) => setListName(e.target.value)}
-                          placeholder="Ej: Contactos Manuales"
-                          className="w-full"
-                          maxLength={50}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          {listName.length}/50 caracteres
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="individual-list-description">
-                          Descripción <span className="text-muted-foreground">(opcional)</span>
-                        </Label>
-                        <Textarea
-                          id="individual-list-description"
-                          value={listDescription}
-                          onChange={(e) => setListDescription(e.target.value)}
-                          placeholder="Ej: Correos agregados manualmente para campaña X"
-                          className="min-h-[80px]"
-                          maxLength={200}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          {listDescription.length}/200 caracteres
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 flex justify-end">
-                      <Button 
-                        type="button"
-                        variant="secondary"
-                        onClick={async () => {
-                          if (!listName || !watch('individualContacts')) {
-                            alert('Por favor, proporciona un nombre para la lista y agrega contactos antes de guardar.');
-                            return;
-                          }
-                          setFileUpload(prev => ({ ...prev, isUploading: true, error: null })); // Reutilizar isUploading para el estado
-                          try {
-                            const contactsToSave = watch('individualContacts');
-                            const result = await addListContacts(listName, contactsToSave);
-                            
-                            if (result.success) {
-                              setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
-                              alert(result.message);
-                            } else {
-                              setFileUpload(prev => ({ ...prev, isUploading: false, error: result.message }));
-                            }
-                          } catch (actionError) {
-                            console.error('Error saving individual contacts list:', actionError);
-                            setFileUpload(prev => ({ 
-                              ...prev, 
-                              isUploading: false, 
-                              error: 'Error al guardar la lista de contactos: ' + (actionError as Error).message 
-                            }));
-                          }
-                        }}
-                      >
-                        <Save className="mr-2 h-4 w-4" />
-                        Guardar lista
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-
-            {/* Database Connection Tab */}
-            <TabsContent value="database" className="mt-6">
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <h4 className="font-medium">Configuración de conexión</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Configura los parámetros de conexión a tu base de datos.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="db-type">Tipo de base de datos <span className="text-destructive">*</span></Label>
-                    <select
-                      id="db-type"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      value={dbConnection.serverType}
-                      onChange={(e) => updateDbConnection('serverType', e.target.value)}
-                    >
-                      <option value="">Seleccionar tipo</option>
-                      {DATABASE_SERVERS.map((server) => (
-                        <option key={server.value} value={server.value}>
-                          {server.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="db-host">Servidor <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="db-host"
-                      placeholder="localhost"
-                      value={dbConnection.host}
-                      onChange={(e) => updateDbConnection('host', e.target.value)}
-                      disabled={!dbConnection.serverType}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="db-port">Puerto</Label>
-                    <Input
-                      id="db-port"
-                      type="number"
-                      placeholder="3306"
-                      value={dbConnection.port}
-                      onChange={(e) => updateDbConnection('port', e.target.value)}
-                      disabled={!dbConnection.serverType || dbConnection.serverType === 'sqlite'}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="db-name">Base de datos <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="db-name"
-                      placeholder="nombre_bd"
-                      value={dbConnection.database}
-                      onChange={(e) => updateDbConnection('database', e.target.value)}
-                      disabled={!dbConnection.serverType}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="db-username">Usuario <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="db-username"
-                      placeholder="usuario"
-                      value={dbConnection.username}
-                      onChange={(e) => updateDbConnection('username', e.target.value)}
-                      disabled={!dbConnection.serverType}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="db-password">Contraseña <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="db-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={dbConnection.password}
-                      onChange={(e) => updateDbConnection('password', e.target.value)}
-                      disabled={!dbConnection.serverType}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="db-query">Consulta SQL <span className="text-destructive">*</span></Label>
-                  <Textarea
-                    id="db-query"
-                    placeholder="SELECT email, nombre FROM usuarios WHERE activo = 1"
-                    className="min-h-[120px] font-mono text-sm"
-                    value={dbConnection.query}
-                    onChange={(e) => updateDbConnection('query', e.target.value)}
-                    disabled={!dbConnection.serverType}
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Escribe la consulta SQL que devuelva los correos electrónicos y nombres.
-                  </p>
-                </div>
-
-                {/* Column Mapping for Database */}
-                <div className="space-y-4 pt-2">
-                  <h4 className="text-sm font-medium">Mapeo de columnas</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="db-email-column">Columna de correo electrónico</Label>
-                      <Input
-                        id="db-email-column"
-                        placeholder="Ej: email, correo"
-                        value={columnMapping.emailColumn}
-                        onChange={(e) => setColumnMapping(prev => ({
-                          ...prev,
-                          emailColumn: e.target.value
-                        }))}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="db-name-column">Columna de nombre (opcional)</Label>
-                      <Input
-                        id="db-name-column"
-                        placeholder="Ej: nombre, name"
-                        value={columnMapping.nameColumn}
-                        onChange={(e) => setColumnMapping(prev => ({
-                          ...prev,
-                          nameColumn: e.target.value
-                        }))}
-                      />
-                    </div>
-                  </div>
-                  <div className="pt-2 flex gap-2">
-                    <Button 
-                      type="button" 
-                      variant="outline"
-                      onClick={() => {
-                        // Add database validation logic here
-                        console.log('Validating database mapping:', columnMapping);
-                      }}
-                    >
-                      <CheckCircle2 className="mr-2 h-4 w-4" />
-                      Validar mapeo
-                    </Button>
-                    <Button 
-                      type="button"
-                      variant="secondary"
-                      onClick={async () => {
-                        if (!listName || !watch('dbContacts')) {
-                          setFileUpload(prev => ({ ...prev, error: 'Por favor, proporciona un nombre para la lista y realiza una prueba de conexión exitosa antes de guardar.' }));
-                          return;
-                        }
-
-                        setFileUpload(prev => ({ ...prev, isUploading: true, error: null })); // Reutilizar isUploading
-                        try {
-                          const contactsToSave = watch('dbContacts');
-                          const result = await addListContacts(listName, contactsToSave);
-                          
-                          if (result.success) {
-                            setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
-                            alert(result.message);
-                          } else {
-                            setFileUpload(prev => ({ ...prev, isUploading: false, error: result.message }));
-                          }
-                        } catch (actionError) {
-                          console.error('Error saving database contacts list:', actionError);
-                          setFileUpload(prev => ({ 
-                            ...prev, 
-                            isUploading: false, 
-                            error: 'Error al guardar la lista de contactos: ' + (actionError as Error).message 
-                          }));
-                        }
-                      }}
-                    >
-                      <Save className="mr-2 h-4 w-4" />
-                      Guardar lista
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex justify-end">
-                  <Button
-                    type="button"
-                    onClick={handleTestConnection}
-                    disabled={
-                      dbConnectionTested === 'testing' || 
-                      !isDbConnectionComplete(dbConnection)
-                    }
-                    className="gap-2"
-                  >
-                    {dbConnectionTested === 'testing' ? (
-                      <>
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                        Probando conexión...
-                      </>
-                    ) : dbConnectionTested ? (
-                      <>
-                        <CheckCircle2 className="h-4 w-4" />
-                        Conexión exitosa
-                      </>
-                    ) : (
-                      <>
-                        <Zap className="h-4 w-4" />
-                        Probar conexión
-                      </>
-                    )}
-                  </Button>
-                </div>
-
-                {fileUpload.error && (
-                  <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm flex items-start gap-2">
-                    <XCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                    <span>{fileUpload.error}</span>
-                  </div>
-                )}
-
-                {dbConnectionTested === true && (
-                  <div className="p-4 bg-green-50 dark:bg-green-900/10 rounded-lg border border-green-200 dark:border-green-800">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0">
-                        <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                          <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
-                        </div>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-green-800 dark:text-green-200">
-                          Conexión exitosa
-                        </h4>
-                        <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                          La conexión a la base de datos se ha establecido correctamente. 
-                          Los datos se cargarán al guardar la campaña.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </TabsContent>
+        <div className="mt-6">
+          {tabContent[activeTab as keyof typeof tabContent]}
+        </div>
       </Tabs>
 
-      {/* Contact Summary */}
-      {contactSummary && (
-        <div className="mt-6 border rounded-lg overflow-hidden">
-          <div className="bg-muted/50 p-4 border-b">
-            <h4 className="font-medium">Resumen de Contactos</h4>
-          </div>
-          <div className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div className="border rounded-lg p-4">
-                <p className="text-sm text-muted-foreground">Total de contactos</p>
-                <p className="text-2xl font-semibold">{contactSummary.total.toLocaleString()}</p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <p className="text-sm text-muted-foreground">Correos válidos</p>
-                <p className="text-2xl font-semibold text-green-600">
-                  {contactSummary.validEmails.toLocaleString()}
-                </p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <p className="text-sm text-muted-foreground">Correos inválidos</p>
-                <p className="text-2xl font-semibold text-red-600">
-                  {contactSummary.invalidEmails.toLocaleString()}
-                </p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <p className="text-sm text-muted-foreground">Duplicados</p>
-                <p className="text-2xl font-semibold text-amber-600">
-                  {contactSummary.duplicates.toLocaleString()}
-                </p>
-              </div>
-            </div>
-            
-            {contactSummary.sampleEmails.length > 0 && (
-              <div className="border rounded-lg overflow-hidden">
-                <div className="bg-muted/50 p-2 px-4 text-sm font-medium">
-                  Vista previa de correos (primeros {contactSummary.sampleEmails.length})
-                </div>
-                <div className="max-h-40 overflow-y-auto p-2">
-                  <table className="w-full text-sm">
-                    <tbody className="divide-y">
-                      {contactSummary.sampleEmails.map((email, index) => (
-                        <tr key={index}>
-                          <td className="py-1.5 px-2">{email}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Modal de carga de archivos */}
+      <FileUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onUploadComplete={handleUploadComplete}
+        onListSaved={handleListSaved}
+      />
 
       {/* Summary Card */}
       <div className="rounded-lg border bg-muted/50 p-4">
@@ -1198,11 +302,20 @@ export function RecipientStep({
           <div className="text-right">
             <p className="text-2xl font-bold">{totalRecipients.toLocaleString()}</p>
             <p className="text-xs text-muted-foreground">
-              {totalRecipients === 1 ? 'contacto' : 'contactos'}
+              {totalRecipients === 0 ? 'Sin contactos' : 
+               totalRecipients === 1 ? 'contacto' : 'contactos'}
             </p>
           </div>
         </div>
+        
+        {/* Mostrar advertencia si no hay contactos seleccionados */}
+        {totalRecipients === 0 && (
+          <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 text-sm rounded-md">
+            No hay contactos seleccionados. Por favor, selecciona o crea una lista de contactos.
+          </div>
+        )}
       </div>
-    </div>
+      </div>
+    </FormProvider>
   );
 }
