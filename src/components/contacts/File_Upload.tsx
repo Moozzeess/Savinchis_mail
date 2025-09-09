@@ -1,15 +1,24 @@
 /**
  * @hook useFileUpload
  * @description Un hook personalizado para gestionar el ciclo de vida completo de la carga de un archivo de contactos: desde la selección y validación del archivo, el mapeo de columnas, hasta el procesamiento y guardado de los contactos.
- * Utiliza `react-hook-form` para gestionar datos de un formulario de forma integrada.
  * @returns {object} Un objeto que contiene el estado actual de la carga, los resúmenes de contactos y las funciones para manejar el proceso.
  */
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useFormContext } from 'react-hook-form';
 import { getContactsFromExcel } from '@/actions/Contactos/get-contact';
 import { addListContacts } from '@/actions/Contactos/add-list-contacts';
+
+/**
+ * @interface Contact
+ * @description Define la estructura de un contacto.
+ */
+interface Contact {
+  email: string;
+  nombre_completo?: string;
+  name?: string; // Para compatibilidad con datos que vienen con 'name' en lugar de 'nombre_completo'
+  [key: string]: any;
+}
 
 /**
  * @interface FileUploadState
@@ -55,7 +64,6 @@ interface ColumnMapping {
 }
 
 export function useFileUpload() {
-  const { setValue, watch } = useFormContext();
 
   /**
    * @var {FileUploadState} fileUpload
@@ -106,6 +114,8 @@ export function useFileUpload() {
    * @description Estado para la descripción de la lista de contactos.
    */
   const [listDescription, setListDescription] = useState('');
+  const [fileContacts, setFileContacts] = useState<Contact[]>([]);
+  const [totalRecipients, setTotalRecipients] = useState(0);
 
   /**
    * @function handleFileChange
@@ -138,8 +148,8 @@ export function useFileUpload() {
     setListName(fileNameWithoutExt);
     setIsMappingValidated(false);
     setContactSummary(null);
-    setValue('totalRecipients', 0);
-    setValue('fileContacts', []);
+    setTotalRecipients(0);
+    setFileContacts([]);
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -152,11 +162,12 @@ export function useFileUpload() {
     reader.onerror = () => {
       setFileUpload(prev => ({ ...prev, isUploading: false, error: 'Error al leer el archivo.' }));
       setContactSummary(null);
-      setValue('totalRecipients', 0);
+      setTotalRecipients(0);
       setIsMappingValidated(false);
+      setFileContacts([]);
     };
     reader.readAsArrayBuffer(file);
-  }, [setValue]);
+  }, []);
 
   /**
    * @function handleValidateMapping
@@ -177,34 +188,34 @@ export function useFileUpload() {
     setFileUpload(prev => ({ ...prev, isUploading: true, error: null }));
     setIsMappingValidated(false);
     setContactSummary(null);
-    setValue('totalRecipients', 0);
-    setValue('fileContacts', []);
+    setTotalRecipients(0);
+    setFileContacts([]);
 
     try {
       const result = await getContactsFromExcel(Buffer.from(fileBufferState), columnMapping.nameColumn, columnMapping.emailColumn);
       
       if (result.success && result.summary) {
         setContactSummary(result.summary);
-        setValue('totalRecipients', result.summary.validEmails);
-        setValue('fileContacts', result.contacts);
+        setTotalRecipients(result.summary.validEmails);
+        setFileContacts(result.contacts || []);
         setIsMappingValidated(true);
         setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
       } else {
         setFileUpload(prev => ({ ...prev, isUploading: false, error: result.message }));
         setContactSummary(null);
-        setValue('totalRecipients', 0);
-        setValue('fileContacts', []);
+        setTotalRecipients(0);
+        setFileContacts([]);
         setIsMappingValidated(false);
       }
     } catch (actionError) {
       console.error('Error al validar mapeo:', actionError);
       setFileUpload(prev => ({ ...prev, isUploading: false, error: 'Error al validar el mapeo: ' + (actionError as Error).message }));
       setContactSummary(null);
-      setValue('totalRecipients', 0);
-      setValue('fileContacts', []);
+      setTotalRecipients(0);
+      setFileContacts([]);
       setIsMappingValidated(false);
     }
-  }, [fileBufferState, columnMapping, setValue, fileUpload.file]);
+  }, [fileBufferState, columnMapping, fileUpload.file]);
 
   /**
    * @function handleSaveList
@@ -213,16 +224,21 @@ export function useFileUpload() {
    * @returns {Promise<{success: boolean, message: string}>} Un objeto que indica si la operación fue exitosa y un mensaje.
    */
   const handleSaveList = useCallback(async () => {
-    const contactsToSave = watch('fileContacts');
-
-    if (!listName || !contactsToSave || contactsToSave.length === 0) {
+    if (!listName || fileContacts.length === 0) {
       setFileUpload(prev => ({ ...prev, error: 'Por favor, completa el nombre de la lista y valida el mapeo antes de guardar.' }));
       return { success: false, message: 'Faltan datos para guardar la lista.' };
     }
 
+    // Asegurarse de que los contactos tengan el formato correcto
+    const formattedContacts = fileContacts.map(contact => ({
+      ...contact,
+      email: contact.email,
+      nombre_completo: contact.nombre_completo || contact.name || 'Sin nombre'
+    }));
+
     setFileUpload(prev => ({ ...prev, isUploading: true, error: null }));
     try {
-      const result = await addListContacts(listName, contactsToSave, listDescription);
+      const result = await addListContacts(listName, formattedContacts, listDescription);
       if (result.success) {
         setFileUpload(prev => ({ ...prev, isUploading: false, error: null }));
         return { success: true, message: 'Lista guardada correctamente.' };
@@ -234,7 +250,7 @@ export function useFileUpload() {
       setFileUpload(prev => ({ ...prev, isUploading: false, error: 'Error al guardar la lista: ' + (actionError as Error).message }));
       return { success: false, message: 'Error al guardar la lista.' };
     }
-  }, [listName, listDescription, setValue, watch]);
+  }, [listName, listDescription, fileContacts]);
 
   /**
    * @returns {object} Un objeto con el estado y las funciones para ser utilizados por un componente de UI.
@@ -246,12 +262,14 @@ export function useFileUpload() {
     columnMapping,
     listName,
     listDescription,
+    fileContacts,
+    totalRecipients,
     setColumnMapping,
     setListName,
     setListDescription,
     handleFileChange,
     handleValidateMapping,
     handleSaveList,
-    setFileUpload, // Exportar setFileUpload para permitir su uso en componentes que usan este hook
+    setFileUpload,
   };
 }

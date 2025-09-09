@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,7 +17,6 @@ interface FileUploadModalProps {
 }
 
 export function FileUploadModal({ isOpen, onClose, onUploadComplete, onListSaved }: FileUploadModalProps) {
-  const { setValue } = useFormContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [isSaving, setIsSaving] = useState(false);
@@ -79,22 +77,31 @@ export function FileUploadModal({ isOpen, onClose, onUploadComplete, onListSaved
       formData.append('emailColumn', columnMapping.emailColumn);
       formData.append('nameColumn', columnMapping.nameColumn || '');
 
-      // Aquí iría la llamada a la API para guardar la lista
-      // const response = await api.saveContactList(formData);
+      const response = await fetch('/api/contacts', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al guardar la lista de contactos');
+      }
+
+      const result = await response.json();
       
-      // Simulación de respuesta exitosa
-      setTimeout(() => {
+      if (result.success) {
         setSaveSuccess(true);
         onUploadComplete(fileUpload.file!);
         
         // Notificar que la lista se guardó exitosamente
         if (onListSaved && contactSummary) {
-          const tempListId = `temp_${Date.now()}`;
-          onListSaved(tempListId, listName, contactSummary.total);
+          onListSaved(result.data.contactId, listName, contactSummary.total);
         }
         
         onClose();
-      }, 1000);
+      } else {
+        throw new Error(result.message || 'Error al procesar la respuesta del servidor');
+      }
     } catch (error) {
       console.error(error);
       setSaveError(error instanceof Error ? error.message : 'Error al guardar la lista');
@@ -213,9 +220,7 @@ export function FileUploadModal({ isOpen, onClose, onUploadComplete, onListSaved
                 <div className="flex justify-end gap-2 pt-2">
                   <Button 
                     variant="outline"
-                    onClick={() => {
-                      setValue('fileUpload', { file: null, progress: 0, isUploading: false, error: null });
-                    }}
+                    onClick={onClose}
                   >
                     Cancelar
                   </Button>

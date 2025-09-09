@@ -188,7 +188,7 @@ export default function ContactsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="container mx-auto px-4 py-8">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
@@ -204,8 +204,8 @@ export default function ContactsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Contactos</h1>
           <p className="text-muted-foreground">
@@ -447,7 +447,7 @@ export default function ContactsPage() {
       <FileUploadModal 
         isOpen={isUploadModalOpen} 
         onClose={() => setIsUploadModalOpen(false)}
-        onSuccess={handleUploadSuccess} 
+        onUploadComplete={handleUploadSuccess} 
       />
       
       <EditListDialog
