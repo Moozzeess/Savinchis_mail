@@ -29,22 +29,85 @@ import { ArrowLeft } from 'lucide-react';
 // Types
 import { Campaign, CampaignFormData } from '@/types/campaign';
 
+// Mapeo de objetivos entre inglés y español
+const objetivoMap = {
+  promotional: 'promocional',
+  newsletter: 'boletin',
+  announcement: 'anuncio',
+  event: 'evento',
+  welcome: 'bienvenida',
+  other: 'otro',
+} as const;
+
+type ObjetivoTipo = typeof objetivoMap[keyof typeof objetivoMap];
+type ObjetivoInglesTipo = keyof typeof objetivoMap;
+
 // Esquema de validación
 const campaignFormSchema = z.object({
   // Detalles básicos
-  id: z.number().optional(),
+  id: z.union([z.string(), z.number()]).transform(val => Number(val)).optional(),
+  
+  // Campos en español
   nombre_campaign: z.string().min(1, 'El nombre es requerido'),
   descripcion: z.string().optional(),
-  objetivo: z.enum(['promocional', 'boletin', 'anuncio', 'evento', 'bienvenida', 'otro']),
-  
-  // Contenido del correo
+  objetivo: z.enum(['promocional', 'boletin', 'anuncio', 'evento', 'bienvenida', 'otro'] as const),
   asunto: z.string().min(1, 'El asunto es requerido'),
   contenido: z.any(),
-  
-  // Destinatarios
   id_lista: z.coerce.number().min(1, 'Debes seleccionar una lista de contactos'),
+  id_plantilla: z.union([z.string(), z.number()])
+    .transform(val => val ? Number(val) : undefined)
+    .optional(),
   nombre_lista: z.string().optional(),
   total_contactos: z.coerce.number().min(1, 'Debes tener al menos un destinatario'),
+  
+  // Campos en inglés (para compatibilidad con componentes)
+  name: z.string().optional(),
+  description: z.string().optional(),
+  objective: z.enum(Object.keys(objetivoMap) as [string, ...string[]]).optional(),
+  subject: z.string().optional(),
+  emailBody: z.any().optional(),
+  contactListId: z.union([z.string(), z.number()])
+    .transform(val => {
+      const num = Number(val);
+      return isNaN(num) ? 0 : num;
+    })
+    .default(0),
+  contactListName: z.string().optional(),
+  totalRecipients: z.number().optional(),
+  templateId: z.union([z.string(), z.number()])
+    .transform(val => {
+      if (!val) return undefined;
+      const num = Number(val);
+      return isNaN(num) ? undefined : num;
+    })
+    .optional()
+    .nullable(),
+    
+  // Programación de envíos
+  scheduledSends: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      sendNow: z.boolean(),
+      date: z.union([z.string(), z.date()]).transform(val => 
+        typeof val === 'string' ? new Date(val) : val
+      ).optional(),
+      hour: z.string().optional(),
+      minute: z.string().optional(),
+      timezone: z.string().optional(),
+      isRecurring: z.boolean().optional(),
+      recurrenceType: z.enum(['diaria', 'semanal', 'mensual', 'anual']).optional(),
+      recurrenceInterval: z.number().optional(),
+      recurrenceDaysOfWeek: z.string().optional(),
+      recurrenceDayOfMonth: z.number().optional(),
+      recurrenceStartDate: z.union([z.string(), z.date()]).transform(val => 
+        typeof val === 'string' ? new Date(val) : val
+      ).optional(),
+      recurrenceEndDate: z.union([z.string(), z.date()]).transform(val => 
+        typeof val === 'string' ? new Date(val) : val
+      ).optional(),
+    })
+  ).optional(),
   
   // Programación
   enviar_ahora: z.boolean().default(true),
@@ -115,17 +178,38 @@ export default function EditCampaignPage() {
         if (result.success && result.data) {
           const campaign = result.data as unknown as DBCampaign;
           
+          // Asegurarse de que el ID sea un número
+          const campaignWithNumberId = {
+            ...campaign,
+            id_campaign: Number(campaign.id_campaign)
+          };
+          
           // Formatear fechas para el input datetime-local
           const formatDateForInput = (dateString: string | null) => {
             if (!dateString) return '';
             const date = new Date(dateString);
             return date.toISOString().slice(0, 16);
           };
+          
+          // Asegurarse de que los campos numéricos sean números
+          const formatNumericFields = (obj: any) => {
+            if (!obj) return obj;
+            return {
+              ...obj,
+              id_campaign: Number(obj.id_campaign),
+              id_lista_contactos: obj.id_lista_contactos ? Number(obj.id_lista_contactos) : null,
+              total_contactos: obj.total_contactos ? Number(obj.total_contactos) : 0,
+              id_plantilla: obj.id_plantilla ? Number(obj.id_plantilla) : null,
+              intervalo: obj.intervalo ? Number(obj.intervalo) : null,
+              dia_mes: obj.dia_mes ? Number(obj.dia_mes) : null
+            };
+          };
 
           // Obtener el objetivo de datos_adicionales o usar un valor por defecto
-          const datosAdicionales = typeof campaign.datos_adicionales === 'string' 
-            ? JSON.parse(campaign.datos_adicionales) 
-            : campaign.datos_adicionales || {};
+          const campaignWithNumericFields = formatNumericFields(campaign);
+          const datosAdicionales = typeof campaignWithNumericFields.datos_adicionales === 'string' 
+            ? JSON.parse(campaignWithNumericFields.datos_adicionales) 
+            : campaignWithNumericFields.datos_adicionales || {};
           
           // Definir el tipo para los valores permitidos de objetivo
           type ObjetivoTipo = 'promocional' | 'boletin' | 'anuncio' | 'evento' | 'bienvenida' | 'otro';
@@ -139,105 +223,86 @@ export default function EditCampaignPage() {
           const objetivoValido: ObjetivoTipo = 
             ['promocional', 'boletin', 'anuncio', 'evento', 'bienvenida', 'otro'].includes(objetivo)
               ? (objetivo as ObjetivoTipo)
-              : 'promocional';
-          
-          // Definir el tipo para los valores permitidos de estado
-          type EstadoTipo = 'borrador' | 'programada' | 'en_progreso' | 'completada' | 'pausada' | 'cancelada';
-          
-          // Asegurar que el estado sea uno de los permitidos
-          const estadoValido: EstadoTipo = 
-            ['borrador', 'programada', 'en_progreso', 'completada', 'pausada', 'cancelada'].includes(campaign.estado as string)
-              ? (campaign.estado as EstadoTipo)
-              : 'borrador';
-          
-          // Preparar los datos para el formulario
-          const formData = {
+              : 'promocional';  // Valor por defecto si no es válido
+              
+          // Mapear los datos de la campaña al formulario
+          methods.reset({
+            // Detalles básicos
             id: campaign.id_campaign,
-            nombre_campaign: campaign.nombre_campaign || '',
+            
+            // Campos en español
+            nombre_campaign: campaign.nombre_campaign,
             descripcion: campaign.descripcion || '',
             objetivo: objetivoValido,
-            asunto: campaign.asunto || '',
+            asunto: campaign.asunto,
             contenido: campaign.contenido || '',
-            id_lista: campaign.id_lista_contactos || 0,
-            id_plantilla: campaign.id_plantilla || undefined,
+            id_lista: campaign.id_lista_contactos,
+            id_plantilla: campaign.id_plantilla,
             nombre_lista: campaign.nombre_lista || '',
-            total_contactos: campaign.total_contactos || 0,
+            total_contactos: campaign.total_contactos,
+            
+            // Programación
             enviar_ahora: !campaign.fecha_envio,
-            fecha_envio: formatDateForInput(campaign.fecha_envio),
-            estado: estadoValido,
-            // Datos de recurrencia
+            fecha_envio: campaign.fecha_envio || '',
+            
+            // Recurrencia
             es_recurrente: !!campaign.tipo_recurrencia,
             tipo_recurrencia: campaign.tipo_recurrencia || undefined,
             intervalo: campaign.intervalo || 1,
-            dias_semana: campaign.dias_semana || undefined,
+            dias_semana: campaign.dias_semana || '',
             dia_mes: campaign.dia_mes || undefined,
-            fecha_fin: formatDateForInput(campaign.fecha_fin) || undefined,
-
-            // Campos esperados por los step components (inglés)
-            // DetailsStep
-            name: campaign.nombre_campaign || '',
+            fecha_fin: campaign.fecha_fin || '',
+            
+            // Campos en inglés (para compatibilidad con componentes)
+            name: campaign.nombre_campaign,
             description: campaign.descripcion || '',
             objective: (() => {
-              const map: Record<string, string> = {
+              const map: Record<ObjetivoTipo, ObjetivoInglesTipo> = {
                 promocional: 'promotional',
                 boletin: 'newsletter',
                 anuncio: 'announcement',
                 evento: 'event',
                 bienvenida: 'welcome',
-                otro: 'other',
+                otro: 'other'
               };
-              return map[objetivoValido] || 'promotional';
+              return map[campaign.objetivo as ObjetivoTipo] || 'other';
             })(),
-
-            // EmailStep
-            fromName: '',
-            fromEmail: '',
-            subject: campaign.asunto || '',
+            subject: campaign.asunto,
             emailBody: campaign.contenido || '',
-            templateId: campaign.id_plantilla ?? null,
-            templateName: '',
-            templateContent: campaign.contenido || '',
-            templateBlocks: null as any,
-
-            // RecipientStep
-            contactListId: campaign.id_lista_contactos ? String(campaign.id_lista_contactos) : '',
+            contactListId: campaign.id_lista_contactos,
             contactListName: campaign.nombre_lista || '',
-            totalRecipients: campaign.total_contactos || 0,
-
-            // SchedulingStep
+            totalRecipients: campaign.total_contactos,
+            templateId: campaign.id_plantilla || null,
+            
+            // Programación de envíos
             scheduledSends: [
               {
                 id: '1',
                 name: 'Envío Principal',
                 sendNow: !campaign.fecha_envio,
                 optimalTime: false,
-                date: campaign.fecha_envio ? new Date(campaign.fecha_envio) : new Date(),
+                date: campaign.fecha_envio || new Date(),
                 hour: campaign.fecha_envio ? new Date(campaign.fecha_envio).getHours().toString().padStart(2, '0') : '12',
                 minute: campaign.fecha_envio ? new Date(campaign.fecha_envio).getMinutes().toString().padStart(2, '0') : '00',
                 timezone: 'America/Mexico_City',
-                isEditing: false,
                 isRecurring: !!campaign.tipo_recurrencia,
                 recurrenceType: campaign.tipo_recurrencia || undefined,
-                recurrenceInterval: campaign.intervalo || undefined,
-                recurrenceDaysOfWeek: campaign.dias_semana || undefined,
+                recurrenceInterval: campaign.intervalo || 1,
+                recurrenceDaysOfWeek: campaign.dias_semana || '',
                 recurrenceDayOfMonth: campaign.dia_mes || undefined,
-                recurrenceStartDate: campaign.fecha_envio ? new Date(campaign.fecha_envio) : undefined,
+                recurrenceStartDate: campaign.fecha_envio ? new Date(campaign.fecha_envio) : new Date(),
                 recurrenceEndDate: campaign.fecha_fin ? new Date(campaign.fecha_fin) : undefined,
-              },
+              }
             ],
-            isRecurring: !!campaign.tipo_recurrencia,
-            recurrenceType: campaign.tipo_recurrencia || undefined,
-            recurrenceInterval: campaign.intervalo || undefined,
-            recurrenceDaysOfWeek: campaign.dias_semana || undefined,
-            recurrenceDayOfMonth: campaign.dia_mes || undefined,
-            recurrenceStartDate: campaign.fecha_envio ? new Date(campaign.fecha_envio) : undefined,
-            recurrenceEndDate: campaign.fecha_fin ? new Date(campaign.fecha_fin) : undefined,
-          };
-          
-          console.log('Cargando datos de la campaña:', formData);
-          methods.reset(formData);
+            
+            // Otros campos
+            estado: campaign.estado || 'borrador',
+            templateName: '',
+            templateContent: campaign.contenido || '',
+            templateBlocks: null as any,
+          });
         } else {
-          setError(result.message || 'No se pudo cargar la campaña');
+          setError('No se pudo cargar la campaña');
         }
       } catch (err) {
         console.error('Error al cargar la campaña:', err);
@@ -250,59 +315,60 @@ export default function EditCampaignPage() {
     loadCampaign();
   }, [campaignId, methods]);
 
-  // Sincronizar campos en inglés (usados por los steps) con los del esquema en español (para validación y envío)
-  useEffect(() => {
-    const anyMethods = methods as any;
-    const subscription = anyMethods.watch((value: any) => {
-      // DetailsStep -> Spanish
-      methods.setValue('nombre_campaign', value?.name || '');
-      methods.setValue('descripcion', value?.description || '');
-      const obj = value?.objective as string | undefined;
-      const mapReverse: Record<string, 'promocional' | 'boletin' | 'anuncio' | 'evento' | 'bienvenida' | 'otro'> = {
-        promotional: 'promocional',
-        newsletter: 'boletin',
-        announcement: 'anuncio',
-        event: 'evento',
-        welcome: 'bienvenida',
-        other: 'otro',
+  // Función para obtener valores del formulario con soporte para campos en inglés y español
+  const getValue = <T = any>(field: keyof CampaignFormValues | string, defaultValue: T = '' as any): T => {
+        // Primero intentar con el campo exacto
+        try {
+          const value = methods.getValues(field as any);
+          if (value !== undefined && value !== null) return value as T;
+        } catch (e) {
+          // Si falla, continuar con los valores alternativos
+        }
+        
+        // Mapeo de campos en inglés a español para compatibilidad
+        const fieldMap: Record<string, keyof CampaignFormValues> = {
+          // Mapeo de inglés a español
+          'name': 'nombre_campaign',
+          'description': 'descripcion',
+          'subject': 'asunto',
+          'emailBody': 'contenido',
+          'contactListId': 'id_lista',
+          'contactListName': 'nombre_lista',
+          'totalRecipients': 'total_contactos',
+          'templateId': 'id_plantilla',
+          
+          // Mapeo inverso (español a inglés)
+          'nombre_campaign': 'name',
+          'descripcion': 'description',
+          'asunto': 'subject',
+          'contenido': 'emailBody',
+          'id_lista': 'contactListId',
+          'nombre_lista': 'contactListName',
+          'total_contactos': 'totalRecipients',
+          'id_plantilla': 'templateId'
+        };
+        
+        // Si el campo está en el mapa, intentar obtener el valor mapeado
+        if (field in fieldMap) {
+          const mappedField = fieldMap[field as keyof typeof fieldMap];
+          try {
+            const mappedValue = methods.getValues(mappedField as any);
+            if (mappedValue !== undefined && mappedValue !== null) {
+              return mappedValue as T;
+            }
+          } catch (e) {
+            // Si falla, continuar con el valor por defecto
+          }
+        }
+        
+        // Si todo falla, devolver el valor por defecto
+        return defaultValue;
       };
-      if (obj && mapReverse[obj]) {
-        methods.setValue('objetivo', mapReverse[obj]);
-      }
 
-      // EmailStep -> Spanish
-      methods.setValue('asunto', value?.subject || '');
-      methods.setValue('contenido', value?.emailBody || '');
-
-      // RecipientStep -> Spanish
-      const idStr = value?.contactListId as string | undefined;
-      methods.setValue('id_lista', idStr ? Number(idStr) : 0);
-      methods.setValue('nombre_lista', value?.contactListName || '');
-      const total = value?.totalRecipients as number | undefined;
-      methods.setValue('total_contactos', total ?? 0);
-    });
-
-    return () => {
-      if (subscription && typeof subscription.unsubscribe === 'function') {
-        subscription.unsubscribe();
-      }
-    };
-  }, [methods]);
-
-  const onSubmit = async (formData: CampaignFormValues) => {
-    if (isSubmitting) return;
-    
-    try {
-      setIsSubmitting(true);
-      setError(null);
-      
-      // Mapear los datos del formulario a la interfaz UpdateCampaignData
-      // Preferir campos de los steps (inglés) si están presentes
-      const anyMethods = methods as any;
-      const nombre_campaign = (methods.getValues('nombre_campaign') || anyMethods.getValues('name')) as string;
-      const descripcion = (methods.getValues('descripcion') || anyMethods.getValues('description')) as string | null;
-      const objetivo = (methods.getValues('objetivo') || (() => {
-        const obj = anyMethods.getValues('objective') as string | undefined;
+      // Mapear objetivo de inglés a español si es necesario
+      let objetivo = getValue<string>('objetivo', '');
+      if (!objetivo) {
+        const obj = anyMethods.getValues('objective');
         const mapReverse: Record<string, 'promocional' | 'boletin' | 'anuncio' | 'evento' | 'bienvenida' | 'otro'> = {
           promotional: 'promocional',
           newsletter: 'boletin',
@@ -311,35 +377,69 @@ export default function EditCampaignPage() {
           welcome: 'bienvenida',
           other: 'otro',
         };
-        return obj ? mapReverse[obj] : undefined;
-      })()) as any;
-      const asunto = (methods.getValues('asunto') || anyMethods.getValues('subject')) as string;
-      const contenido = (methods.getValues('contenido') || anyMethods.getValues('emailBody') || '') as string;
-      const id_lista_contactos = (methods.getValues('id_lista') || Number(anyMethods.getValues('contactListId') || 0)) as number;
-      const nombre_lista = (methods.getValues('nombre_lista') || anyMethods.getValues('contactListName') || '') as string;
-      const total_contactos = (methods.getValues('total_contactos') || Number(anyMethods.getValues('totalRecipients') || 0)) as number;
+        objetivo = obj ? mapReverse[obj] : 'promocional';
+      }
 
+      // Formatear fechas correctamente
+      const formatDateForDB = (dateString: string | null | undefined): string | null => {
+        if (!dateString) return null;
+        try {
+          const date = new Date(dateString);
+          return date.toISOString().slice(0, 19).replace('T', ' ');
+        } catch (e) {
+          console.error('Error al formatear fecha:', e);
+          return null;
+        }
+      };
+
+      // Obtener valores de los campos
+      const nombre_campaign = getValue('nombre_campaign') || getValue('name');
+      const descripcion = getValue('descripcion') || getValue('description') || null;
+      const asunto = getValue('asunto') || getValue('subject');
+      const contenido = getValue('contenido') || getValue('emailBody') || '';
+      const id_lista_contactos = getValue<number>('id_lista') || getValue<number>('contactListId') || 0;
+      const nombre_lista = getValue('nombre_lista') || getValue('contactListName') || '';
+      const total_contactos = Number(getValue('total_contactos') || getValue('totalRecipients') || 0);
+      const id_plantilla = Number(getValue('id_plantilla') || getValue('templateId') || 0) || null;
+      
+      // Manejo de fechas
+      let fecha_envio = null;
+      if (!formData.enviar_ahora) {
+        const fecha = getValue('fecha_envio') || getValue('scheduledSends')?.[0]?.date;
+        fecha_envio = formatDateForDB(fecha);
+      }
+
+      // Preparar datos adicionales
+      const datos_adicionales = {
+        objetivo,
+        // Agregar cualquier otro dato adicional que necesites
+      };
+
+      // Construir objeto de datos para la actualización
       const campaignData: UpdateCampaignData = {
+        id_campaign: campaignId, // Asegurar que el ID esté incluido
         nombre_campaign,
-        descripcion: descripcion || null,
+        descripcion,
         objetivo,
         asunto,
         contenido,
         id_lista_contactos,
         nombre_lista,
         total_contactos,
-        fecha_envio: formData.enviar_ahora ? null : formData.fecha_envio || null,
-        estado: formData.estado,
-        es_recurrente: formData.es_recurrente,
+        id_plantilla,
+        fecha_envio,
+        estado: formData.estado || 'borrador',
+        es_recurrente: formData.es_recurrente || false,
+        datos_adicionales: JSON.stringify(datos_adicionales),
       };
 
-      // Agregar campos de recurrencia solo si es recurrente
-      if (formData.es_recurrente && formData.tipo_recurrencia) {
-        campaignData.tipo_recurrencia = formData.tipo_recurrencia;
+      // Agregar campos de recurrencia si es necesario
+      if (formData.es_recurrente) {
+        campaignData.tipo_recurrencia = formData.tipo_recurrencia || null;
         campaignData.intervalo = formData.intervalo || 1;
-        campaignData.dias_semana = formData.dias_semana || undefined;
-        campaignData.dia_mes = formData.dia_mes || undefined;
-        campaignData.fecha_fin = formData.fecha_fin || undefined;
+        campaignData.dias_semana = formData.dias_semana || null;
+        campaignData.dia_mes = formData.dia_mes || null;
+        campaignData.fecha_fin = formatDateForDB(formData.fecha_fin);
       }
 
       console.log('Datos a actualizar:', campaignData);

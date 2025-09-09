@@ -29,7 +29,7 @@ export interface Campaign {
   updatedAt?: string;
 }
 
-export type CampaignFormData = Omit<Campaign, 'id' | 'createdAt' | 'updatedAt'> & {
+export type CampaignFormData = Omit<Campaign, 'createdAt' | 'updatedAt'> & {
   isRecurring?: boolean;
   recurrenceType?: 'diaria' | 'semanal' | 'mensual' | 'anual' | null;
   recurrenceInterval?: number | null;

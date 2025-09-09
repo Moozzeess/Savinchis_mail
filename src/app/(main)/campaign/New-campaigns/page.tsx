@@ -105,36 +105,102 @@ export default function NewCampaignPage() {
   
   // Avanzar al siguiente paso
   const nextStep = async () => {
-    // Validar solo los campos del paso actual
-    const fieldsToValidate = getStepFields(currentStep);
+    console.log('Intentando avanzar al siguiente paso:', currentStep);
+    
     // En el último paso (programación), no validar nada para poder avanzar a revisión
     if (currentStep === 3) {
+      console.log('Avanzando a paso de revisión');
       setCurrentStep(4);
       return;
     }
+    
+    // Obtener campos a validar
+    const fieldsToValidate = getStepFields(currentStep);
+    console.log('Campos a validar:', fieldsToValidate);
+    
+    // Forzar validación de campos
     const isValid = await methods.trigger(fieldsToValidate);
+    console.log('Resultado de validación:', isValid);
+    
+    // Obtener errores actuales
+    const errors = methods.formState.errors;
+    console.log('Errores del formulario:', errors);
+    
     if (isValid) {
+      console.log('Validación exitosa, avanzando al siguiente paso');
       setCurrentStep((prev) => Math.min(prev + 1, 4));
+    } else {
+      console.log('Error de validación, mostrando errores');
+      // Hacer scroll al primer error
+      const firstError = Object.keys(errors)[0];
+      if (firstError) {
+        const element = document.querySelector(`[name="${firstError}"]`);
+        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
   };
   
   // Obtener campos a validar por paso
   const getStepFields = (step: number): (keyof z.infer<typeof campaignFormSchema>)[] => {
+    console.log('Obteniendo campos para el paso:', step);
+    
+    // Obtener valores actuales del formulario
+    const values = methods.getValues();
+    console.log('Valores actuales del formulario (getStepFields):', values);
+    
     switch (step) {
       case 0: // Detalles
         return ['name', 'objective'];
+        
       case 1: // Destinatarios
+        // Limpiar errores previos
+        methods.clearErrors(['contactListId', 'totalRecipients']);
+        
+        // Validar que se haya seleccionado una lista
+        if (!values.contactListId) {
+          console.log('No se ha seleccionado una lista de contactos');
+          methods.setError('contactListId', {
+            type: 'required',
+            message: 'Debes seleccionar una lista de contactos'
+          }, { shouldFocus: true });
+          return [];
+        }
+        
+        // Validar que la lista tenga destinatarios
+        if (!values.totalRecipients || values.totalRecipients <= 0) {
+          console.log('La lista no tiene destinatarios');
+          methods.setError('totalRecipients', {
+            type: 'min',
+            message: 'La lista debe tener al menos un contacto'
+          }, { shouldFocus: true });
+          return [];
+        }
+        
+        console.log('Validación exitosa para destinatarios');
         return ['contactListId', 'totalRecipients'];
+        
       case 2: // Email
         return ['subject', 'emailBody'];
+        
       case 3: // Programación
         // Validar recurrencia solo si está activa
-        const base: (keyof z.infer<typeof campaignFormSchema>)[] = ['sendNow', 'scheduledAt', 'timeZone'];
         const vals = methods.getValues();
+        const base: (keyof z.infer<typeof campaignFormSchema>)[] = [];
+        
+        if (!vals.sendNow && !vals.scheduledAt) {
+          methods.setError('scheduledAt', {
+            type: 'required',
+            message: 'Debes seleccionar una fecha de envío o elegir "Enviar ahora"'
+          }, { shouldFocus: true });
+          base.push('scheduledAt');
+        }
+        
         if (vals.isRecurring) {
           base.push('recurrenceType', 'recurrenceInterval');
         }
+        
         return base;
+        
       default:
         return [];
     }
@@ -153,17 +219,22 @@ export default function NewCampaignPage() {
       
       // Convert form data to Campaign type
       const campaignData: CampaignFormData = {
+        // Required fields
+        id: data.id || crypto.randomUUID(), // Generate a new ID if not present
         name: data.name,
-        description: data.description,
         objective: data.objective,
         subject: data.subject,
         emailBody: data.emailBody,
-        contactListId: data.contactListId ? parseInt(data.contactListId) : null,
-        scheduledAt: data.sendNow ? null : data.scheduledAt?.toISOString(),
         totalRecipients: data.totalRecipients || 0,
         status: 'draft',
-        timeZone: data.timeZone,
-        useOptimalTime: data.useOptimalTime,
+        
+        // Optional fields with defaults
+        description: data.description || '',
+        contactListId: data.contactListId ? parseInt(data.contactListId) : null,
+        contactListName: data.contactListName || '',
+        scheduledAt: data.sendNow ? null : data.scheduledAt?.toISOString() || null,
+        timeZone: data.timeZone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+        useOptimalTime: data.useOptimalTime || false,
         // Recurrence mapping expected by server action
         isRecurring: data.isRecurring,
         recurrenceType: data.isRecurring ? (data.recurrenceType as any) : null,

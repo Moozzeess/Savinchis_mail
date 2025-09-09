@@ -3,7 +3,7 @@ export interface DBCampaign {
   nombre_campaign: string;
   descripcion: string | null;
   asunto: string;
-  ruta_contenido: string | null;
+  ruta_contenido: string | null; // Ruta al archivo con el contenido
   id_plantilla: number | null;
   id_lista_contactos: number | null;
   fecha_envio: string | null;

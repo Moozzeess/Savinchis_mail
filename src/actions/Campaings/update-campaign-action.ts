@@ -5,6 +5,28 @@ import { RowDataPacket } from 'mysql2';
 import { getDbConnection } from '../DBConnection';
 import { campaignContentService } from '@/service/campaignContentService';
 import { CampaignData } from './new-campaign-action';
+
+export interface UpdateCampaignData extends Partial<CampaignData> {
+  id_campaign?: number;
+  nombre_campaign: string;
+  descripcion?: string | null;
+  objetivo: string;
+  asunto: string;
+  contenido: string;
+  id_lista_contactos: number;
+  nombre_lista?: string;
+  total_contactos: number;
+  id_plantilla?: number | null;
+  fecha_envio?: string | null;
+  estado: string;
+  es_recurrente?: boolean;
+  tipo_recurrencia?: 'diaria' | 'semanal' | 'mensual' | 'anual' | null;
+  intervalo?: number | null;
+  dias_semana?: string | null;
+  dia_mes?: number | null;
+  fecha_fin?: string | null;
+  datos_adicionales?: string | Record<string, any> | null;
+}
 /**
  * @function updateCampaign
  * @description Actualiza una campaña existente en la base de datos.
@@ -14,25 +36,7 @@ import { CampaignData } from './new-campaign-action';
  */
 export async function updateCampaign(
   campaignId: number, 
-  campaignData: Partial<CampaignData> & { 
-    id_campaign?: number;
-    nombre_campaign: string;
-    descripcion?: string | null;
-    objetivo: string;
-    asunto: string;
-    contenido: string;
-    id_lista_contactos: number;
-    nombre_lista?: string;
-    total_contactos: number;
-    fecha_envio?: string | null;
-    estado: string;
-    es_recurrente?: boolean;
-    tipo_recurrencia?: 'diaria' | 'semanal' | 'mensual' | 'anual' | null;
-    intervalo?: number | null;
-    dias_semana?: string | null;
-    dia_mes?: number | null;
-    fecha_fin?: string | null;
-  }
+  campaignData: UpdateCampaignData
 ) {
   let connection;
   
@@ -75,23 +79,25 @@ export async function updateCampaign(
         id_lista_contactos = ?,
         estado = ?,
         fecha_envio = ?,
-        fecha_actualizacion = NOW()
+        fecha_actualizacion = NOW(),
+        datos_adicionales = ?
       WHERE id_campaign = ?`,
       [
         campaignData.nombre_campaign,
         campaignData.descripcion || null,
         campaignData.asunto,
         rutaContenido, // Usamos la ruta existente o la nueva
-        campaignData.templateId || null,
+        campaignData.id_plantilla || null,
         campaignData.id_lista_contactos || null,
-        campaignData.estado || 'draft',
+        campaignData.estado || 'borrador',
         campaignData.fecha_envio || null,
+        campaignData.datos_adicionales || JSON.stringify({}),
         campaignId
       ]
     );
-    
-    // Manejar la actualización de la recurrencia si es necesario
-    if (campaignData.tipo_recurrencia) {
+
+    // Actualizar o insertar datos de recurrencia si es necesario
+    if (campaignData.es_recurrente && campaignData.tipo_recurrencia) {
       // Verificar si ya existe una entrada de recurrencia
       const [recurrence] = await connection.execute(
         'SELECT id_recurrencia FROM recurrencias_campana WHERE id_campaign = ?',

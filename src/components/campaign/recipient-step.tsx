@@ -78,32 +78,51 @@ export function RecipientStep({
   // State para las pestañas
   const [activeTab, setActiveTab] = useState('existing');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [selectedListId, setSelectedListId] = useState<string | null>(initialSelectedList);
   
   // Valores del formulario que necesitamos observar
   const selectedListName = watch('contactListName');
   const totalRecipients = watch('totalRecipients') || 0;
   
   // Manejador para la selección de listas
-  const handleListSelect = useCallback((listId: string, listName: string, count: number) => {
-    const updates = {
-      contactListId: listId,
-      contactListName: listName,
-      totalRecipients: count
-    };
+  const handleListSelect = useCallback(async (listId: string, listName: string, count: number) => {
+    console.log('Lista seleccionada:', { listId, listName, count });
     
-    // Actualizar múltiples valores a la vez para reducir renders
-    Object.entries(updates).forEach(([key, value]) => {
-      setValue(key, value, { shouldValidate: true, shouldDirty: true });
-    });
-    
-    // Notificar al componente padre si es necesario
-    onContactListChange?.(listId);
-  }, [setValue, onContactListChange]);
+    try {
+      // Actualizar el estado local primero
+      setSelectedListId(listId);
+      
+      // Actualizar los valores del formulario en un solo lote
+      methods.setValue('contactListId', listId, { shouldValidate: true, shouldDirty: true });
+      methods.setValue('contactListName', listName, { shouldValidate: true, shouldDirty: true });
+      methods.setValue('totalRecipients', count, { shouldValidate: true, shouldDirty: true });
+      
+      console.log('Valores establecidos en el formulario:', {
+        contactListId: listId,
+        contactListName: listName,
+        totalRecipients: count
+      });
+      
+      // Forzar validación después de actualizar los valores
+      const isValid = await methods.trigger(['contactListId', 'totalRecipients']);
+      console.log('Resultado de validación después de actualizar:', isValid);
+      
+      if (!isValid) {
+        const errors = methods.formState.errors;
+        console.error('Errores de validación:', errors);
+      }
+      
+      // Notificar al componente padre
+      onContactListChange?.(listId);
+      
+    } catch (error) {
+      console.error('Error al actualizar la lista seleccionada:', error);
+    }
+  }, [methods, onContactListChange]);
 
   // Manejador para cuando se completa la carga de un archivo
   const handleUploadComplete = useCallback((file: File) => {
     // Este manejador se llamará cuando el usuario seleccione un archivo en el modal
-    // No necesitamos hacer nada aquí ya que el modal manejará la lógica de carga
   }, []);
 
   // Manejador para cuando se guarda exitosamente una lista desde el modal
@@ -152,13 +171,17 @@ export function RecipientStep({
 
   // Efecto para manejar la lista inicial seleccionada
   useEffect(() => {
-    if (initialSelectedList) {
-      setActiveTab('existing');
-    }
     
-    // Inicializar valores por defecto si es necesario
-    const contactListId = watch('contactListId');
-    if (!contactListId) {
+    if (initialSelectedList) {
+      setSelectedListId(initialSelectedList);
+      setActiveTab('existing');
+      
+      // Forzar la carga de los detalles de la lista inicial
+      if (initialSelectedList) {
+        getContactListDetails(initialSelectedList);
+      }
+    } else {
+      // Si no hay lista seleccionada, inicializar valores por defecto
       const initialValues = [
         { key: 'contactListId', value: '' },
         { key: 'contactListName', value: '' },
@@ -166,10 +189,46 @@ export function RecipientStep({
       ] as const;
       
       initialValues.forEach(({ key, value }) => {
+        console.log(`Inicializando ${key} a:`, value);
         setValue(key, value, { shouldValidate: true });
       });
     }
   }, [initialSelectedList, setValue, watch]);
+  
+  // Función para cargar los detalles de una lista
+  const getContactListDetails = async (listId: string) => {
+    try {
+      // Cargar la lista específica por su ID
+      const response = await getContactLists(1, 100);
+      
+      if (response.success && response.data?.lists) {
+        // Buscar la lista específica por su ID
+        const list = response.data.lists.find((l) => l.id === listId);
+        console.log('Lista encontrada:', list);
+        
+        if (list) {
+          console.log('Actualizando valores del formulario con lista:', list);
+          setSelectedListId(listId);
+          
+          // Actualizar los valores del formulario
+          setValue('contactListId', list.id, { shouldValidate: true });
+          setValue('contactListName', list.name, { shouldValidate: true });
+          setValue('totalRecipients', list.count || 0, { shouldValidate: true });
+          
+          // Forzar validación después de actualizar
+          setTimeout(() => {
+            methods.trigger(['contactListId', 'totalRecipients']);
+          }, 100);
+        } else {
+          console.warn(`No se encontró la lista con ID: ${listId}`);
+        }
+      } else {
+        console.warn('No se pudieron cargar las listas:', response.message);
+      }
+    } catch (error) {
+      console.error('Error al cargar los detalles de la lista:', error);
+    }
+  };
 
   // Memoizar la lista de pestañas para evitar re-renders innecesarios
   const renderTabs = useMemo(() => {
@@ -188,7 +247,7 @@ export function RecipientStep({
     existing: (
       <TabsContent value="existing" className="mt-6">
         <ListasExistentes 
-          selectedListId={initialSelectedList} 
+          selectedListId={selectedListId} 
           onListSelect={handleListSelect}
         />
       </TabsContent>

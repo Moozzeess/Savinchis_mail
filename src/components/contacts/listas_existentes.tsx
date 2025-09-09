@@ -31,12 +31,12 @@ interface ListasExistentesProps {
 }
 
 export function ListasExistentes({ selectedListId, onListSelect }: ListasExistentesProps) {
-  const [contactLists, setContactLists] = useState<ContactListItem[]>([]);
+  const [contactLists, setContactLists] = useState<Array<ContactListItem | null>>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [listsLoading, setListsLoading] = useState(true);
+  const [listsLoading, setListsLoading] = useState<boolean>(true);
   const [listsError, setListsError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedList, setSelectedList] = useState<ContactListItem | null>(null);
   const pageSize = 5;
 
@@ -44,27 +44,76 @@ export function ListasExistentes({ selectedListId, onListSelect }: ListasExisten
     const fetchContactLists = async () => {
       try {
         setListsLoading(true);
+        setListsError(null);
+        
+        console.log('Solicitando listas...');
         const response = await getContactLists(currentPage, pageSize);
         
+        // Validar que la respuesta tenga el formato esperado
+        if (!response || typeof response !== 'object') {
+          throw new Error('Respuesta inválida del servidor');
+        }
+        
+        console.log('Respuesta de la API:', response);
+        
         if (response.success && response.data) {
-          const mappedLists: ContactListItem[] = response.data.lists.map((list: any) => ({
-            id_lista: list.id_lista,
-            nombre: list.nombre,
-            descripcion: list.descripcion,
-            total_contactos: list.total_contactos || 0,
-            estado: list.estado || 'activa',
-            fecha_actualizacion: list.fecha_actualizacion || new Date().toISOString()
-          }));
+          const { lists, totalPages } = response.data;
           
+          // Validar que lists sea un array
+          if (!Array.isArray(lists)) {
+            console.error('Formato de datos inesperado:', response.data);
+            setListsError('Formato de datos inesperado al cargar las listas');
+            return;
+          }
+          
+          console.log('Listas recibidas:', lists);
+          
+          // Mapear los datos al formato esperado por el componente
+          const mappedLists = lists
+            .filter((list: any) => {
+              const isValid = list && list.id != null;
+              if (!isValid) {
+                console.warn('Lista inválida filtrada:', list);
+              }
+              return isValid;
+            })
+            .map((list: any) => {
+              // Mapear los campos según la estructura real de la API
+              const id = Number(list.id);
+              if (isNaN(id)) {
+                console.warn('ID de lista inválido:', list.id);
+                return null;
+              }
+              
+              const formattedList = {
+                id_lista: id,
+                nombre: String(list.name || 'Lista sin nombre'),
+                descripcion: list.descripcion ? String(list.descripcion) : null,
+                total_contactos: Number(list.total_contactos || list.count || 0),
+                estado: String(list.estado || 'activa'),
+                fecha_actualizacion: list.fecha_actualizacion || new Date().toISOString()
+              };
+              
+              console.log('Lista mapeada:', formattedList);
+              return formattedList;
+            })
+            .filter(Boolean); // Eliminar cualquier null
+          
+          console.log('Listas mapeadas:', mappedLists);
           setContactLists(mappedLists);
-          setTotalPages(response.data.totalPages);
-          setListsError(null);
+          setTotalPages(totalPages || 1);
+          
+          // No seleccionar automáticamente la primera lista
+          // El usuario deberá seleccionar manualmente una lista
         } else {
-          setListsError(response.message || 'Error al cargar las listas');
+          const errorMessage = response.message || 'Error al cargar las listas';
+          console.error('Error en la respuesta del servidor:', errorMessage);
+          setListsError(errorMessage);
         }
       } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
         console.error('Error al cargar las listas:', error);
-        setListsError('Error al cargar las listas. Por favor, inténtalo de nuevo.');
+        setListsError(`Error al cargar las listas: ${errorMessage}`);
       } finally {
         setListsLoading(false);
       }
@@ -74,40 +123,48 @@ export function ListasExistentes({ selectedListId, onListSelect }: ListasExisten
   }, [currentPage, pageSize]);
 
   const filteredLists = useMemo(() => {
-    if (!contactLists) return [];
+    if (!Array.isArray(contactLists) || contactLists.length === 0) return [];
     
-    const query = searchQuery.toLowerCase();
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return [...contactLists]; // Devolver una copia del array original
+    
     return contactLists.filter(list => {
-      const nombre = list?.nombre?.toLowerCase() || '';
-      const descripcion = list?.descripcion?.toLowerCase() || '';
+      if (!list) return false;
       
-      return nombre.includes(query) || descripcion.includes(query);
+      try {
+        const nombre = String(list.nombre || '').toLowerCase();
+        const descripcion = String(list.descripcion || '').toLowerCase();
+        
+        return nombre.includes(query) || descripcion.includes(query);
+      } catch (error) {
+        console.error('Error al filtrar lista:', error);
+        return false;
+      }
     });
   }, [contactLists, searchQuery]);
 
-  // Update selected list when selectedListId or contactLists changes
   useEffect(() => {
     if (selectedListId) {
-      const list = contactLists.find(list => list.id_lista.toString() === selectedListId);
+      const list = contactLists.find(list => list?.id_lista?.toString() === selectedListId);
       if (list) {
         setSelectedList(list);
       }
-    } else if (contactLists.length > 0) {
-      // If no list is selected but we have lists, select the first one by default
-      setSelectedList(contactLists[0]);
-      onListSelect(
-        contactLists[0].id_lista.toString(), 
-        contactLists[0].nombre, 
-        contactLists[0].total_contactos
-      );
     }
-  }, [selectedListId, contactLists, onListSelect]);
+  }, [selectedListId, contactLists]);
 
-  const handleListClick = useCallback((list: ContactListItem) => {
-    // Only update if it's a different list
+  const handleListClick = useCallback((list: ContactListItem | null) => {
+    if (!list) return;
+    
+    const listId = list.id_lista?.toString() || '';
+    
+    // Solo actualizar si es una lista diferente
     if (selectedList?.id_lista !== list.id_lista) {
       setSelectedList(list);
-      onListSelect(list.id_lista.toString(), list.nombre, list.total_contactos);
+      onListSelect(
+        listId,
+        list.nombre || 'Lista sin nombre',
+        list.total_contactos || 0
+      );
     }
   }, [onListSelect, selectedList]);
 
@@ -152,43 +209,64 @@ export function ListasExistentes({ selectedListId, onListSelect }: ListasExisten
           <div className="max-h-[300px] overflow-y-auto">
             <div className="divide-y divide-border">
               {filteredLists.map((list) => {
-                const isSelected = selectedListId === list.id_lista.toString();
+                // Asegurarse de que list no sea nulo
+                if (!list) return null;
+                
+                const listId = list.id_lista?.toString() || '';
+                const isSelected = selectedListId === listId;
+                const listName = list.nombre || 'Lista sin nombre';
+                const description = list.descripcion || '';
+                const contactCount = list.total_contactos || 0;
+                const updateDate = list.fecha_actualizacion;
+                
                 return (
                   <div
-                    key={list.id_lista}
+                    key={listId}
                     onClick={() => handleListClick(list)}
                     className={cn(
                       'flex items-center justify-between p-4 cursor-pointer transition-colors',
-                      'hover:bg-accent/50',
-                      isSelected ? 'bg-accent' : 'hover:bg-accent/50'
+                      'hover:bg-accent/20 dark:hover:bg-accent/10',
+                      isSelected 
+                        ? 'bg-primary/5 dark:bg-primary/10 border-l-4 border-l-primary' 
+                        : 'hover:bg-accent/10 dark:hover:bg-accent/5',
+                      'group'
                     )}
                   >
                     <div className="flex items-center space-x-4">
                       <div className={cn(
-                        'flex-shrink-0 h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors',
+                        'flex-shrink-0 h-5 w-5 rounded-full border-2 flex items-center justify-center',
                         isSelected 
                           ? 'border-primary bg-primary text-primary-foreground' 
-                          : 'border-border hover:border-primary/50'
+                          : 'border-border hover:border-foreground/30',
+                        'transition-all duration-200 ease-in-out',
+                        'group-hover:border-primary/70'
                       )}>
-                        {isSelected && <Check className="h-3.5 w-3.5" />}
+                        <Check 
+                          className={cn(
+                            'h-3.5 w-3.5 transition-opacity duration-200',
+                            isSelected ? 'opacity-100' : 'opacity-0',
+                            'text-white'
+                          )} 
+                          strokeWidth={3}
+                        />
                       </div>
                       <div>
-                        <h4 className="text-sm font-medium text-foreground">{list.nombre}</h4>
-                        {list.descripcion && (
-                          <p className="text-xs text-muted-foreground mt-0.5">{list.descripcion}</p>
+                        <h4 className="text-sm font-medium text-foreground">{listName}</h4>
+                        {description && (
+                          <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
                         )}
                         <div className="mt-1.5 flex items-center text-xs text-muted-foreground">
                           <Users className="mr-1.5 h-3 w-3" />
-                          <span>{list.total_contactos} {list.total_contactos === 1 ? 'contacto' : 'contactos'}</span>
+                          <span>{contactCount} {contactCount === 1 ? 'contacto' : 'contactos'}</span>
                         </div>
                       </div>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {new Date(list.fecha_actualizacion).toLocaleDateString('es-ES', {
+                      {updateDate ? new Date(updateDate).toLocaleDateString('es-ES', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric'
-                      })}
+                      }) : 'Fecha no disponible'}
                     </div>
                   </div>
                 );
