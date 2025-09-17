@@ -12,3 +12,21 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+/**
+ * Obtiene la URL base del API considerando distintos entornos (local, Vercel, etc.).
+ *
+ * Orden de prioridad:
+ * - NEXT_PUBLIC_SITE_URL
+ * - APP_URL
+ * - VERCEL_URL (agregando https si falta)
+ * - http://localhost:3000
+ */
+export function getApiUrl(): string {
+  const fromEnv = process.env.NEXT_PUBLIC_SITE_URL || process.env.APP_URL || process.env.VERCEL_URL
+  if (fromEnv) {
+    const url = fromEnv.startsWith('http') ? fromEnv : `https://${fromEnv}`
+    return url.replace(/\/$/, '')
+  }
+  return 'http://localhost:3000'
+}

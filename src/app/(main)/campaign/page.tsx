@@ -23,22 +23,22 @@ const fetchCampaigns = async (page: number = 1, limit: number = 10) => {
 };
 
 
-// Utility functions for campaign status
+
 const getCampaignStatusColor = (status: string) => {
   switch (status) {
     case 'scheduled':
     case 'sending':
-      return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800';
+      return 'bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800';
     case 'completed':
-      return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+      return 'bg-blue-50 dark:bg-blue-900/25 text-blue-700 dark:text-blue-300 border-blue-200/60 dark:border-blue-800';
     case 'paused':
-      return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800';
+      return 'bg-amber-50 dark:bg-amber-900/25 text-amber-700 dark:text-amber-300 border-amber-200/60 dark:border-amber-800';
     case 'failed':
-      return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800';
+      return 'bg-rose-50 dark:bg-rose-900/25 text-rose-700 dark:text-rose-300 border-rose-200/60 dark:border-rose-800';
     case 'draft':
-      return 'bg-gray-100 dark:bg-gray-800/50 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700';
+      return 'bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700';
     default:
-      return 'bg-gray-100 dark:bg-gray-800/50 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-700';
+      return 'bg-slate-100 dark:bg-slate-800/60 text-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700';
   }
 };
 
@@ -162,48 +162,64 @@ export default function DashboardPage() {
       <div 
         key={campaign.id}
         onClick={() => handleCampaignClick(campaign.id)}
-        className="p-4 border rounded-lg hover:shadow-md dark:hover:shadow-lg transition-all duration-200 cursor-pointer relative group bg-card dark:bg-card/80"
+        className="p-5 border rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-pointer relative group bg-card/95 dark:bg-card/80 focus:outline-none focus:ring-2 focus:ring-primary/40"
       >
-        <div className="flex items-start justify-between mb-3">
-          <div>
-            <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary">
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="min-w-0">
+            <h3 className="font-semibold text-base text-gray-900 dark:text-white group-hover:text-primary/90 truncate">
               {campaign.name}
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{campaign.subject}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">{campaign.subject}</p>
           </div>
-          <Badge className={cn("text-xs py-1 px-2", getCampaignStatusColor(campaign.status))}>
-            <span className="flex items-center">
-              {getStatusIcon(campaign.status)}
-              {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
-            </span>
-          </Badge>
+          <div className="flex items-center gap-2 shrink-0">
+            <Badge className={cn("text-[11px] py-1.5 px-2.5 border inline-flex items-center gap-1", getCampaignStatusColor(campaign.status))}>
+              <span className={cn(
+                "inline-block h-1.5 w-1.5 rounded-full",
+                campaign.status === 'failed' ? 'bg-rose-500' :
+                campaign.status === 'paused' ? 'bg-amber-500' :
+                campaign.status === 'completed' ? 'bg-blue-500' :
+                'bg-emerald-500'
+              )} />
+              <span className="flex items-center">
+                {getStatusIcon(campaign.status)}
+                {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
+              </span>
+            </Badge>
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+              <button 
+                onClick={(e) => handleEditClick(e, campaign.id)}
+                className="p-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 transition-colors"
+                title="Editar campaña"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </button>
+              <button 
+                onClick={(e) => handleDeleteClick(e, campaign.id)}
+                className="p-1.5 rounded-full bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-800/50 transition-colors"
+                title="Eliminar campaña"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
         </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mt-4">
-          <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Creada</p>
-            <p className="font-medium text-gray-900 dark:text-gray-100">{campaign.createdAt ? formatDate(campaign.createdAt) : 'N/A'}</p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Destinatarios</p>
-            <p className="font-medium text-gray-900 dark:text-gray-100">{totalRecipients.toLocaleString()}</p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Aperturas</p>
-            <p className="font-medium">
-              <span className="text-gray-900 dark:text-gray-100">{opened.toLocaleString()}</span> 
-              <span className="text-green-600 dark:text-green-400"> ({openRate}%)</span>
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Clicks</p>
-            <p className="font-medium">
-              <span className="text-gray-900 dark:text-gray-100">{clicked.toLocaleString()}</span> 
-              <span className="text-blue-600 dark:text-blue-400"> ({clickRate}%)</span>
-            </p>
-          </div>
+
+        <div className="flex flex-wrap items-center gap-2 mt-1">
+          <span className="text-xs text-muted-foreground">Creada {campaign.createdAt ? formatDate(campaign.createdAt) : 'N/A'}</span>
         </div>
-        
+
+        <div className="flex flex-wrap gap-2 mt-3">
+          <span className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-700">
+            <Users className="h-3.5 w-3.5" /> {totalRecipients.toLocaleString()} destinatarios
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-2.5 py-1 text-[11px] border border-emerald-200/60 dark:border-emerald-800">
+            <MailCheck className="h-3.5 w-3.5" /> {opened.toLocaleString()} ({openRate}%) aperturas
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2.5 py-1 text-[11px] border border-blue-200/60 dark:border-blue-800">
+            <BarChart2 className="h-3.5 w-3.5" /> {clicked.toLocaleString()} ({clickRate}%) clicks
+          </span>
+        </div>
+
         {campaign.status === 'sending' && totalRecipients > 0 && (
           <div className="mt-3">
             <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
@@ -212,27 +228,12 @@ export default function DashboardPage() {
             </div>
             <Progress 
               value={progress} 
-              className="h-2 bg-gray-200 dark:bg-gray-700" 
+              className="h-2 bg-gray-200 dark:bg-gray-700 overflow-hidden" 
             />
           </div>
         )}
+
         
-        <div className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-          <button 
-            onClick={(e) => handleEditClick(e, campaign.id)}
-            className="p-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-800/50 transition-colors"
-            title="Editar campaña"
-          >
-            <Pencil className="w-3.5 h-3.5" />
-          </button>
-          <button 
-            onClick={(e) => handleDeleteClick(e, campaign.id)}
-            className="p-1.5 rounded-full bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-800/50 transition-colors"
-            title="Eliminar campaña"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </button>
-        </div>
       </div>
     );
   };
@@ -394,7 +395,7 @@ export default function DashboardPage() {
               </Link>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {campaigns.slice(0, 5).map(renderCampaignCard)}
             </div>
           )}

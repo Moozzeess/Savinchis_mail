@@ -30,6 +30,8 @@ export function FileUploadModal({ isOpen, onClose, onUploadComplete, onListSaved
     columnMapping,
     listName,
     listDescription,
+    // alias para evitar conflicto de nombres con la función del componente
+    handleSaveList: saveListFromHook,
     setColumnMapping,
     setListName,
     setListDescription,
@@ -57,7 +59,8 @@ export function FileUploadModal({ isOpen, onClose, onUploadComplete, onListSaved
     }
   }, [handleFileChange]);
 
-  const handleSaveList = useCallback(async () => {
+  // Usar la acción del hook para guardar la lista en lugar de enviar FormData a /api/contacts
+  const onSaveListClick = useCallback(async () => {
     try {
       setIsSaving(true);
       setSaveError(null);
@@ -70,37 +73,19 @@ export function FileUploadModal({ isOpen, onClose, onUploadComplete, onListSaved
         throw new Error('Por favor, valida el mapeo de columnas antes de guardar');
       }
 
-      const formData = new FormData();
-      formData.append('file', fileUpload.file);
-      formData.append('listName', listName);
-      formData.append('listDescription', listDescription);
-      formData.append('emailColumn', columnMapping.emailColumn);
-      formData.append('nameColumn', columnMapping.nameColumn || '');
+      // Delegar al hook: valida formato y guarda usando acción de servidor addListContacts
+      const result = await saveListFromHook();
 
-      const response = await fetch('/api/contacts', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al guardar la lista de contactos');
-      }
-
-      const result = await response.json();
-      
-      if (result.success) {
+      if (result?.success) {
         setSaveSuccess(true);
         onUploadComplete(fileUpload.file!);
-        
-        // Notificar que la lista se guardó exitosamente
-        if (onListSaved && contactSummary) {
-          onListSaved(result.data.contactId, listName, contactSummary.total);
-        }
-        
+        // onListSaved es opcional; no contamos con listId desde la acción actual
+        // if (onListSaved && contactSummary) {
+        //   onListSaved('unknown', listName, contactSummary.total);
+        // }
         onClose();
       } else {
-        throw new Error(result.message || 'Error al procesar la respuesta del servidor');
+        throw new Error(result?.message || 'Error al guardar la lista de contactos');
       }
     } catch (error) {
       console.error(error);
@@ -108,7 +93,7 @@ export function FileUploadModal({ isOpen, onClose, onUploadComplete, onListSaved
     } finally {
       setIsSaving(false);
     }
-  }, [fileUpload.file, isMappingValidated, listName, listDescription, columnMapping, onUploadComplete, onListSaved, contactSummary, onClose]);
+  }, [fileUpload.file, isMappingValidated, onUploadComplete, onClose, saveListFromHook]);
 
   if (!isOpen) return null;
 
@@ -314,10 +299,10 @@ export function FileUploadModal({ isOpen, onClose, onUploadComplete, onListSaved
                     Cancelar
                   </Button>
                   <Button 
-                    onClick={handleSaveList}
-                    disabled={!listName || fileUpload.isUploading}
+                    onClick={onSaveListClick}
+                    disabled={!listName || fileUpload.isUploading || isSaving}
                   >
-                    {fileUpload.isUploading ? 'Guardando...' : 'Guardar lista'}
+                    {fileUpload.isUploading || isSaving ? 'Guardando...' : 'Guardar lista'}
                   </Button>
                 </div>
               </div>

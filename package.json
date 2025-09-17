@@ -4,7 +4,7 @@
   "description": "Una plataforma de marketing por correo electrónico construida con Next.js, RBAC y un editor visual.",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 9002",
+    "dev": "next dev --turbopack -p 3000",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "next build",

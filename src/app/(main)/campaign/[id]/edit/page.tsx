@@ -228,16 +228,17 @@ export default function EditCampaignPage() {
           // Mapear los datos de la campaña al formulario
           methods.reset({
             // Detalles básicos
-            id: campaign.id_campaign,
+            id: Number(campaign.id_campaign),
             
             // Campos en español
             nombre_campaign: campaign.nombre_campaign,
             descripcion: campaign.descripcion || '',
             objetivo: objetivoValido,
             asunto: campaign.asunto,
-            contenido: campaign.contenido || '',
-            id_lista: campaign.id_lista_contactos,
-            id_plantilla: campaign.id_plantilla,
+            // El backend no expone 'contenido' directo en DBCampaign; usar fallback seguro
+            contenido: '',
+            id_lista: Number(campaign.id_lista_contactos || 0),
+            id_plantilla: campaign.id_plantilla ?? undefined,
             nombre_lista: campaign.nombre_lista || '',
             total_contactos: campaign.total_contactos,
             
@@ -265,11 +266,11 @@ export default function EditCampaignPage() {
                 bienvenida: 'welcome',
                 otro: 'other'
               };
-              return map[campaign.objetivo as ObjetivoTipo] || 'other';
+              return map[objetivoValido];
             })(),
             subject: campaign.asunto,
-            emailBody: campaign.contenido || '',
-            contactListId: campaign.id_lista_contactos,
+            emailBody: '',
+            contactListId: Number(campaign.id_lista_contactos || 0),
             contactListName: campaign.nombre_lista || '',
             totalRecipients: campaign.total_contactos,
             templateId: campaign.id_plantilla || null,
@@ -280,8 +281,7 @@ export default function EditCampaignPage() {
                 id: '1',
                 name: 'Envío Principal',
                 sendNow: !campaign.fecha_envio,
-                optimalTime: false,
-                date: campaign.fecha_envio || new Date(),
+                date: campaign.fecha_envio ? new Date(campaign.fecha_envio) : new Date(),
                 hour: campaign.fecha_envio ? new Date(campaign.fecha_envio).getHours().toString().padStart(2, '0') : '12',
                 minute: campaign.fecha_envio ? new Date(campaign.fecha_envio).getMinutes().toString().padStart(2, '0') : '00',
                 timezone: 'America/Mexico_City',
@@ -296,10 +296,9 @@ export default function EditCampaignPage() {
             ],
             
             // Otros campos
-            estado: campaign.estado || 'borrador',
-            templateName: '',
-            templateContent: campaign.contenido || '',
-            templateBlocks: null as any,
+            estado: (['borrador','programada','en_progreso','completada','pausada','cancelada'] as const).includes((campaign.estado as any))
+              ? (campaign.estado as any)
+              : 'borrador',
           });
         } else {
           setError('No se pudo cargar la campaña');
@@ -365,10 +364,12 @@ export default function EditCampaignPage() {
         return defaultValue;
       };
 
-      // Mapear objetivo de inglés a español si es necesario
-      let objetivo = getValue<string>('objetivo', '');
-      if (!objetivo) {
-        const obj = anyMethods.getValues('objective');
+  // Handler de envío: encapsula la lógica de actualización
+  const onSubmit = async (formData: CampaignFormValues) => {
+    // Mapear objetivo de inglés a español si es necesario
+    let objetivo = getValue<string>('objetivo', '');
+    if (!objetivo) {
+      const obj = methods.getValues('objective');
         const mapReverse: Record<string, 'promocional' | 'boletin' | 'anuncio' | 'evento' | 'bienvenida' | 'otro'> = {
           promotional: 'promocional',
           newsletter: 'boletin',
@@ -377,8 +378,8 @@ export default function EditCampaignPage() {
           welcome: 'bienvenida',
           other: 'otro',
         };
-        objetivo = obj ? mapReverse[obj] : 'promocional';
-      }
+      objetivo = obj ? mapReverse[obj] : 'promocional';
+    }
 
       // Formatear fechas correctamente
       const formatDateForDB = (dateString: string | null | undefined): string | null => {
@@ -442,28 +443,27 @@ export default function EditCampaignPage() {
         campaignData.fecha_fin = formatDateForDB(formData.fecha_fin);
       }
 
-      console.log('Datos a actualizar:', campaignData);
-      
-      // Actualizar la campaña
+    console.log('Datos a actualizar:', campaignData);
+
+    // Mostrar feedback claro de carga/éxito/error
+    const loadingId = toast.loading('Guardando cambios...');
+    try {
       const result = await updateCampaign(campaignId, campaignData);
-      
+
       if (result.success) {
-        // Mostrar mensaje de éxito
-        toast.success('Campaña actualizada correctamente');
-        
+        toast.success('Campaña actualizada correctamente', { id: loadingId });
         // Redirigir al detalle de la campaña actualizada
         router.push(`/campaign/${campaignId}`);
         router.refresh();
       } else {
         const errorMessage = result.message || 'Error al actualizar la campaña';
         setError(errorMessage);
-        toast.error(errorMessage);
+        toast.error(errorMessage, { id: loadingId });
       }
-    } catch (err) {
-      console.error('Error al actualizar la campaña:', err);
-      setError('Ocurrió un error al actualizar la campaña');
-    } finally {
-      setIsSubmitting(false);
+    } catch (e: any) {
+      const errorMessage = e?.message || 'Error inesperado al actualizar la campaña';
+      setError(errorMessage);
+      toast.error(errorMessage, { id: loadingId });
     }
   };
 

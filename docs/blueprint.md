@@ -49,6 +49,8 @@ src/
 │   │   └── templates/       # Plantillas
 │   └── api/                 # Endpoints de la API
 │       ├── campaigns/       # API de campañas
+│       │   ├── send/        # Envío masivo de campañas (POST)
+│       │   └── test/        # Pruebas de envío (POST)
 │       ├── contacts/        # API de contactos
 │       └── templates/       # API de plantillas
 ├── components/              # Componentes de UI
@@ -63,6 +65,10 @@ src/
 ├── hooks/                   # Custom hooks
 │   └── useContactManagement/
 ├── lib/                     # Utilidades y configuraciones
+│   └── graph-email.ts       # Cliente de Microsoft Graph para envío de correos
+├── service/                 # Servicios de negocio
+│   ├── campaign.crud.service.ts  # Operaciones CRUD de campañas
+│   └── campaign.send.service.ts  # Lógica de envío de campañas
 └── types/                   # Definiciones de tipos TypeScript
 ```
 
@@ -76,6 +82,11 @@ src/
 │   ├── new-campaign-action.ts
 │   ├── send-campaign-action.ts
 │   └── send-test-email-action.ts
+├── service/
+│   ├── campaign.crud.service.ts  # Operaciones CRUD de campañas
+│   └── campaign.send.service.ts  # Lógica de envío de campañas
+└── lib/
+    └── graph-email.ts       # Cliente de Microsoft Graph
 ├── app/(main)/campaign/
 │   ├── New-campaigns/
 │   └── [id]/

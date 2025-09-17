@@ -1,34 +1,51 @@
-
 // Este archivo es el archivo de configuración principal para Next.js.
 import type {NextConfig} from 'next';
 
 // Se define el objeto de configuración de Next.js con el tipo `NextConfig` importado.
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Configuración de reescritura de rutas para el proxy
+  async rewrites() {
+    return [
+      {
+        source: '/api/mailing/:path*',
+        destination: 'https://events.papalote.org.mx/api/mailing/:path*',
+      },
+    ]
+  },
+  
+  // Configuración de CORS
+  async headers() {
+    return [
+      {
+        source: '/api/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Credentials', value: 'true' },
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
+          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version' },
+        ],
+      },
+    ]
+  },
 
   // Configuración relacionada con TypeScript.
   typescript: {
-    // Ignora los errores de TypeScript durante el proceso de construcción.
-    // Esto puede ser útil en etapas tempranas del desarrollo, pero no se recomienda para producción.
     ignoreBuildErrors: true,
   },
 
   // Configuración relacionada con ESLint.
   eslint: {
-    // Ignora los errores y advertencias de ESLint durante el proceso de construcción.
-    // Similar a `ignoreBuildErrors` de TypeScript, útil durante el desarrollo pero a evitar en producción.
     ignoreDuringBuilds: true,
   },
 
   // Configuración para la optimización de imágenes.
   images: {
-    // Permite cargar imágenes desde dominios remotos específicos.
     remotePatterns: [
       {
-        protocol: 'https', // Define el protocolo permitido (por ejemplo, 'http', 'https').
-        hostname: 'placehold.co', // Define el hostname o dominio permitido para las imágenes remotas.
-        port: '', // Define el puerto permitido. Dejar vacío permite cualquier puerto por defecto para el protocolo.
-        pathname: '/**', // Define el patrón de ruta permitido en el dominio. '**' permite cualquier ruta.
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
       },
     ],
   },

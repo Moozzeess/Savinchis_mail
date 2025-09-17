@@ -269,6 +269,7 @@ export async function getCampaigns(page: number = 1, limit: number = 10): Promis
    `SELECT 
     c.*,
     l.nombre as nombre_lista,
+    l.total_contactos AS total_recipients,
     p.nombre as nombre_plantilla
    FROM campaigns c
    LEFT JOIN listas_contactos l ON c.id_lista_contactos = l.id_lista
@@ -299,7 +300,7 @@ export async function getCampaigns(page: number = 1, limit: number = 10): Promis
     objective: 'promotional', // Valor por defecto
     subject: campaign.asunto,
     emailBody: campaign.contenido || '',
-    fromEmail: campaign.from_email || 'no-reply@example.com',
+    fromEmail: campaign.from_email || 'servicio.ssitemas@papalote.org,mx',
     replyTo: campaign.reply_to,
     contactListId: campaign.id_lista_contactos,
     contactListName: campaign.nombre_lista,

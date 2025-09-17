@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useMemo, memo } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { List, Users, Upload, Database } from 'lucide-react';
@@ -72,7 +72,8 @@ export function RecipientStep({
   onContactListChange,
   initialSelectedList = null 
 }: RecipientStepProps) {
-  const methods = useForm();
+  // Usar el contexto del formulario padre para asegurar persistencia y validación global
+  const methods = useFormContext();
   const { setValue, watch } = methods;
   
   // State para las pestañas
@@ -83,6 +84,17 @@ export function RecipientStep({
   // Valores del formulario que necesitamos observar
   const selectedListName = watch('contactListName');
   const totalRecipients = watch('totalRecipients') || 0;
+  const watchedContactListId = watch('contactListId');
+
+  // Sincronizar el highlight con el valor del formulario padre
+  useEffect(() => {
+    if (watchedContactListId != null) {
+      const asString = typeof watchedContactListId === 'string' 
+        ? watchedContactListId 
+        : String(watchedContactListId);
+      setSelectedListId(asString || null);
+    }
+  }, [watchedContactListId]);
   
   // Manejador para la selección de listas
   const handleListSelect = useCallback(async (listId: string, listName: string, count: number) => {
@@ -318,7 +330,6 @@ export function RecipientStep({
   ]);
 
   return (
-    <FormProvider {...methods}>
       <div className={cn('space-y-6', className)}>
       <Tabs 
         value={activeTab} 
@@ -375,6 +386,5 @@ export function RecipientStep({
         )}
       </div>
       </div>
-    </FormProvider>
   );
 }
