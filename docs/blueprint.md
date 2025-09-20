@@ -91,7 +91,16 @@ src/
 │   ├── New-campaigns/
 │   └── [id]/
 ├── components/campaign/
-│   └── ...
+│   ├── campaign-Step.tsx
+│   ├── delete-campaign-button.tsx
+│   ├── details-campaign.tsx
+│   ├── email-preview.tsx
+│   ├── email-step.tsx
+│   ├── recipients-step.tsx
+│   ├── review-step.tsx
+│   ├── scheduling-step.tsx
+│   ├── send-campaign-dialog.tsx
+│   └── template-selector.tsx
 └── app/api/campaigns/
 ```
 

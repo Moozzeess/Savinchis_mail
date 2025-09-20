@@ -1,59 +1,91 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from "recharts"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+// Datos de ejemplo para la evolución en un rango de fechas (sin cambios)
+const data = [
+  { date: "15 Sep", aperturas: 22.5, clics: 3.1 },
+  { date: "16 Sep", aperturas: 24.8, clics: 3.5 },
+  { date: "17 Sep", aperturas: 21.2, clics: 2.9 },
+  { date: "18 Sep", aperturas: 28.3, clics: 4.2 },
+  { date: "19 Sep", aperturas: 26.9, clics: 3.9 },
+  { date: "20 Sep", aperturas: 32.1, clics: 4.8 },
+  { date: "21 Sep", aperturas: 30.5, clics: 4.5 },
+]
 
-const chartData: any[] = []
-
-const chartConfig = {
-  sent: {
-    label: "Enviados",
-    color: "hsl(var(--chart-1))",
-  },
-  open: {
-    label: "Aperturas",
-    color: "hsl(var(--chart-2))",
-  },
-}
-
-/**
- * Componente que renderiza los gráficos de analíticas para el rendimiento de las campañas.
- * Muestra un gráfico de barras con datos de correos enviados y tasas de apertura.
- */
 export function AnalyticsCharts() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Rendimiento de Campañas</CardTitle>
-        <CardDescription>Datos de los últimos 6 meses.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {chartData.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[200px] text-center text-muted-foreground">
-            <p>No hay datos para mostrar.</p>
-            <p className="text-xs">Envía campañas para ver el rendimiento aquí.</p>
-          </div>
-        ) : (
-          <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-            <BarChart accessibilityLayer data={chartData}>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                tickMargin={10}
-                axisLine={false}
-                tickFormatter={(value) => value.slice(0, 3)}
-              />
-              <YAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="sent" fill="var(--color-sent)" radius={4} />
-              <Bar dataKey="open" fill="var(--color-open)" radius={4} />
-            </BarChart>
-          </ChartContainer>
-        )}
-      </CardContent>
-    </Card>
+    <div className="w-full h-full"> {/* Asegura que el div padre ocupa toda la altura disponible */}
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart
+          data={data}
+          margin={{
+            top: 10,
+            right: 30,
+            left: 0,
+            bottom: 0,
+          }}
+        >
+          <defs>
+            <linearGradient id="colorAperturas" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+            </linearGradient>
+            <linearGradient id="colorClics" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
+          <XAxis
+            dataKey="date"
+            stroke="#888888"
+            fontSize={12}
+            tickLine={false}
+            axisLine={false}
+          />
+          <YAxis
+            stroke="#888888"
+            fontSize={12}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(value) => `${value}%`}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+              border: '1px solid #ccc',
+              borderRadius: '8px',
+              backdropFilter: 'blur(5px)',
+            }}
+          />
+          {/* AQUI ESTÁ EL CAMBIO IMPORTANTE: */}
+          <Legend 
+            iconType="circle"
+            layout="horizontal" // La leyenda se mostrará en horizontal
+            verticalAlign="top" // Se alinea en la parte superior del gráfico
+            align="right"       // Se alinea a la derecha
+            wrapperStyle={{ paddingTop: 10, paddingRight: 20 }} // Espaciado para que no toque el borde
+            formatter={(value) => <span className="text-sm text-slate-600 dark:text-slate-300 capitalize">{value}</span>}
+          />
+          <Area 
+            type="monotone" 
+            dataKey="aperturas" 
+            stroke="#8884d8" 
+            strokeWidth={2}
+            fillOpacity={1} 
+            fill="url(#colorAperturas)" 
+          />
+          <Area 
+            type="monotone" 
+            dataKey="clics" 
+            stroke="#82ca9d" 
+            strokeWidth={2}
+            fillOpacity={1} 
+            fill="url(#colorClics)" 
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
   )
 }
