@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Mail, CheckCircle2, XCircle } from "lucide-react"
+import { Mail, CheckCircle2, XCircle, MousePointerClick } from "lucide-react"
 import { AnimatedNumber } from "@/components/ui/animated-number"
 
 export type CampaignStats = {
@@ -25,73 +25,80 @@ export function StatsGrid({ stats }: Props) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {/* Total */}
-      <Card hoverable className="border-blue-200 dark:border-blue-900/50 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-900/10">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-blue-800 dark:text-blue-200">Total de correos</CardTitle>
-          <div className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/50">
-            <Mail className="h-4 w-4 text-blue-600 dark:text-blue-300" />
+      <Card className="group relative overflow-hidden border border-border/50 bg-card hover:border-primary/30 transition-colors duration-300">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <CardHeader className="relative z-10 flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-foreground/80">Total de correos</CardTitle>
+          <div className="p-2 rounded-full bg-blue-100/80 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 transition-colors duration-300 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50">
+            <Mail className="h-4 w-4" />
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+        <CardContent className="relative z-10">
+          <div className="text-2xl font-bold text-foreground">
             <AnimatedNumber value={stats.totalEmails} />
           </div>
-          <p className="text-xs text-blue-700/80 dark:text-blue-300/80">
-            {stats.sent} enviados • {stats.pending} pendientes
+          <p className="text-sm text-muted-foreground mt-1">
+            <span className="text-blue-600 dark:text-blue-400">{stats.sent} enviados</span> • 
+            <span className="text-amber-600 dark:text-amber-400"> {stats.pending} pendientes</span>
           </p>
         </CardContent>
       </Card>
 
       {/* Apertura */}
-      <Card hoverable className="border-green-200 dark:border-green-900/50 bg-gradient-to-br from-green-50 to-green-100/50 dark:from-green-900/20 dark:to-green-900/10">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-green-800 dark:text-green-200">Tasa de apertura</CardTitle>
-          <div className="p-2 rounded-full bg-green-100 dark:bg-green-900/50">
-            <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-300" />
+      <Card className="group relative overflow-hidden border border-border/50 bg-card hover:border-primary/30 transition-colors duration-300">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <CardHeader className="relative z-10 flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-foreground/80">Tasa de apertura</CardTitle>
+          <div className="p-2 rounded-full bg-green-100/80 dark:bg-green-900/30 text-green-600 dark:text-green-300 transition-colors duration-300 group-hover:bg-green-100 dark:group-hover:bg-green-900/50">
+            <CheckCircle2 className="h-4 w-4" />
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-green-900 dark:text-green-100">
+        <CardContent className="relative z-10">
+          <div className="text-2xl font-bold text-foreground">
             <AnimatedNumber value={openRate} formatter={(n) => `${Math.round(n)}%`} />
           </div>
-          <p className="text-xs text-green-700/80 dark:text-green-300/80">
-            {stats.opened} de {stats.sent} correos abiertos
+          <p className="text-sm text-muted-foreground mt-1">
+            <span className="text-green-600 dark:text-green-400">{stats.opened}</span> de {stats.sent} correos abiertos
           </p>
         </CardContent>
       </Card>
 
       {/* Clics */}
-      <Card hoverable className="border-purple-200 dark:border-purple-900/50 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-900/10">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-purple-800 dark:text-purple-200">Tasa de clics</CardTitle>
-        <div className="p-2 rounded-full bg-purple-100 dark:bg-purple-900/50">
-            <CheckCircle2 className="h-4 w-4 text-purple-600 dark:text-purple-300" />
+      <Card className="group relative overflow-hidden border border-border/50 bg-card hover:border-primary/30 transition-colors duration-300">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <CardHeader className="relative z-10 flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-foreground/80">Tasa de clics</CardTitle>
+          <div className="p-2 rounded-full bg-purple-100/80 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 transition-colors duration-300 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/50">
+            <MousePointerClick className="h-4 w-4" />
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+        <CardContent className="relative z-10">
+          <div className="text-2xl font-bold text-foreground">
             <AnimatedNumber value={clickRate} formatter={(n) => `${Math.round(n)}%`} />
           </div>
-          <p className="text-xs text-purple-700/80 dark:text-purple-300/80">
-            {stats.clicked} de {stats.sent} clics registrados
+          <p className="text-sm text-muted-foreground mt-1">
+            <span className="text-purple-600 dark:text-purple-400">{stats.clicked}</span> de {stats.sent} clics registrados
           </p>
         </CardContent>
       </Card>
 
       {/* Fallidos */}
-      <Card hoverable className="border-rose-200 dark:border-rose-900/50 bg-gradient-to-br from-rose-50 to-rose-100/50 dark:from-rose-900/20 dark:to-rose-900/10">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-rose-800 dark:text-rose-200">Correos fallidos</CardTitle>
-          <div className="p-2 rounded-full bg-rose-100 dark:bg-rose-900/50">
-            <XCircle className="h-4 w-4 text-rose-600 dark:text-rose-300" />
+      <Card className="group relative overflow-hidden border border-border/50 bg-card hover:border-primary/30 transition-colors duration-300">
+        <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <CardHeader className="relative z-10 flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-foreground/80">Correos fallidos</CardTitle>
+          <div className="p-2 rounded-full bg-rose-100/80 dark:bg-rose-900/30 text-rose-600 dark:text-rose-300 transition-colors duration-300 group-hover:bg-rose-100 dark:group-hover:bg-rose-900/50">
+            <XCircle className="h-4 w-4" />
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-rose-900 dark:text-rose-100">
+        <CardContent className="relative z-10">
+          <div className="text-2xl font-bold text-foreground">
             <AnimatedNumber value={stats.failed} />
           </div>
-          <p className="text-xs text-rose-700/80 dark:text-rose-300/80">
-            <AnimatedNumber value={failRate} formatter={(n) => `${Math.round(n)}%`} /> de tasa de error
+          <p className="text-sm text-muted-foreground mt-1">
+            <span className="text-rose-600 dark:text-rose-400">
+              <AnimatedNumber value={failRate} formatter={(n) => `${Math.round(n)}%`} />
+            </span> de tasa de error
           </p>
         </CardContent>
       </Card>

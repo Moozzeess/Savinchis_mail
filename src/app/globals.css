@@ -23,60 +23,60 @@ body {
 
 @layer base { /* Define una capa base para estilos personalizados */
   :root { /* Define variables CSS para el tema claro */
-    --background: 170d 60% 95%; /* Fondo ligeramente más claro y limpio */
-    --foreground: 160 10% 20%; /* Color del texto */
-    --card: 160 55% 96%; /* Tarjeta un punto más clara que el fondo */
-    --card-foreground: 160 10% 20%; /* Color del texto de las tarjetas */
-    --popover: 160 55% 96%; /* Popover acorde a las tarjetas */
-    --popover-foreground: 160 10% 20%; /* Color del texto de los popovers */
-    --primary: 158 65% 45%; /* Verde esmeralda más vibrante (mejor contraste) */
+    --background: 170 60% 90%; /* Verde pastel más oscuro para mejor contraste */
+    --foreground: 100 30% 12%; /* Texto más oscuro para mejor legibilidad */
+    --card: 150 35% 96%; /* Tarjetas con tono verde pastel suave */
+    --card-foreground: 150 30% 15%; /* Texto más oscuro en tarjetas */
+    --popover: 1990 35% 96%; /* Popover con tono verde pastel */
+    --popover-foreground: 150 30% 15%; /* Texto más oscuro en popovers */
+    --primary: 158 65% 42%; /* Verde esmeralda ligeramente más oscuro */
     --primary-foreground: 0 0% 100%; /* Texto blanco sobre primario */
-    --secondary: 160 35% 88%; /* Suave verde-gris para superficies secundarias */
-    --secondary-foreground: 160 10% 10%; /* Color del texto secundario */
-    --muted: 160 30% 90%; /* Superficies atenuadas más claras */
-    --muted-foreground: 160 12% 32%; /* Texto atenuado con mejor legibilidad */
-    --accent: 158 70% 50%; /* Acento consistente con el primario */
+    --secondary: 145 35% 78%; /* Fondo secundario con tono verde pastel más oscuro */
+    --secondary-foreground: 150 30% 15%; /* Texto más oscuro sobre secundario */
+    --muted: 150 25% 90%; /* Superficies atenuadas con tono verde pastel más oscuro */
+    --muted-foreground: 150 20% 30%; /* Texto atenuado más oscuro */
+    --accent: 158 70% 48%; /* Acento ligeramente más oscuro */
     --accent-foreground: 0 0% 100%; /* Texto blanco sobre acento */
-    --destructive: 0 84.2% 60.2%; /* Color para elementos destructivos (ej: errores) */
-    --destructive-foreground: 0 0% 98%; /* Color del texto destructivo */
-    --border: 160 25% 82%; /* Bordes con mejor definición */
-    --input: 160 40% 92%; /* Inputs ligeramente más claros */
-    --ring: 158 70% 46%; /* Ring alineado con primario para foco visible */
-    --radius: 0.75rem; /* Radio por defecto para bordes redondeados */
-    --chart-1: 12 76% 61%; /* Color 1 para gráficos */
-    --chart-2: 173 58% 39%; /* Color 2 para gráficos */
-    --chart-3: 197 37% 24%; /* Color 3 para gráficos */
-    --chart-4: 43 74% 66%; /* Color 4 para gráficos */
-    --chart-5: 27 87% 67%; /* Color 5 para gráficos */
+    --destructive: 0 84% 60%; /* Rojo para acciones destructivas */
+    --destructive-foreground: 0 0% 100%; /* Texto blanco sobre destructivo */
+    --border: 150 25% 80%; /* Bordes con tono verde pastel más oscuro */
+    --input: 150 35% 90%; /* Inputs con fondo verde pastel más oscuro */
+    --ring: 158 70% 44%; /* Anillo de enfoque ligeramente más oscuro */
+    --radius: 0.75rem; /* Radio de borde consistente */
+    --chart-1: 201 86% 55%; /* Azul para gráficos ligeramente más oscuro */
+    --chart-2: 158 65% 42%; /* Verde para gráficos ligeramente más oscuro */
+    --chart-3: 43 86% 56%; /* Amarillo para gráficos ligeramente más oscuro */
+    --chart-4: 27 86% 58%; /* Naranja para gráficos ligeramente más oscuro */
+    --chart-5: 340 82% 54%; /* Rojo para gráficos ligeramente más oscuro */
 
-    --sidebar-background: 160 42% 94%; /* Sidebar más limpio y luminoso */
-    --sidebar-foreground: 160 12% 18%; /* Texto sidebar */
-    --sidebar-primary: 158 65% 45%; /* Igual al primario */
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 158 70% 50%; /* Hover/activo vibrante */
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 160 25% 86%;
-    --sidebar-ring: 158 70% 46%;
+    --sidebar-background: 150 30% 90%; /* Barra lateral con tono verde pastel más oscuro */
+    --sidebar-foreground: 150 30% 15%; /* Texto de la barra lateral más oscuro */
+    --sidebar-primary: 158 65% 45%; /* Color primario de la barra lateral */
+    --sidebar-primary-foreground: 0 0% 100%; /* Texto sobre primario */
+    --sidebar-accent: 158 70% 50%; /* Color de acento en hover/activo */
+    --sidebar-accent-foreground: 0 0% 100%; /* Texto sobre acento */
+    --sidebar-border: 140 25% 88%; /* Borde de la barra lateral con tono verde pastel */
+    --sidebar-ring: 158 70% 46%; /* Anillo de enfoque */
   }
   .dark { /* Tema oscuro mejorado */
-    --background: 210 15% 12%; /* Un poco más profundo para contraste */
+    --background: 200 15% 13%; /* Fondo más oscuro para mejor contraste */
     --foreground: 0 0% 98%; /* Texto principal casi blanco */
-    --card: 210 18% 16%; /* Tarjetas */
+    --card: 210 20% 12%; /* Tarjetas con un tono más oscuro */
     --card-foreground: 0 0% 98%;
-    --popover: 210 18% 16%;
+    --popover: 210 20% 12%;
     --popover-foreground: 0 0% 98%;
     --primary: 158 70% 52%; /* Verde más vivo en oscuro */
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 20% 24%; /* Neutro para superficies secundarias */
+    --secondary: 210 22% 18%; /* Fondo secundario más oscuro */
     --secondary-foreground: 0 0% 98%;
-    --muted: 210 16% 18%;
-    --muted-foreground: 210 20% 70%;
+    --muted: 210 15% 15%;
+    --muted-foreground: 210 20% 75%; /* Texto atenuado más claro para mejor legibilidad */
     --accent: 158 70% 45%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 210 22% 22%;
-    --input: 210 22% 22%;
+    --border: 210 18% 18%; /* Bordes más sutiles */
+    --input: 210 18% 18%;
     --ring: 158 70% 52%;
     --chart-1: 220 70% 50%; /* Color 1 para gráficos en modo oscuro */
     --chart-2: 160 60% 45%; /* Color 2 para gráficos en modo oscuro */
@@ -84,13 +84,13 @@ body {
     --chart-4: 280 65% 60%; /* Color 4 para gráficos en modo oscuro */
     --chart-5: 340 75% 55%; /* Color 5 para gráficos en modo oscuro */
 
-    --sidebar-background: 210 18% 16%; /* Igual que las tarjetas */
+    --sidebar-background: 210 22% 10%; /* Barra lateral más oscura */
     --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 158 70% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 158 70% 48%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 210 22% 22%;
+    --sidebar-border: 210 20% 15%; /* Borde más sutil */
     --sidebar-ring: 158 70% 52%;
   }
 }

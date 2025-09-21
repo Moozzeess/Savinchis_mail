@@ -3,6 +3,10 @@ import type {NextConfig} from 'next';
 
 // Se define el objeto de configuración de Next.js con el tipo `NextConfig` importado.
 const nextConfig: NextConfig = {
+  // Desactivar el watermark de Next.js
+  devIndicators: {
+    buildActivity: false
+  },
   // Configuración de reescritura de rutas para el proxy
   async rewrites() {
     return [

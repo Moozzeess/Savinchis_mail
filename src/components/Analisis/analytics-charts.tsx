@@ -28,38 +28,47 @@ export function AnalyticsCharts() {
         >
           <defs>
             <linearGradient id="colorAperturas" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+              <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0}/>
             </linearGradient>
             <linearGradient id="colorClics" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
+              <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0}/>
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
+          <CartesianGrid 
+            strokeDasharray="3 3" 
+            strokeOpacity={0.2} 
+            stroke="hsl(var(--border))"
+          />
           <XAxis
             dataKey="date"
-            stroke="#888888"
+            stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             tickLine={false}
             axisLine={false}
+            tick={{ fill: 'hsl(var(--muted-foreground))' }}
           />
           <YAxis
-            stroke="#888888"
+            stroke="hsl(var(--muted-foreground))"
             fontSize={12}
             tickLine={false}
             axisLine={false}
             tickFormatter={(value) => `${value}%`}
+            tick={{ fill: 'hsl(var(--muted-foreground))' }}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              border: '1px solid #ccc',
+              backgroundColor: 'hsl(var(--popover))',
+              border: '1px solid hsl(var(--border))',
               borderRadius: '8px',
               backdropFilter: 'blur(5px)',
+              color: 'hsl(var(--foreground))',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
             }}
+            itemStyle={{ color: 'hsl(var(--foreground))' }}
+            labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
           />
-          {/* AQUI ESTÁ EL CAMBIO IMPORTANTE: */}
           <Legend 
             iconType="circle"
             layout="horizontal" // La leyenda se mostrará en horizontal
@@ -71,7 +80,7 @@ export function AnalyticsCharts() {
           <Area 
             type="monotone" 
             dataKey="aperturas" 
-            stroke="#8884d8" 
+            stroke="hsl(var(--chart-1))" 
             strokeWidth={2}
             fillOpacity={1} 
             fill="url(#colorAperturas)" 
@@ -79,7 +88,7 @@ export function AnalyticsCharts() {
           <Area 
             type="monotone" 
             dataKey="clics" 
-            stroke="#82ca9d" 
+            stroke="hsl(var(--chart-2))" 
             strokeWidth={2}
             fillOpacity={1} 
             fill="url(#colorClics)" 

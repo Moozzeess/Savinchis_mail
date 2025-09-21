@@ -187,78 +187,57 @@ const Sidebar = React.forwardRef<
     variant?: "sidebar" | "floating" | "inset"
     collapsible?: "offcanvas" | "icon" | "none"
   }
->(
-  (
-    {
-      side = "left",
-      variant = "sidebar",
-      collapsible = "offcanvas",
-      className,
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+>(({
+  side = "left",
+  variant = "sidebar",
+  collapsible = "offcanvas",
+  className,
+  children,
+  ...props
+}, ref) => {
+  const { state, isMobile } = useSidebar()
 
-    if (collapsible === "none") {
-      return (
-        <div
-          className={cn(
-            // Adaptación visual (tema)
-            "flex h-full w-[--sidebar-width] flex-col border-r border-sidebar-border bg-sidebar/95 backdrop-blur-md shadow-xl transition-all duration-300 ease-in-out z-40 text-sidebar-foreground",
-            className
-          )}
-          ref={ref}
-          {...props}
-        >
-          {children}
-        </div>
-      )
-    }
-
-    if (isMobile) {
-      return (
-        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-          <SheetContent
-            data-sidebar="sidebar"
-            data-mobile="true"
-            className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
-            style={
-              {
-                "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-              } as React.CSSProperties
-            }
-            side={side}
-          >
-            <div className="flex h-full w-full flex-col">{children}</div>
-          </SheetContent>
-        </Sheet>
-      )
-    }
-
+  if (isMobile) {
     return (
+      <Sheet>
+        <SheetContent
+          side={side}
+          className="p-0 w-[var(--sidebar-width)]"
+          style={{
+            "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+          } as React.CSSProperties}
+        >
+          <div className="flex h-full w-full flex-col">
+            {children}
+          </div>
+        </SheetContent>
+      </Sheet>
+    )
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "group peer hidden md:block text-sidebar-foreground border-r border-sidebar-border bg-sidebar/95 backdrop-blur-md shadow-xl transition-all duration-300 ease-in-out z-40",
+        className
+      )}
+      data-state={state}
+      data-variant={variant}
+      data-side={side}
+      data-collapsible={state === "collapsed" ? collapsible : ""}
+      {...props}
+    >
       <div
-        ref={ref}
         className={cn(
-          "group peer hidden md:block text-sidebar-foreground border-r border-sidebar-border bg-sidebar/95 backdrop-blur-md shadow-xl transition-all duration-300 ease-in-out z-40",
-          className
+          "duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
+          "group-data-[collapsible=offcanvas]:w-0",
+          "group-data-[side=right]:rotate-180",
+          variant === "floating" || variant === "inset"
+            ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
+            : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
         )}
-        data-state={state}
-        data-collapsible={state === "collapsed" ? collapsible : ""}
-        data-variant={variant}
-        data-side={side}
       >
-        <div
-          className={cn(
-            "duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
-            "group-data-[collapsible=offcanvas]:w-0",
-            "group-data-[side=right]:rotate-180",
-            variant === "floating" || variant === "inset"
-              ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
-              : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
-          )}
-        />
         <div
           className={cn(
             "duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex border-r border-sidebar-border bg-sidebar/95 backdrop-blur-md shadow-xl",
@@ -267,10 +246,8 @@ const Sidebar = React.forwardRef<
               : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
             variant === "floating" || variant === "inset"
               ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]"
-              : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
-            className
+              : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l"
           )}
-          {...props}
         >
           <div
             data-sidebar="sidebar"
@@ -280,7 +257,8 @@ const Sidebar = React.forwardRef<
           </div>
         </div>
       </div>
-    )
+    </div>
+  )
   }
 )
 Sidebar.displayName = "Sidebar"
@@ -318,29 +296,51 @@ const SidebarRail = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button">
 >(({ className, ...props }, ref) => {
-  // Botón fijo, visible, para mostrar/ocultar sidebar (no draggable)
   const { toggleSidebar, state } = useSidebar();
   const isExpanded = state === "expanded";
+  const [isHovered, setIsHovered] = React.useState(false);
+  
   return (
-    <button
-      ref={ref}
-      data-sidebar="toggle-btn"
-      aria-label={isExpanded ? "Cerrar menú" : "Abrir menú"}
-      onClick={toggleSidebar}
-      className={cn(
-        "fixed top-5 left-3 z-50 flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 ease-out group overflow-hidden transform-gpu cursor-pointer select-none bg-sidebar text-sidebar-foreground border border-sidebar-border shadow hover:scale-105 hover:border-sidebar-accent hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-        className
-      )}
-      {...props}
-    >
-      <span className="relative z-10 transition-all duration-300 group-hover:drop-shadow-sm">
-        {isExpanded ? (
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-        ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
-        )}
-      </span>
-    </button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            ref={ref}
+            data-sidebar="toggle-btn"
+            aria-label={isExpanded ? "Ocultar menú" : "Mostrar menú"}
+            onClick={toggleSidebar}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className={cn(
+              "fixed top-4 left-4 z-50 flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-300 ease-out group overflow-hidden cursor-pointer select-none",
+              "bg-background/80 backdrop-blur-sm border border-border shadow-sm",
+              "hover:bg-accent hover:text-accent-foreground hover:shadow-md active:scale-95",
+              isExpanded ? "md:left-[16.5rem]" : "md:left-4",
+              className
+            )}
+            {...props}
+          >
+            <span className="relative w-5 h-5 flex items-center justify-center">
+              <span className={cn(
+                "block w-5 h-0.5 bg-foreground rounded-full transition-all duration-300",
+                isExpanded ? "rotate-45 translate-y-0" : "rotate-0 translate-y-1"
+              )} />
+              <span className={cn(
+                "absolute block w-5 h-0.5 bg-foreground rounded-full transition-all duration-300",
+                isExpanded ? "opacity-0" : "opacity-100"
+              )} />
+              <span className={cn(
+                "block w-5 h-0.5 bg-foreground rounded-full transition-all duration-300 mt-1.5",
+                isExpanded ? "-rotate-45 -translate-y-1" : "rotate-0 -translate-y-1"
+              )} />
+            </span>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="right" sideOffset={8}>
+          {isExpanded ? "Ocultar menú" : "Mostrar menú"}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 });
 SidebarRail.displayName = "SidebarRail"

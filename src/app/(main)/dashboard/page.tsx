@@ -124,27 +124,31 @@ export default function PerformancePage() {
   const FunnelStep = ({ icon, title, value, percentage, change, color }: { icon: ReactNode, title: string, value: string, percentage: number, change: string, color: string }) => (
      <div className="flex items-center gap-4">
       <div className="flex items-center gap-3 w-32">
-        <div className={cn("p-2 rounded-lg bg-opacity-10", color.replace('bg-', 'bg-').replace('500', '100'), color.replace('bg-', 'text-'))}>{icon}</div>
+        <div className={cn("p-2 rounded-lg bg-opacity-10 dark:bg-opacity-20", 
+          color.replace('bg-', 'bg-').replace('500', '100'), 
+          color.replace('bg-', 'text-').replace('500', '500'))}>
+          {icon}
+        </div>
         <div>
           <p className="font-bold text-slate-800 dark:text-slate-100">{value}</p>
-          <p className="text-xs text-muted-foreground">{title}</p>
+          <p className="text-xs text-muted-foreground dark:text-slate-300/80">{title}</p>
         </div>
       </div>
       <div className="flex-1">
         <Progress value={percentage} indicatorClassName={cn("dark:saturate-150", color)} />
       </div>
-      <div className="w-20 text-left text-xs text-muted-foreground">{change}</div>
+      <div className="w-20 text-left text-xs text-muted-foreground dark:text-slate-400">{change}</div>
     </div>
   );
 
   return (
-    <div className="flex flex-col h-[calc(100vh-2rem)] gap-6">
+    <div className="flex flex-col flex-1 gap-6">
       {/* --- Encabezado de la Página --- */}
       <div className="flex-shrink-0">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-headline font-bold text-slate-800 dark:text-slate-100">Rendimiento de Campañas</h1>
-              <p className="text-slate-500 dark:text-slate-400">
+              <h1 className="text-3xl font-headline font-bold text-slate-800 dark:text-slate-100">Rendimiento de Savinchi's</h1>
+              <p className="text-slate-500 dark:text-slate-300/80">
                 Análisis de métricas clave en una sola vista.
               </p>
             </div>
@@ -155,7 +159,7 @@ export default function PerformancePage() {
                       id="date"
                       variant={"outline"}
                       className={cn(
-                        "w-[280px] justify-start text-left font-normal bg-white dark:bg-slate-900",
+                        "w-[280px] justify-start text-left font-normal bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-colors",
                         !date && "text-muted-foreground"
                       )}
                     >
@@ -179,7 +183,10 @@ export default function PerformancePage() {
                   </PopoverContent>
                 </Popover>
                 {canGenerateReport && (
-                  <Button onClick={handleGeneratePdf} className="bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-500 dark:hover:bg-indigo-600">
+                  <Button 
+                    onClick={handleGeneratePdf} 
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-500/90 dark:hover:bg-indigo-600/90 transition-colors"
+                  >
                     <FileDown className="mr-2 h-4 w-4" />
                     Generar Reporte
                   </Button>
@@ -191,7 +198,7 @@ export default function PerformancePage() {
       {/* --- Contenido del Dashboard para Reporte --- */}
       <motion.div 
         ref={reportRef} 
-        className="grid grid-cols-1 lg:grid-cols-4 lg:grid-rows-3 gap-6 flex-grow"
+        className="grid grid-cols-1 lg:grid-cols-4 lg:grid-rows-3 gap-6 flex-grow pb-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
