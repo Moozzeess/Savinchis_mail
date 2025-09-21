@@ -9,6 +9,25 @@ import { campaignContentService } from '@/service/campaignContentService';
  * @interface CampaignData
  * @description Interfaz para la estructura de datos de la campaña
  */
+export interface ScheduledSend {
+  id: string;
+  name: string;
+  sendNow: boolean;
+  optimalTime: boolean;
+  date?: Date;
+  hour?: string;
+  minute?: string;
+  timezone: string;
+  isRecurring: boolean;
+  recurrenceType?: 'diaria' | 'semanal' | 'mensual' | 'anual' | null;
+  recurrenceInterval?: number | null;
+  recurrenceDaysOfWeek?: string | null;
+  recurrenceDayOfMonth?: number | null;
+  recurrenceStartDate?: Date | null;
+  recurrenceEndDate?: Date | null;
+  scheduledAt?: Date | null;
+}
+
 export interface CampaignData {
   id_campaign?: number | string;
   name: string;
@@ -30,8 +49,9 @@ export interface CampaignData {
   recurrenceInterval?: number | null;
   recurrenceDaysOfWeek?: string | null;
   recurrenceDayOfMonth?: number | null;
-  recurrenceStartDate?: string | null;
-  recurrenceEndDate?: string | null;
+  recurrenceStartDate?: string | Date | null;
+  recurrenceEndDate?: string | Date | null;
+  scheduledSends?: ScheduledSend[];
 }
 
 interface DBCampaign extends Record<string, any> {
@@ -167,8 +187,67 @@ export async function createCampaign(campaignData: CampaignData) {
       );
     }
     
-    // Si es una campaña recurrente, insertar en la tabla de recurrencias
-    if (campaignData.isRecurring && campaignData.recurrenceType) {
+    // Si es una campaña con envíos programados, insertar en la tabla de recurrencias
+    if (campaignData.scheduledSends && Array.isArray(campaignData.scheduledSends)) {
+      for (const send of campaignData.scheduledSends) {
+        if (send.isRecurring && send.recurrenceType) {
+          await connection.execute(
+            `INSERT INTO recurrencias_campana (
+              id_campaign, 
+              tipo_recurrencia, 
+              intervalo, 
+              dias_semana, 
+              dia_mes, 
+              fecha_inicio, 
+              fecha_fin,
+              estado,
+              fecha_creacion,
+              fecha_actualizacion
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            [
+              campaignId,
+              send.recurrenceType,
+              send.recurrenceInterval || 1,
+              send.recurrenceDaysOfWeek || null,
+              send.recurrenceDayOfMonth || null,
+              send.recurrenceStartDate 
+                ? new Date(send.recurrenceStartDate).toISOString().split('T')[0] 
+                : new Date().toISOString().split('T')[0],
+              send.recurrenceEndDate 
+                ? new Date(send.recurrenceEndDate).toISOString().split('T')[0] 
+                : null,
+              'activa'
+            ]
+          );
+        } else if (send.date && !send.sendNow) {
+          // Si no es recurrente pero tiene fecha programada, crear una recurrencia única
+          const sendDate = new Date(send.date);
+          if (send.hour && send.minute) {
+            sendDate.setHours(parseInt(send.hour, 10), parseInt(send.minute, 10));
+          }
+          
+          await connection.execute(
+            `INSERT INTO recurrencias_campana (
+              id_campaign,
+              tipo_recurrencia,
+              intervalo,
+              fecha_inicio,
+              fecha_fin,
+              estado,
+              fecha_creacion,
+              fecha_actualizacion
+            ) VALUES (?, 'unica', 1, ?, ?, 'activa', NOW(), NOW())`,
+            [
+              campaignId,
+              sendDate.toISOString().split('T')[0],
+              sendDate.toISOString().split('T')[0] // Misma fecha de inicio y fin para envío único
+            ]
+          );
+        }
+      }
+    }
+    // Compatibilidad con el formato anterior (solo una recurrencia)
+    else if (campaignData.isRecurring && campaignData.recurrenceType) {
       await connection.execute(
         `INSERT INTO recurrencias_campana (
           id_campaign, 
@@ -178,16 +257,22 @@ export async function createCampaign(campaignData: CampaignData) {
           dia_mes, 
           fecha_inicio, 
           fecha_fin,
-          estado
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          estado,
+          fecha_creacion,
+          fecha_actualizacion
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
         [
           campaignId,
           campaignData.recurrenceType,
           campaignData.recurrenceInterval || 1,
           campaignData.recurrenceDaysOfWeek || null,
           campaignData.recurrenceDayOfMonth || null,
-          campaignData.recurrenceStartDate || new Date().toISOString().split('T')[0],
-          campaignData.recurrenceEndDate || null,
+          campaignData.recurrenceStartDate 
+            ? new Date(campaignData.recurrenceStartDate).toISOString().split('T')[0] 
+            : new Date().toISOString().split('T')[0],
+          campaignData.recurrenceEndDate 
+            ? new Date(campaignData.recurrenceEndDate).toISOString().split('T')[0] 
+            : null,
           'activa'
         ]
       );

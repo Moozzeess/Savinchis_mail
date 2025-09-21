@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { getCampaignById, updateCampaignStatus } from '@/actions/Campaings/new-campaign-action';
 import { Progress } from '@/components/ui/progress';
-import { Mail, Clock, AlertCircle, CheckCircle2, XCircle, PauseCircle, Calendar, Send, Play, RotateCw } from 'lucide-react';
+import { Calendar, Clock, Mail, Users, FileText, Zap, ExternalLink, ArrowLeft, Loader2, Trash2, CheckCircle2, XCircle, AlertCircle, ChevronDown, ChevronUp, BadgeCheck, BarChart2, Send, RefreshCw, Info, Pencil, PauseCircle, Play, RotateCw } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { generateHtmlFromBlocks } from '@/lib/template-utils';
 import { DeleteCampaignButton } from '@/components/campaign/delete-campaign-button';
@@ -18,7 +18,6 @@ import { ProgressCard } from '@/components/Analisis/progress-card';
 import { StatsGrid } from '@/components/Analisis/stats-grid';
 import { useToast } from '@/components/ui/use-toast';
 import { SendCampaignDialog } from '@/components/campaign/send-campaign-dialog';
-import { Pencil } from 'lucide-react';
 
 function mapStatusToUi(estado?: string) {
   switch (estado) {
@@ -33,21 +32,16 @@ function mapStatusToUi(estado?: string) {
 }
 
 function mapStatusToBadge(status: string): { variant: 'success' | 'warning' | 'info'; pulse?: boolean; label: string } {
-  switch (status) {
-    case 'completed':
-      return { variant: 'success', label: 'completed' }
-    case 'sending':
-      return { variant: 'warning', pulse: true, label: 'sending' }
-    case 'scheduled':
-      return { variant: 'info', label: 'scheduled' }
-    case 'paused':
-      return { variant: 'info', label: 'paused' }
-    case 'cancelled':
-      return { variant: 'warning', label: 'cancelled' }
-    case 'draft':
-    default:
-      return { variant: 'info', label: 'draft' }
-  }
+  const statusMap: Record<string, { variant: 'success' | 'warning' | 'info'; pulse?: boolean; label: string }> = {
+    'completed': { variant: 'success', label: 'completada' },
+    'sending': { variant: 'warning', pulse: true, label: 'en progreso' },
+    'scheduled': { variant: 'info', label: 'programada' },
+    'paused': { variant: 'info', label: 'pausada' },
+    'cancelled': { variant: 'warning', label: 'cancelada' },
+    'draft': { variant: 'info', label: 'borrador' }
+  };
+
+  return statusMap[status] || statusMap['draft'];
 }
 
 export default function CampaignDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -161,21 +155,24 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
   const recurrenceLabel = hasRecurrence
     ? (() => {
         const tipo = c.tipo_recurrencia as string;
-        const intervalo = c.intervalo ? `cada ${c.intervalo} ` : '';
+        const intervalo = c.intervalo ? `cada ${c.intervalo} ` : 'cada ';
         switch (tipo) {
           case 'diaria':
-            return `${intervalo}día(s)`;
+            return `${intervalo}día(s) a las ${new Date(c.fecha_envio).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
           case 'semanal':
-            return `${intervalo}semana(s) (${c.dias_semana || '—'})`;
+            return `${intervalo}semana(s) los ${c.dias_semana || 'días seleccionados'}`;
           case 'mensual':
-            return `${intervalo}mes(es) (día ${c.dia_mes || '—'})`;
+            return `${intervalo}mes(es) el día ${c.dia_mes || new Date(c.fecha_envio).getDate()}`;
           case 'anual':
-            return `${intervalo}año(s)`;
+            return `${intervalo}año(s) el ${new Date(c.fecha_envio).toLocaleString('es-ES', { day: 'numeric', month: 'long' })}`;
           default:
             return tipo;
         }
       })()
-    : '';
+    : 'No recurrente';
+
+  // Verificar si se activó "Enviar ahora"
+  const isSendNow = c.fecha_envio && new Date(c.fecha_envio) <= new Date();
 
   // Datos de la campaña
   const campaignStats = {
@@ -356,80 +353,217 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
             {/* Programación */}
             <Card hoverable className="border-amber-100 dark:border-amber-900/30 bg-gradient-to-br from-amber-50/50 to-amber-100/30 dark:from-amber-900/10 dark:to-amber-900/5">
               <CardHeader>
-                <div className="flex items-center space-x-2">
-                  <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                    <Calendar className="h-5 w-5 text-amber-600 dark:text-amber-300" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/30">
+                      <Calendar className="h-5 w-5 text-amber-600 dark:text-amber-300" />
+                    </div>
+                    <CardTitle className="text-amber-900 dark:text-amber-100">
+                      {hasRecurrence ? 'Programación Recurrente' : 'Programación'}
+                    </CardTitle>
                   </div>
-                  <CardTitle className="text-amber-900 dark:text-amber-100">Programación</CardTitle>
+                  {isSendNow && (
+                    <Badge variant="outline" className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300 border-amber-200 dark:border-amber-800">
+                      Envío Inmediato
+                    </Badge>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Estado de la campaña */}
                 <div className="p-3 rounded-lg bg-white/50 dark:bg-amber-950/20 border border-amber-50 dark:border-amber-900/20">
                   <div className="text-xs font-medium text-amber-700/80 dark:text-amber-300/80 mb-1">Estado</div>
                   <div>
                     {(() => {
-                      const b = mapStatusToBadge(status)
+                      const b = mapStatusToBadge(status);
                       return (
-                        <Badge variant={b.variant} pulse={b.pulse} className="px-2.5 py-1 text-xs font-medium rounded-full capitalize">
+                        <Badge
+                          variant={b.variant}
+                          pulse={b.pulse}
+                          className="px-2.5 py-1 text-xs font-medium rounded-full capitalize"
+                        >
                           {b.label}
                         </Badge>
                       )
                     })()}
                   </div>
                 </div>
+
+                {/* Notificación de envío inmediato */}
+                {isSendNow && (
+                  <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/20">
+                    <div className="flex items-start">
+                      <Info className="h-4 w-4 mt-0.5 text-blue-600 dark:text-blue-300 mr-2 flex-shrink-0" />
+                      <p className="text-sm text-blue-700 dark:text-blue-300">
+                        Esta campaña se enviará inmediatamente{hasRecurrence ? ' y luego continuará según la programación de recurrencia.' : '.'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Fecha de envío principal */}
                 <div className="p-3 rounded-lg bg-white/50 dark:bg-amber-950/20 border border-amber-50 dark:border-amber-900/20">
-                  <div className="text-xs font-medium text-amber-700/80 dark:text-amber-300/80 mb-1">Inicio programado</div>
+                  <div className="text-xs font-medium text-amber-700/80 dark:text-amber-300/80 mb-1">
+                    {hasRecurrence ? 'Próximo envío programado' : 'Fecha de envío'}
+                  </div>
                   <div className="font-medium text-amber-900 dark:text-amber-100">
-                    {c.fecha_envio ? new Date(c.fecha_envio).toLocaleString('es-ES') : '—'}
+                    {campaignStats.nextScheduled ? (
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                        <div>
+                          <div>{new Date(campaignStats.nextScheduled).toLocaleDateString('es-ES', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}</div>
+                          <div className="text-sm text-amber-700/80 dark:text-amber-300/70">
+                            a las {new Date(campaignStats.nextScheduled).toLocaleTimeString('es-ES', {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    ) : c.fecha_envio ? (
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                        <div>
+                          <div>Programado para {new Date(c.fecha_envio).toLocaleDateString('es-ES', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}</div>
+                          <div className="text-sm text-amber-700/80 dark:text-amber-300/70">
+                            a las {new Date(c.fecha_envio).toLocaleTimeString('es-ES', {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-2 text-amber-600/70 dark:text-amber-400/70 flex-shrink-0" />
+                        <div>
+                          <div>Guardado el {new Date(c.fecha_creacion).toLocaleDateString('es-ES', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}</div>
+                          <div className="text-sm text-amber-700/70 dark:text-amber-300/50">
+                            a las {new Date(c.fecha_creacion).toLocaleTimeString('es-ES', {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="p-3 rounded-lg bg-white/50 dark:bg-amber-950/20 border border-amber-50 dark:border-amber-900/20">
-                  <div className="text-xs font-medium text-amber-700/80 dark:text-amber-300/80 mb-1">Próximo envío</div>
-                  <div className="font-medium text-amber-900 dark:text-amber-100 flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-amber-600 dark:text-amber-400" />
-                    {new Date(campaignStats.nextScheduled).toLocaleString('es-ES')}
+                
+                {/* Detalles de la Recurrencia (sección unificada y reorganizada) */}
+                {hasRecurrence && (
+                  <div className="p-4 rounded-lg bg-white/50 dark:bg-amber-950/20 border border-amber-50 dark:border-amber-900/20">
+                    <div className="text-xs font-medium text-amber-700/80 dark:text-amber-300/80 mb-4">
+                      Detalles de la Recurrencia
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 text-sm">
+
+                      {/* Tipo de recurrencia */}
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-1">Tipo</div>
+                        <div className="font-medium flex items-center text-amber-900 dark:text-amber-100">
+                          <RefreshCw className="h-4 w-4 mr-2 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                          <div>
+                            <span className="capitalize">
+                              {c.tipo_recurrencia === 'diaria' && 'Diaria'}
+                              {c.tipo_recurrencia === 'semanal' && 'Semanal'}
+                              {c.tipo_recurrencia === 'mensual' && 'Mensual'}
+                              {c.tipo_recurrencia === 'anual' && 'Anual'}
+                            </span>
+                            {c.intervalo > 1 && (
+                              <span className="text-xs text-muted-foreground ml-1">
+                                (cada {c.intervalo} {c.tipo_recurrencia === 'diaria' ? 'días' : c.tipo_recurrencia === 'semanal' ? 'semanas' : c.tipo_recurrencia === 'mensual' ? 'meses' : 'años'})
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Próxima ejecución */}
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-1">Próxima ejecución</div>
+                        <div className="font-medium text-amber-900 dark:text-amber-100">{c.proxima_ejecucion ? new Date(c.proxima_ejecucion).toLocaleString('es-ES') : '—'}</div>
+                      </div>
+
+                      {/* Última ejecución */}
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-1">Última ejecución</div>
+                        <div className="font-medium text-amber-900 dark:text-amber-100">{c.ultima_ejecucion ? new Date(c.ultima_ejecucion).toLocaleString('es-ES') : '—'}</div>
+                      </div>
+                      
+                      {/* Día del mes (solo para recurrencia mensual) */}
+                      {c.tipo_recurrencia === 'mensual' && c.dia_mes && (
+                        <div>
+                          <div className="text-xs text-muted-foreground mb-1">Día del mes</div>
+                          <div className="font-medium text-amber-900 dark:text-amber-100">Día {c.dia_mes}</div>
+                        </div>
+                      )}
+
+                      {/* Días de la semana (solo para recurrencia semanal) */}
+                      {c.tipo_recurrencia === 'semanal' && c.dias_semana && (
+                        <div className="md:col-span-2">
+                          <div className="text-xs text-muted-foreground mb-2">Días de la semana</div>
+                          <div className="flex flex-wrap gap-2">
+                            {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map((dia, index) => {
+                              const diasSeleccionados = c.dias_semana?.split(',').map((d: string) => d.trim()) || [];
+                              const diaNum = (index + 1).toString();
+                              const estaSeleccionado = diasSeleccionados.includes(diaNum);
+                              return (
+                                <span
+                                  key={dia}
+                                  className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                                    estaSeleccionado
+                                      ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300'
+                                      : 'bg-gray-100 text-gray-500 dark:bg-slate-800 dark:text-slate-400'
+                                  }`}
+                                >
+                                  {dia}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Fecha de finalización (si existe) */}
+                      {c.fecha_fin && (
+                        <div className="md:col-span-2">
+                          <div className="text-xs text-muted-foreground mb-1">Finaliza el</div>
+                          <div className="font-medium text-amber-900 dark:text-amber-100">
+                            {new Date(c.fecha_fin).toLocaleDateString('es-ES', {
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
           </div>
-
-          
-
-          {/* Recurrencia real (si existe) */}
-          {hasRecurrence && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Recurrencia</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="p-3 rounded-lg bg-white/50 dark:bg-slate-900/30 border border-slate-200/60 dark:border-slate-800/60">
-                    <div className="text-xs text-muted-foreground mb-1">Tipo</div>
-                    <div className="font-medium">{recurrenceLabel}</div>
-                  </div>
-                  <div className="p-3 rounded-lg bg-white/50 dark:bg-slate-900/30 border border-slate-200/60 dark:border-slate-800/60">
-                    <div className="text-xs text-muted-foreground mb-1">Próxima ejecución</div>
-                    <div className="font-medium">{c.proxima_ejecucion ? new Date(c.proxima_ejecucion).toLocaleString('es-ES') : '—'}</div>
-                  </div>
-                  <div className="p-3 rounded-lg bg-white/50 dark:bg-slate-900/30 border border-slate-200/60 dark:border-slate-800/60">
-                    <div className="text-xs text-muted-foreground mb-1">Última ejecución</div>
-                    <div className="font-medium">{c.ultima_ejecucion ? new Date(c.ultima_ejecucion).toLocaleString('es-ES') : '—'}</div>
-                  </div>
-                  <div className="p-3 rounded-lg bg-white/50 dark:bg-slate-900/30 border border-slate-200/60 dark:border-slate-800/60">
-                    <div className="text-xs text-muted-foreground mb-1">Estado</div>
-                    <div className="font-medium capitalize">{c.estado_recurrencia || 'activa'}</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          
         </div>
 
         {/* Columna derecha - Plantilla completa con Tabs */}
-        <div className="h-fit">
+        <div className="h-[calc(100vh-10rem)]">
           <Card className="overflow-hidden">
             <CardHeader>
               <CardTitle className="text-center">Plantilla</CardTitle>

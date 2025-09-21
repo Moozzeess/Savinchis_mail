@@ -27,7 +27,8 @@ import {
   Clock as ClockIcon,
   TrendingUp,
   LayoutTemplate,
-  AlertCircle as AlertCircleIcon
+  AlertCircle as AlertCircleIcon,
+  Globe
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
@@ -84,6 +85,7 @@ interface ReviewStepProps {
   className?: string;
   onEditStep?: (step: number) => void;
   isSubmitting?: boolean;
+  onRequestSave?: () => void; // Callback opcional para manejar el guardado desde el padre
   isPreview?: boolean;
   templates?: Template[];
   formData?: CampaignFormData;
@@ -92,10 +94,11 @@ interface ReviewStepProps {
 export default function ReviewStep({ 
   className = '',
   onEditStep,
-  isSubmitting,
+  isSubmitting = false,
+  onRequestSave,
   isPreview = false,
   templates = [],
-  formData,
+  formData
 }: ReviewStepProps) {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [hasConfirmedDetails, setHasConfirmedDetails] = useState(false);
@@ -196,6 +199,61 @@ export default function ReviewStep({
 
   const missingData = getMissingData();
   const isFormValid = missingData.length === 0;
+
+  // Obtener la fecha y hora formateada
+  const getFormattedDateTime = (date: string | Date, time?: string) => {
+    if (!date) return 'No programado';
+    
+    const dateObj = date instanceof Date ? date : new Date(date);
+    if (isNaN(dateObj.getTime())) return 'Fecha inválida';
+    
+    const formattedDate = format(dateObj, "EEEE d 'de' MMMM 'de' yyyy", { locale: es });
+    
+    if (time) {
+      return `${formattedDate} a las ${time}`;
+    }
+    
+    // Si no hay hora, verificar si es un objeto Date con hora
+    if (dateObj.getHours() > 0 || dateObj.getMinutes() > 0) {
+      return format(dateObj, "EEEE d 'de' MMMM 'de' yyyy 'a las' HH:mm", { locale: es });
+    }
+    
+    return formattedDate;
+  };
+  
+  // Formatear la información de recurrencia
+  const getRecurrenceInfo = (send: any) => {
+    if (!send.isRecurring || !send.recurrenceType) return null;
+    
+    const startDate = send.recurrenceStartDate 
+      ? format(new Date(send.recurrenceStartDate), "d 'de' MMMM 'de' yyyy", { locale: es })
+      : 'fecha de inicio';
+      
+    const endDate = send.recurrenceEndDate 
+      ? ` hasta el ${format(new Date(send.recurrenceEndDate), "d 'de' MMMM 'de' yyyy", { locale: es })}` 
+      : '';
+    
+    const timeInfo = send.hour && send.minute ? ` a las ${send.hour}:${send.minute}` : '';
+    
+    switch (send.recurrenceType) {
+      case 'diaria':
+        return `Diariamente cada ${send.recurrenceInterval || 1} día(s) desde el ${startDate}${endDate}${timeInfo}`;
+      case 'semanal':
+        const days = send.recurrenceDaysOfWeek 
+          ? send.recurrenceDaysOfWeek.split(',').map((d: string) => {
+              const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+              return daysOfWeek[parseInt(d)];
+            }).join(', ')
+          : 'días no especificados';
+        return `Semanalmente los días ${days} cada ${send.recurrenceInterval || 1} semana(s) desde el ${startDate}${endDate}${timeInfo}`;
+      case 'mensual':
+        return `Mensualmente el día ${send.recurrenceDayOfMonth || 1} de cada mes desde el ${startDate}${endDate}${timeInfo}`;
+      case 'anual':
+        return `Anualmente el ${format(new Date(send.recurrenceStartDate || new Date()), "d 'de' MMMM", { locale: es })} de cada año desde ${startDate}${endDate}${timeInfo}`;
+      default:
+        return `Recurrencia configurada desde el ${startDate}${endDate}${timeInfo}`;
+    }
+  };  
 
   // Obtener resumen de programación
   const getSchedulingSummary = () => {
@@ -308,6 +366,61 @@ export default function ReviewStep({
                 : 'Sin lista seleccionada'
             }
           />
+          <div className="space-y-4">
+            {values.scheduledSends && values.scheduledSends.length > 0 ? (
+              <div className="space-y-3">
+                <h4 className="text-sm font-medium">Envíos programados:</h4>
+                <div className="space-y-2">
+                  {values.scheduledSends.map((send: any, index: number) => (
+                    <div key={index} className="p-3 border rounded-md bg-muted/10">
+                      <div className="font-medium">{send.name}</div>
+                      {send.sendNow ? (
+                        <div className="text-sm text-muted-foreground">Enviar ahora</div>
+                      ) : send.optimalTime ? (
+                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                          <Zap className="h-3.5 w-3.5 text-yellow-500" />
+                          <span>Enviar en la hora óptima</span>
+                        </div>
+                      ) : send.isRecurring ? (
+                        <div className="text-sm text-muted-foreground">
+                          {getRecurrenceInfo(send)}
+                        </div>
+                      ) : (
+                        <div className="text-sm text-muted-foreground">
+                          {getFormattedDateTime(send.date, send.hour && send.minute ? `${send.hour}:${send.minute}` : undefined)}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : scheduledAt ? (
+              <DetailItem 
+                icon={<Calendar className="h-4 w-4" />}
+                label="Fecha de envío"
+                value={getFormattedDateTime(scheduledAt, scheduledAt.split('T')[1]?.substring(0, 5))}
+              />
+            ) : (
+              <DetailItem 
+                icon={<Zap className="h-4 w-4 text-yellow-500" />}
+                label="Envío"
+                value="Enviar ahora"
+              />
+            )}
+            {timeZone && (
+              <DetailItem 
+                icon={<Globe className="h-4 w-4" />}
+                label="Zona horaria"
+                value={timeZone}
+              />
+            )}
+            {useOptimalTime && !values.scheduledSends && (
+              <div className="flex items-center space-x-2 text-sm">
+                <Zap className="h-4 w-4 text-yellow-500" />
+                <span>Se enviará en la hora óptima para cada destinatario</span>
+              </div>
+            )}
+          </div>
           <DetailItem
             icon={<Calendar className="h-5 w-5 text-muted-foreground" />}
             label="Programación"
@@ -544,12 +657,21 @@ export default function ReviewStep({
           <ConfirmationDialog
             open={showConfirmation}
             onOpenChange={setShowConfirmation}
-            onConfirm={handleSave}
+            onConfirm={() => {
+              if (onRequestSave) {
+                onRequestSave(); // Marcar intención de guardado
+                const form = document.querySelector('form') as HTMLFormElement | null;
+                form?.requestSubmit(); // Disparar submit del formulario padre
+              } else {
+                handleSave(); // Fallback al método local
+              }
+            }}
             title="Confirmar guardado"
             description="¿Estás seguro de que deseas guardar esta campaña? Podrás editarla más tarde desde el panel de control."
             confirmText="Sí, guardar campaña"
             cancelText="No, volver"
             confirmVariant="default"
+            confirmDisabled={!hasConfirmedDetails}
             showCheckbox={true}
             checkboxLabel="He revisado y confirmo que toda la información es correcta"
             onCheckChange={setHasConfirmedDetails}
@@ -561,7 +683,7 @@ export default function ReviewStep({
 }
 
 // Componente auxiliar para mostrar detalles
-function DetailItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
+function DetailItem({ icon, label, value }: { icon: React.ReactNode; label: string; value?: React.ReactNode }) {
   return (
     <div className="flex items-start gap-4">
       <div className="mt-0.5">{icon}</div>

@@ -61,7 +61,7 @@ interface SendConfig {
   recurrenceEndDate: Date | undefined;
 }
 
-export function SchedulingStep({ className = '' }: { className?: string }){
+export function SchedulingStep({ className = '' }: { className?: string }): JSX.Element {
   const { setValue } = useFormContext();
 
   const [sends, setSends] = useState<SendConfig[]>(() => [
@@ -88,52 +88,93 @@ export function SchedulingStep({ className = '' }: { className?: string }){
   // Estado para controlar qué envío está activo/visible (no usado directamente, pero puede ser útil luego)
   // const [activeSendId, setActiveSendId] = useState<string | null>('1');
 
-  // Actualizar el formulario cuando cambian los envíos
-  useEffect(() => {
-    const formattedSends = sends.map(send => ({
-      id: send.id,
-      name: send.name,
-      sendNow: send.sendNow,
-      optimalTime: send.optimalTime,
-      scheduledAt: send.sendNow ? null : send.date ? new Date(
-        new Date(send.date).setHours(
-          parseInt(send.hour, 10),
-          parseInt(send.minute, 10),
-          0,
-          0
-        )
-      ) : null,
-      timeZone: send.timezone,
-      isRecurring: send.isRecurring,
-      recurrenceType: send.recurrenceType,
-      recurrenceInterval: send.recurrenceInterval,
-      recurrenceDaysOfWeek: send.recurrenceDaysOfWeek,
-      recurrenceDayOfMonth: send.recurrenceDayOfMonth,
-      recurrenceStartDate: send.recurrenceStartDate,
-      recurrenceEndDate: send.recurrenceEndDate,
-    }));
+  // Función para guardar los cambios en el formulario
+  const saveScheduling = () => {
+    const formattedSends = sends.map((send) => {
+      // Si es recurrente, mantener la fecha/hora original como referencia
+      const scheduledAt = send.isRecurring 
+        ? (send.recurrenceStartDate || send.date || new Date())
+        : send.sendNow 
+          ? new Date() 
+          : send.date 
+            ? new Date(
+                new Date(send.date).setHours(
+                  parseInt(send.hour, 10),
+                  parseInt(send.minute, 10),
+                  0,
+                  0
+                )
+              )
+            : null;
+
+      return {
+        id: send.id,
+        name: send.name,
+        sendNow: send.sendNow,
+        optimalTime: send.optimalTime,
+        date: send.date,
+        hour: send.hour,
+        minute: send.minute,
+        timezone: send.timezone,
+        scheduledAt,
+        isRecurring: send.isRecurring,
+        recurrenceType: send.recurrenceType,
+        recurrenceInterval: send.recurrenceInterval,
+        recurrenceDaysOfWeek: send.recurrenceDaysOfWeek,
+        recurrenceDayOfMonth: send.recurrenceDayOfMonth,
+        recurrenceStartDate: send.recurrenceStartDate,
+        recurrenceEndDate: send.recurrenceEndDate,
+      };
+    });
     
+    // Guardar todos los envíos programados
     setValue('scheduledSends', formattedSends, { shouldValidate: true });
-    // Sync primary send recurrence to root form fields for validation/submission
-    if (sends.length > 0) {
-      const primary = sends[0];
-      setValue('isRecurring', primary.isRecurring, { shouldValidate: true });
-      setValue('recurrenceType', primary.recurrenceType as any, { shouldValidate: true });
-      setValue('recurrenceInterval', primary.recurrenceInterval, { shouldValidate: true });
-      setValue('recurrenceDaysOfWeek', primary.recurrenceDaysOfWeek, { shouldValidate: true });
-      setValue('recurrenceDayOfMonth', primary.recurrenceDayOfMonth, { shouldValidate: true });
-      setValue('recurrenceStartDate', primary.recurrenceStartDate as any, { shouldValidate: true });
-      setValue('recurrenceEndDate', primary.recurrenceEndDate as any, { shouldValidate: true });
+    
+    // Si hay envíos recurrentes, establecer el primer envío como recurrente
+    const hasRecurringSends = formattedSends.some(send => send.isRecurring);
+    
+    if (hasRecurringSends) {
+      // Obtener el primer envío recurrente
+      const primaryRecurringSend = formattedSends.find(send => send.isRecurring) || formattedSends[0];
+      
+      // Establecer los valores de recurrencia para compatibilidad con el formulario
+      setValue('isRecurring', true, { shouldValidate: true });
+      setValue('recurrenceType', primaryRecurringSend.recurrenceType as any, { shouldValidate: true });
+      setValue('recurrenceInterval', primaryRecurringSend.recurrenceInterval, { shouldValidate: true });
+      setValue('recurrenceDaysOfWeek', primaryRecurringSend.recurrenceDaysOfWeek, { shouldValidate: true });
+      setValue('recurrenceDayOfMonth', primaryRecurringSend.recurrenceDayOfMonth, { shouldValidate: true });
+      setValue('recurrenceStartDate', primaryRecurringSend.recurrenceStartDate as any, { shouldValidate: true });
+      setValue('recurrenceEndDate', primaryRecurringSend.recurrenceEndDate as any, { shouldValidate: true });
+    } else {
+      // Si no hay envíos recurrentes, limpiar los valores de recurrencia
+      setValue('isRecurring', false, { shouldValidate: true });
+      setValue('recurrenceType', null, { shouldValidate: true });
+      setValue('recurrenceInterval', null, { shouldValidate: true });
+      setValue('recurrenceDaysOfWeek', null, { shouldValidate: true });
+      setValue('recurrenceDayOfMonth', null, { shouldValidate: true });
+      setValue('recurrenceStartDate', null, { shouldValidate: true });
+      setValue('recurrenceEndDate', null, { shouldValidate: true });
     }
-  }, [sends, setValue]);
+    
+    // Marcar como no editable al guardar
+    setSends(prevSends => 
+      prevSends.map(send => ({
+        ...send,
+        isEditing: false
+      }))
+    );
+  };
 
   // Agregar un nuevo envío
   const addNewSend = () => {
     // Set all other sends to not editing
-    const updatedSends = sends.map(send => ({
+    const updatedSends = sends.map((send) => ({
       ...send,
-      isEditing: false
+      isEditing: false,
     }));
+
+    // Verificar si ya hay un envío recurrente
+    const hasRecurringSend = sends.some(send => send.isRecurring);
 
     const newSend: SendConfig = {
       id: Date.now().toString(),
@@ -145,24 +186,24 @@ export function SchedulingStep({ className = '' }: { className?: string }){
       minute: '00',
       timezone: 'America/Mexico_City',
       isEditing: true, // New send is editable
-      isRecurring: false,
-      recurrenceType: undefined,
-      recurrenceInterval: undefined,
-      recurrenceDaysOfWeek: undefined,
-      recurrenceDayOfMonth: undefined,
-      recurrenceStartDate: undefined,
-      recurrenceEndDate: undefined,
+      isRecurring: !hasRecurringSend, // Solo permitir un envío recurrente a la vez
+      recurrenceType: !hasRecurringSend ? 'semanal' : undefined,
+      recurrenceInterval: !hasRecurringSend ? 1 : undefined,
+      recurrenceDaysOfWeek: !hasRecurringSend ? '1' : undefined, // Lunes por defecto
+      recurrenceDayOfMonth: !hasRecurringSend ? 1 : undefined,
+      recurrenceStartDate: !hasRecurringSend ? addDays(new Date(), 1) : undefined,
+      recurrenceEndDate: !hasRecurringSend ? addDays(new Date(), 30) : undefined, // Un mes por defecto
     };
-    
+
     setSends([...updatedSends, newSend]);
   };
 
   // Edit an existing send
   const editSend = (id: string) => {
-    setSends(prevSends => 
-      prevSends.map(send => ({
+    setSends((prevSends) =>
+      prevSends.map((send) => ({
         ...send,
-        isEditing: send.id === id
+        isEditing: send.id === id,
       }))
     );
   };
@@ -170,15 +211,40 @@ export function SchedulingStep({ className = '' }: { className?: string }){
   // Eliminar un envío
   const removeSend = (id: string) => {
     if (sends.length > 1) {
-      setSends(prev => prev.filter(send => send.id !== id));
+      setSends((prev) => prev.filter((send) => send.id !== id));
     }
   };
 
-  // Actualizar un envío
+  // Actualizar un envío sin guardar automáticamente
   const updateSend = (id: string, updates: Partial<SendConfig>) => {
-    setSends(prev => prev.map(send => 
-      send.id === id ? { ...send, ...updates } : send
-    ));
+    // Si se está activando la recurrencia y no hay fecha de inicio, establecerla
+    if (updates.isRecurring === true) {
+      setSends(prev =>
+        prev.map(send => {
+          if (send.id !== id) return send;
+          
+          return { 
+            ...send, 
+            ...updates,
+            // Si no hay fecha de inicio de recurrencia, usar la fecha actual o la programada
+            recurrenceStartDate: send.recurrenceStartDate || send.date || new Date(),
+            // Si no hay fecha de fin, establecer una por defecto (ej. 1 mes después)
+            recurrenceEndDate: send.recurrenceEndDate || (() => {
+              const date = new Date();
+              date.setMonth(date.getMonth() + 1);
+              return date;
+            })()
+          };
+        })
+      );
+    } else {
+      // Actualización normal
+      setSends(prev =>
+        prev.map(send => 
+          send.id === id ? { ...send, ...updates } : send
+        )
+      );
+    }
   };
 
   // Formatear fecha para mostrar
@@ -199,9 +265,15 @@ export function SchedulingStep({ className = '' }: { className?: string }){
     send: SendConfig;
     index: number;
     onFinish?: () => void;
+    onSave?: () => void;
   }
 
-  const SendCard = ({ send, index, onFinish }: SendCardProps) => {
+  const SendCard: React.FC<SendCardProps> = ({
+    send,
+    index,
+    onFinish,
+    onSave,
+  }) => {
     const handleSendNowChange = (checked: boolean) => {
       updateSend(send.id, {
         sendNow: checked,
@@ -235,6 +307,7 @@ export function SchedulingStep({ className = '' }: { className?: string }){
             <div className="flex items-center gap-2">
               {sends.length > 1 && (
                 <Button
+                  type="button"
                   variant="ghost"
                   size="sm"
                   onClick={() => removeSend(send.id)}
@@ -261,17 +334,16 @@ export function SchedulingStep({ className = '' }: { className?: string }){
               />
             </div>
             <div className="ml-3 space-y-1">
-              <Label 
+              <Label
                 htmlFor={`send-now-${send.id}`}
                 className="text-base font-medium text-foreground cursor-pointer"
               >
                 Enviar ahora
               </Label>
               <p className="text-sm text-muted-foreground">
-                {index === 0 
+                {index === 0
                   ? 'La campaña se enviará inmediatamente después de hacer clic en "Enviar campaña".'
-                  : 'Este envío se procesará inmediatamente después del anterior.'
-                }
+                  : 'Este envío se procesará inmediatamente después del anterior.'}
               </p>
             </div>
           </div>
@@ -281,7 +353,7 @@ export function SchedulingStep({ className = '' }: { className?: string }){
             <div className="space-y-5">
               <div className="p-4 bg-muted/20 rounded-lg border border-border/50 space-y-4">
                 <h4 className="font-medium text-foreground">Programar fecha y hora</h4>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Selector de fecha */}
                   <div className="space-y-2">
@@ -291,6 +363,7 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
+                          type="button"
                           variant="outline"
                           className={cn(
                             'w-full justify-start text-left font-normal h-10',
@@ -330,8 +403,8 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                       Hora de envío
                     </Label>
                     <div className="flex space-x-2">
-                      <Select 
-                        value={send.hour} 
+                      <Select
+                        value={send.hour}
                         onValueChange={(value) => updateSend(send.id, { hour: value })}
                         disabled={send.optimalTime}
                       >
@@ -340,8 +413,8 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                         </SelectTrigger>
                         <SelectContent className="max-h-[200px] bg-background">
                           {HOURS.map((h) => (
-                            <SelectItem 
-                              key={h} 
+                            <SelectItem
+                              key={h}
                               value={h}
                               className="hover:bg-muted/50 focus:bg-muted/50"
                             >
@@ -350,8 +423,8 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                           ))}
                         </SelectContent>
                       </Select>
-                      <Select 
-                        value={send.minute} 
+                      <Select
+                        value={send.minute}
                         onValueChange={(value) => updateSend(send.id, { minute: value })}
                         disabled={send.optimalTime}
                       >
@@ -360,8 +433,8 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                         </SelectTrigger>
                         <SelectContent className="max-h-[200px] bg-background">
                           {MINUTES.map((m) => (
-                            <SelectItem 
-                              key={m} 
+                            <SelectItem
+                              key={m}
                               value={m}
                               className="hover:bg-muted/50 focus:bg-muted/50"
                             >
@@ -378,7 +451,7 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                     <Label htmlFor={`timezone-${send.id}`} className="text-foreground/90">
                       Zona horaria
                     </Label>
-                    <Select 
+                    <Select
                       value={send.timezone}
                       onValueChange={(value) => updateSend(send.id, { timezone: value })}
                     >
@@ -387,8 +460,8 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                       </SelectTrigger>
                       <SelectContent className="bg-background">
                         {TIMEZONES.map((tz) => (
-                          <SelectItem 
-                            key={tz.value} 
+                          <SelectItem
+                            key={tz.value}
                             value={tz.value}
                             className="hover:bg-muted/50 focus:bg-muted/50"
                           >
@@ -418,7 +491,7 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                       />
                     </div>
                     <div className="ml-3 space-y-1">
-                      <Label 
+                      <Label
                         htmlFor={`optimal-time-${send.id}`}
                         className="text-base font-medium text-foreground cursor-pointer"
                       >
@@ -434,7 +507,10 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                     <div className="ml-11 p-3 bg-accent/10 rounded-md border border-accent/20">
                       <p className="text-sm text-accent-foreground flex items-start gap-2">
                         <Zap className="w-4 h-4 mt-0.5 flex-shrink-0 text-accent" />
-                        <span>El sistema configurará automáticamente la mejor hora para enviar este envío basándose en el comportamiento histórico de tus contactos.</span>
+                        <span>
+                          El sistema configurará automáticamente la mejor hora para enviar este envío basándose en el
+                          comportamiento histórico de tus contactos.
+                        </span>
                       </p>
                     </div>
                   )}
@@ -456,13 +532,15 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                 />
               </div>
               <div className="ml-3 space-y-1">
-                <Label 
+                <Label
                   htmlFor={`is-recurring-${send.id}`}
                   className="text-base font-medium text-foreground cursor-pointer"
                 >
                   Repetir automáticamente
                 </Label>
-                <p className="text-sm text-muted-foreground">Activa para enviar esta campaña de forma recurrente.</p>
+                <p className="text-sm text-muted-foreground">
+                  Activa para enviar esta campaña de forma recurrente.
+                </p>
               </div>
             </div>
 
@@ -515,7 +593,7 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                   <div className="space-y-2">
                     <Label>Días de la semana</Label>
                     <div className="grid grid-cols-7 gap-2">
-                      {['D','L','M','X','J','V','S'].map((label, idx) => {
+                      {['D', 'L', 'M', 'X', 'J', 'V', 'S'].map((label, idx) => {
                         const dayVal = String(idx); // 0-6
                         const selected = (send.recurrenceDaysOfWeek || '').split(',').filter(Boolean).includes(dayVal);
                         return (
@@ -526,7 +604,7 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                             className="h-9"
                             onClick={() => {
                               const parts = (send.recurrenceDaysOfWeek || '').split(',').filter(Boolean);
-                              const next = selected ? parts.filter(p => p !== dayVal) : [...new Set([...parts, dayVal])];
+                              const next = selected ? parts.filter((p) => p !== dayVal) : [...new Set([...parts, dayVal])];
                               updateSend(send.id, { recurrenceDaysOfWeek: next.join(',') });
                             }}
                           >
@@ -544,8 +622,12 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
+                          type="button"
                           variant="outline"
-                          className={cn('w-full justify-start text-left h-10', !send.recurrenceStartDate ? 'text-muted-foreground' : 'text-foreground')}
+                          className={cn(
+                            'w-full justify-start text-left h-10',
+                            !send.recurrenceStartDate ? 'text-muted-foreground' : 'text-foreground'
+                          )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                           {send.recurrenceStartDate ? formatDate(send.recurrenceStartDate) : <span>Seleccionar fecha</span>}
@@ -569,8 +651,12 @@ export function SchedulingStep({ className = '' }: { className?: string }){
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
+                          type="button"
                           variant="outline"
-                          className={cn('w-full justify-start text-left h-10', !send.recurrenceEndDate ? 'text-muted-foreground' : 'text-foreground')}
+                          className={cn(
+                            'w-full justify-start text-left h-10',
+                            !send.recurrenceEndDate ? 'text-muted-foreground' : 'text-foreground'
+                          )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                           {send.recurrenceEndDate ? formatDate(send.recurrenceEndDate) : <span>Seleccionar fecha</span>}
@@ -594,11 +680,37 @@ export function SchedulingStep({ className = '' }: { className?: string }){
           </div>
         </div>
 
+        {/* Botón de guardar */}
+        {send.isEditing && (
+          <div className="p-4 border-t border-border/50 flex justify-end space-x-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                // Cancelar edición
+                if (onFinish) onFinish();
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                saveScheduling();
+                if (onSave) onSave();
+              }}
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Listo
+            </Button>
+          </div>
+        )}
+
         {/* Resumen de programación */}
         {!send.sendNow && send.date && (
           <div className="p-4 bg-muted/20 rounded-lg border border-border/50">
             <h4 className="text-sm font-medium mb-2 text-foreground/90">Resumen de programación</h4>
-            
+
             <div className="flex items-start space-x-2 text-sm">
               <Clock className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
               <div>
@@ -622,136 +734,146 @@ export function SchedulingStep({ className = '' }: { className?: string }){
           </div>
         )}
       </div>
-
     );
   };
+
+  // Verificar si hay algún envío en edición
+  const isAnySendInEdit = sends.some(send => send.isEditing);
+
   return (
     <div className={cn('space-y-6', className)}>
-    {/* Mostrar el envío actual en edición */}
-    {sends.filter(s => s.isEditing).map((send) => (
-      <SendCard 
-        key={send.id} 
-        send={send} 
-        index={sends.findIndex(s => s.id === send.id)}
-        onFinish={() => {
-          // Al terminar de editar, marcamos como no en edición
-          setSends(prevSends => 
-            prevSends.map(s => 
-              s.id === send.id 
-                ? { ...s, isEditing: false } 
-                : s
-            )
-          );
-        }}
-      />
-    ))}
-
-    {/* Botón para agregar nuevo envío */}
-    <div className="flex justify-center pt-2">
-      <Button
-        onClick={addNewSend}
-        variant="outline"
-        className="border-primary/30 text-foreground hover:bg-primary/5"
-      >
-        <Plus className="w-4 h-4 mr-2" />
-        {sends.length > 0 ? 'Agregar otro envío' : 'Agregar envío'}
-      </Button>
-    </div>
-
-    {/* Mostrar resumen de envíos existentes */}
-    {sends.filter(s => !s.isEditing).length > 0 && (
-      <div className="border-t border-border/50 pt-6 mt-6">
-        <h4 className="font-medium text-foreground text-lg mb-4">
-          Envíos programados
-        </h4>
-        
-        <div className="space-y-3">
-          {sends
-            .filter(send => !send.isEditing)
-            .map((send) => (
-              <div 
-                key={send.id} 
-                className="p-4 bg-muted/10 rounded-lg border border-border/50 hover:bg-muted/20 transition-colors cursor-pointer"
-                onClick={() => editSend(send.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2.5 h-2.5 rounded-full ${
-                      send.sendNow ? 'bg-primary' : 'bg-accent'
-                    }`}></div>
-                    <span className="font-medium text-foreground">
-                      {send.name}
-                    </span>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      editSend(send.id);
-                    }}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    Editar
-                  </Button>
-                </div>
-                
-                <div className="mt-2 ml-4 text-sm text-foreground/90 space-y-1">
-                  {send.sendNow ? (
-                    <p className="flex items-center">
-                      <Zap className="w-3.5 h-3.5 mr-1.5 text-primary" />
-                      <span>Envío inmediato</span>
-                    </p>
-                  ) : send.date ? (
-                    <>
-                      <div className="flex items-start">
-                        <CalendarIcon className="w-3.5 h-3.5 mr-1.5 mt-0.5 text-muted-foreground flex-shrink-0" />
-                        <span>{format(send.date, "EEEE d 'de' MMMM 'de' yyyy", { locale: es })}</span>
-                      </div>
-                      {send.optimalTime ? (
-                        <div className="flex items-center">
-                          <Zap className="w-3.5 h-3.5 mr-1.5 text-accent flex-shrink-0" />
-                          <span>Hora optimizada automáticamente</span>
-                        </div>
-                      ) : send.hour && send.minute && (
-                        <div className="flex items-center">
-                          <Clock className="w-3.5 h-3.5 mr-1.5 text-muted-foreground flex-shrink-0" />
-                          <span>{send.hour}:{send.minute} hrs</span>
-                        </div>
-                      )}
-                      <div className="flex items-center">
-                        <Globe className="w-3.5 h-3.5 mr-1.5 text-muted-foreground flex-shrink-0" />
-                        <span>{TIMEZONES.find(tz => tz.value === send.timezone)?.label}</span>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="flex items-center text-amber-600">
-                      <AlertCircle className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
-                      <span>Configuración incompleta</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
+      {/* Botón para agregar nuevo envío - Solo mostrar si no hay ningún envío en edición */}
+      {!isAnySendInEdit && (
+        <div className="flex justify-center pt-2">
+          <Button
+            type="button"
+            onClick={addNewSend}
+            variant="outline"
+            className="border-primary/30 text-foreground hover:bg-primary/5"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            {sends.length > 0 ? 'Agregar otro envío' : 'Agregar envío'}
+          </Button>
         </div>
+      )}
+      
+      {/* Mostrar el envío actual en edición */}
+      {sends.filter((s) => s.isEditing).map((send) => (
+        <SendCard
+          key={send.id}
+          send={send}
+          index={sends.findIndex((s) => s.id === send.id)}
+          onFinish={() => {
+            // Al cancelar, restablecer los valores originales
+            setSends((prevSends) =>
+              prevSends.map((s) =>
+                s.id === send.id
+                  ? { ...s, isEditing: false }
+                  : s
+              )
+            );
+          }}
+          onSave={saveScheduling}
+        />
+      ))}
 
-        {sends.length > 1 && (
-          <div className="mt-4 p-4 bg-accent/5 rounded-lg border border-accent/20">
-            <div className="flex items-start">
-              <Info className="w-4 h-4 text-accent mt-0.5 mr-2 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-foreground/90">
-                  Total de envíos programados: <span className="font-semibold">{sends.length}</span>
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Los envíos se procesarán en el orden configurado.
-                </p>
+      {/* Mostrar resumen de envíos existentes */}
+      {sends.filter((s) => !s.isEditing).length > 0 && (
+        <div className="border-t border-border/50 pt-6 mt-6">
+          <h4 className="font-medium text-foreground text-lg mb-4">
+            Envíos programados
+          </h4>
+
+          <div className="space-y-3">
+            {sends
+              .filter((send) => !send.isEditing)
+              .map((send) => (
+                <div
+                  key={send.id}
+                  className="p-4 bg-muted/10 rounded-lg border border-border/50 hover:bg-muted/20 transition-colors cursor-pointer"
+                  onClick={() => editSend(send.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-2.5 h-2.5 rounded-full ${
+                          send.sendNow ? 'bg-primary' : 'bg-accent'
+                        }`}
+                      ></div>
+                      <span className="font-medium text-foreground">
+                        {send.name}
+                      </span>
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        editSend(send.id);
+                      }}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      Editar
+                    </Button>
+                  </div>
+                  <div className="mt-2 ml-4 text-sm text-foreground/90 space-y-1">
+                    {send.sendNow ? (
+                      <p className="flex items-center">
+                        <Zap className="w-3.5 h-3.5 mr-1.5 text-primary" />
+                        <span>Envío inmediato</span>
+                      </p>
+                    ) : send.date ? (
+                      <>
+                        <div className="flex items-start">
+                          <CalendarIcon className="w-3.5 h-3.5 mr-1.5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                          <span>{format(send.date, "EEEE d 'de' MMMM 'de' yyyy", { locale: es })}</span>
+                        </div>
+                        {send.optimalTime ? (
+                          <div className="flex items-center">
+                            <Zap className="w-3.5 h-3.5 mr-1.5 text-accent flex-shrink-0" />
+                            <span>Hora optimizada automáticamente</span>
+                          </div>
+                        ) : send.hour && send.minute ? (
+                          <div className="flex items-center">
+                            <Clock className="w-3.5 h-3.5 mr-1.5 text-muted-foreground flex-shrink-0" />
+                            <span>{send.hour}:{send.minute} hrs</span>
+                          </div>
+                        ) : null}
+                        <div className="flex items-center">
+                          <Globe className="w-3.5 h-3.5 mr-1.5 text-muted-foreground flex-shrink-0" />
+                          <span>{TIMEZONES.find((tz) => tz.value === send.timezone)?.label}</span>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex items-center text-amber-600">
+                        <AlertCircle className="w-3.5 h-3.5 mr-1.5 flex-shrink-0" />
+                        <span>Configuración incompleta</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+          
+          {sends.length > 1 && (
+            <div className="mt-4 p-4 bg-accent/5 rounded-lg border border-accent/20">
+              <div className="flex items-start">
+                <Info className="w-4 h-4 text-accent mt-0.5 mr-2 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-foreground/90">
+                    Total de envíos programados: <span className="font-semibold">{sends.length}</span>
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Los envíos se procesarán en el orden configurado.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
-    )}
-  </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

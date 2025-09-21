@@ -72,6 +72,8 @@ export default function NewCampaignPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Intención explícita para permitir el submit sólo cuando el usuario lo solicita
+  const [submitIntent, setSubmitIntent] = useState<'none' | 'save' | 'create'>('none');
 
   const methods = useForm<z.infer<typeof campaignFormSchema>>({
   // Inicializar formulario
@@ -213,6 +215,11 @@ export default function NewCampaignPage() {
   
   // Manejar envío del formulario
   const onSubmit = async (data: z.infer<typeof campaignFormSchema>) => {
+    // Bloquear cualquier submit que no tenga intención explícita
+    if (submitIntent === 'none') {
+      console.warn('Submit bloqueado: sin intención explícita');
+      return;
+    }
     try {
       setIsSubmitting(true);
       console.log('Datos del formulario a enviar:', data);
@@ -270,6 +277,8 @@ export default function NewCampaignPage() {
       alert(`Error al guardar la campaña: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     } finally {
       setIsSubmitting(false);
+      // Restablecer intención tras intentar enviar
+      setSubmitIntent('none');
     }
   };
   
@@ -285,7 +294,13 @@ export default function NewCampaignPage() {
       case 3:
         return <SchedulingStep />;
       case 4:
-        return <ReviewStep onEditStep={setCurrentStep} isSubmitting={isSubmitting} />;
+        return (
+          <ReviewStep
+            onEditStep={setCurrentStep}
+            isSubmitting={isSubmitting}
+            onRequestSave={() => setSubmitIntent('save')}
+          />
+        );
       default:
         return null;
     }
@@ -312,7 +327,7 @@ export default function NewCampaignPage() {
           
           <CampaignSteps currentStep={currentStep} onStepClick={setCurrentStep} />
           
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <form onSubmit={currentStep === 4 ? methods.handleSubmit(onSubmit) : (e) => e.preventDefault()}>
             {renderStep()}
             
             <div className="mt-8 flex justify-between">
@@ -330,7 +345,11 @@ export default function NewCampaignPage() {
                   Siguiente
                 </Button>
               ) : (
-                <Button type="submit" disabled={isSubmitting}>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  onClick={() => setSubmitIntent('create')}
+                >
                   {isSubmitting ? 'Enviando...' : 'Crear campaña'}
                 </Button>
               )}
