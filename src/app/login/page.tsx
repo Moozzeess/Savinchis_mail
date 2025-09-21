@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -11,17 +10,33 @@ import {
 } from "@/components/ui/card";
 import { useRouter } from 'next/navigation';
 import Image from "next/image";
+import { useTheme } from 'next-themes';
 import { useAuth } from '@/context/auth-context';
 import { ROLES, type Role } from '@/lib/permissions';
-import { Users, Code, Megaphone } from 'lucide-react';
+import { Users, Code, Megaphone, Sun, Moon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 /**
  * Página de inicio de sesión.
  * Permite a los usuarios "autenticarse" (simulado) seleccionando un rol.
  */
 export default function LoginPage() {
+  const { theme, setTheme } = useTheme();
   const { login } = useAuth();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  // Evitar hidratación hasta que el componente se monte en el cliente
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null; // O un placeholder mientras se carga el tema
+  }
+  
+  // Ruta del logo basada en el tema actual
+  const logoPath = theme === 'dark' ? '/images/logo-dark.png' : '/images/logo-light.png';
 
   const handleLogin = (role: Role) => {
     login(role);
@@ -29,15 +44,30 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-background p-4">
+    <main className="flex items-center justify-center min-h-screen bg-background p-4 relative">
+      <div className="absolute top-4 right-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="rounded-full"
+          aria-label="Cambiar tema"
+        >
+          {theme === 'dark' ? (
+            <Sun className="h-5 w-5" />
+          ) : (
+            <Moon className="h-5 w-5" />
+          )}
+        </Button>
+      </div>
       <Card className="w-full max-w-sm overflow-hidden">
         <Image
-          src="https://placehold.co/436x236.png"
-          alt="Monstruos divertidos"
-          width={436}
+          src={logoPath}
+          alt="Savinchis' Mail"
+          width={456}
           height={236}
           className="w-full object-cover"
-          data-ai-hint="happy monsters"
+          data-ai-hint="Savinchi at the world"
         />
         <CardHeader className="text-center pt-6">
           <div className="flex justify-center items-center gap-2 mb-4">

@@ -98,7 +98,7 @@ export default function MainLayout({
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="justify-start gap-2 w-full p-2 h-auto">
                   <Avatar className="size-8">
-                    <AvatarImage src="https://placehold.co/100x100.png" alt="User" data-ai-hint="person portrait" />
+                    <AvatarImage src="/public/logo.png" alt="User" data-ai-hint="person portrait" />
                     <AvatarFallback>U</AvatarFallback>
                   </Avatar>
                   <div className="text-left group-data-[collapsible=icon]:hidden">
