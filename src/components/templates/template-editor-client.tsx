@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { HtmlImportModal } from './html-import-modal';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormLabel } from '@/components/ui/form';
 import {
   Pilcrow, ImageIcon, MousePointerClick, Minus, GripVertical, Code,
-  Loader2, Trash2, StretchVertical, Upload, Computer, Smartphone
+  Loader2, Trash2, StretchVertical, Upload, Computer, Smartphone, FileText
 } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DropResult, DraggableProvided, DraggableStateSnapshot, DroppableProvided } from '@hello-pangea/dnd';
@@ -114,13 +115,19 @@ export function TemplateEditorClient({ templateData }: { templateData?: Template
   const [isSaving, setIsSaving] = useState(false);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importedHtml, setImportedHtml] = useState<string>('');
+  const [isImporting, setIsImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       templateName: templateData?.nombre || 'Mi Nueva Plantilla',
       emailSubject: templateData?.asunto_predeterminado || 'Asunto del Correo',
-      blocks: templateData?.contenido || [],
+      blocks: templateData?.tipo === 'html' ? [] : (templateData?.contenido || []),
+      isHtmlTemplate: templateData?.tipo === 'html',
+      htmlContent: templateData?.tipo === 'html' ? (templateData?.contenido as string || '') : '',
     },
   });
 
@@ -158,14 +165,16 @@ export function TemplateEditorClient({ templateData }: { templateData?: Template
  * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de guardado ha terminado.
  */
   const handleSave = async () => {
-    setIsSaving(true);
-    const result = await saveTemplateAction({
-      id_plantilla: templateData?.id_plantilla,
-      nombre: form.getValues('templateName'),
-      asunto_predeterminado: form.getValues('emailSubject'),
-      contenido: form.getValues('blocks'),
-      tipo: templateData?.tipo || 'template',
-    });
+    setIsSaving(true);
+    const formValues = form.getValues();
+    const result = await saveTemplateAction({
+      id_plantilla: templateData?.id_plantilla,
+      nombre: formValues.templateName,
+      asunto_predeterminado: formValues.emailSubject,
+      contenido: formValues.isHtmlTemplate ? formValues.htmlContent : formValues.blocks,
+      tipo: formValues.isHtmlTemplate ? 'html' : 'template',
+      html_content: formValues.isHtmlTemplate ? formValues.htmlContent : undefined,
+    });
 
     setIsSaving(false);
 
@@ -193,12 +202,12 @@ export function TemplateEditorClient({ templateData }: { templateData?: Template
  * @param {DropResult} result - El objeto de resultado de la operación de arrastrar y soltar.
  */
   const onDragEnd = (result: DropResult) => {
-    if (!result.destination) {
-      return;
-    }
-    if (result.source.droppableId === result.destination.droppableId && result.source.index !== result.destination.index) {
-      move(result.source.index, result.destination.index);
-    }
+    if (!result.destination) {
+      return;
+    }
+    if (result.source.droppableId === result.destination.droppableId && result.source.index !== result.destination.index) {
+      move(result.source.index, result.destination.index);
+    }
   };
 
 /**
@@ -229,7 +238,7 @@ const addBlock = (blockType: Block['type']) => {
       reader.onload = (event) => {
         const htmlContent = event.target?.result as string;
         form.setValue(`blocks.${selectedBlockIndex}.content.code`, htmlContent);
-        toast({ title: 'HTML importado' });
+        toast({ title: 'HTML importado al bloque' });
       };
       reader.readAsText(file);
     } else {
@@ -237,6 +246,75 @@ const addBlock = (blockType: Block['type']) => {
     }
     e.target.value = '';
   };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de archivo
+    if (file.type !== 'text/html') {
+      toast({
+        title: 'Archivo no válido',
+        description: 'Por favor, selecciona un archivo .html',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      setIsImporting(true);
+      const htmlContent = await file.text();
+      setImportedHtml(htmlContent);
+      setIsImportModalOpen(true);
+    } catch (error) {
+      console.error('Error al leer el archivo:', error);
+      toast({
+        title: 'Error al leer el archivo',
+        description: 'No se pudo leer el contenido del archivo.',
+        variant: 'destructive',
+      });
+    } finally {
+      // Limpiar el input de archivo
+      if (e.target) {
+        e.target.value = '';
+      }
+      setIsImporting(false);
+    }
+  };
+
+  const toggleEditMode = useCallback(() => {
+    const currentMode = form.getValues('isHtmlTemplate');
+    if (currentMode) {
+      // Cambiando de modo HTML a bloques
+      form.setValue('isHtmlTemplate', false);
+      form.setValue('blocks', []);
+    } else {
+      // Cambiando de modo bloques a HTML
+      form.setValue('isHtmlTemplate', true);
+      form.setValue('htmlContent', '');
+    }
+  }, [form]);
+
+  const isHtmlTemplate = useWatch({ control: form.control, name: 'isHtmlTemplate' });
+  const htmlContent = useWatch({ control: form.control, name: 'htmlContent' });
+
+  const confirmHtmlImport = useCallback((importedHtml: string) => {
+    try {
+      // Configurar como plantilla HTML pura
+      form.setValue('isHtmlTemplate', true);
+      form.setValue('htmlContent', importedHtml);
+      form.setValue('blocks', []);
+      setSelectedBlockId(null);
+      
+      toast({
+        title: '✅ Plantilla HTML importada',
+        description: 'La plantilla HTML se ha importado correctamente como una plantilla pura.',
+      });
+    } catch (error) {
+      console.error('Error al importar el HTML:', error);
+      throw error;
+    }
+  }, [form, toast]);
   
   return (
     <Form {...form}>
@@ -246,33 +324,173 @@ const addBlock = (blockType: Block['type']) => {
                 <Label htmlFor="templateName">Nombre de la Plantilla</Label>
                 <FormField control={form.control} name="templateName" render={({ field }) => <Input id="templateName" {...field} className="text-lg font-medium" />} />
             </div>
-             <div className="flex-1 min-w-[250px] space-y-2">
+            <div className="flex-1 min-w-[250px] space-y-2">
                 <Label htmlFor="emailSubject">Asunto del Correo</Label>
                 <FormField control={form.control} name="emailSubject" render={({ field }) => <Input id="emailSubject" {...field} />} />
             </div>
-            <div className="pt-5">
+            <div className="flex items-center gap-2 pt-5">
+              <input
+                type="file"
+                id="import-html"
+                accept=".html"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2"
+                disabled={isImporting}
+              >
+                {isImporting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Procesando...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4" />
+                    {isHtmlTemplate ? 'Actualizar HTML' : 'Importar HTML'}
+                  </>
+                )}
+              </Button>
+              
+              <Button
+                type="button"
+                variant="outline"
+                onClick={toggleEditMode}
+                className="flex items-center gap-2"
+              >
+                {isHtmlTemplate ? 'Cambiar a Bloques' : 'Cambiar a HTML'}
+              </Button>
               <Button type="submit" disabled={isSaving}>
-                  {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Guardar Plantilla
+                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Guardar Plantilla
               </Button>
             </div>
         </div>
         
+        {isHtmlTemplate ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-200px)]">
+          {/* Columna izquierda - Editor de código */}
+          <div className="flex flex-col h-full">
+            <div className="border rounded-lg p-4 bg-white flex-1 flex flex-col">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Editor HTML</h2>
+                <div className="flex space-x-2">
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isImporting}
+                  >
+                    {isImporting ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Upload className="mr-2 h-4 w-4" />
+                    )}
+                    Importar HTML
+                  </Button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileSelect}
+                    accept=".html,text/html"
+                    className="hidden"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                  <span className="flex items-center">
+                    <Code className="mr-1 h-3 w-3" />
+                    {htmlContent.length} caracteres
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center">
+                    <FileText className="mr-1 h-3 w-3" />
+                    {htmlContent.split('\n').length} líneas
+                  </span>
+                </div>
+              </div>
+              <div className="flex-1 min-h-0">
+                <Textarea
+                  value={htmlContent}
+                  onChange={(e) => form.setValue('htmlContent', e.target.value)}
+                  className="font-mono h-full w-full text-sm resize-none"
+                  placeholder="Pega tu código HTML aquí o importa un archivo..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Columna derecha - Vista previa */}
+          <div className="flex flex-col h-full">
+            <div className="border rounded-lg p-4 bg-white flex-1 flex flex-col">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Vista Previa</h2>
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant={previewMode === 'desktop' ? 'secondary' : 'ghost'} 
+                    size="sm" 
+                    onClick={() => setPreviewMode('desktop')}
+                    className="h-8 w-8 p-0"
+                    title="Vista de escritorio"
+                  >
+                    <Computer className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant={previewMode === 'mobile' ? 'secondary' : 'ghost'} 
+                    size="sm" 
+                    onClick={() => setPreviewMode('mobile')}
+                    className="h-8 w-8 p-0"
+                    title="Vista móvil"
+                  >
+                    <Smartphone className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="flex-1 overflow-auto border rounded bg-gray-50 p-4">
+                <div 
+                  className={`${previewMode === 'mobile' ? 'max-w-[375px] mx-auto border-8 border-black rounded-3xl overflow-hidden' : ''}`}
+                  style={previewMode === 'mobile' ? { minHeight: '667px' } : {}}
+                >
+                  <div 
+                    className={`${previewMode === 'mobile' ? 'h-[calc(100vh-150px)]' : 'min-h-[500px]'}`}
+                    dangerouslySetInnerHTML={{ 
+                      __html: htmlContent || '<div class="flex items-center justify-center h-full text-muted-foreground"><p>La vista previa aparecerá aquí</p></div>' 
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <p className="text-xs text-muted-foreground mt-2">
+                Nota: Algunos estilos pueden verse diferentes en clientes de correo. 
+                Prueba siempre en varios clientes antes de enviar.
+              </p>
+            </div>
+          </div>
+        </div>
+        ) : (
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_350px] gap-6 items-start">
             <aside className="space-y-4 sticky top-24">
                 <h2 className="text-lg font-semibold font-headline">Bloques</h2>
                 <div className="grid grid-cols-2 gap-2">
-                {PALETTE_BLOCKS.map((block) => (
+                  {PALETTE_BLOCKS.map((block) => (
                     <button
-                        key={block.id}
-                        type="button"
-                        onClick={() => addBlock(block.id)}
-                        className="flex flex-col items-center justify-center p-4 border rounded-lg bg-card hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors"
+                      key={block.id}
+                      type="button"
+                      onClick={() => addBlock(block.id)}
+                      className="flex flex-col items-center justify-center p-4 border rounded-lg bg-card hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors"
                     >
-                        <block.icon className="h-6 w-6 mb-2" />
-                        <span className="text-xs font-medium">{block.label}</span>
+                      <block.icon className="h-6 w-6 mb-2" />
+                      <span className="text-xs font-medium">{block.label}</span>
                     </button>
-                ))}
+                  ))}
                 </div>
             </aside>
 
@@ -414,7 +632,15 @@ const addBlock = (blockType: Block['type']) => {
               )}
             </aside>
         </div>
+        )}
       </form>
+
+      <HtmlImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onConfirm={confirmHtmlImport}
+        htmlContent={importedHtml}
+      />
     </Form>
   );
 }
