@@ -49,3 +49,4 @@ storage/templates
 storage/campaigns
 
 node_modules
+.env
