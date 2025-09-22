@@ -18,6 +18,7 @@ import { ProgressCard } from '@/components/Analisis/progress-card';
 import { StatsGrid } from '@/components/Analisis/stats-grid';
 import { useToast } from '@/components/ui/use-toast';
 import { SendCampaignDialog } from '@/components/campaign/send-campaign-dialog';
+import { CampaignProgressPanel } from '@/components/campaign/campaign-progress-panel';
 import { Pencil } from 'lucide-react';
 
 function mapStatusToUi(estado?: string) {
@@ -59,6 +60,15 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
   const [isLoading, setIsLoading] = useState(true);
   const [campaign, setCampaign] = useState<any>(null);
   const [status, setStatus] = useState('draft');
+  const [liveProgress, setLiveProgress] = useState<{
+    status: 'idle' | 'starting' | 'running' | 'completed' | 'failed';
+    totalRecipients: number;
+    totalSent: number;
+    totalFailed: number;
+    currentBatch: number;
+    totalBatches: number;
+    message?: string;
+  } | null>(null);
   
   // Constante para el modo de pruebas (siempre true para permitir reenvíos en pruebas)
   const isTestEnvironment = true;
@@ -97,6 +107,56 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
     loadCampaign();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  // Polling de progreso para reflejar avances en tarjetas (lógica estabilizada)
+  useEffect(() => {
+    if (status !== 'sending') {
+      setLiveProgress(null); // Limpiar progreso si no se está enviando
+      return;
+    }
+
+    let timer: any;
+    const controller = new AbortController();
+
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/campaigns/status/${id}`, { cache: 'no-store', signal: controller.signal });
+
+        if (res.status === 404) {
+          // El progreso no existe (puede que haya terminado), recargar y detener
+          loadCampaign();
+          return;
+        }
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.success && data?.progress) {
+            const p = data.progress;
+            setLiveProgress(p);
+
+            // Si el job terminó, detener polling y recargar para estado final
+            if (p.status === 'completed' || p.status === 'failed') {
+              loadCampaign();
+              return;
+            }
+          }
+        }
+      } catch (e) {
+        if ((e as any).name === 'AbortError') return; // Ignorar errores de aborto
+      }
+
+      // Reprogramar solo si no se ha detenido
+      timer = setTimeout(poll, 5000);
+    };
+
+    poll();
+
+    return () => {
+      controller.abort();
+      if (timer) clearTimeout(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, id]);
 
   // Manejar cambio de estado
   const handleStatusChange = async (newStatus: string) => {
@@ -178,7 +238,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
     : '';
 
   // Datos de la campaña
-  const campaignStats = {
+  const baseCampaignStats = {
     totalEmails: c.total_destinatarios || 0,
     sent: c.enviados || 0,
     pending: (c.total_destinatarios || 0) - (c.enviados || 0),
@@ -195,6 +255,24 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
     mailbox: c.email_remitente || 'servicio.sistemas@papalote.org.mx',
     nextScheduled: c.proximo_envio || ''
   };
+
+  // Fusionar progreso en vivo con métricas mostradas
+  const campaignStats = (() => {
+    if (!liveProgress) return baseCampaignStats;
+    const total = liveProgress.totalRecipients || baseCampaignStats.totalEmails;
+    const sent = liveProgress.totalSent ?? baseCampaignStats.sent;
+    const failed = liveProgress.totalFailed ?? baseCampaignStats.failed;
+    const progressPct = total > 0 ? Math.round(((sent + failed) * 100) / total) : baseCampaignStats.progress;
+    return {
+      ...baseCampaignStats,
+      totalEmails: total,
+      sent,
+      failed,
+      pending: Math.max(0, total - (sent + failed)),
+      progress: progressPct,
+      timeRemaining: baseCampaignStats.timeRemaining,
+    };
+  })();
 
   return (
     <div className="space-y-6">
@@ -322,6 +400,9 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
             }}
           />
 
+          {/* Progreso en vivo del envío (polling backend) */}
+          <CampaignProgressPanel campaignId={String(id)} />
+
           {/* Grid de métricas (componente de análisis) */}
           <StatsGrid stats={campaignStats} />
 
@@ -387,7 +468,10 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
                   <div className="text-xs font-medium text-amber-700/80 dark:text-amber-300/80 mb-1">Próximo envío</div>
                   <div className="font-medium text-amber-900 dark:text-amber-100 flex items-center">
                     <Calendar className="w-4 h-4 mr-2 text-amber-600 dark:text-amber-400" />
-                    {new Date(campaignStats.nextScheduled).toLocaleString('es-ES')}
+                    {(() => {
+                      const d = campaignStats.nextScheduled ? new Date(campaignStats.nextScheduled) : null;
+                      return d && !isNaN(d.getTime()) ? d.toLocaleString('es-ES') : '—';
+                    })()}
                   </div>
                 </div>
               </CardContent>

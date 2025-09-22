@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { sendEmailViaGraph, personalize } from '@/lib/graph-email';
 import { sendIndividualEmails } from '@/lib/mailing-api';
 import { generateHtmlFromBlocks } from '@/lib/template-utils';
+import { progressStore } from '@/lib/progress-store';
 
 // Conversión simple de HTML a texto plano para textContent
 function htmlToText(html: string): string {
@@ -138,42 +139,90 @@ export async function POST(request: Request) {
         name: c.name,
         templateData: { ...(payload.customData || payload.customFields || {}), ...c },
       }));
-
-      const resp = await sendIndividualEmails({
-        recipients,
-        subject: payload.subject || 'Sin asunto',
-        htmlContent: htmlBodyStr,
-        textContent: htmlToText(htmlBodyStr),
-        fromEmail,
-      });
-
-      if (!resp.success) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: resp.message || 'Error al enviar la campaña vía API externa',
-            details: resp.errors || [],
-            statusCode: resp.statusCode,
-          },
-          { status: 422 }
-        );
+      // Enviar en lotes para poder reportar progreso
+      const totalRecipients = recipients.length;
+      const batches: typeof recipients[] = [];
+      for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
+        batches.push(recipients.slice(i, i + BATCH_SIZE));
       }
+
+      const campaignId = String(payload.templateId || 'campaign');
+      progressStore.init(campaignId, totalRecipients, batches.length);
+      progressStore.update(campaignId, { status: 'running', message: 'Envío iniciado (API externa)' });
+
+      let totalSent = 0;
+      let totalFailed = 0;
+      const details: Array<{ email: string; status: 'sent' | 'failed'; batch: number; error?: string }> = [];
+
+      for (let i = 0; i < batches.length; i++) {
+        // Verificar estado antes de procesar cada lote
+        let currentProgress = progressStore.get(campaignId);
+        while (currentProgress?.status === 'paused') {
+          await new Promise(res => setTimeout(res, 5000)); // Esperar 5s y volver a verificar
+          currentProgress = progressStore.get(campaignId);
+        }
+
+        if (currentProgress?.status === 'cancelled') {
+          break; // Salir del bucle si se cancela
+        }
+
+        const batch = batches[i];
+        try {
+          const resp = await sendIndividualEmails({
+            recipients: batch,
+            subject: payload.subject || 'Sin asunto',
+            htmlContent: htmlBodyStr,
+            textContent: htmlToText(htmlBodyStr),
+            fromEmail,
+          });
+
+          if (resp.success) {
+            totalSent += batch.length;
+            for (const r of batch) details.push({ email: r.email, status: 'sent', batch: i + 1 });
+          } else {
+            const failed = batch.length;
+            totalFailed += failed;
+            const errorsMap = new Map<string, string>();
+            resp.errors?.forEach(e => errorsMap.set(e.recipient, e.error));
+            for (const r of batch) {
+              details.push({ email: r.email, status: 'failed', batch: i + 1, error: errorsMap.get(r.email) });
+            }
+          }
+        } catch (e: any) {
+          const failed = batch.length;
+          totalFailed += failed;
+          for (const r of batch) details.push({ email: r.email, status: 'failed', batch: i + 1, error: e?.message || 'Error desconocido' });
+        }
+
+        progressStore.update(campaignId, {
+          totalSent,
+          totalFailed,
+          currentBatch: i + 1,
+          message: `Procesado lote ${i + 1} de ${batches.length}`,
+        });
+
+        if (i < batches.length - 1) {
+          await new Promise(res => setTimeout(res, DELAY_BETWEEN_BATCHES));
+        }
+      }
+
+      progressStore.complete(campaignId, 'Campaña completada (API externa)');
 
       return NextResponse.json({
         success: true,
-        message: `Campaña enviada exitosamente vía API externa. Enviados: ${resp.messageIds?.length ?? contacts.length}`,
+        message: `Campaña enviada exitosamente vía API externa. Enviados: ${totalSent}, Fallidos: ${totalFailed}`,
         stats: {
-          totalRecipients: contacts.length,
-          totalSent: resp.messageIds?.length ?? contacts.length,
-          totalFailed: 0,
-          batchesProcessed: 1,
+          totalRecipients,
+          totalSent,
+          totalFailed,
+          batchesProcessed: batches.length,
         },
-        details: recipients.map((r: any) => ({ email: r.email, status: 'sent', batch: 1 })),
+        details,
       });
     }
 
     // Dividir los contactos en lotes
-    const batches = [];
+    const batches = [] as Array<any[]>;
     for (let i = 0; i < contacts.length; i += BATCH_SIZE) {
       batches.push(contacts.slice(i, i + BATCH_SIZE));
     }
@@ -182,8 +231,24 @@ export async function POST(request: Request) {
     let totalSent = 0;
     let totalFailed = 0;
 
+    // Inicializar progreso
+    const campaignId = String(payload.templateId || 'campaign');
+    progressStore.init(campaignId, contacts.length, batches.length);
+    progressStore.update(campaignId, { status: 'running', message: 'Envío iniciado' });
+
     // Procesar cada lote con un retraso entre ellos
     for (let i = 0; i < batches.length; i++) {
+      // Verificar estado antes de procesar cada lote
+      let currentProgress = progressStore.get(campaignId);
+      while (currentProgress?.status === 'paused') {
+        await new Promise(res => setTimeout(res, 5000)); // Esperar 5s y volver a verificar
+        currentProgress = progressStore.get(campaignId);
+      }
+
+      if (currentProgress?.status === 'cancelled') {
+        break; // Salir del bucle si se cancela
+      }
+
       const batch = batches[i];
       const batchResults = await processBatch(
         batch,
@@ -202,12 +267,23 @@ export async function POST(request: Request) {
       totalFailed += batchResults.failed;
       results.push(...batchResults.details);
 
+      // Actualizar progreso por lote
+      progressStore.update(campaignId, {
+        totalSent,
+        totalFailed,
+        currentBatch: i + 1,
+        message: `Procesado lote ${i + 1} de ${batches.length}`,
+      });
+
       // Esperar antes del siguiente lote (excepto en el último)
       if (i < batches.length - 1) {
         await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES));
       }
     }
     
+    // Completar progreso
+    progressStore.complete(campaignId, 'Campaña completada');
+
     return NextResponse.json({
       success: true,
       message: `Campaña enviada exitosamente. Enviados: ${totalSent}, Fallidos: ${totalFailed}`,
@@ -222,6 +298,10 @@ export async function POST(request: Request) {
     
   } catch (error) {
     console.error('Error al enviar la campaña:', error);
+    try {
+      const campaignId = String((await request.json())?.templateId || 'campaign');
+      progressStore.fail(campaignId, error instanceof Error ? error.message : 'Error desconocido');
+    } catch {}
     return NextResponse.json(
       { 
         success: false, 
