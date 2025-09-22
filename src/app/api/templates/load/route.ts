@@ -32,10 +32,11 @@ export async function GET(request: Request) {
   // Si no hay path, listar las plantillas con contenido resuelto
   try {
     // Mapeamos 'email' -> 'template' para mantener compatibilidad con el cliente
-    const mappedTipo = tipo === 'email' ? 'template' : tipo;
+    // Si tipo es null, lo convertimos a undefined para que getTemplatesAction lo maneje correctamente
+    const mappedTipo = tipo === 'email' ? 'template' : (tipo || undefined);
 
     const { templates } = await getTemplatesAction({ 
-      tipo: (mappedTipo === 'certificate' || mappedTipo === 'template') ? mappedTipo : undefined,
+      tipo: mappedTipo as 'template' | 'certificate' | 'email' | 'html' | undefined,
       limit
     });
 

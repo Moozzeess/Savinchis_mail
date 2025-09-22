@@ -98,7 +98,7 @@ export default async function TemplatesPage({ searchParams }: { searchParams: Pr
                   <div className="flex-1 flex items-center justify-center p-3 bg-muted/10">
                     <div className="w-full h-full max-h-[140px] flex items-center justify-center overflow-hidden rounded-md border bg-background/50 shadow-sm">
                       <TemplatePreview
-                        templatePath={template.contenido}
+                        templateContent={template.contenido}
                         templateName={template.nombre}
                         isCertificate={isCertificate}
                         className="w-full h-full scale-90 origin-top"

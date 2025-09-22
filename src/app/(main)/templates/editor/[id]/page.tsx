@@ -10,7 +10,9 @@ import { getTemplateAction, Template } from "@/actions/Plantillas/template-actio
  * @param {string} props.params.id - El ID de la plantilla a editar.
  */
 export default async function TemplateEditorPage({ params }: { params: { id: string } }) {
-  const templateId = params.id !== 'new' ? parseInt(params.id, 10) : undefined;
+  // Aseguramos que params esté completamente resuelto antes de usarlo
+  const { id } = await params;
+  const templateId = id !== 'new' ? parseInt(id, 10) : undefined;
   let templateData: Template | undefined = undefined;
 
   if (templateId) {

@@ -1,7 +1,6 @@
 'use server';
 
 import mysql from 'mysql2/promise';
-import type { Block } from '@/lib/template-utils';
 import { revalidatePath } from 'next/cache';
 import fs from 'fs/promises';
 import path from 'path';
@@ -13,20 +12,32 @@ import { getDbConnection } from '../DBConnection';
  * @description Define la estructura de una plantilla de correo electrónico o certificado.
  * @property {number} id_plantilla - Identificador único de la plantilla.
  * @property {string} nombre - Nombre descriptivo de la plantilla.
- * @property {string} asunto_predeterminado - Asunto predeterminado para plantillas de correo.
- * @property {any} contenido - El contenido de la plantilla, puede ser un arreglo de bloques (para correos) o una estructura específica para certificados.
- * @property {string} fecha_creacion - Fecha de creación de la plantilla en formato de cadena.
- * @property {'template' | 'certificate' | 'html'} tipo - Tipo de plantilla: 'template' para correos, 'certificate' para certificados, 'html' para contenido HTML.
+ * @property {string} [asunto_predeterminado] - Asunto predeterminado para plantillas de correo.
+ * @property {string | { backgroundImage?: string; blocks?: any[]; isHtmlTemplate?: boolean; htmlContent?: string; [key: string]: any }} [contenido] - El contenido de la plantilla, puede ser un arreglo de bloques (para correos), una estructura específica para certificados o HTML.
+ * @property {string} [fecha_creacion] - Fecha de creación de la plantilla en formato de cadena.
+ * @property {'template' | 'certificate' | 'html' | 'email'} tipo - Tipo de plantilla: 'template' o 'email' para correos, 'certificate' para certificados, 'html' para contenido HTML.
  * @property {string} [html_content] - Contenido HTML para plantillas de tipo 'html'.
+ * @property {string} [thumbnail] - URL o ruta a la miniatura de la plantilla.
+ * @property {boolean} [enabled] - Indica si la plantilla está habilitada.
  */
+import type { Block } from '@/lib/template-utils';
+
 export interface Template {
   id_plantilla: number;
   nombre: string;
-  asunto_predeterminado: string;
-  contenido: any; // Puede ser Block[] o la estructura del certificado
-  fecha_creacion: string;
-  tipo: 'template' | 'certificate' | 'html';
-  html_content?: string; // Contenido HTML para plantillas de tipo 'html'
+  asunto_predeterminado?: string;
+  contenido?: string | Block[] | { 
+    backgroundImage?: string; 
+    blocks?: Block[]; 
+    isHtmlTemplate?: boolean; 
+    htmlContent?: string; 
+    [key: string]: unknown;
+  };
+  fecha_creacion?: string;
+  tipo: 'template' | 'certificate' | 'html' | 'email';
+  html_content?: string;
+  thumbnail?: string;
+  enabled?: boolean;
 }
 
 /**
@@ -65,7 +76,7 @@ async function ensureStorageDirectoryExists() {
  * @async
  */
 export async function getTemplatesAction(params: {
-  tipo?: 'template' | 'certificate',
+  tipo?: 'template' | 'certificate' | 'email' | 'html',
   page?: number,
   limit?: number,
 }= {}): Promise<{ templates: Template[], total: number }> {
@@ -82,8 +93,10 @@ export async function getTemplatesAction(params: {
 
     // Si se especifica un tipo, añade la condición WHERE.
     if (tipo) {
+      // Mapear 'email' a 'template' para compatibilidad con la base de datos
+      const dbTipo = tipo === 'email' ? 'template' : tipo;
       whereClause = ' WHERE tipo = ?';
-      queryParams.push(tipo);
+      queryParams.push(dbTipo);
     }
 
     // Consulta para obtener el conteo total de plantillas (para la paginación).
@@ -167,7 +180,7 @@ export async function getTemplateAction(id: number): Promise<Template | null> {
     connection = await getDbConnection();
     // Consulta la base de datos para obtener los metadatos de la plantilla.
     const [rows] = await connection.execute(
-      'SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo FROM plantillas WHERE id_plantilla = ?',
+      'SELECT id_plantilla, nombre, asunto_predeterminado, contenido, fecha_creacion, tipo, html_content FROM plantillas WHERE id_plantilla = ?',
       [id]
     );
 
@@ -175,24 +188,60 @@ export async function getTemplateAction(id: number): Promise<Template | null> {
     if ((rows as any[]).length === 0) return null;
 
     const row = (rows as any[])[0];
-    let contenidoReal: object | null = null;
+    let contenidoReal: any = null;
 
     // Manejo del contenido: si es una cadena, se asume que es una ruta a un archivo JSON.
     if (typeof row.contenido === 'string' && row.contenido) {
       try {
         // Construye la ruta completa al archivo de contenido.
         const filePath = path.join(process.cwd(), row.contenido);
-        // Lee el contenido del archivo.
-        const fileContent = await fs.readFile(filePath, 'utf-8');
-        // Parsea el contenido JSON del archivo.
-        contenidoReal = JSON.parse(fileContent);
+        // Verifica si el archivo existe
+        try {
+          await fs.access(filePath);
+          // Lee el contenido del archivo.
+          const fileContent = await fs.readFile(filePath, 'utf-8');
+          // Parsea el contenido JSON del archivo.
+          contenidoReal = JSON.parse(fileContent);
+          
+          // Si es una plantilla HTML, asegurarse de que el contenido esté en el formato correcto
+          if (row.tipo === 'html' && contenidoReal && contenidoReal.isHtmlTemplate) {
+            // Para compatibilidad con el editor, aseguramos que el contenido esté en el formato esperado
+            contenidoReal = {
+              isHtmlTemplate: true,
+              htmlContent: contenidoReal.htmlContent || ''
+            };
+          }
+        } catch (fileError) {
+          console.warn(`El archivo de contenido para la plantilla ${id} no existe o no se pudo leer:`, fileError);
+          // Si es una plantilla HTML, creamos una estructura vacía
+          if (row.tipo === 'html') {
+            contenidoReal = {
+              isHtmlTemplate: true,
+              htmlContent: ''
+            };
+          }
+        }
       } catch (error) {
-        console.error(`Error al leer o parsear el archivo de contenido para la plantilla ${id}:`, error);
-        // Si hay un error en el archivo, contenidoReal permanece null.
+        console.error(`Error al procesar el contenido para la plantilla ${id}:`, error);
+        // Si hay un error, creamos una estructura vacía apropiada según el tipo
+        if (row.tipo === 'html') {
+          contenidoReal = {
+            isHtmlTemplate: true,
+            htmlContent: ''
+          };
+        } else {
+          contenidoReal = { blocks: [] };
+        }
       }
+    } else if (row.tipo === 'html' && !row.contenido) {
+      // Si es una plantilla HTML sin contenido, inicializamos una estructura vacía
+      contenidoReal = {
+        isHtmlTemplate: true,
+        htmlContent: ''
+      };
     } else {
       // Si el contenido no es una cadena (ej. ya es un objeto JSON directo de la DB, o es null/undefined), lo asigna directamente.
-      contenidoReal = row.contenido;
+      contenidoReal = row.contenido || { blocks: [] };
     }
 
     // Retorna la plantilla con el contenido real (desde el archivo o directamente de la DB).
@@ -203,6 +252,10 @@ export async function getTemplateAction(id: number): Promise<Template | null> {
       fecha_creacion: row.fecha_creacion,
       tipo: row.tipo,
       contenido: contenidoReal,
+      // Para compatibilidad con código existente que podría esperar html_content
+      html_content: row.tipo === 'html' && contenidoReal?.htmlContent 
+        ? contenidoReal.htmlContent 
+        : row.html_content
     } as Template;
   } catch (error) {
     console.error(`Error al obtener la plantilla ${id}:`, error);
@@ -232,15 +285,16 @@ export async function saveTemplateAction(data: SaveTemplateParams) {
     connection = await getDbConnection();
     await connection.beginTransaction();
 
-    const { id_plantilla, nombre, asunto_predeterminado, contenido, tipo } = data;
+    const { id_plantilla, nombre, asunto_predeterminado, contenido, tipo, html_content } = data;
     const isUpdate = !!id_plantilla;
     
-    // 1. Preparar y guardar el contenido de la plantilla como un archivo JSON en el disco.
+    // Asegurar que el directorio de almacenamiento exista
     await ensureStorageDirectoryExists();
     
     // Determinar el ID a usar (nuevo o existente)
     let templateId = id_plantilla;
     
+    // 1. Insertar o actualizar el registro en la base de datos
     if (isUpdate) {
       // Actualizar plantilla existente
       const [updateResult] = await connection.execute(
@@ -254,8 +308,8 @@ export async function saveTemplateAction(data: SaveTemplateParams) {
     } else {
       // Insertar nueva plantilla
       const [insertResult] = await connection.execute(
-        'INSERT INTO plantillas (nombre, asunto_predeterminado, contenido, tipo, fecha_creacion) VALUES (?, ?, ?, ?, NOW())',
-        [nombre, asunto_predeterminado, 'pending_file_path', tipo]
+        'INSERT INTO plantillas (nombre, asunto_predeterminado, tipo, fecha_creacion) VALUES (?, ?, ?, NOW())',
+        [nombre, asunto_predeterminado, tipo]
       );
       
       templateId = (insertResult as any).insertId;
@@ -267,17 +321,46 @@ export async function saveTemplateAction(data: SaveTemplateParams) {
     // 2. Guardar el contenido en un archivo JSON
     const fileName = `template-${templateId}.json`;
     const filePath = path.join(TEMPLATES_STORAGE_PATH, fileName);
-    const fileContent = JSON.stringify(contenido, null, 2);
-    await fs.writeFile(filePath, fileContent);
+    
+    // Preparar el contenido a guardar
+    let fileContent: any;
+    
+    if (tipo === 'html' && html_content) {
+      // Para plantillas HTML, guardamos el HTML en un objeto con la estructura esperada
+      fileContent = {
+        isHtmlTemplate: true,
+        htmlContent: html_content
+      };
+    } else if (contenido) {
+      // Para plantillas de bloques, usamos el contenido directamente
+      fileContent = contenido;
+    } else {
+      // Contenido vacío si no hay nada que guardar
+      fileContent = { blocks: [] };
+    }
+    
+    // Guardar el archivo
+    await fs.writeFile(filePath, JSON.stringify(fileContent, null, 2));
 
     // 3. Actualizar la ruta del archivo en la base de datos
     const relativePath = path.join('storage', 'templates', fileName).replace(/\\/g, '/');
-    await connection.execute(
-      'UPDATE plantillas SET contenido = ? WHERE id_plantilla = ?',
-      [relativePath, templateId]
-    );
+    
+    // Actualizar tanto la ruta del archivo como el contenido HTML (si es una plantilla HTML)
+    if (tipo === 'html') {
+      await connection.execute(
+        'UPDATE plantillas SET contenido = ? WHERE id_plantilla = ?',
+        [relativePath, templateId]
+      );
+    } else {
+      await connection.execute(
+        'UPDATE plantillas SET contenido = ? WHERE id_plantilla = ?',
+        [relativePath, templateId]
+      );
+    }
 
     await connection.commit();
+    
+    // Invalidar las rutas relevantes
     revalidatePath('/templates');
     revalidatePath(`/templates/editor/${templateId}`);
     revalidatePath(`/certificates/editor/${templateId}`);

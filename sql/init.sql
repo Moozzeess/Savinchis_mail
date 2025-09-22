@@ -25,9 +25,13 @@ CREATE TABLE `plantillas` (
   `fecha_creacion` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   `fecha_actualizacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `categoria` VARCHAR(255) NOT NULL DEFAULT 'Otro',
-  `tipo` VARCHAR(50) NOT NULL DEFAULT 'template',
+  `tipo` ENUM('template', 'certificate', 'email', 'html') NOT NULL DEFAULT 'template',
+  `html_content` LONGTEXT DEFAULT NULL,
+  `thumbnail` VARCHAR(255) DEFAULT NULL,
+  `enabled` TINYINT(1) DEFAULT 1,
   PRIMARY KEY (`id_plantilla`),
-  KEY `idx_fecha_creacion` (`fecha_creacion` DESC)
+  KEY `idx_fecha_creacion` (`fecha_creacion` DESC),
+  KEY `idx_tipo` (`tipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Almacena las plantillas de correo con un editor de bloques.';
 
 -- -----------------------------------------------------

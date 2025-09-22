@@ -101,23 +101,6 @@ export function DetailsStep({ className = '' }: { className?: string }) {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           
 
-          <div className="space-y-2">
-            <Label htmlFor="fromEmail">
-              Correo del remitente <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="fromEmail"
-              type="email"
-              placeholder="ejemplo@midominio.com"
-              {...register('fromEmail')}
-              className={errors.fromEmail && 'border-destructive'}
-            />
-            {errors.fromEmail && (
-              <p className="text-sm text-destructive">
-                {errors.fromEmail.message as string}
-              </p>
-            )}
-          </div>
         </div>
 
         

@@ -173,9 +173,21 @@ export function TemplatePreview({
             const certHtml = generateCertificateHtml(templateContent, templateName);
             setHtml(certHtml);
           } else if (Array.isArray(templateContent)) {
-            setHtml(generateHtmlFromBlocks(templateContent));
+            setHtml(generateHtmlFromBlocks({
+              templateName: templateName,
+              emailSubject: 'Vista previa',
+              blocks: templateContent,
+              isHtmlTemplate: false,
+              htmlContent: ''
+            }));
           } else if (templateContent.blocks) {
-            setHtml(generateHtmlFromBlocks(templateContent.blocks));
+            setHtml(generateHtmlFromBlocks({
+              templateName: templateContent.templateName || templateName,
+              emailSubject: templateContent.emailSubject || 'Vista previa',
+              blocks: templateContent.blocks,
+              isHtmlTemplate: templateContent.isHtmlTemplate || false,
+              htmlContent: templateContent.htmlContent || ''
+            }));
           }
           return;
         }
@@ -195,9 +207,21 @@ export function TemplatePreview({
           const certHtml = generateCertificateHtml(data, templateName);
           setHtml(certHtml);
         } else if (Array.isArray(data)) {
-          setHtml(generateHtmlFromBlocks(data));
+          setHtml(generateHtmlFromBlocks({
+            templateName: templateName,
+            emailSubject: 'Vista previa',
+            blocks: data,
+            isHtmlTemplate: false,
+            htmlContent: ''
+          }));
         } else if (data.blocks) {
-          setHtml(generateHtmlFromBlocks(data.blocks));
+          setHtml(generateHtmlFromBlocks({
+            templateName: data.templateName || templateName,
+            emailSubject: data.emailSubject || 'Vista previa',
+            blocks: data.blocks,
+            isHtmlTemplate: data.isHtmlTemplate || false,
+            htmlContent: data.htmlContent || ''
+          }));
         }
       } catch (error) {
         console.error('Error loading preview:', error);

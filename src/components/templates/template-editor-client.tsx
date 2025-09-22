@@ -120,15 +120,121 @@ export function TemplateEditorClient({ templateData }: { templateData?: Template
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Función para obtener el valor inicial de los bloques
+  const getInitialBlocks = (): Block[] => {
+    try {
+      if (!templateData) return [];
+      
+      // Si es una plantilla HTML, devolver un array vacío
+      if (templateData.tipo === 'html') return [];
+      
+      // Si no hay contenido, devolver array vacío
+      if (!templateData.contenido) return [];
+      
+      let blocksToParse: unknown[] = [];
+      
+      // Manejar diferentes formatos de contenido
+      if (typeof templateData.contenido === 'string') {
+        try {
+          // Intentar parsear el string como JSON
+          const parsed = JSON.parse(templateData.contenido);
+          blocksToParse = Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+          console.error('Error al parsear el contenido como JSON:', e);
+          return [];
+        }
+      } else if (Array.isArray(templateData.contenido)) {
+        // Si ya es un array, asumimos que es un array de bloques
+        blocksToParse = templateData.contenido;
+      } else if (
+        templateData.contenido && 
+        typeof templateData.contenido === 'object' && 
+        'blocks' in templateData.contenido
+      ) {
+        // Si es un objeto con propiedad blocks
+        const contentObj = templateData.contenido as { blocks?: unknown };
+        if (Array.isArray(contentObj.blocks)) {
+          blocksToParse = contentObj.blocks;
+        }
+      }
+      
+      // Validar que cada bloque cumpla con el esquema
+      const validBlocks = blocksToParse
+        .filter((block): block is Record<string, unknown> => 
+          block !== null && typeof block === 'object' && !Array.isArray(block)
+        )
+        .map(block => {
+          try {
+            // Validar el bloque contra el esquema
+            const result = blockSchema.safeParse(block);
+            if (result.success) {
+              return result.data;
+            }
+            console.warn('Bloque no válido:', block, result.error);
+            return null;
+          } catch (e) {
+            console.error('Error al validar el bloque:', e);
+            return null;
+          }
+        })
+        .filter((block): block is Block => block !== null);
+      
+      return validBlocks;
+      
+    } catch (e) {
+      console.error('Error inesperado en getInitialBlocks:', e);
+      return [];
+    }
+  };
+
+  // Obtener el contenido HTML inicial
+  const getInitialHtmlContent = (): string => {
+    try {
+      if (!templateData) return '';
+      
+      // Si es una plantilla HTML, devolver el contenido como string
+      if (templateData.tipo === 'html') {
+        // Si el contenido es un string, usarlo directamente
+        if (typeof templateData.contenido === 'string') {
+          return templateData.contenido;
+        }
+        
+        // Si el contenido es un objeto con htmlContent, usarlo
+        if (
+          templateData.contenido && 
+          typeof templateData.contenido === 'object' && 
+          !Array.isArray(templateData.contenido) &&
+          'htmlContent' in templateData.contenido &&
+          typeof (templateData.contenido as { htmlContent?: unknown }).htmlContent === 'string'
+        ) {
+          return (templateData.contenido as { htmlContent: string }).htmlContent;
+        }
+        
+        // Si hay html_content en el nivel superior, usarlo
+        if (templateData.html_content && typeof templateData.html_content === 'string') {
+          return templateData.html_content;
+        }
+      }
+      
+      return '';
+    } catch (e) {
+      console.error('Error al obtener el contenido HTML inicial:', e);
+      return '';
+    }
+  };
+
+  // Obtener los valores iniciales de forma segura
+  const initialValues = useMemo<FormValues>(() => ({
+    templateName: templateData?.nombre || 'Mi Nueva Plantilla',
+    emailSubject: templateData?.asunto_predeterminado || 'Asunto del Correo',
+    blocks: getInitialBlocks(),
+    isHtmlTemplate: templateData?.tipo === 'html',
+    htmlContent: getInitialHtmlContent(),
+  }), [templateData]);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      templateName: templateData?.nombre || 'Mi Nueva Plantilla',
-      emailSubject: templateData?.asunto_predeterminado || 'Asunto del Correo',
-      blocks: templateData?.tipo === 'html' ? [] : (templateData?.contenido || []),
-      isHtmlTemplate: templateData?.tipo === 'html',
-      htmlContent: templateData?.tipo === 'html' ? (templateData?.contenido as string || '') : '',
-    },
+    defaultValues: initialValues,
   });
 
   const { fields, move, append, remove } = useFieldArray({
@@ -149,11 +255,19 @@ export function TemplateEditorClient({ templateData }: { templateData?: Template
 
   useEffect(() => {
     if (templateData) {
-        form.reset({
-            templateName: templateData.nombre,
-            emailSubject: templateData.asunto_predeterminado,
-            blocks: templateData.contenido,
-        });
+      // Obtener los bloques iniciales usando la función getInitialBlocks
+      const initialBlocks = getInitialBlocks();
+      
+      // Obtener el contenido HTML inicial si es una plantilla HTML
+      const initialHtmlContent = getInitialHtmlContent();
+      
+      form.reset({
+        templateName: templateData.nombre || '',
+        emailSubject: templateData.asunto_predeterminado || '',
+        blocks: initialBlocks,
+        isHtmlTemplate: templateData.tipo === 'html',
+        htmlContent: initialHtmlContent,
+      });
     }
   }, [templateData, form]);
 

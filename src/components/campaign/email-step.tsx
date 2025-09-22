@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,10 +30,41 @@ export function EmailStep({ className = '' }: { className?: string }) {
   const fromName = watch('fromName') || '';
   const fromEmail = watch('fromEmail') || '';
 
+  // Obtener plantillas de tipo 'email' (que internamente mapea a 'template')
   const { data: templates = [], isLoading } = useTemplates({ 
-    tipo: 'email', //|| 'template' || 'certificate',
+    tipo: 'email', // Esto se mapea internamente a 'template' en el hook useTemplates
     enabled: activeTab === 'gallery' // Solo cargar cuando esté activa la pestaña
-  });;
+  });
+  
+  // Obtener plantillas HTML solo si no hay plantillas de email
+  const { data: htmlTemplates = [], isLoading: isLoadingHtml } = useTemplates({ 
+    tipo: 'html',
+    enabled: activeTab === 'gallery' && templates.length === 0 // Solo cargar si no hay plantillas de email
+  });
+  
+  // Combinar las plantillas, asegurando que no haya duplicados por ID
+  const allTemplates = React.useMemo(() => {
+    const uniqueTemplates = new Map<number, any>();
+    
+    // Primero agregar las plantillas HTML
+    htmlTemplates.forEach(tpl => {
+      uniqueTemplates.set(tpl.id_plantilla, tpl);
+    });
+    
+    // Luego las plantillas de email (que sobrescribirán cualquier duplicado por ID)
+    templates.forEach(tpl => {
+      uniqueTemplates.set(tpl.id_plantilla, tpl);
+    });
+    
+    return Array.from(uniqueTemplates.values());
+  }, [templates, htmlTemplates]);
+  
+  const isAnyLoading = isLoading || (isLoadingHtml && templates.length === 0);
+
+  // Depuración: Mostrar las plantillas cargadas
+  useEffect(() => {
+    console.log('Plantillas cargadas:', allTemplates);
+  }, [allTemplates]);
 
   // Insertar texto en la posición del cursor
   const insertAtCursor = (text: string) => {
@@ -101,10 +132,17 @@ export function EmailStep({ className = '' }: { className?: string }) {
     }
   };
 
-  const filteredTemplates = templates.filter(template => 
-    template.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (template.asunto_predeterminado?.toLowerCase() || '').includes(searchQuery.toLowerCase())
-  );
+  // Filtrar plantillas por búsqueda y por tipo
+  const filteredTemplates = templates
+    .filter(template => 
+      template.tipo === 'email' || 
+      template.tipo === 'template' || 
+      template.tipo === 'html'
+    )
+    .filter(template => 
+      template.nombre.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (template.asunto_predeterminado?.toLowerCase() || '').includes(searchQuery.toLowerCase())
+    );
 
   const handleTemplateSelect = (template: Plantillas) => {
     if (activeTab === 'gallery') {
@@ -213,11 +251,45 @@ export function EmailStep({ className = '' }: { className?: string }) {
         
         <TabsContent value="gallery" className="mt-6">
           <div className="space-y-4">
-            <TemplateCarousel 
-              templates={templates} 
-              onSelect={handleTemplateSelect}
-              selectedTemplateId={selectedTemplate ?? undefined}
-            />
+            <div className="mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Buscar plantillas..."
+                  className="pl-10"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </div>
+            {isAnyLoading ? (
+              <div className="flex justify-center items-center h-40">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : allTemplates.length === 0 ? (
+              <div className="text-center py-10 bg-muted/20 rounded-lg">
+                <p className="text-muted-foreground mb-4">
+                  {searchQuery 
+                    ? 'No se encontraron plantillas que coincidan con tu búsqueda.' 
+                    : 'No hay plantillas disponibles.'}
+                </p>
+                <Button 
+                  variant="outline" 
+                  onClick={handleCreateNewTemplateRedirect}
+                  className="flex items-center gap-2 mx-auto"
+                >
+                  <Plus className="h-4 w-4" />
+                  Crear nueva plantilla
+                </Button>
+              </div>
+            ) : (
+              <TemplateCarousel 
+                templates={allTemplates}
+                onSelect={handleTemplateSelect}
+                selectedTemplateId={selectedTemplate}
+              />
+            )}
           </div>
         </TabsContent>
       </Tabs>
