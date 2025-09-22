@@ -41,6 +41,111 @@ export function SendCampaignDialog({
     details?: any;
   } | null>(null);
   const [success, setSuccess] = useState<{ title: string; message: string } | null>(null);
+  const [progress, setProgress] = useState<{
+    status: 'idle' | 'starting' | 'running' | 'completed' | 'failed' | 'paused' | 'cancelled';
+    totalRecipients: number;
+    totalSent: number;
+    totalFailed: number;
+    currentBatch: number;
+    totalBatches: number;
+    message?: string;
+  } | null>(null);
+
+  // Polling de progreso cuando está enviando (estabilizado)
+  useEffect(() => {
+    let timer: any;
+    
+    if (isSending || progress) {
+      const poll = async () => {
+        try {
+          const res = await fetch(`/api/campaigns/status/${campaignId}`, { cache: 'no-store' });
+          
+          if (res.status === 404) {
+            // Si no estamos enviando, detener polling
+            if (!isSending) return;
+          } else if (res.ok) {
+            const data = await res.json();
+            
+            if (data?.success) {
+              type ProgressType = {
+                status: 'idle' | 'starting' | 'running' | 'completed' | 'failed' | 'paused' | 'cancelled';
+                totalRecipients: number;
+                totalSent: number;
+                totalFailed: number;
+                currentBatch: number;
+                totalBatches: number;
+                message?: string;
+              } | null;
+
+              const p = data.progress as ProgressType;
+              
+              // Si no hay progreso, salir temprano
+              if (!p) {
+                timer = setTimeout(poll, 3000);
+                return;
+              }
+
+              // Actualizar solo si hay cambios en métricas clave
+              setProgress(prev => {
+                if (!prev) return p;
+                const changed = prev.status !== p.status
+                  || prev.totalSent !== p.totalSent
+                  || prev.totalFailed !== p.totalFailed
+                  || prev.currentBatch !== p.currentBatch;
+                return changed ? p : prev;
+              });
+
+              // Manejar estados finales
+              if (p.status === 'completed') {
+                toast({ 
+                  title: 'Campaña completada', 
+                  description: `Enviados: ${p.totalSent}, Fallidos: ${p.totalFailed}` 
+                });
+                setSuccess({ 
+                  title: '✅ Campaña completada', 
+                  message: 'El envío ha finalizado exitosamente.' 
+                });
+                setIsSending(false);
+                setTimeout(() => {
+                  onSuccess();
+                  onOpenChange(false);
+                }, 1500);
+                return; // no reprogramar
+              }
+
+              if (p.status === 'failed' || p.status === 'cancelled') {
+                const message = p.status === 'cancelled' 
+                  ? 'El envío ha sido cancelado' 
+                  : p.message || 'Error en el envío';
+                  
+                toast({ 
+                  title: p.status === 'cancelled' ? 'Campaña cancelada' : 'Campaña fallida', 
+                  description: message, 
+                  variant: p.status === 'cancelled' ? 'default' : 'destructive' 
+                });
+                
+                setApiError({ 
+                  title: p.status === 'cancelled' ? 'Campaña cancelada' : 'Campaña fallida', 
+                  message 
+                });
+                
+                setIsSending(false);
+                return; // no reprogramar
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error en polling de progreso:', error);
+        } finally {
+          // Siempre reprogramar el siguiente poll a menos que se haya retornado antes
+          timer = setTimeout(poll, 3000);
+        }
+      };
+      
+      poll();
+    }
+    return () => timer && clearTimeout(timer);
+  }, [isSending, campaignId, !!progress]);
 
   // Si cambia el remitente por defecto desde arriba, y el usuario no ha escrito nada, sincronizar.
   // Esto garantiza que por defecto el correo de prueba sea el remitente (usuario activo).
@@ -125,21 +230,9 @@ export function SendCampaignDialog({
         senderEmail: defaultSenderEmail,
       });
 
-      setSuccess({
-        title: '✅ Campaña en proceso',
-        message: 'La campaña se está enviando. Recibirás una notificación cuando se complete.'
-      });
-      
-      toast({
-        title: 'Campaña en proceso',
-        description: 'La campaña se ha puesto en cola de envío correctamente.',
-      });
-      
-      // Cerrar automáticamente después de 2 segundos
-      setTimeout(() => {
-        onSuccess();
-        onOpenChange(false);
-      }, 2000);
+      // Al iniciar el envío, dejamos el diálogo abierto y mostramos progreso por polling
+      setSuccess({ title: '🚀 Envío iniciado', message: 'La campaña se está enviando. Mostrando progreso...' });
+      toast({ title: 'Campaña iniciada', description: 'Mostrando progreso del envío...' });
       
     } catch (error: any) {
       const errorTitle = error?.statusCode === 422 
@@ -160,7 +253,7 @@ export function SendCampaignDialog({
         variant: 'destructive',
       });
     } finally {
-      setIsSending(false);
+      // No desactivamos isSending aquí; lo hará el polling cuando termine
     }
   };
 
@@ -311,6 +404,28 @@ export function SendCampaignDialog({
                   <div className="text-sm">{success.message}</div>
                 </AlertDescription>
               </Alert>
+            )}
+
+            {/* Progreso en tiempo real */}
+            {progress && (
+              <div className="text-sm space-y-1">
+                <div className="flex justify-between"><span>Estado:</span><span className="font-medium">{progress.status}</span></div>
+                <div className="flex justify-between"><span>Enviados:</span><span className="font-medium">{progress.totalSent} / {progress.totalRecipients}</span></div>
+                <div className="flex justify-between"><span>Fallidos:</span><span className="font-medium">{progress.totalFailed}</span></div>
+                <div className="flex justify-between"><span>Lote:</span><span className="font-medium">{progress.currentBatch} / {progress.totalBatches}</span></div>
+                {(() => {
+                  const pct = progress.totalRecipients > 0 ? Math.round((progress.totalSent + progress.totalFailed) * 100 / progress.totalRecipients) : 0;
+                  return (
+                    <div className="mt-2">
+                      <div className="h-2 w-full bg-muted rounded">
+                        <div className="h-2 bg-primary rounded" style={{ width: `${pct}%` }} />
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">{pct}% completado</div>
+                    </div>
+                  );
+                })()}
+                {progress.message && <div className="text-xs text-muted-foreground">{progress.message}</div>}
+              </div>
             )}
             
             {apiError && !apiError.title.includes('prueba') && (

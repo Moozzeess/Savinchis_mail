@@ -113,6 +113,8 @@ export const formSchema = z.object({
   templateName: z.string().min(1, 'El nombre de la plantilla es requerido.'),
   emailSubject: z.string().min(1, 'El asunto del correo es requerido.'),
   blocks: z.array(blockSchema),
+  isHtmlTemplate: z.boolean().default(false),
+  htmlContent: z.string().default(''),
 });
 
 /**
@@ -124,13 +126,18 @@ export type FormValues = z.infer<typeof formSchema>;
 // --- Función para generar HTML a partir de los bloques ---
 
 /**
- * @description Genera el código HTML completo de un correo electrónico a partir de un arreglo de bloques.
- * @param {Block[]} blocks - Un arreglo de bloques de contenido.
+ * @description Genera el código HTML completo de un correo electrónico.
+ * @param {FormValues} formData - Los datos del formulario que incluyen bloques o HTML puro.
  * @returns {string} El código HTML del correo listo para ser enviado o previsualizado.
  */
-export function generateHtmlFromBlocks(blocks: Block[]): string {
+export function generateHtmlFromBlocks(formData: FormValues): string {
+  // Si es una plantilla HTML pura, devolver el contenido HTML directamente
+  if (formData.isHtmlTemplate && formData.htmlContent) {
+    return formData.htmlContent;
+  }
+
   // Mapea cada bloque a su fragmento de HTML correspondiente.
-  const content = blocks.map(block => {
+  const content = formData.blocks.map(block => {
     switch (block.type) {
       case 'text': {
         const { text, color, fontSize, lineHeight, fontWeight, textAlign } = block.content;
@@ -156,18 +163,18 @@ export function generateHtmlFromBlocks(blocks: Block[]): string {
         return `<tr><td style="padding: 0; margin: 0;">${block.content.code}</td></tr>`;
       }
       default:
-        // Maneja casos desconocidos, aunque la unión discriminada de Zod lo previene.
         return '';
     }
-  }).join(''); // Une todos los fragmentos de HTML en una sola cadena.
+  }).join('');
 
   // Devuelve la plantilla HTML completa del correo.
   return `
     <!DOCTYPE html>
     <html>
     <head>
-      <title>Email Preview</title>
+      <title>${formData.emailSubject || 'Email Preview'}</title>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body style="margin: 0; padding: 0; background-color: #f4f4f4;">
       <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">

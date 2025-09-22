@@ -126,10 +126,12 @@ Una vez que se inicie, verás un mensaje en la terminal indicando que el servido
 
 ### 7. (Opcional) Usar la API externa de Mailing (Papalote)
 
-La aplicación ahora puede enviar correos usando una API externa ya existente (Papalote Events). Esto permite reutilizar su endpoint `POST /mailing/send` para envíos individuales por destinatario.
+La aplicación ahora puede enviar correos usando una API externa ya existente (Papalote Events). Se utilizan los endpoints definidos en el Swagger:
 
 - Documentación OpenAPI: https://events.papalote.org.mx/api-json
-- Endpoint que se consume: `POST https://events.papalote.org.mx/mailing/send`
+- Endpoints consumidos por el backend:
+  - `POST https://events.papalote.org.mx/api/mailing/send` (envío individual/personalizado por destinatario)
+  - `POST https://events.papalote.org.mx/api/mailing/send-bulk` (un solo correo con todos en TO)
 
 Para activarlo, agrega estas variables al archivo `.env`:
 
@@ -137,8 +139,8 @@ Para activarlo, agrega estas variables al archivo `.env`:
 # Activa el uso de la API externa
 USE_EXTERNAL_MAILING_API=true
 
-# Base de la API externa (opcional, por defecto usa https://events.papalote.org.mx)
-MAILING_API_BASE=https://events.papalote.org.mx
+# Base de la API externa (incluye /api según Swagger)
+MAILING_API_BASE=https://events.papalote.org.mx/api
 
 # Correo remitente por defecto si no se envía desde el cliente
 DEFAULT_SENDER_EMAIL=remitente@tu-dominio.com
@@ -156,3 +158,20 @@ Archivos involucrados:
 - `src/lib/mailing-api.ts` (cliente para la API externa)
 - `src/app/api/campaigns/test/route.ts` (soporte condicional)
 - `src/app/api/campaigns/send/route.ts` (soporte condicional)
+
+Ejemplo de uso con archivo de campaña (evita imprimir todo el HTML en consola):
+
+```bash
+curl -X POST "http://localhost:3000/api/campaigns/test" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to": ["tu.correo@papalote.org.mx"],
+    "subject": "Prueba desde archivo de campaña",
+    "senderEmail": "servicio.sistemas@papalote.org.mx",
+    "campaignPath": "campaigns/campaign_1.html"
+  }'
+```
+
+Notas:
+- Si `htmlBody` no se envía, el servidor leerá el HTML desde `storage/campaigns/<campaignPath>` validando la ruta.
+- Se registran en consola solo metadatos (remitente, destinatarios, flags y `campaignFile`), no el HTML completo.

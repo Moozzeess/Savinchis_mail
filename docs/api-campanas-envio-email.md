@@ -54,17 +54,19 @@ Estos estados se mapean en `mapStatusToUi()` dentro de `page.tsx` y se actualiza
 
 ## 3) Endpoint: POST /api/campaigns/test
 
-Uso: enviar uno o varios correos de prueba de forma real via Microsoft Graph.
+Uso: enviar uno o varios correos de prueba. Funciona con Microsoft Graph o con la API externa (Papalote) cuando está activo el feature flag.
 
 - Archivo: `src/app/api/campaigns/test/route.ts`
-- Llama a: `sendEmailViaGraph()` de `src/lib/graph-email.ts`
+- Llama a:
+  - `sendEmailViaGraph()` de `src/lib/graph-email.ts` cuando `USE_EXTERNAL_MAILING_API !== 'true'`
+  - `sendIndividualEmails()` de `src/lib/mailing-api.ts` cuando `USE_EXTERNAL_MAILING_API === 'true'`
 
-Body esperado:
+Body esperado (Graph o Externa):
 ```json
 {
   "to": ["usuario@dominio.com"],
   "subject": "Prueba Graph real",
-  "htmlBody": "<h1>Hola {{name}}</h1><p>Esto es una prueba real con Microsoft Graph.</p>",
+  "htmlBody": "<h1>Hola {{name}}</h1><p>Esto es una prueba.</p>",
   "senderEmail": "buzon@tu-dominio.com",
   "attachments": [
     {
@@ -72,12 +74,16 @@ Body esperado:
       "contentType": "application/pdf",
       "contentBytes": "BASE64"
     }
-  ]
+  ],
+  "campaignPath": "campaigns/campaign_1.html"
 }
 ```
 Notas:
 - `to` puede ser `string` o `string[]`. Se envía un mensaje por destinatario.
 - `attachments` es opcional. `contentBytes` debe ir en base64.
+- `campaignPath` es opcional: si no se proporciona `htmlBody`, el servidor leerá el HTML desde `storage/campaigns/<campaignPath>` (con validación de ruta). Esto evita imprimir HTML en consola y usa el contenido real de la campaña.
+
+Cuando se usa API externa (flag activo), el servidor envía el esquema `SendEmailDto` al endpoint externo. Ver sección 10.
 
 Respuesta (200):
 ```json
@@ -95,7 +101,9 @@ Respuesta (200):
 Uso: envío de campaña masivo por lotes con personalización por contacto.
 
 - Archivo: `src/app/api/campaigns/send/route.ts`
-- Llama a: `sendEmailViaGraph()` de `src/lib/graph-email.ts`
+- Llama a:
+  - `sendEmailViaGraph()` de `src/lib/graph-email.ts` cuando `USE_EXTERNAL_MAILING_API !== 'true'`
+  - `sendIndividualEmails()` de `src/lib/mailing-api.ts` cuando `USE_EXTERNAL_MAILING_API === 'true'` (envíos personalizados por contacto)
 - Obtiene datos auxiliares de:
   - `GET /api/templates/:id` → contenido HTML
   - `GET /api/contacts/lists/:id` → `{ contacts: [{ email, name? }, ...] }`
@@ -196,3 +204,36 @@ curl -X POST "$BASE_URL/api/campaigns/send" \
     "customData": { "eventName": "Conferencia 2025" }
   }'
 ```
+
+## 10) Uso con API externa (Papalote Events Mailing)
+
+- Documentación OpenAPI: `https://events.papalote.org.mx/api-json`
+- Endpoints externos usados por el servidor (según Swagger):
+  - `POST https://events.papalote.org.mx/api/mailing/send` (envío individual/personalizado por destinatario)
+  - `POST https://events.papalote.org.mx/api/mailing/send-bulk` (un correo con todos en TO)
+
+Para habilitarlo (feature flag):
+
+```env
+USE_EXTERNAL_MAILING_API=true
+MAILING_API_BASE=https://events.papalote.org.mx/api
+DEFAULT_SENDER_EMAIL=servicio.sistemas@papalote.org.mx
+```
+
+Esquema que envía el backend al servicio externo (SendEmailDto):
+
+```json
+{
+  "recipients": [{ "email": "a@dom.com", "name": "A", "templateData": {"name": "A"} }],
+  "subject": "Asunto",
+  "htmlContent": "<p>Hola {{name}}</p>",
+  "textContent": "Hola {{name}}",
+  "fromEmail": "servicio.sistemas@papalote.org.mx",
+  "attachments": [{ "name": "file.pdf", "contentType": "application/pdf", "contentBytes": "BASE64" }]
+}
+```
+
+Notas importantes:
+- `htmlContent` es obligatorio según Swagger.
+- `fromEmail` debe ser del dominio `@papalote.org.mx`; si no, el servidor intenta usar `DEFAULT_SENDER_EMAIL` del entorno.
+- Los logs del servidor no imprimen el HTML completo; se muestra solo la ruta del archivo de campaña (`campaignFile`) y banderas de estado.

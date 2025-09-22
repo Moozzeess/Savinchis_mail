@@ -16,7 +16,8 @@ import { getDbConnection } from '../DBConnection';
  * @property {string} asunto_predeterminado - Asunto predeterminado para plantillas de correo.
  * @property {any} contenido - El contenido de la plantilla, puede ser un arreglo de bloques (para correos) o una estructura específica para certificados.
  * @property {string} fecha_creacion - Fecha de creación de la plantilla en formato de cadena.
- * @property {'template' | 'certificate'} tipo - Tipo de plantilla: 'template' para correos, 'certificate' para certificados.
+ * @property {'template' | 'certificate' | 'html'} tipo - Tipo de plantilla: 'template' para correos, 'certificate' para certificados, 'html' para contenido HTML.
+ * @property {string} [html_content] - Contenido HTML para plantillas de tipo 'html'.
  */
 export interface Template {
   id_plantilla: number;
@@ -24,7 +25,8 @@ export interface Template {
   asunto_predeterminado: string;
   contenido: any; // Puede ser Block[] o la estructura del certificado
   fecha_creacion: string;
-  tipo: 'template' | 'certificate';
+  tipo: 'template' | 'certificate' | 'html';
+  html_content?: string; // Contenido HTML para plantillas de tipo 'html'
 }
 
 /**
