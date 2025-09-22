@@ -18,11 +18,8 @@ import { ProgressCard } from '@/components/Analisis/progress-card';
 import { StatsGrid } from '@/components/Analisis/stats-grid';
 import { useToast } from '@/components/ui/use-toast';
 import { SendCampaignDialog } from '@/components/campaign/send-campaign-dialog';
-<<<<<<< HEAD
-=======
 import { CampaignProgressPanel } from '@/components/campaign/campaign-progress-panel';
-import { Pencil } from 'lucide-react';
->>>>>>> d1f2a98 (cambios en rama, extraer despues)
+
 
 function mapStatusToUi(estado?: string) {
   switch (estado) {
@@ -549,7 +546,6 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
                     )}
                   </div>
                 </div>
-<<<<<<< HEAD
                 
                 {/* Detalles de la Recurrencia (sección unificada y reorganizada) */}
                 {hasRecurrence && (
@@ -641,17 +637,16 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
                         </div>
                       )}
                     </div>
-=======
-                <div className="p-3 rounded-lg bg-white/50 dark:bg-amber-950/20 border border-amber-50 dark:border-amber-900/20">
-                  <div className="text-xs font-medium text-amber-700/80 dark:text-amber-300/80 mb-1">Próximo envío</div>
-                  <div className="font-medium text-amber-900 dark:text-amber-100 flex items-center">
-                    <Calendar className="w-4 h-4 mr-2 text-amber-600 dark:text-amber-400" />
-                    {(() => {
-                      const d = campaignStats.nextScheduled ? new Date(campaignStats.nextScheduled) : null;
+                    <div className="p-3 rounded-lg bg-white/50 dark:bg-amber-950/20 border border-amber-50 dark:border-amber-900/20"></div>
+                      <div className="text-xs font-medium text-amber-700/80 dark:text-amber-300/80 mb-1">Próximo envío</div>
+                      <div className="font-medium text-amber-900 dark:text-amber-100 flex items-center">
+                        <Calendar className="w-4 h-4 mr-2 text-amber-600 dark:text-amber-400" />
+                        {(() => {
+                          const d = campaignStats.nextScheduled ? new Date(campaignStats.nextScheduled) : null;
                       return d && !isNaN(d.getTime()) ? d.toLocaleString('es-ES') : '—';
                     })()}
->>>>>>> d1f2a98 (cambios en rama, extraer despues)
                   </div>
+                </div>
                 )}
               </CardContent>
             </Card>
