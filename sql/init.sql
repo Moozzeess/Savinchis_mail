@@ -26,7 +26,6 @@ CREATE TABLE `plantillas` (
   `fecha_actualizacion` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `categoria` VARCHAR(255) NOT NULL DEFAULT 'Otro',
   `tipo` ENUM('template', 'certificate', 'email', 'html') NOT NULL DEFAULT 'template',
-  `html_content` LONGTEXT DEFAULT NULL,
   `thumbnail` VARCHAR(255) DEFAULT NULL,
   `enabled` TINYINT(1) DEFAULT 1,
   PRIMARY KEY (`id_plantilla`),
